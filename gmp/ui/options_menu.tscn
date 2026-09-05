@@ -1,0 +1,251 @@
+[gd_scene format=3 uid="uid://d2yprb5hy7dhy"]
+
+[ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://gmp/ui/theme/menu_theme.tres" id="1_theme"]
+[ext_resource type="Texture2D" uid="uid://bmckesaf77x8c" path="res://gmp/ui/theme/bg_gradient.tres" id="2_bg"]
+[ext_resource type="Script" uid="uid://bb2px1c1v2u4r" path="res://gmp/ui/OptionsMenu.cs" id="3_om"]
+
+[node name="OptionsMenu" type="Control" unique_id=2052952133]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("3_om")
+
+[node name="Background" type="TextureRect" parent="." unique_id=2001475670]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=85860329]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainPanel" type="PanelContainer" parent="CenterContainer" unique_id=807598534]
+custom_minimum_size = Vector2(720, 560)
+layout_mode = 2
+
+[node name="Content" type="VBoxContainer" parent="CenterContainer/MainPanel" unique_id=1696036299]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/MainPanel/Content" unique_id=895927986]
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+text = "Options"
+
+[node name="Tabs" type="TabContainer" parent="CenterContainer/MainPanel/Content" unique_id=1309170197]
+layout_mode = 2
+size_flags_vertical = 3
+current_tab = 0
+
+[node name="Video" type="VBoxContainer" parent="CenterContainer/MainPanel/Content/Tabs" unique_id=1854756774]
+layout_mode = 2
+theme_override_constants/separation = 18
+metadata/_tab_index = 0
+
+[node name="ResolutionRow" type="PanelContainer" parent="CenterContainer/MainPanel/Content/Tabs/Video" unique_id=1894877048]
+layout_mode = 2
+theme_type_variation = &"FieldRow"
+
+[node name="ResolutionRowBox" type="HBoxContainer" parent="CenterContainer/MainPanel/Content/Tabs/Video/ResolutionRow" unique_id=1561338609]
+layout_mode = 2
+
+[node name="ResolutionLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Video/ResolutionRow/ResolutionRowBox" unique_id=1971277230]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"FieldLabel"
+text = "Resolution"
+
+[node name="ResolutionOptionButton" type="OptionButton" parent="CenterContainer/MainPanel/Content/Tabs/Video/ResolutionRow/ResolutionRowBox" unique_id=1569886382]
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+selected = 1
+item_count = 4
+popup/item_0/text = "1280 x 720"
+popup/item_0/id = 0
+popup/item_1/text = "1920 x 1080"
+popup/item_1/id = 1
+popup/item_2/text = "2560 x 1440"
+popup/item_2/id = 2
+popup/item_3/text = "3840 x 2160"
+popup/item_3/id = 3
+
+[node name="FullscreenRow" type="PanelContainer" parent="CenterContainer/MainPanel/Content/Tabs/Video" unique_id=1824374031]
+layout_mode = 2
+theme_type_variation = &"FieldRow"
+
+[node name="FullscreenRowBox" type="HBoxContainer" parent="CenterContainer/MainPanel/Content/Tabs/Video/FullscreenRow" unique_id=608625234]
+layout_mode = 2
+
+[node name="FullscreenLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Video/FullscreenRow/FullscreenRowBox" unique_id=863524778]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"FieldLabel"
+text = "Fullscreen"
+
+[node name="FullscreenCheckButton" type="CheckButton" parent="CenterContainer/MainPanel/Content/Tabs/Video/FullscreenRow/FullscreenRowBox" unique_id=452989761]
+layout_mode = 2
+
+[node name="Input" type="MarginContainer" parent="CenterContainer/MainPanel/Content/Tabs" unique_id=1220653410]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="Scroll" type="ScrollContainer" parent="CenterContainer/MainPanel/Content/Tabs/Input" unique_id=1722784533]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="Grid" type="GridContainer" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll" unique_id=139985165]
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 3
+
+[node name="HeaderAction" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1279012889]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+text = "ACTION"
+
+[node name="HeaderPrimary" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=490085839]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+text = "PRIMARY"
+
+[node name="HeaderSecondary" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=2140996405]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+text = "SECONDARY"
+
+[node name="MoveForwardLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1059812843]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Move Forward"
+
+[node name="MoveForwardPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1197562171]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Unbound"
+
+[node name="MoveForwardSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1335232489]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Unbound"
+
+[node name="MoveBackLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1791800609]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Move Back"
+
+[node name="MoveBackPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1984054401]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Unbound"
+
+[node name="MoveBackSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=54367679]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Unbound"
+
+[node name="MoveLeftLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1830479834]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Move Left"
+
+[node name="MoveLeftPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1562361434]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Unbound"
+
+[node name="MoveLeftSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1395083213]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Unbound"
+
+[node name="MoveRightLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1683992581]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Move Right"
+
+[node name="MoveRightPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=310009977]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Unbound"
+
+[node name="MoveRightSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1082567576]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Unbound"
+
+[node name="JumpLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=468615293]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Jump"
+
+[node name="JumpPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=496041034]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Unbound"
+
+[node name="JumpSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=268675223]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Unbound"
+
+[node name="InteractLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=158976186]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Interact"
+
+[node name="InteractPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=651597377]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Unbound"
+
+[node name="InteractSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1653946337]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Unbound"
+
+[node name="PauseLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=541326945]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Pause"
+
+[node name="PausePrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=2015026167]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Unbound"
+
+[node name="PauseSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1732160112]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Unbound"
+
+[node name="Other" type="VBoxContainer" parent="CenterContainer/MainPanel/Content/Tabs" unique_id=902751384]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="Footer" type="HBoxContainer" parent="CenterContainer/MainPanel/Content" unique_id=1477851929]
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="CenterContainer/MainPanel/Content/Footer" unique_id=1793783504]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BackButton" type="Button" parent="CenterContainer/MainPanel/Content/Footer" unique_id=1339156614]
+custom_minimum_size = Vector2(140, 44)
+layout_mode = 2
+text = "Back"

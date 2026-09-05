@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://y3cn1mhviuas"]
+
+[ext_resource type="Script" uid="uid://cuprrojg5uqs1" path="res://gmp/core/gmpo/GMPORigidBody3D.cs" id="1_8q2nk"]
+[ext_resource type="PackedScene" uid="uid://ciayac65b7mpu" path="res://gmp/examples/GMPOSphere.tscn" id="2_vi25l"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bgkna"]
+
+[node name="NestedTest" type="RigidBody3D" unique_id=861113552]
+script = ExtResource("1_8q2nk")
+metadata/_custom_type_script = "uid://cuprrojg5uqs1"
+
+[node name="GmpoSphere" parent="." unique_id=207060871 instance=ExtResource("2_vi25l")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.90734863, 0.15261161, 1.1021128)
+
+[node name="GmpoSphere2" parent="." unique_id=348425965 instance=ExtResource("2_vi25l")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4609241, 0.15261161, 1.0341737)
+
+[node name="GmpoSphere3" parent="." unique_id=969224389 instance=ExtResource("2_vi25l")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3256106, 0.15261161, -1.6452475)
+
+[node name="GmpoSphere4" parent="." unique_id=1767912890 instance=ExtResource("2_vi25l")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5658684, 0.15261161, -1.8267283)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=350764942]
+mesh = SubResource("BoxMesh_7qi08")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=915023838]
+shape = SubResource("BoxShape3D_bgkna")

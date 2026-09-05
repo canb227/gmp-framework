@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://dq8r1uuokq7fo"]
+
+[ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://gmp/ui/theme/menu_theme.tres" id="1_6wm6r"]
+
+[node name="PlayerRow1" type="PanelContainer" unique_id=1324399783]
+theme = ExtResource("1_6wm6r")
+theme_type_variation = &"FieldRow"
+
+[node name="PlayerRow1Box" type="HBoxContainer" parent="." unique_id=1350526303]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Avatar" type="PanelContainer" parent="PlayerRow1Box" unique_id=1439833235]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"AvatarBox"
+
+[node name="AvatarCenter" type="CenterContainer" parent="PlayerRow1Box/Avatar" unique_id=94948960]
+layout_mode = 2
+
+[node name="AvatarLabel" type="Label" parent="PlayerRow1Box/Avatar/AvatarCenter" unique_id=1845306709]
+layout_mode = 2
+theme_type_variation = &"FieldLabel"
+theme_override_font_sizes/font_size = 14
+text = "P1"
+
+[node name="NameLabel" type="Label" parent="PlayerRow1Box" unique_id=163651624]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Player One"
+vertical_alignment = 1
+
+[node name="PeerIDLabel" type="Label" parent="PlayerRow1Box" unique_id=158487903]
+layout_mode = 2
+text = "PEERID"
+
+[node name="Badge" type="PanelContainer" parent="PlayerRow1Box" unique_id=1170136558]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"BadgeRow"
+
+[node name="BadgeLabel" type="Label" parent="PlayerRow1Box/Badge" unique_id=2030765847]
+layout_mode = 2
+theme_type_variation = &"BadgeLabel"
+text = "HOST"

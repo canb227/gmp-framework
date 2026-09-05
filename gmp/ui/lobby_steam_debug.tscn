@@ -1,0 +1,386 @@
+[gd_scene format=3 uid="uid://cg20xdka737fs"]
+
+[ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://gmp/ui/theme/menu_theme.tres" id="1_obikm"]
+[ext_resource type="Texture2D" uid="uid://bmckesaf77x8c" path="res://gmp/ui/theme/bg_gradient.tres" id="2_m06ut"]
+[ext_resource type="Script" uid="uid://ff8rxl23212h" path="res://gmp/ui/LobbySteamDebug.cs" id="2_qsy4g"]
+
+[node name="LobbySteamDebug" type="Control" unique_id=57453499]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_obikm")
+script = ExtResource("2_qsy4g")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1975856068]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_m06ut")
+expand_mode = 1
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=79745762]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="RootVBox" type="VBoxContainer" parent="Margin" unique_id=453495433]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="TopBar" type="HBoxContainer" parent="Margin/RootVBox" unique_id=855444528]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="BackButton" type="Button" parent="Margin/RootVBox/TopBar" unique_id=1505939085]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 44)
+layout_mode = 2
+text = "Back"
+
+[node name="TitleLabel" type="Label" parent="Margin/RootVBox/TopBar" unique_id=1194620626]
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 28
+text = "Lobby Debug (Steam)"
+
+[node name="HostButton" type="Button" parent="Margin/RootVBox/TopBar" unique_id=749408639]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 44)
+layout_mode = 2
+text = "Host"
+
+[node name="JoinButton" type="Button" parent="Margin/RootVBox/TopBar" unique_id=2092642409]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 44)
+layout_mode = 2
+text = "Join ID:"
+
+[node name="IpInput" type="LineEdit" parent="Margin/RootVBox/TopBar" unique_id=1434731520]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "HOST STEAMID"
+
+[node name="Body" type="HBoxContainer" parent="Margin/RootVBox" unique_id=1871456539]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="LeftPanel" type="PanelContainer" parent="Margin/RootVBox/Body" unique_id=1109967048]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LeftContent" type="VBoxContainer" parent="Margin/RootVBox/Body/LeftPanel" unique_id=283814375]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ConnectionSection" type="VBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent" unique_id=1542520253]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ConnectionSectionLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection" unique_id=1526275258]
+layout_mode = 2
+theme_type_variation = &"SectionLabel"
+text = "Connection Status"
+
+[node name="StateRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection" unique_id=295482741]
+layout_mode = 2
+
+[node name="StateLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/StateRow" unique_id=1037743083]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"FieldLabel"
+text = "State"
+
+[node name="StateValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/StateRow" unique_id=761833038]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Disconnected"
+horizontal_alignment = 2
+
+[node name="PeerRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection" unique_id=1909790675]
+layout_mode = 2
+
+[node name="PeerLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/PeerRow" unique_id=644583643]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"FieldLabel"
+text = "Peer ID"
+
+[node name="PeerValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/PeerRow" unique_id=1472481985]
+unique_name_in_owner = true
+layout_mode = 2
+text = "-"
+horizontal_alignment = 2
+
+[node name="PingRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection" unique_id=877017404]
+layout_mode = 2
+
+[node name="PingLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/PingRow" unique_id=636080914]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"FieldLabel"
+text = "Ping"
+
+[node name="PingValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/PingRow" unique_id=760802139]
+unique_name_in_owner = true
+layout_mode = 2
+text = "-- ms"
+horizontal_alignment = 2
+
+[node name="LobbySection" type="VBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent" unique_id=683259073]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LobbySectionLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection" unique_id=444962368]
+layout_mode = 2
+theme_type_variation = &"SectionLabel"
+text = "Lobby State"
+
+[node name="LobbyIdRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection" unique_id=229538035]
+layout_mode = 2
+
+[node name="LobbyIdLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/LobbyIdRow" unique_id=646590792]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"FieldLabel"
+text = "Lobby ID"
+
+[node name="LobbyIdValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/LobbyIdRow" unique_id=1552380589]
+unique_name_in_owner = true
+layout_mode = 2
+text = "-"
+horizontal_alignment = 2
+
+[node name="HostRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection" unique_id=934017119]
+layout_mode = 2
+
+[node name="HostLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/HostRow" unique_id=517693551]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"FieldLabel"
+text = "Host"
+
+[node name="HostValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/HostRow" unique_id=1542902242]
+unique_name_in_owner = true
+layout_mode = 2
+text = "-"
+horizontal_alignment = 2
+
+[node name="PlayersRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection" unique_id=1024856471]
+layout_mode = 2
+
+[node name="PlayersLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/PlayersRow" unique_id=302462438]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"FieldLabel"
+text = "Players"
+
+[node name="PlayersValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/PlayersRow" unique_id=1656009436]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0 / 6"
+horizontal_alignment = 2
+
+[node name="EventLogSection" type="VBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent" unique_id=402970028]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="EventLogSectionLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/EventLogSection" unique_id=1205382439]
+layout_mode = 2
+theme_type_variation = &"SectionLabel"
+text = "Event Log"
+
+[node name="LogPanel" type="PanelContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/EventLogSection" unique_id=931554260]
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"FieldRow"
+
+[node name="LogText" type="RichTextLabel" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/EventLogSection/LogPanel" unique_id=148117844]
+layout_mode = 2
+bbcode_enabled = true
+text = "[color=#8c93a3][00:00:01][/color] Steam debug console ready."
+scroll_following = true
+
+[node name="CenterColumn" type="VBoxContainer" parent="Margin/RootVBox/Body" unique_id=368454085]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 20
+
+[node name="PlayerSection" type="VBoxContainer" parent="Margin/RootVBox/Body/CenterColumn" unique_id=1842203578]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PlayerSectionLabel" type="Label" parent="Margin/RootVBox/Body/CenterColumn/PlayerSection" unique_id=1098169979]
+layout_mode = 2
+theme_type_variation = &"SectionLabel"
+text = "Players in Lobby"
+
+[node name="PlayerListPanel" type="PanelContainer" parent="Margin/RootVBox/Body/CenterColumn/PlayerSection" unique_id=811432774]
+custom_minimum_size = Vector2(0, 266.7)
+layout_mode = 2
+theme_type_variation = &"FieldRow"
+
+[node name="PlayerScroll" type="ScrollContainer" parent="Margin/RootVBox/Body/CenterColumn/PlayerSection/PlayerListPanel" unique_id=135968775]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="PlayerRows" type="VBoxContainer" parent="Margin/RootVBox/Body/CenterColumn/PlayerSection/PlayerListPanel/PlayerScroll" unique_id=185156173]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="ChatSection" type="VBoxContainer" parent="Margin/RootVBox/Body/CenterColumn" unique_id=411131971]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="ChatSectionLabel" type="Label" parent="Margin/RootVBox/Body/CenterColumn/ChatSection" unique_id=931047698]
+layout_mode = 2
+theme_type_variation = &"SectionLabel"
+text = "Chat"
+
+[node name="ChatPanel" type="PanelContainer" parent="Margin/RootVBox/Body/CenterColumn/ChatSection" unique_id=2028881625]
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"FieldRow"
+
+[node name="ChatVBox" type="VBoxContainer" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel" unique_id=917556892]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ChatOutputPanel" type="PanelContainer" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox" unique_id=633098437]
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"FieldRow"
+
+[node name="ChatLog" type="RichTextLabel" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox/ChatOutputPanel" unique_id=1034456717]
+layout_mode = 2
+bbcode_enabled = true
+text = "[color=#4dc7d1]System:[/color] Welcome to the Steam lobby chat."
+scroll_following = true
+
+[node name="ChatInputRow" type="HBoxContainer" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox" unique_id=386752554]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ChatInput" type="LineEdit" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox/ChatInputRow" unique_id=1738727063]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Type a message..."
+
+[node name="SendButton" type="Button" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox/ChatInputRow" unique_id=1236384367]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "Send"
+
+[node name="RightPanel" type="PanelContainer" parent="Margin/RootVBox/Body" unique_id=1802368456]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RightContent" type="VBoxContainer" parent="Margin/RootVBox/Body/RightPanel" unique_id=1896012838]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="RightSectionLabel" type="Label" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=1927095918]
+layout_mode = 2
+theme_type_variation = &"SectionLabel"
+text = "Game Config"
+
+[node name="LevelRow" type="PanelContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=64495468]
+layout_mode = 2
+theme_type_variation = &"FieldRow"
+
+[node name="LevelBox" type="HBoxContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent/LevelRow" unique_id=1404721220]
+layout_mode = 2
+
+[node name="LevelLabel" type="Label" parent="Margin/RootVBox/Body/RightPanel/RightContent/LevelRow/LevelBox" unique_id=1922177596]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"FieldLabel"
+text = "Level"
+
+[node name="LevelOption" type="OptionButton" parent="Margin/RootVBox/Body/RightPanel/RightContent/LevelRow/LevelBox" unique_id=829038719]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+selected = 0
+item_count = 4
+popup/item_0/text = "Test Arena"
+popup/item_0/id = 0
+popup/item_1/text = "Level 1"
+popup/item_1/id = 1
+popup/item_2/text = "Level 2"
+popup/item_2/id = 2
+popup/item_3/text = "Level 3"
+popup/item_3/id = 3
+
+[node name="MaxPlayersRow" type="PanelContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=1477137611]
+layout_mode = 2
+theme_type_variation = &"FieldRow"
+
+[node name="MaxPlayersBox" type="HBoxContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent/MaxPlayersRow" unique_id=24886169]
+layout_mode = 2
+
+[node name="MaxPlayersLabel" type="Label" parent="Margin/RootVBox/Body/RightPanel/RightContent/MaxPlayersRow/MaxPlayersBox" unique_id=311072501]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"FieldLabel"
+text = "Max Players"
+
+[node name="MaxPlayersSpin" type="SpinBox" parent="Margin/RootVBox/Body/RightPanel/RightContent/MaxPlayersRow/MaxPlayersBox" unique_id=208042367]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+min_value = 1.0
+max_value = 16.0
+value = 6.0
+
+[node name="GameModeRow" type="PanelContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=871649588]
+layout_mode = 2
+theme_type_variation = &"FieldRow"
+
+[node name="GameModeBox" type="HBoxContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent/GameModeRow" unique_id=1907559408]
+layout_mode = 2
+
+[node name="GameModeLabel" type="Label" parent="Margin/RootVBox/Body/RightPanel/RightContent/GameModeRow/GameModeBox" unique_id=1381485565]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"FieldLabel"
+text = "Game Mode"
+
+[node name="GameModeOption" type="OptionButton" parent="Margin/RootVBox/Body/RightPanel/RightContent/GameModeRow/GameModeBox" unique_id=1426959578]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "Deathmatch"
+popup/item_0/id = 0
+popup/item_1/text = "Co-op"
+popup/item_1/id = 1
+popup/item_2/text = "Sandbox"
+popup/item_2/id = 2
+
+[node name="RightSpacer" type="Control" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=587589101]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StartGameButton" type="Button" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=1520338131]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+text = "Start Game"

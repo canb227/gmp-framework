@@ -1,0 +1,19 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GMPFramework", "GMPFramework.csproj", "{C3EF1B81-1020-43C0-B4F4-42607F4C5ADC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+	Debug|Any CPU = Debug|Any CPU
+	ExportDebug|Any CPU = ExportDebug|Any CPU
+	ExportRelease|Any CPU = ExportRelease|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C3EF1B81-1020-43C0-B4F4-42607F4C5ADC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3EF1B81-1020-43C0-B4F4-42607F4C5ADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3EF1B81-1020-43C0-B4F4-42607F4C5ADC}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
+		{C3EF1B81-1020-43C0-B4F4-42607F4C5ADC}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
+		{C3EF1B81-1020-43C0-B4F4-42607F4C5ADC}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
+		{C3EF1B81-1020-43C0-B4F4-42607F4C5ADC}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+	EndGlobalSection
+EndGlobal

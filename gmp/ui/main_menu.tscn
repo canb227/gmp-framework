@@ -1,0 +1,97 @@
+[gd_scene format=3 uid="uid://ckre0b3bwrbof"]
+
+[ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://gmp/ui/theme/menu_theme.tres" id="1_theme"]
+[ext_resource type="Texture2D" uid="uid://bmckesaf77x8c" path="res://gmp/ui/theme/bg_gradient.tres" id="2_bg"]
+[ext_resource type="Script" uid="uid://dbhtqkipoluf" path="res://gmp/ui/MainMenu.cs" id="3_mm"]
+
+[node name="MainMenu" type="Control" unique_id=300778322]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("3_mm")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1151971214]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1167247457]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=333065536]
+layout_mode = 2
+theme_override_constants/separation = 32
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1694694699]
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+text = "Godot Multiplayer (GMP) Framework"
+horizontal_alignment = 1
+
+[node name="AccentBar" type="ColorRect" parent="CenterContainer/VBoxContainer" unique_id=1491452105]
+custom_minimum_size = Vector2(120, 3)
+layout_mode = 2
+size_flags_horizontal = 4
+color = Color(0.302, 0.784, 0.82, 1)
+
+[node name="ButtonList" type="VBoxContainer" parent="CenterContainer/VBoxContainer" unique_id=605602831]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="StartSteamButton" type="Button" parent="CenterContainer/VBoxContainer/ButtonList" unique_id=586085226]
+custom_minimum_size = Vector2(260, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Start Steam Lobby"
+
+[node name="StartLANButton" type="Button" parent="CenterContainer/VBoxContainer/ButtonList" unique_id=2126269421]
+custom_minimum_size = Vector2(260, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Start LAN Lobby"
+
+[node name="OptionsButton" type="Button" parent="CenterContainer/VBoxContainer/ButtonList" unique_id=1507170232]
+custom_minimum_size = Vector2(260, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Options"
+
+[node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer/ButtonList" unique_id=1466342458]
+custom_minimum_size = Vector2(260, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Quit"
+
+[node name="VersionLabel" type="Label" parent="." unique_id=1096839547]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -100.0
+offset_top = -32.0
+offset_right = -16.0
+offset_bottom = -12.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_type_variation = &"HeaderLabel"
+text = "v0.1"
+horizontal_alignment = 2

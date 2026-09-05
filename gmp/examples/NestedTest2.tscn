@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://ckgupe3agc4sj"]
+
+[ext_resource type="PackedScene" uid="uid://ciayac65b7mpu" path="res://gmp/examples/GMPOSphere.tscn" id="1_8wrj7"]
+
+[node name="NestedTest" type="Node3D" unique_id=2008310522]
+
+[node name="GmpoSphere" parent="." unique_id=207060871 instance=ExtResource("1_8wrj7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.90734863, 0.15261161, 1.1021128)
+
+[node name="GmpoSphere2" parent="." unique_id=1738688489 instance=ExtResource("1_8wrj7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4609241, 0.15261161, 1.0341737)
+
+[node name="GmpoSphere3" parent="." unique_id=1626852097 instance=ExtResource("1_8wrj7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3256106, 0.15261161, -1.6452475)
+
+[node name="GmpoSphere4" parent="." unique_id=1484574058 instance=ExtResource("1_8wrj7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5658684, 0.15261161, -1.8267283)

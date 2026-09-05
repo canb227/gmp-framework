@@ -1,0 +1,480 @@
+[gd_scene format=3 uid="uid://k4t4djpids3j"]
+
+[ext_resource type="PackedScene" uid="uid://ciayac65b7mpu" path="res://gmp/examples/GMPOSphere.tscn" id="1_bwfj0"]
+[ext_resource type="PackedScene" uid="uid://ckgupe3agc4sj" path="res://gmp/examples/NestedTest2.tscn" id="2_sauf0"]
+[ext_resource type="PackedScene" uid="uid://y3cn1mhviuas" path="res://gmp/examples/NestedTest.tscn" id="3_w6rdu"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_an5lo"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
+size = Vector3(20, 0.5, 20)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_cqf6g"]
+points = PackedVector3Array(-10, -0.25, -10, -10, 0.25, -10, 10, -0.25, -10, -10, -0.25, 10, -10, 0.25, 10, 10, 0.25, -10, 10, -0.25, 10, 10, 0.25, 10)
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_u51hs"]
+
+[sub_resource type="Sky" id="Sky_ug8er"]
+sky_material = SubResource("ProceduralSkyMaterial_u51hs")
+
+[sub_resource type="Environment" id="Environment_7qi08"]
+background_mode = 2
+sky = SubResource("Sky_ug8er")
+
+[node name="SyncedLevel" type="Node3D" unique_id=164654105]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=707495693]
+physics_material_override = SubResource("PhysicsMaterial_an5lo")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D" unique_id=280604351]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.2823296e-05, -0.1366399, -4.7683716e-06)
+mesh = SubResource("BoxMesh_7qi08")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1740307046]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.13635093, 0)
+shape = SubResource("ConvexPolygonShape3D_cqf6g")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1739648171]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8485892, 11.904491)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1433585326]
+environment = SubResource("Environment_7qi08")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1051721313]
+transform = Transform3D(1, 0, 0, 0, 0.88996774, 0.4560235, 0, -0.4560235, 0.88996774, 0, 4.6577506, 0)
+shadow_enabled = true
+
+[node name="GmpoSphere" parent="." unique_id=207060871 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5833843, 0.613649, -0.6312351)
+
+[node name="GmpoSphere2" parent="." unique_id=1521154352 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7439822, 0.61364937, 3.5260553)
+
+[node name="GmpoSphere3" parent="." unique_id=1529274700 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3159679, 0.61364937, 7.2069545)
+
+[node name="NestedTest" parent="." unique_id=2008310522 instance=ExtResource("2_sauf0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5328574, 0.46103823, 6.6208405)
+
+[node name="NestedTest2" parent="." unique_id=861113552 instance=ExtResource("3_w6rdu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2504532, 0.61364937, 2.9830618)
+
+[node name="GmpoSphere4" parent="." unique_id=1035252311 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5537826, 0.61364985, 3.9428916)
+
+[node name="GmpoSphere5" parent="." unique_id=2064590540 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.53986, 1.6369734, 3.9790435)
+
+[node name="GmpoSphere6" parent="." unique_id=915094495 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.56129867, 2.6877668, 4.0810637)
+
+[node name="GmpoSphere7" parent="." unique_id=1817465662 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.52744275, 3.7619843, 3.9067342)
+
+[node name="GmpoSphere8" parent="." unique_id=325507155 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2876438, 4.862746, 3.9888017)
+
+[node name="GmpoSphere9" parent="." unique_id=533299219 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08662844, 5.9576006, 4.0680704)
+
+[node name="GmpoSphere10" parent="." unique_id=1884292603 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.26874995, 7.065782, 3.971535)
+
+[node name="GmpoSphere11" parent="." unique_id=853483417 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5537826, 0.61364985, 2.0747972)
+
+[node name="GmpoSphere12" parent="." unique_id=117662386 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.53986, 1.6369734, 2.110949)
+
+[node name="GmpoSphere13" parent="." unique_id=1891436523 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.56129867, 2.6877668, 2.2129693)
+
+[node name="GmpoSphere14" parent="." unique_id=1526541868 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.52744275, 3.7619843, 2.0386398)
+
+[node name="GmpoSphere15" parent="." unique_id=298769540 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2876438, 4.862746, 2.1207073)
+
+[node name="GmpoSphere16" parent="." unique_id=2127725330 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08662844, 5.9576006, 2.199976)
+
+[node name="GmpoSphere17" parent="." unique_id=131137921 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.26874995, 7.065782, 2.1034405)
+
+[node name="GmpoSphere18" parent="." unique_id=600746183 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5537826, 0.61364985, 0.20653248)
+
+[node name="GmpoSphere19" parent="." unique_id=77011759 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.53986, 1.6369734, 0.24268436)
+
+[node name="GmpoSphere20" parent="." unique_id=1297338486 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.56129867, 2.6877668, 0.34470463)
+
+[node name="GmpoSphere21" parent="." unique_id=663153502 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.52744275, 3.7619843, 0.17037511)
+
+[node name="GmpoSphere22" parent="." unique_id=1152828557 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2876438, 4.862746, 0.2524426)
+
+[node name="GmpoSphere23" parent="." unique_id=1198669873 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08662844, 5.9576006, 0.3317113)
+
+[node name="GmpoSphere24" parent="." unique_id=1382434942 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.26874995, 7.065782, 0.23517585)
+
+[node name="GmpoSphere25" parent="." unique_id=1182846776 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5537826, 0.61364985, -1.6177425)
+
+[node name="GmpoSphere26" parent="." unique_id=1453059040 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.53986, 1.6369734, -1.5815907)
+
+[node name="GmpoSphere27" parent="." unique_id=1991056042 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.56129867, 2.6877668, -1.4795704)
+
+[node name="GmpoSphere28" parent="." unique_id=544629593 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.52744275, 3.7619843, -1.6538999)
+
+[node name="GmpoSphere29" parent="." unique_id=1776583665 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2876438, 4.862746, -1.5718324)
+
+[node name="GmpoSphere30" parent="." unique_id=345690600 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08662844, 5.9576006, -1.4925637)
+
+[node name="GmpoSphere31" parent="." unique_id=1542048066 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.26874995, 7.065782, -1.5890992)
+
+[node name="GmpoSphere32" parent="." unique_id=943575309 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6271695, 0.61364985, 3.9428916)
+
+[node name="GmpoSphere33" parent="." unique_id=1118306713 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.64109206, 1.6369734, 3.9790435)
+
+[node name="GmpoSphere34" parent="." unique_id=1625657286 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6196534, 2.6877668, 4.0810637)
+
+[node name="GmpoSphere35" parent="." unique_id=310990158 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6535093, 3.7619843, 3.9067342)
+
+[node name="GmpoSphere36" parent="." unique_id=698054270 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8933083, 4.862746, 3.9888017)
+
+[node name="GmpoSphere37" parent="." unique_id=113972504 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0943236, 5.9576006, 4.0680704)
+
+[node name="GmpoSphere38" parent="." unique_id=1032685898 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.449702, 7.065782, 3.971535)
+
+[node name="GmpoSphere39" parent="." unique_id=388794672 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6271695, 0.61364985, 2.0747972)
+
+[node name="GmpoSphere40" parent="." unique_id=1214889635 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.64109206, 1.6369734, 2.110949)
+
+[node name="GmpoSphere41" parent="." unique_id=390192935 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6196534, 2.6877668, 2.2129693)
+
+[node name="GmpoSphere42" parent="." unique_id=1693146531 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6535093, 3.7619843, 2.0386398)
+
+[node name="GmpoSphere43" parent="." unique_id=1991680995 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8933083, 4.862746, 2.1207073)
+
+[node name="GmpoSphere44" parent="." unique_id=640301240 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0943236, 5.9576006, 2.199976)
+
+[node name="GmpoSphere45" parent="." unique_id=663368403 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.449702, 7.065782, 2.1034405)
+
+[node name="GmpoSphere46" parent="." unique_id=1122122976 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6271695, 0.61364985, 0.20653248)
+
+[node name="GmpoSphere47" parent="." unique_id=613759918 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.64109206, 1.6369734, 0.24268436)
+
+[node name="GmpoSphere48" parent="." unique_id=1538107447 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6196534, 2.6877668, 0.34470463)
+
+[node name="GmpoSphere49" parent="." unique_id=1218603912 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6535093, 3.7619843, 0.17037511)
+
+[node name="GmpoSphere50" parent="." unique_id=31466921 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8933083, 4.862746, 0.2524426)
+
+[node name="GmpoSphere51" parent="." unique_id=555582751 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0943236, 5.9576006, 0.3317113)
+
+[node name="GmpoSphere52" parent="." unique_id=498637110 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.449702, 7.065782, 0.23517585)
+
+[node name="GmpoSphere53" parent="." unique_id=139814732 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6271695, 0.61364985, -1.6177425)
+
+[node name="GmpoSphere54" parent="." unique_id=117647530 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.64109206, 1.6369734, -1.5815907)
+
+[node name="GmpoSphere55" parent="." unique_id=1799051920 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6196534, 2.6877668, -1.4795704)
+
+[node name="GmpoSphere56" parent="." unique_id=1612772886 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6535093, 3.7619843, -1.6538999)
+
+[node name="GmpoSphere57" parent="." unique_id=739845578 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8933083, 4.862746, -1.5718324)
+
+[node name="GmpoSphere58" parent="." unique_id=1371961707 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0943236, 5.9576006, -1.4925637)
+
+[node name="GmpoSphere59" parent="." unique_id=398499858 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.449702, 7.065782, -1.5890992)
+
+[node name="GmpoSphere60" parent="." unique_id=407778209 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3708558, 0.61364985, 3.9428916)
+
+[node name="GmpoSphere61" parent="." unique_id=49991617 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.356933, 1.6369734, 3.9790435)
+
+[node name="GmpoSphere62" parent="." unique_id=959574981 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3783717, 2.6877668, 4.0810637)
+
+[node name="GmpoSphere63" parent="." unique_id=917204396 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3445158, 3.7619843, 3.9067342)
+
+[node name="GmpoSphere64" parent="." unique_id=1189204157 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1047168, 4.862746, 3.9888017)
+
+[node name="GmpoSphere65" parent="." unique_id=304961082 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9037015, 5.9576006, 4.0680704)
+
+[node name="GmpoSphere66" parent="." unique_id=84739428 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5483232, 7.065782, 3.971535)
+
+[node name="GmpoSphere67" parent="." unique_id=326280081 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3708558, 0.61364985, 2.0747972)
+
+[node name="GmpoSphere68" parent="." unique_id=2020366268 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.356933, 1.6369734, 2.110949)
+
+[node name="GmpoSphere69" parent="." unique_id=1866414028 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3783717, 2.6877668, 2.2129693)
+
+[node name="GmpoSphere70" parent="." unique_id=1752198131 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3445158, 3.7619843, 2.0386398)
+
+[node name="GmpoSphere71" parent="." unique_id=1927780713 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1047168, 4.862746, 2.1207073)
+
+[node name="GmpoSphere72" parent="." unique_id=317953176 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9037015, 5.9576006, 2.199976)
+
+[node name="GmpoSphere73" parent="." unique_id=530458962 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5483232, 7.065782, 2.1034405)
+
+[node name="GmpoSphere74" parent="." unique_id=884024288 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3708558, 0.61364985, 0.20653248)
+
+[node name="GmpoSphere75" parent="." unique_id=1715842576 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.356933, 1.6369734, 0.24268436)
+
+[node name="GmpoSphere76" parent="." unique_id=1179134796 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3783717, 2.6877668, 0.34470463)
+
+[node name="GmpoSphere77" parent="." unique_id=1581852726 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3445158, 3.7619843, 0.17037511)
+
+[node name="GmpoSphere78" parent="." unique_id=1623523556 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1047168, 4.862746, 0.2524426)
+
+[node name="GmpoSphere79" parent="." unique_id=613618963 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9037015, 5.9576006, 0.3317113)
+
+[node name="GmpoSphere80" parent="." unique_id=1146906148 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5483232, 7.065782, 0.23517585)
+
+[node name="GmpoSphere81" parent="." unique_id=424796341 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3708558, 0.61364985, -1.6177425)
+
+[node name="GmpoSphere82" parent="." unique_id=420468131 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.356933, 1.6369734, -1.5815907)
+
+[node name="GmpoSphere83" parent="." unique_id=905357188 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3783717, 2.6877668, -1.4795704)
+
+[node name="GmpoSphere84" parent="." unique_id=1636048198 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3445158, 3.7619843, -1.6538999)
+
+[node name="GmpoSphere85" parent="." unique_id=910949235 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1047168, 4.862746, -1.5718324)
+
+[node name="GmpoSphere86" parent="." unique_id=1299166028 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9037015, 5.9576006, -1.4925637)
+
+[node name="GmpoSphere87" parent="." unique_id=884681189 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5483232, 7.065782, -1.5890992)
+
+[node name="GmpoSphere88" parent="." unique_id=852760886 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2770357, 0.61364985, 3.9428916)
+
+[node name="GmpoSphere89" parent="." unique_id=1285312850 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.263113, 1.6369734, 3.9790435)
+
+[node name="GmpoSphere90" parent="." unique_id=349555530 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.284552, 2.6877668, 4.0810637)
+
+[node name="GmpoSphere91" parent="." unique_id=547483257 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.250696, 3.7619843, 3.9067342)
+
+[node name="GmpoSphere92" parent="." unique_id=1901744132 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.010897, 4.862746, 3.9888017)
+
+[node name="GmpoSphere93" parent="." unique_id=380906647 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8098817, 5.9576006, 4.0680704)
+
+[node name="GmpoSphere94" parent="." unique_id=473491952 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4545033, 7.065782, 3.971535)
+
+[node name="GmpoSphere95" parent="." unique_id=1139415074 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2770357, 0.61364985, 2.0747972)
+
+[node name="GmpoSphere96" parent="." unique_id=188234678 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.263113, 1.6369734, 2.110949)
+
+[node name="GmpoSphere97" parent="." unique_id=1596577385 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.284552, 2.6877668, 2.2129693)
+
+[node name="GmpoSphere98" parent="." unique_id=1113338748 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.250696, 3.7619843, 2.0386398)
+
+[node name="GmpoSphere99" parent="." unique_id=109624396 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.010897, 4.862746, 2.1207073)
+
+[node name="GmpoSphere100" parent="." unique_id=951967705 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8098817, 5.9576006, 2.199976)
+
+[node name="GmpoSphere101" parent="." unique_id=347537892 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4545033, 7.065782, 2.1034405)
+
+[node name="GmpoSphere102" parent="." unique_id=1815485124 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2770357, 0.61364985, 0.20653248)
+
+[node name="GmpoSphere103" parent="." unique_id=944987525 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.263113, 1.6369734, 0.24268436)
+
+[node name="GmpoSphere104" parent="." unique_id=1636469 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.284552, 2.6877668, 0.34470463)
+
+[node name="GmpoSphere105" parent="." unique_id=1565705532 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.250696, 3.7619843, 0.17037511)
+
+[node name="GmpoSphere106" parent="." unique_id=560068619 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.010897, 4.862746, 0.2524426)
+
+[node name="GmpoSphere107" parent="." unique_id=399689932 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8098817, 5.9576006, 0.3317113)
+
+[node name="GmpoSphere108" parent="." unique_id=2035051864 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4545033, 7.065782, 0.23517585)
+
+[node name="GmpoSphere109" parent="." unique_id=108998979 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2770357, 0.61364985, -1.6177425)
+
+[node name="GmpoSphere110" parent="." unique_id=523179557 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.263113, 1.6369734, -1.5815907)
+
+[node name="GmpoSphere111" parent="." unique_id=1493524019 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.284552, 2.6877668, -1.4795704)
+
+[node name="GmpoSphere112" parent="." unique_id=1903013287 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.250696, 3.7619843, -1.6538999)
+
+[node name="GmpoSphere113" parent="." unique_id=418538601 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.010897, 4.862746, -1.5718324)
+
+[node name="GmpoSphere114" parent="." unique_id=1769934112 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8098817, 5.9576006, -1.4925637)
+
+[node name="GmpoSphere115" parent="." unique_id=1365453129 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4545033, 7.065782, -1.5890992)
+
+[node name="GmpoSphere116" parent="." unique_id=1678513861 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.899529, 0.61364985, 3.9428916)
+
+[node name="GmpoSphere117" parent="." unique_id=342580486 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9134514, 1.6369734, 3.9790435)
+
+[node name="GmpoSphere118" parent="." unique_id=1189428391 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8920128, 2.6877668, 4.0810637)
+
+[node name="GmpoSphere119" parent="." unique_id=1490977975 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9258687, 3.7619843, 3.9067342)
+
+[node name="GmpoSphere120" parent="." unique_id=1848853374 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1656675, 4.862746, 3.9888017)
+
+[node name="GmpoSphere121" parent="." unique_id=1053268559 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.366683, 5.9576006, 4.0680704)
+
+[node name="GmpoSphere122" parent="." unique_id=1686242090 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7220614, 7.065782, 3.971535)
+
+[node name="GmpoSphere123" parent="." unique_id=806459041 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.899529, 0.61364985, 2.0747972)
+
+[node name="GmpoSphere124" parent="." unique_id=1714816688 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9134514, 1.6369734, 2.110949)
+
+[node name="GmpoSphere125" parent="." unique_id=2029805920 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8920128, 2.6877668, 2.2129693)
+
+[node name="GmpoSphere126" parent="." unique_id=1801488988 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9258687, 3.7619843, 2.0386398)
+
+[node name="GmpoSphere127" parent="." unique_id=903406412 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1656675, 4.862746, 2.1207073)
+
+[node name="GmpoSphere128" parent="." unique_id=930381321 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.366683, 5.9576006, 2.199976)
+
+[node name="GmpoSphere129" parent="." unique_id=1437883962 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7220614, 7.065782, 2.1034405)
+
+[node name="GmpoSphere130" parent="." unique_id=1227873689 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.899529, 0.61364985, 0.20653248)
+
+[node name="GmpoSphere131" parent="." unique_id=60824559 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9134514, 1.6369734, 0.24268436)
+
+[node name="GmpoSphere132" parent="." unique_id=1130212635 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8920128, 2.6877668, 0.34470463)
+
+[node name="GmpoSphere133" parent="." unique_id=2028233003 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9258687, 3.7619843, 0.17037511)
+
+[node name="GmpoSphere134" parent="." unique_id=1100425777 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1656675, 4.862746, 0.2524426)
+
+[node name="GmpoSphere135" parent="." unique_id=615503066 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.366683, 5.9576006, 0.3317113)
+
+[node name="GmpoSphere136" parent="." unique_id=186802331 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7220614, 7.065782, 0.23517585)
+
+[node name="GmpoSphere137" parent="." unique_id=1204216134 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.899529, 0.61364985, -1.6177425)
+
+[node name="GmpoSphere138" parent="." unique_id=1828227628 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9134514, 1.6369734, -1.5815907)
+
+[node name="GmpoSphere139" parent="." unique_id=1509451470 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8920128, 2.6877668, -1.4795704)
+
+[node name="GmpoSphere140" parent="." unique_id=427545875 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9258687, 3.7619843, -1.6538999)
+
+[node name="GmpoSphere141" parent="." unique_id=1167201701 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1656675, 4.862746, -1.5718324)
+
+[node name="GmpoSphere142" parent="." unique_id=839128066 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.366683, 5.9576006, -1.4925637)
+
+[node name="GmpoSphere143" parent="." unique_id=1549214680 instance=ExtResource("1_bwfj0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7220614, 7.065782, -1.5890992)

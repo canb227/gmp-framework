@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://3a16lgn3sia6"]
+
+[ext_resource type="Script" path="res://gmp/core/gmpo/GMPOPlayer.cs" id="1_qtduu"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_ug8er"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_w8kaj"]
+
+[node name="Player" type="CharacterBody3D" unique_id=532013398]
+script = ExtResource("1_qtduu")
+metadata/_custom_type_script = "uid://sksnyhhsco60"
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=2053209877]
+mesh = SubResource("CapsuleMesh_ug8er")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=807923692]
+shape = SubResource("CapsuleShape3D_w8kaj")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=456608993]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7169312, -0.46742606)
+current = true
