@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://cnepf4qmdksw8"]
+
+[ext_resource type="Script" uid="uid://dwpd83xh1mryx" path="res://gmp/examples/GmpoB3DSphere.cs" id="1_1p6qh"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_ug8er"]
+
+[node name="b3dsphere" type="Box3DBody" unique_id=2006279778]
+shape_type = 1
+script = ExtResource("1_1p6qh")
+
+[node name="m" type="MeshInstance3D" parent="." unique_id=1139449063]
+mesh = SubResource("SphereMesh_ug8er")

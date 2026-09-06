@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://ciirmm2hc7q5t"]
+
+[ext_resource type="Script" uid="uid://l5i3volv1htp" path="res://game/God.cs" id="1_mvsx6"]
+[ext_resource type="Texture2D" uid="uid://b646400pws0lh" path="res://icon.svg" id="1_tafm0"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mvsx6"]
+albedo_texture = ExtResource("1_tafm0")
+
+[sub_resource type="SphereMesh" id="SphereMesh_7qi08"]
+material = SubResource("StandardMaterial3D_mvsx6")
+
+[node name="God" type="Node3D" unique_id=1804936311]
+transform = Transform3D(1, 0, 0, 0, 0.96694046, 0.2550021, 0, -0.2550021, 0.96694046, 0, 0, 0)
+script = ExtResource("1_mvsx6")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1180670356]
+transform = Transform3D(1, 0, 0, 0, 0.99197525, 0.12643173, 0, -0.12643173, 0.99197525, 0, 0, 0)
+
+[node name="hand" type="Box3DBody" parent="." unique_id=283892411]
+body_type = 1
+auto_visual = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.45892978, -3.0892687)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=232088261]
+mesh = SubResource("SphereMesh_7qi08")

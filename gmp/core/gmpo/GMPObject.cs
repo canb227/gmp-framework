@@ -77,6 +77,10 @@ public partial interface GMPObject
         {
             this.priority = init.priority;
         }
+        else
+        {
+            this.priority = 1;
+        }
 
         this.pauseable = init.pauseable;
         this.owner = init.owner;

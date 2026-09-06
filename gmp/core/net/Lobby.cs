@@ -320,7 +320,7 @@ public partial class Lobby : Node
 
     public static void SendStartGame()
     {
-        gameInfo.LevelPath = "res://gmp/examples/SyncedLevel.tscn";
+        gameInfo.LevelPath = "res://gmp/examples/SyncedBox3DLevel.tscn";
         Logging.Log($"Host is starting the game", "Lobby");
         SendGameInfoUpdate();
         instance.GetTree().CreateTimer(1f).Connect("timeout", Callable.From(() =>

@@ -106,7 +106,7 @@ public partial class GameWorld : Node3D
         return (ulong)Random.Shared.NextInt64();
     }
 
-    public static void Spawn3DSceneAt(string scenePath, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null)
+    public static ulong Spawn3DSceneAt(string scenePath, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null)
     {
         if (position == default)
         {
@@ -136,7 +136,7 @@ public partial class GameWorld : Node3D
         // send-to-self runs synchronously mid-broadcast, so they reached remote peers
         // *before* this spawn RPC and targeted nodes that did not exist yet.
         var childInit = new Dictionary<string, GMPOInitData>();
-        Node3D probe = ResourceLoader.Load<PackedScene>(scenePath).Instantiate<Node3D>();
+        Node probe = ResourceLoader.Load<PackedScene>(scenePath).Instantiate<Node>();
         foreach (Node c in probe.FindChildren("*").ToList())
         {
             if (c is GMPObject gmpoChild)
@@ -150,16 +150,22 @@ public partial class GameWorld : Node3D
 
         RPCManager.RPC(instance, "_Spawn3DSceneAt",
             [scenePath, position, rotation, initData, initState, childInit]);
+        return initData.id;
     }
 
     private static void _Spawn3DSceneAt(string scenePath, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null)
     {
         PackedScene pck = ResourceLoader.Load<PackedScene>(scenePath);
-        Node3D node = pck.Instantiate() as Node3D;
-        instance.AddChild(node);
-        node.Position = position;
-        node.Rotation = rotation;
-        if (node is GMPObject gmpo)
+        Node n = pck.Instantiate();
+        instance.AddChild(n);
+        if (n is Node3D n3d)
+        {
+            n3d.Position = position;
+            n3d.Rotation = rotation;
+        }
+
+
+        if (n is GMPObject gmpo)
         {
             gmpo.Init(initData,initState);
             syncedObjs.Add(gmpo.id, gmpo);
@@ -174,13 +180,13 @@ public partial class GameWorld : Node3D
         // keys line up with what the spawner recorded.
         if (childInit != null)
         {
-            foreach (Node c in node.FindChildren("*").ToList())
+            foreach (Node c in n.FindChildren("*").ToList())
             {
                 if (c is not GMPObject gmpoChild)
                 {
                     continue;
                 }
-                string rel = node.GetPathTo(c);
+                string rel = n.GetPathTo(c);
                 if (!childInit.TryGetValue(rel, out GMPOInitData ci))
                 {
                     Logging.Warn($"No init data for child GMPObject at '{rel}' under {scenePath}; it will not be synced.", "GameWorld");
@@ -313,13 +319,16 @@ public partial class GameWorld : Node3D
             Spawn3DSceneAt(levelPath);
         }
     }
-
+     
     internal static void Init()
     {
         //When this is called all players have completed the Preload function and are sitting staring at a loading screen.
 
         //Use it to slam a bunch of RPCs and other networked stuff before anyone else has a chance to do anything.
-
+        GodSync init = new GodSync();
+        init.controllingPeerID = Lobby.selfPeerID;
+        init.isHuman = true;
+        ulong pid = Spawn3DSceneAt("res://game/God.tscn",default,default,default,GMPObject.serializer.Serialize(init));
         Lobby.SendToAllAndSelf(Channel.LOBBY_Control, [(byte)LobbyControlCode.DoneLoading]);
         
 

@@ -24,7 +24,4 @@
       <HintPath>lib\windows\Steamworks.NET.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="game\" />
-  </ItemGroup>
 </Project>
