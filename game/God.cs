@@ -17,6 +17,10 @@ public partial record struct GodSync
     public Vector3 handRot;
 }
 
+
+/**
+ * 
+ */ 
 [GlobalClass]
 public partial class God : Node3D, GMPObject
 {
@@ -32,7 +36,7 @@ public partial class God : Node3D, GMPObject
     public int priorityAccumulator { get; set; }
     public byte[] desiredState { get; set; }
 
-    // ---- Tunables -------------------------------------------------------------
+
     [ExportGroup("God Camera")]
     [Export] public float panSpeed = 60.0f;          // world units/sec while fully zoomed out
     [Export] public float edgePanMargin = 12.0f;     // px from a viewport edge that triggers edge-pan
@@ -48,7 +52,7 @@ public partial class God : Node3D, GMPObject
     [Export] public float rayLength = 5000.0f;       // terrain-pick ray length
     [Export] public float groundHeight = 0.0f;       // world Y of the focus / pan plane
 
-    // ---- Runtime state -----------------------------------------------------
+
     private Camera3D cam;
     private Node3D hand;
     private MeshInstance3D bodyMesh;
@@ -70,7 +74,6 @@ public partial class God : Node3D, GMPObject
 
     private bool IsController => controllingPeerID == Lobby.selfPeerID;
 
-    // ---- GMPObject -------------------------------------------------------
 
     public byte[] GenerateStateUpdate()
     {
@@ -128,8 +131,6 @@ public partial class God : Node3D, GMPObject
             cam.Current = IsController;
         }
 
-        // The body marks this god's POV for everyone else; you don't want it
-        // filling your own view (the camera sits inside it).
         if (bodyMesh != null)
         {
             bodyMesh.Visible = !IsController;
@@ -241,7 +242,6 @@ public partial class God : Node3D, GMPObject
             return;
         }
 
-        // Mouse right -> turn right; mouse up -> tilt toward the horizon.
         yaw -= rotInput.X * rotSpeed;
         pitch = Mathf.Clamp(
             pitch + rotInput.Y * rotSpeed,
@@ -284,8 +284,6 @@ public partial class God : Node3D, GMPObject
             axis = axis.Normalized();
         }
 
-        // Map screen-space intent through the orbit yaw so "up" is always "into the
-        // screen", then flatten onto the world XZ plane (no vertical drift).
         Vector3 move = new Basis(Vector3.Up, yaw) * new Vector3(axis.X, 0, axis.Y);
         move.Y = 0;
         if (move != Vector3.Zero)
@@ -299,7 +297,7 @@ public partial class God : Node3D, GMPObject
 
     private Vector2 ReadPanAxis()
     {
-        // Keyboard: W/S -> forward/back (local -Z/+Z), A/D -> strafe.
+
         float x = (Input.IsPhysicalKeyPressed(Key.D) ? 1.0f : 0.0f) - (Input.IsPhysicalKeyPressed(Key.A) ? 1.0f : 0.0f);
         float y = (Input.IsPhysicalKeyPressed(Key.S) ? 1.0f : 0.0f) - (Input.IsPhysicalKeyPressed(Key.W) ? 1.0f : 0.0f);
 
@@ -323,12 +321,10 @@ public partial class God : Node3D, GMPObject
 
     private void ApplyRigTransform()
     {
-        // Arm from the focus point up to the eye, in world space.
+
         Vector3 localArm = new Vector3(0, Mathf.Sin(pitch), Mathf.Cos(pitch)) * zoomDistance;
         Vector3 worldArm = new Basis(Vector3.Up, yaw) * localArm;
 
-        // The god node (and its body mesh) sits at the eye; the camera rides at
-        // that origin and just tilts down the arm toward the focus.
         Position = focus + worldArm;
         Rotation = new Vector3(0, yaw, 0);
 
@@ -341,8 +337,7 @@ public partial class God : Node3D, GMPObject
 
     private void EndFreeLook()
     {
-        // Put the now-visible cursor back over the world spot the pointer is on,
-        // so it doesn't jump to the window centre when capture releases.
+
         Vector2 resume = rotAnchorMouse;
         if (havePointer && cam != null && !cam.IsPositionBehind(handLoc))
         {
@@ -362,9 +357,7 @@ public partial class God : Node3D, GMPObject
 
         if (rotating)
         {
-            // Free-look: don't re-pick. Keep the pointer pinned to the world spot
-            // it had when rotation began, and keep lastMousePos tracking the pixel
-            // that spot now projects to, so releasing RMB doesn't snap the ray.
+
             if (havePointer)
             {
                 hand.GlobalPosition = handLoc;

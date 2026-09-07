@@ -67,6 +67,15 @@ public class SteamNetwork :  Network
 
     public Error Send(ulong peerID, Channel ch, byte[] msg, int SENDFLAGS = Network.k_nSteamNetworkingSend_Reliable)
     {
+        // Steam won't deliver a message you address to yourself, so loop it back in
+        // process — matches ENetNetwork.Send() so Lobby.SendToAllAndSelf behaves the
+        // same on both transports.
+        if (peerID == SelfId)
+        {
+            MessageSentEvent?.Invoke(peerID, ch, msg);
+            MessageReceivedEvent?.Invoke(peerID, ch, msg);
+            return Error.Ok;
+        }
         return SendRaw(peerID, (int)ch, msg, SENDFLAGS);
     }
 

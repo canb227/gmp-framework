@@ -98,6 +98,7 @@ public partial class GameWorld : Node3D
             }
             else
             {
+                Logging.Warn("Mistimed tick, discarding! (If this is getting spammed lag compensation is broken)", "GameWorld");
                 //mistimed tick, discard it I guess?
             }
         }
@@ -141,12 +142,6 @@ public partial class GameWorld : Node3D
             initData.owner = Lobby.selfPeerID;
         }
 
-        // Assign an ID for every child GMPObject here, on the spawner, and bake the
-        // map into the spawn RPC itself. The scene instantiates identically on every
-        // peer, so shipping the IDs alongside the spawn removes the need for a
-        // per-child _Register RPC. Those follow-up RPCs were also unsafe: local
-        // send-to-self runs synchronously mid-broadcast, so they reached remote peers
-        // *before* this spawn RPC and targeted nodes that did not exist yet.
         var childInit = new Dictionary<string, GMPOInitData>();
         Node probe = ResourceLoader.Load<PackedScene>(scenePath).Instantiate<Node>();
         foreach (Node c in probe.FindChildren("*").ToList())
@@ -175,8 +170,6 @@ public partial class GameWorld : Node3D
             n3d.Position = position;
             n3d.Rotation = rotation;
         }
-
-
         if (n is GMPObject gmpo)
         {
             gmpo.Init(initData,initState);
@@ -186,10 +179,6 @@ public partial class GameWorld : Node3D
         {
             Logging.Warn($"Spawned scene at {scenePath} is not a GMPObject. It will not be synced.", "GameWorld");
         }
-
-        // Register child GMPObjects from the ID map the spawner baked into this RPC.
-        // Runs on every peer; the instantiated tree is identical, so the GetPathTo
-        // keys line up with what the spawner recorded.
         if (childInit != null)
         {
             foreach (Node c in n.FindChildren("*").ToList())
@@ -247,10 +236,8 @@ public partial class GameWorld : Node3D
         {
             foreach (var item in kv.Value.updates)
             {
-                //Logging.Log($"applying an update for item# {item.Item1}", "dong");
                 if (syncedObjs.TryGetValue(item.Item1, out GMPObject? gmpo))
                 {
-                    // Logging.Log($"4 REAL applying an update for item# {item.Item1}", "dong");
                     gmpo.ApplyStateUpdate(item.Item2);
                 }
                 else
@@ -281,7 +268,6 @@ public partial class GameWorld : Node3D
                 entity.priorityAccumulator += entity.priority;
             }
         }
-
         List<GMPObject> temp = syncedObjs.Values.OrderByDescending(e => e.priorityAccumulator).ToList();
         foreach (GMPObject e in temp)
         {
@@ -301,17 +287,13 @@ public partial class GameWorld : Node3D
                 }
                 else
                 {
-                  // Logging.Log($"This update of size {update.Length} would exceed our tick size budget (at {tickSize} of {maxTickSize}. Stopping at {pendingOutgoingTick.updates.Count} updates", "GameWorld");
+                   Logging.Warn($"This update of size {update.Length} would exceed our tick size budget (at {tickSize} of {maxTickSize}. Stopping at {pendingOutgoingTick.updates.Count} updates. (If this is getting spammed something is broken)", "GameWorld");
                 }
             }
         }
         if (pendingOutgoingTick.updates.Count > 0)
         {
-            // Logging.Log($"TICK #{Engine.GetPhysicsFrames()} Sending {pendingOutgoingTick.updates.Count} updates of total size: {tickSize}", "GameWorld");
             pendingOutgoingTick.tick = tickNum;
-            //byte[] test = pack.Serialize<WorldTickMessage>(pendingOutgoingTick);
-            //WorldTickMessage test2 = pack.Deserialize<WorldTickMessage>(test);
-           // Logging.Log($"TICK #{test2.tick} Sending {test2.updates.Count} updates", "GameWorld");
             Lobby.SendToAllExceptSelf(Channel.GAME_State, pack.Serialize<WorldTickMessage>(pendingOutgoingTick));
             pendingOutgoingTick = new();
         }
