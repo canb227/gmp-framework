@@ -25,6 +25,8 @@ public partial class GameWorld : Node3D
     public static WorldTickMessage pendingOutgoingTick = new();
     public static List<WorldTickMessage> pendingIncomingTicks = new();
 
+    public static Dictionary<ulong, WorldTickMessage> mostRecentUpdates = new();
+
     public static MessagePackSerializer pack = new();
     
     private static int maxTickSize = 1024 //1kb
@@ -85,16 +87,26 @@ public partial class GameWorld : Node3D
         {
             return;
         }
-        WorldTickMessage tick = pack.Deserialize<WorldTickMessage>(msg);
-        if (tick.tick>=mostRecentInboundTick)
+        WorldTickMessage tickmsg = pack.Deserialize<WorldTickMessage>(msg);
+        if (mostRecentUpdates.TryGetValue(from, out WorldTickMessage currentRecentTick))
         {
-            mostRecentInboundTick = tick.tick;
-            pendingIncomingTicks.Add(tick);
+
+            if (tickmsg.tick >= mostRecentUpdates[from].tick)
+            {
+
+                mostRecentUpdates[from] = tickmsg;
+            }
+            else
+            {
+                //mistimed tick, discard it I guess?
+            }
         }
         else
         {
-            Logging.Warn($"Mistimed tick update ({tick.tick} vs {mostRecentInboundTick}) - investigate.", "GameWorld");
+            mostRecentUpdates[from] = tickmsg;
         }
+
+
        // Logging.Log($"Got a tick for tick# {tick.tick}", "help");
 
 
@@ -231,22 +243,24 @@ public partial class GameWorld : Node3D
         {
             tickNum++;
         }
-        if (pendingIncomingTicks.Count > 0)
+        foreach (var kv in mostRecentUpdates)
         {
-          //  Logging.Log($"applying an update for tick# {pendingIncomingTicks.ElementAt(0).tick}", "dong");
-            List<(ulong, byte[])> pendingSyncs = pendingIncomingTicks.ElementAt(0).updates;  
-            foreach (var item in pendingSyncs)
+            foreach (var item in kv.Value.updates)
             {
                 //Logging.Log($"applying an update for item# {item.Item1}", "dong");
                 if (syncedObjs.TryGetValue(item.Item1, out GMPObject? gmpo))
                 {
-                   // Logging.Log($"4 REAL applying an update for item# {item.Item1}", "dong");
+                    // Logging.Log($"4 REAL applying an update for item# {item.Item1}", "dong");
                     gmpo.ApplyStateUpdate(item.Item2);
                 }
-
+                else
+                {
+                    Logging.Warn("sync message for unknown object, ordering issue!", "GameWorld");
+                }
             }
-            pendingIncomingTicks.RemoveAt(0);
+            mostRecentUpdates.Remove(kv.Key);
         }
+
 
         int tickSize = 0;
         List<GMPObject> toBeSynced = new();
