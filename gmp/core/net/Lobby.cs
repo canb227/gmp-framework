@@ -26,7 +26,7 @@ public enum LobbyControlCode : byte
     UNREADY = 2,
     DoneLoading = 3,
 }
-public partial class Lobby : GMPOSingleton
+public partial class Lobby : Node
 {
     public static Lobby instance;
     
@@ -314,7 +314,7 @@ public partial class Lobby : GMPOSingleton
 
     public static void SendStartGame()
     {
-        gameInfo.LevelPath = "res://gmp/examples/SyncedBox3DLevel.tscn";
+        gameInfo.Level = GameResources.LevelsList[0];
         Logging.Log($"Host is starting the game", "Lobby");
         SendGameInfoUpdate();
         instance.GetTree().CreateTimer(1f).Connect("timeout", Callable.From(() =>

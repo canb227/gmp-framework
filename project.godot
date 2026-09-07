@@ -18,11 +18,11 @@ config/icon="res://icon.svg"
 [autoload]
 
 Global="*uid://b4engl1rluqqq"
+ImGuiRoot="*uid://dugmpnsxaagba"
 LimboConsole="*uid://dyxornv8vwibg"
+GameWorld="*uid://diwgca4ea4mq8"
 Lobby="*uid://dfuapltpe6pga"
 RpcManager="*uid://cisvc3rton0m"
-GameWorld="*uid://diwgca4ea4mq8"
-ImGuiRoot="*uid://dugmpnsxaagba"
 
 [display]
 

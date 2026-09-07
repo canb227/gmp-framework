@@ -24,7 +24,7 @@ public partial record RPC
     public byte[][] args;
 }
 
-public partial class RPCManager : GMPOSingleton
+public partial class RPCManager : Node
 {
     public static MessagePackSerializer s;
     public override void _Ready()

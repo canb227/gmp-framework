@@ -69,6 +69,7 @@ public partial interface GMPObject
         }
     }
 
+
     public virtual void Init(GMPOInitData init, byte[] initState = null)
     {
         this.id = init.id;
@@ -92,6 +93,9 @@ public partial interface GMPObject
         AfterInit();
     }
 
+    /// <summary>
+    /// This is called on all GMPO objects after they have been fully constructed and configured. The initState byte[] has already been applied.
+    /// </summary>
     protected void AfterInit();
 
 }

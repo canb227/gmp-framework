@@ -18,7 +18,7 @@ public partial record WorldTickMessage
 [GenerateShapeFor<List<(ulong,byte[])>>]
 public partial class Witness;
 
-public partial class GameWorld : Node3D
+public partial class GameWorld : Node
 {
     public static GameWorld instance;
     public static Dictionary<ulong, GMPObject> syncedObjs = new();
@@ -80,6 +80,7 @@ public partial class GameWorld : Node3D
     }
 
 
+
     private static void OnMessageReceived(ulong from, Channel ch, byte[] msg)
     {
         //we may need to batch these and apply them all at the start of the next tick idk
@@ -112,85 +113,103 @@ public partial class GameWorld : Node3D
 
 
     }
-
-
-    private static ulong GenRandomID()
+    private static GMPOInitData initDataNormalizer(GMPOInitData initData)
     {
-        return (ulong)Random.Shared.NextInt64();
-    }
 
-    public static ulong Spawn3DSceneAt(string scenePath, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null)
-    {
-        if (position == default)
-        {
-            position = Vector3.Zero;
-        }
-        if (rotation == default)
-        {
-            rotation = Vector3.Zero;
-        }
         if (initData.id == 0)
         {
             initData.id = GenRandomID();
         }
-        if (initData.authority==0)
+        if (initData.authority == 0)
         {
             initData.authority = Lobby.selfPeerID;
         }
-        if (initData.owner==0)
+        if (initData.owner == 0)
         {
             initData.owner = Lobby.selfPeerID;
         }
+        return initData;
+    }
 
-        var childInit = new Dictionary<string, GMPOInitData>();
-        Node probe = ResourceLoader.Load<PackedScene>(scenePath).Instantiate<Node>();
-        foreach (Node c in probe.FindChildren("*").ToList())
+    private static Dictionary<string,GMPOInitData> childGMPORegisterGenerator(Node node, GMPOInitData initData)
+    {
+        Dictionary<string, GMPOInitData> childInit = new();
+        foreach (Node c in node.FindChildren("*").ToList())
         {
             if (c is GMPObject gmpoChild)
             {
-                childInit[probe.GetPathTo(c)] = new GMPOInitData(
+                childInit[node.GetPathTo(c)] = new GMPOInitData(
                     GenRandomID(), initData.authority, initData.owner,
                     gmpoChild.priority, gmpoChild.pauseable);
             }
         }
-        probe.Free();
-
-        RPCManager.RPC(instance, "_Spawn3DSceneAt",
-            [scenePath, position, rotation, initData, initState, childInit]);
+        return childInit;
+    }
+    public static ulong SpawnScene(string scenePath, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null)
+    {
+        PackedScene pck = ResourceLoader.Load<PackedScene>(scenePath);
+        Node node = pck.Instantiate();
+        initData = initDataNormalizer(initData);
+        Dictionary<string, GMPOInitData> childInit = childGMPORegisterGenerator(node, initData);
+        node.Free();
+        RPCManager.RPC(instance, "_SpawnScene", [scenePath, position, rotation, initData, initState, childInit]);
         return initData.id;
     }
 
-    private static void _Spawn3DSceneAt(string scenePath, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null)
+    public static ulong SpawnNode(Type nodeType, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null)
     {
-        PackedScene pck = ResourceLoader.Load<PackedScene>(scenePath);
-        Node n = pck.Instantiate();
-        instance.AddChild(n);
-        if (n is Node3D n3d)
+        Node node = (Node)Activator.CreateInstance(nodeType);
+        initData = initDataNormalizer(initData);
+
+        Dictionary<string, GMPOInitData> childInit = childGMPORegisterGenerator(node, initData);
+        node.Free();
+
+        RPCManager.RPC(instance, "_SpawnNode", [nodeType,position, rotation, initData, initState, childInit]);
+
+        return initData.id;
+    }
+
+    private void _SpawnNode(Type nodeType, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null)
+    {
+        Node node = (Node)Activator.CreateInstance(nodeType);
+        _SpawnInternal(node, position, rotation, initData, initState, childInit);
+    }
+
+    private void _SpawnScene(string scenePath, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null)
+    {
+        Node node = ResourceLoader.Load<PackedScene>(scenePath).Instantiate();
+        _SpawnInternal(node, position, rotation, initData, initState, childInit);
+    }
+
+    private void _SpawnInternal(Node node, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null)
+    {
+        instance.AddChild(node);
+        if (node is Node3D n3d)
         {
             n3d.Position = position;
             n3d.Rotation = rotation;
         }
-        if (n is GMPObject gmpo)
+        if (node is GMPObject gmpo)
         {
-            gmpo.Init(initData,initState);
+            gmpo.Init(initData, initState);
             syncedObjs.Add(gmpo.id, gmpo);
         }
         else
         {
-            Logging.Warn($"Spawned scene at {scenePath} is not a GMPObject. It will not be synced.", "GameWorld");
+            Logging.Warn($"Spawned node of type {node.GetType()} is not a GMPObject. It will not be synced.", "GameWorld");
         }
         if (childInit != null)
         {
-            foreach (Node c in n.FindChildren("*").ToList())
+            foreach (Node c in node.FindChildren("*").ToList())
             {
                 if (c is not GMPObject gmpoChild)
                 {
                     continue;
                 }
-                string rel = n.GetPathTo(c);
+                string rel = node.GetPathTo(c);
                 if (!childInit.TryGetValue(rel, out GMPOInitData ci))
                 {
-                    Logging.Warn($"No init data for child GMPObject at '{rel}' under {scenePath}; it will not be synced.", "GameWorld");
+                    Logging.Warn($"No init data for child GMPObject at '{rel}' under {node}; it will not be synced.", "GameWorld");
                     continue;
                 }
                 gmpoChild.Init(ci, null);
@@ -198,25 +217,12 @@ public partial class GameWorld : Node3D
             }
         }
     }
-
-    private void _Register(string NodePath, GMPOInitData InitData, byte[] initState)
+    private static ulong GenRandomID()
     {
-        Node node = instance.GetNodeOrNull(NodePath);
-        if (node == null)
-        {
-            Logging.Warn($"Registration failed: no node at {NodePath} (not spawned yet?). It will not be synced.", "GameWorld");
-            return;
-        }
-        if (node is GMPObject gmpo)
-        {
-            gmpo.Init(InitData, initState);
-            syncedObjs.Add(gmpo.id, gmpo);
-        }
-        else
-        {
-            Logging.Warn($"Registration Failed! Node at {NodePath} is not a GMPObject. (type is {node.GetType().Name}) It will not be synced.", "GameWorld");
-        }
+        return (ulong)Random.Shared.NextInt64();
     }
+
+
     public override void _PhysicsProcess(double delta)
     {
         if (waitTicks < waitTickCount)
@@ -311,8 +317,8 @@ public partial class GameWorld : Node3D
         if (Lobby.isHost)
         {
             maxTickSize *= 4;
-            string levelPath = gameInfo.LevelPath;
-            Spawn3DSceneAt(levelPath);
+            string levelPath = gameInfo.Level.levelPath;
+            SpawnScene(levelPath);
         }
     }
      
@@ -324,11 +330,10 @@ public partial class GameWorld : Node3D
         GodSync init = new GodSync();
         init.controllingPeerID = Lobby.selfPeerID;
         init.isHuman = true;
-        ulong pid = Spawn3DSceneAt("res://game/God.tscn",default,default,default,GMPObject.serializer.Serialize(init));
+        ulong pid = SpawnScene("res://game/God.tscn",default,default,default,GMPObject.serializer.Serialize(init));
         Lobby.SendToAllAndSelf(Channel.LOBBY_Control, [(byte)LobbyControlCode.DoneLoading]);
         
 
     }
-
 
 }

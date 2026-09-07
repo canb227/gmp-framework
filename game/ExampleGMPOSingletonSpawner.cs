@@ -5,8 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
-public abstract partial class GMPOSingleton : Node, GMPObject
+public partial class ExmapleGMPOSingletonSpawner : Node, GMPObject
 {
     public int priority { get; set; }
     public bool pauseable { get; set; }
@@ -16,15 +15,24 @@ public abstract partial class GMPOSingleton : Node, GMPObject
     public int priorityAccumulator { get; set; }
     public byte[] desiredState { get; set; }
 
-    public abstract void AfterInit();
-
-    public abstract void ApplyStateUpdate(byte[] update);
-
-    public abstract byte[] GenerateStateUpdate();
-
-    public void RPC(string method, object[] args)
+    public override void _Ready()
     {
-        RPCManager.RPC(this, method, args);
+        GameWorld.SpawnNode(typeof(ExampleGMPOSingleton));
+    }
+
+
+    public void AfterInit()
+    {
+
+    }
+
+    public void ApplyStateUpdate(byte[] update)
+    {
+
+    }
+
+    public byte[] GenerateStateUpdate()
+    {
+        return null;
     }
 }
-
