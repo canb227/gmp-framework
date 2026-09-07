@@ -37,6 +37,8 @@ public partial class GameWorld : Node
     private static ulong mostRecentInboundTick;
     private static bool started = false;
     public static ulong tickNum = 0;
+    public static GMPOBox3DWorld b3dworld;
+
     public override void _Process(double delta)
     {
        ImGui.Begin("Synced Objects");
@@ -189,6 +191,19 @@ public partial class GameWorld : Node
             n3d.Position = position;
             n3d.Rotation = rotation;
         }
+        if (node is GMPOBox3DWorld world)
+        {
+            if (b3dworld!=null)
+            {
+                Logging.Error("Multiple B3DWorlds dectected. Not supported.", "GameWorld");
+            }
+            else
+            {
+                Logging.Log("B3DWorld ID'ed and registered.", "GameWorld");
+                b3dworld = world;
+            }
+
+        }
         if (node is GMPObject gmpo)
         {
             gmpo.Init(initData, initState);
@@ -317,7 +332,7 @@ public partial class GameWorld : Node
         if (Lobby.isHost)
         {
             maxTickSize *= 4;
-            string levelPath = gameInfo.Level.levelPath;
+            string levelPath = GameResources.LevelsList[gameInfo.levelIdx].levelPath;
             SpawnScene(levelPath);
         }
     }

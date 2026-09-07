@@ -328,18 +328,9 @@ theme_type_variation = &"FieldLabel"
 text = "Level"
 
 [node name="LevelOption" type="OptionButton" parent="Margin/RootVBox/Body/RightPanel/RightContent/LevelRow/LevelBox" unique_id=1264684750]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(140, 0)
 layout_mode = 2
-selected = 0
-item_count = 4
-popup/item_0/text = "Test Arena"
-popup/item_0/id = 0
-popup/item_1/text = "Level 1"
-popup/item_1/id = 1
-popup/item_2/text = "Level 2"
-popup/item_2/id = 2
-popup/item_3/text = "Level 3"
-popup/item_3/id = 3
 
 [node name="MaxPlayersRow" type="PanelContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=783397737]
 layout_mode = 2

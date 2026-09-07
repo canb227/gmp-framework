@@ -30,4 +30,8 @@
           <HintPath>lib/linux/Steamworks.NET.dll</HintPath>
       </Reference>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="game\levels\" />
+  </ItemGroup>
 </Project>

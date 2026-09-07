@@ -1,4 +1,5 @@
 using Godot;
+using Godot.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,11 @@ public partial class GMPOBox3DWorld : Node3D, GMPObject
     public byte[] GenerateStateUpdate()
     {
         return null;
+    }
+
+    public Godot.Collections.Dictionary<string,Variant> Raycast(Vector3 from, Vector3 to)
+    {
+        return Call("raycast", [from, to]).AsGodotDictionary<string, Variant>();
     }
 }
 

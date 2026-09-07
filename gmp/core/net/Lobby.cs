@@ -30,7 +30,7 @@ public partial class Lobby : Node
 {
     public static Lobby instance;
     
-    private static GameInfo gameInfo = new();
+    public static GameInfo gameInfo = new();
     public static ulong hostID = 0;
     public static Network network;
 
@@ -314,7 +314,7 @@ public partial class Lobby : Node
 
     public static void SendStartGame()
     {
-        gameInfo.Level = GameResources.LevelsList[0];
+        //gameInfo.Level = GameResources.LevelsList[0];
         Logging.Log($"Host is starting the game", "Lobby");
         SendGameInfoUpdate();
         instance.GetTree().CreateTimer(1f).Connect("timeout", Callable.From(() =>
@@ -324,7 +324,7 @@ public partial class Lobby : Node
 
     }
 
-    private static void SendGameInfoUpdate()
+    public static void SendGameInfoUpdate()
     {
         if (network == null)
             return;

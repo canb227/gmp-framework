@@ -10,11 +10,13 @@ public partial record LevelInfo : IEquatable<LevelInfo>
 {
     public string levelName;
     public string levelPath;
+    public string iconPath;
 
-    public LevelInfo(string levelName, string levelPath)
+    public LevelInfo(string levelName, string levelPath, string iconPath = "")
     {
         this.levelName = levelName;
         this.levelPath = levelPath;
+        this.iconPath = iconPath;
     }
 }
 
@@ -24,7 +26,7 @@ public partial record LevelInfo : IEquatable<LevelInfo>
 [GenerateShape]
 public partial record GameInfo
 {
-    public LevelInfo Level;
+    public int levelIdx;
     public Dictionary<ulong, PlayerInfo> Players;
     public ulong tick;
     public int bulk1size;

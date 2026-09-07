@@ -48,6 +48,7 @@ public partial class LobbyDebug : Control
     private LineEdit _chatInput;
     private Button _sendButton;
     private PackedScene _rowScene;
+    private OptionButton _levelSelect;
 
     public override void _Ready()
     {
@@ -66,6 +67,7 @@ public partial class LobbyDebug : Control
         _lobbyIdValue = GetNode<Label>("%LobbyIdValue");
         _hostValue = GetNode<Label>("%HostValue");
         _playersValue = GetNode<Label>("%PlayersValue");
+        _levelSelect = GetNode<OptionButton>("%LevelOption");
 
         _logText = GetNode<RichTextLabel>("Margin/RootVBox/Body/LeftPanel/LeftContent/EventLogSection/LogPanel/LogText");
         _playerRows = GetNode<VBoxContainer>("Margin/RootVBox/Body/CenterColumn/PlayerSection/PlayerListPanel/PlayerScroll/PlayerRows");
@@ -81,6 +83,7 @@ public partial class LobbyDebug : Control
         _joinButton.Pressed += OnJoinPressed;
         _sendButton.Pressed += OnSendChat;
         _startButton.Pressed += OnStartGamePressed;
+        _levelSelect.ItemSelected += _levelSelect_ItemSelected;
         _chatInput.TextSubmitted += _ => OnSendChat();
 
         // Subscribe to Lobby (an autoload) events.
@@ -91,14 +94,29 @@ public partial class LobbyDebug : Control
         Lobby.LobbyMembersChangedEvent += RefreshRoster;
         Lobby.LobbyGameInfoChangedEvent += RefreshGameInfo;
         Lobby.LobbyDoneLoadingEvent += DoneLoading;
+
         // Chat (LOBBY_Chat) is not surfaced by Lobby's LobbyMessageEvent — it is read
         // straight off the transport, wired in StartHost/StartJoin once _net exists.
 
         _peerValue.Text = ShortId(_selfId);
         _stateValue.Text = "Disconnected";
+
+        foreach (var item in GameResources.LevelsList)
+        {
+            _levelSelect.AddItem(item.levelName);
+        }
+
         Log($"lobby ready ({_mode}) as {_selfName} ({ShortId(_selfId)})");
 
+
+
         CallDeferred(nameof(HandleCmdline));
+    }
+
+    private void _levelSelect_ItemSelected(long index)
+    {
+        Lobby.gameInfo.levelIdx = (int)index;
+        Lobby.SendGameInfoUpdate();
     }
 
     public override void _ExitTree()
@@ -305,6 +323,7 @@ public partial class LobbyDebug : Control
     private void RefreshGameInfo()
     {
         // GameInfo (level/mode/max players) changed on the wire. Nothing to render yet.
+        _levelSelect.Select(Lobby.gameInfo.levelIdx);
     }
 
     // Every peer has finished loading the game world — drop the lobby UI.

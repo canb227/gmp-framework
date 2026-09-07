@@ -389,18 +389,37 @@ public partial class God : Node3D, GMPObject
         Vector3 from = cam.ProjectRayOrigin(lastMousePos);
         Vector3 dir = cam.ProjectRayNormal(lastMousePos);
 
-        var query = PhysicsRayQueryParameters3D.Create(from, from + dir * rayLength);
-        query.CollisionMask = uint.MaxValue; // every layer; the ground just needs a collider
-        var result = GetWorld3D().DirectSpaceState.IntersectRay(query);
-        if (result.Count > 0)
-        {
-            point = (Vector3)result["position"];
-            return true;
-        }
 
-        // Fallback: intersect the horizontal plane at the focus height.
+
+        if (GameWorld.b3dworld != null)
+        {
+            var result2 = GameWorld.b3dworld.Raycast(from, from + dir * rayLength);
+
+
+            if (result2["hit"].AsBool() ==true)
+            {
+                //Logging.Log($"{result2}", "god");
+                point = (Vector3)result2["position"];
+                return true;
+            }
+
+        }
+        else
+        {
+            //non b3d fallback
+            var query = PhysicsRayQueryParameters3D.Create(from, from + dir * rayLength);
+            query.CollisionMask = uint.MaxValue; // every layer; the ground just needs a collider
+            var result = GetWorld3D().DirectSpaceState.IntersectRay(query);
+            if (result.Count > 0)
+            {
+                  point = (Vector3)result["position"];
+                 return true;
+            }
+        }
+        
+        //super  Fallback: intersect the horizontal plane at the focus height.
         Plane ground = new Plane(Vector3.Up, groundHeight);
-        Vector3? planeHit = ground.IntersectsRay(from, dir);
+        Vector3? planeHit = ground.IntersectsRay(from, from + dir * rayLength);
         if (planeHit.HasValue)
         {
             point = planeHit.Value;

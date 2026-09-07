@@ -10,7 +10,8 @@ public static class GameResources
 
     public static List<LevelInfo> LevelsList = new List<LevelInfo>
     {
-        new LevelInfo ("TestScene", "res://gmp/examples/SyncedBox3DLevel.tscn" )
+        new LevelInfo ("B3DTestScene", "res://gmp/examples/SyncedBox3DLevel.tscn"),
+        new LevelInfo ("B3DTerrainTest", "res://game/levels/B3DTerrainTest.tscn"),
     };
 }
 
