@@ -38,17 +38,22 @@ public partial class GameWorld : Node3D
     private static bool started = false;
     public static ulong tickNum = 0;
     public static GMPOBox3DWorld b3dworld;
+    public static bool displaySyncedObjectDebugInfo = false;
 
     public override void _Process(double delta)
     {
-       ImGui.Begin("Synced Objects");
-       ImGui.Text($"Synced Objects: {syncedObjs.Count}");
-       ImGui.Text($"Synced Objects with Auth: {syncedObjs.Count(o => o.Value.authority == Lobby.selfPeerID)}");
-       foreach(var kvp in syncedObjs.OrderByDescending(e => e.Value.priorityAccumulator).ToList())
+        if (displaySyncedObjectDebugInfo)
         {
-            ImGui.Text($"ID: {kvp.Key} | Auth: {kvp.Value.authority} | Owner: {kvp.Value.owner} | Priority: {kvp.Value.priority} | Accumulator: {kvp.Value.priorityAccumulator}");
+            ImGui.Begin("Synced Objects");
+            ImGui.Text($"Synced Objects: {syncedObjs.Count}");
+            ImGui.Text($"Synced Objects with Auth: {syncedObjs.Count(o => o.Value.authority == Lobby.selfPeerID)}");
+            foreach (var kvp in syncedObjs.OrderByDescending(e => e.Value.priorityAccumulator).ToList())
+            {
+                ImGui.Text($"ID: {kvp.Key} | Auth: {kvp.Value.authority} | Owner: {kvp.Value.owner} | Priority: {kvp.Value.priority} | Accumulator: {kvp.Value.priorityAccumulator}");
+            }
+            ImGui.End();
         }
-       ImGui.End();
+
     }
     public override void _Ready()
     {
