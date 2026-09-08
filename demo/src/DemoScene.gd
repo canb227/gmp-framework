@@ -5,6 +5,9 @@ extends Node
 
 
 func _ready():
+    var world:Box3DWorld = new()
+    var body :Box3DBody = new()
+    body.apply_central_force()
     if not Engine.is_editor_hint() and has_node("UI"):
         $UI.player = $Player
 

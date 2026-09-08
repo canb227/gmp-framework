@@ -36,5 +36,11 @@ public partial class GMPOBox3DWorld : Node3D, GMPObject
     {
         return Call("raycast", [from, to]).AsGodotDictionary<string, Variant>();
     }
+
+    public Godot.Collections.Array<Node> OverlapSphere(Vector3 center, float radius, int collisionMask = -1, int collisionLayer = -1)
+    {
+        return Call("overlap_sphere", [center, radius, collisionMask, collisionLayer]).AsGodotArray<Node>();
+    }
+
 }
 

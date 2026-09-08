@@ -74,11 +74,11 @@ public partial interface GMPObject
     {
         this.id = init.id;
         this.authority = init.authority;
-        if (init.priority!=0)
+        if (this.priority == 0 && init.priority!=0)
         {
             this.priority = init.priority;
         }
-        else
+        else if (this.priority==0)
         {
             this.priority = 1;
         }

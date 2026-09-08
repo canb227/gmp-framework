@@ -15,6 +15,7 @@ material = SubResource("StandardMaterial3D_mvsx6")
 [node name="God" type="Node3D" unique_id=1804936311]
 transform = Transform3D(1, 0, 0, 0, 0.96694046, 0.2550021, 0, -0.2550021, 0.96694046, 0, 0, 0)
 script = ExtResource("1_mvsx6")
+priority = 100
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1180670356]
 transform = Transform3D(1, 0, 0, 0, 0.99197525, 0.12643173, 0, -0.12643173, 0.99197525, 0, 0, 0)

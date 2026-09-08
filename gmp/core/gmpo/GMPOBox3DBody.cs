@@ -40,7 +40,10 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     {
         if (authority == Lobby.selfPeerID)
         {
-            
+            BasicSyncMessage desiredStateData = GMPObject.serializer.Deserialize<BasicSyncMessage>(desiredState);
+           // GD.Print(desiredStateData.pos);
+            //Position = desiredStateData.pos;
+            Call("teleport", [new Transform3D(Basis.FromEuler(desiredStateData.rot), desiredStateData.pos)]);
         }
         else
         {
@@ -56,6 +59,11 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     public void ApplyStateUpdate(byte[] update)
     {
         desiredState = update;
+        //BasicSyncMessage desiredStateData = GMPObject.serializer.Deserialize<BasicSyncMessage>(desiredState);
+
+        //  GD.Print(desiredStateData.pos);
+
+
     }
 
     public byte[] GenerateStateUpdate()
@@ -75,12 +83,23 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
             if (desiredState != null && desiredState.Length > 0)
             {
                 BasicSyncMessage desiredStateData = GMPObject.serializer.Deserialize<BasicSyncMessage>(desiredState);
-                this.Position = this.Position.Lerp(desiredStateData.pos, (float)(.2f));
-                this.Rotation = this.Rotation.Lerp(desiredStateData.rot, (float)(.2f));
+                //Call("teleport", [new Transform3D(Basis.FromEuler(desiredStateData.rot), desiredStateData.pos)]);
+                // GD.Print(desiredStateData.pos);
+                this.Position = this.Position.Lerp(desiredStateData.pos, (float)(.1f));
+                this.Rotation = this.Rotation.Lerp(desiredStateData.rot, (float)(.1f));
             }
+        }
+        else
+        {
+          
         }
     }
 
+    public void ApplyCentralForce(Vector3 force)
+    {
+
+        Call("apply_central_force", [force]);
+    }
     public override void _Ready()
     {
 

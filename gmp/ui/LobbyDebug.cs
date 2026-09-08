@@ -1,5 +1,6 @@
 using Godot;
 using Steamworks;
+using System;
 using System.Linq;
 using System.Text;
 
@@ -105,7 +106,7 @@ public partial class LobbyDebug : Control
         {
             _levelSelect.AddItem(item.levelName);
         }
-
+        _levelSelect_ItemSelected(1);
         Log($"lobby ready ({_mode}) as {_selfName} ({ShortId(_selfId)})");
 
 

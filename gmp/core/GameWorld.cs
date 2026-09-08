@@ -18,7 +18,7 @@ public partial record WorldTickMessage
 [GenerateShapeFor<List<(ulong,byte[])>>]
 public partial class Witness;
 
-public partial class GameWorld : Node
+public partial class GameWorld : Node3D
 {
     public static GameWorld instance;
     public static Dictionary<ulong, GMPObject> syncedObjs = new();
@@ -30,7 +30,7 @@ public partial class GameWorld : Node
     public static MessagePackSerializer pack = new();
     
     private static int maxTickSize = 1024 //1kb
-                            * 256 //256kb
+                            *50 //256kb
                             / Engine.PhysicsTicksPerSecond; //per second 
     private static int waitTicks = 0 ;
     private static int waitTickCount = 0;
@@ -185,15 +185,34 @@ public partial class GameWorld : Node
 
     private void _SpawnInternal(Node node, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null)
     {
-        instance.AddChild(node);
+        node.Name = node.GetType().ToString() + initData.id.ToString();
+        if (node is GMPOBox3DBody b3d)
+        {
+            if (b3dworld == null)
+            {
+                Logging.Error("attempted to spawn b3dbody with no b3dworld!", "GameWorld");
+            }
+            else
+            {
+                b3dworld.AddChild(node);
+                node.Call("teleport", [new Transform3D(Basis.FromEuler(rotation), position)]);
+            }
+
+        }
+        else
+        {
+            instance.AddChild(node);
+        }
+
         if (node is Node3D n3d)
         {
+          //  GD.Print($"current pos {n3d.Position}, setting to {position}");
             n3d.Position = position;
             n3d.Rotation = rotation;
         }
         if (node is GMPOBox3DWorld world)
         {
-            if (b3dworld!=null)
+            if (b3dworld != null)
             {
                 Logging.Error("Multiple B3DWorlds dectected. Not supported.", "GameWorld");
             }
@@ -231,6 +250,7 @@ public partial class GameWorld : Node
                 syncedObjs.Add(gmpoChild.id, gmpoChild);
             }
         }
+
     }
     private static ulong GenRandomID()
     {
@@ -308,6 +328,7 @@ public partial class GameWorld : Node
                 }
                 else
                 {
+                    break;
                    Logging.Warn($"This update of size {update.Length} would exceed our tick size budget (at {tickSize} of {maxTickSize}. Stopping at {pendingOutgoingTick.updates.Count} updates. (If this is getting spammed something is broken)", "GameWorld");
                 }
             }

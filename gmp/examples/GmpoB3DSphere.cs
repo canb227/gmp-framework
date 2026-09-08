@@ -4,6 +4,8 @@ using System.Linq;
 
 public partial class GmpoB3DSphere : GMPOBox3DBody
 {
+    double PriorityDecrementTime = 1;
+    double timer;
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -12,6 +14,16 @@ public partial class GmpoB3DSphere : GMPOBox3DBody
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
+        timer += delta;
+        if (timer>PriorityDecrementTime)
+        {
+            timer = 0;
+            if (priority>1)
+            {
+              //  GD.Print($"guh{priority}");
+                priority--;
+            }
+        }
     }
 
     public override void _Input(InputEvent @event)
@@ -20,7 +32,7 @@ public partial class GmpoB3DSphere : GMPOBox3DBody
         {
             if (@event is InputEventKey keyEvent && keyEvent.Pressed)
             {
-                if (keyEvent.Keycode == Key.Enter)
+                if (keyEvent.Keycode == Key.Key2)
                 {
                     RPCManager.RPC(GetPath(), "ChangeColor", [ColorDict.NamedColors.ElementAt(Random.Shared.Next(0, ColorDict.NamedColors.Count)).Value]);
                 }

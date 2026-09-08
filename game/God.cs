@@ -1,4 +1,6 @@
+using ENet;
 using Godot;
+using Godot.Collections;
 using PolyType;
 using System;
 using System.Collections.Generic;
@@ -28,11 +30,20 @@ public partial class God : Node3D, GMPObject
     public bool isHuman;
     public ulong controllingPeerID;
 
+    [ExportGroup("Configuration")]
+    [Export]
     public int priority { get; set; }
+    [Export]
     public bool pauseable { get; set; }
+
+    [ExportGroup("READONLY")]
+    [Export]
     public ulong id { get; set; }
+    [Export]
     public ulong authority { get; set; }
+    [Export]
     public ulong owner { get; set; }
+    [Export]
     public int priorityAccumulator { get; set; }
     public byte[] desiredState { get; set; }
 
@@ -192,6 +203,14 @@ public partial class God : Node3D, GMPObject
             }
         }
 
+        if (@event is InputEventKey key && key.Keycode == Key.Key1 && key.Pressed)
+        {
+            BasicSyncMessage init = new BasicSyncMessage();
+            init.pos = new Vector3(handLoc.X, handLoc.Y + 5, handLoc.Z);
+            init.rot = Vector3.Zero;
+            GameWorld.SpawnScene("res://gmp/examples/GMPBox3DSphere.tscn", new Vector3(handLoc.X,handLoc.Y+5,handLoc.Z ),default,default,GMPObject.serializer.Serialize(init));
+        }
+
         if (@event is InputEventMouseMotion motion)
         {
             if (rotating)
@@ -233,6 +252,21 @@ public partial class God : Node3D, GMPObject
         ApplyPan(dt);
         ApplyRigTransform();
         UpdatePointer();
+
+
+        if (Input.IsMouseButtonPressed(MouseButton.Left))
+        {
+            Array<Node> overlaps = GameWorld.b3dworld.OverlapSphere(handLoc, 10);
+            foreach (Node node in overlaps)
+            {
+                if (node is GMPOBox3DBody b3dgmpo)
+                {
+                    b3dgmpo.priority = 10;
+                    Vector3 dir = b3dgmpo.GlobalPosition - handLoc;
+                    b3dgmpo.ApplyCentralForce(-dir * 10);
+                }
+            }
+        }
     }
 
     private void ApplyRotation()
