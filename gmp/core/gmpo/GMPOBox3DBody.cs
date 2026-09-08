@@ -36,7 +36,7 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         Set("body_type", (int)value);
     }
 
-    public void AfterInit()
+    public virtual void AfterInit()
     {
         if (authority == Lobby.selfPeerID)
         {
@@ -56,7 +56,7 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
 
     }
 
-    public void ApplyStateUpdate(byte[] update)
+    public virtual void ApplyStateUpdate(byte[] update)
     {
         desiredState = update;
         //BasicSyncMessage desiredStateData = GMPObject.serializer.Deserialize<BasicSyncMessage>(desiredState);
@@ -66,7 +66,7 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
 
     }
 
-    public byte[] GenerateStateUpdate()
+    public virtual byte[] GenerateStateUpdate()
     {
         BasicSyncMessage msg = new BasicSyncMessage
         {
@@ -97,7 +97,6 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
 
     public void ApplyCentralForce(Vector3 force)
     {
-
         Call("apply_central_force", [force]);
     }
     public override void _Ready()

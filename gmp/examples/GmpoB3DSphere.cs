@@ -44,4 +44,10 @@ public partial class GmpoB3DSphere : GMPOBox3DBody
     {
         GetNode<MeshInstance3D>("m").SetSurfaceOverrideMaterial(0, new StandardMaterial3D() { AlbedoColor = color });
     }
+
+    public override void AfterInit()
+    {
+        base.AfterInit();
+        Set("sleep_threshold", 1f);
+    }
 }

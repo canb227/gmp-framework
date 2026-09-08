@@ -1,5 +1,6 @@
 using ENet;
 using Godot;
+using ImGuiNET;
 using Nerdbank.MessagePack;
 using PolyType;
 using System;
@@ -28,6 +29,8 @@ public enum LobbyControlCode : byte
 }
 public partial class Lobby : Node
 {
+
+    public static bool displayLobbyDebugInfo = false;
     public static Lobby instance;
     
     public static GameInfo gameInfo = new();
@@ -80,6 +83,10 @@ public partial class Lobby : Node
     public double timer = 0;
     public override void _Process(double delta)
     {
+        if (displayLobbyDebugInfo)
+        {
+            renderLobbyDebugInfo();
+        }
         network?.service();
         foreach (var item in outgoingTracker.ToList())
         {
@@ -101,10 +108,24 @@ public partial class Lobby : Node
         timer += delta;
         if (timer>timerMax)
         {
-            Logging.Log($"{selfPeerID}: in: {incomingBandwidth/ (int)timerMax /1000} KB/s | out: {outgoingBandwidth/ (int)timerMax /1000} KB/s", "Lobby");
+         //   Logging.Log($"{selfPeerID}: in: {incomingBandwidth/ (int)timerMax /1000} KB/s | out: {outgoingBandwidth/ (int)timerMax /1000} KB/s", "Lobby");
             timer = 0;
         }
 
+    }
+
+    private void renderLobbyDebugInfo()
+    {
+        ImGui.Begin("debugui lobby");
+        ImGui.Text($"Network mode: {network?.GetType()}");
+        ImGui.Text($"My Peer ID: {Lobby.selfPeerID}");
+        ImGui.Text($"Lobby Host: {hostID} | Lobby Members: {members?.Count}");
+        ImGui.Text($"Bandwidth estimates (1s interval) in: {incomingBandwidth/ (int)timerMax /1000} KB/s | out: {outgoingBandwidth/ (int)timerMax /1000} KB/s");
+        foreach(var member in members)
+        {
+            ImGui.Text($"   Name: {member.Value.Name} | ID: {member.Value.PeerID}");
+        }
+        ImGui.End();
     }
 
     // ---- lifecycle -------------------------------------------------------------

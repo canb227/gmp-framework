@@ -30,7 +30,7 @@ public partial class GameWorld : Node3D
     public static MessagePackSerializer pack = new();
     
     private static int maxTickSize = 1024 //1kb
-                            *50 //256kb
+                            *50 //50kb
                             / Engine.PhysicsTicksPerSecond; //per second 
     private static int waitTicks = 0 ;
     private static int waitTickCount = 0;
@@ -272,6 +272,10 @@ public partial class GameWorld : Node3D
         if (started)
         {
             tickNum++;
+        }
+        else
+        {
+            return;
         }
         foreach (var kv in mostRecentUpdates)
         {

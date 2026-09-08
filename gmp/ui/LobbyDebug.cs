@@ -106,6 +106,7 @@ public partial class LobbyDebug : Control
         {
             _levelSelect.AddItem(item.levelName);
         }
+        _levelSelect.Select(1);
         _levelSelect_ItemSelected(1);
         Log($"lobby ready ({_mode}) as {_selfName} ({ShortId(_selfId)})");
 
