@@ -75,7 +75,12 @@ public partial class MainMenu : Control
         var outputBytes = rd.BufferGetData(buffer);
         var output = new float[xSize * ySize * zSize];
         Buffer.BlockCopy(outputBytes, 0, output, 0, outputBytes.Length);
-        
+        float total = 0;
+        foreach( var item in output )
+        {
+            total += item;
+        }
+        GD.Print($" expected: {xSize*ySize*zSize*2} vs actual: {total}");
     }
 
     
