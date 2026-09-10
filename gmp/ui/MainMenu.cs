@@ -26,10 +26,9 @@ public partial class MainMenu : Control
         var shaderFile = GD.Load<RDShaderFile>("res://test.glsl");
         var shaderBytecode = shaderFile.GetSpirV();
         var shader = rd.ShaderCreateFromSpirV(shaderBytecode);
-
         // Prepare our data. We use floats in the shader, so we need 32 bit.
-        int xSize = 1024;
-        int ySize = 1024;
+        int xSize = 1000;
+        int ySize = 1000;
         int zSize = 3;
         float[] floats = new float[xSize*ySize*zSize];
         for (int z = 0; z < zSize; z++)
@@ -42,7 +41,6 @@ public partial class MainMenu : Control
                 }
             }
         }
-
         int totalBytes = floats.Length * sizeof(float);
         byte[] byteArray = new byte[totalBytes];
         Buffer.BlockCopy(floats, 0, byteArray, 0, totalBytes);
@@ -66,7 +64,7 @@ public partial class MainMenu : Control
         var computeList = rd.ComputeListBegin();
         rd.ComputeListBindComputePipeline(computeList, pipeline);
         rd.ComputeListBindUniformSet(computeList, uniformSet, 0);
-        rd.ComputeListDispatch(computeList, xGroups: 1, yGroups: 1, zGroups: 1);
+        rd.ComputeListDispatch(computeList, xGroups: (uint)xSize/32, yGroups: (uint)ySize/32, zGroups: 3);
         rd.ComputeListEnd();
 
         // Submit to GPU and wait for sync
@@ -77,19 +75,7 @@ public partial class MainMenu : Control
         var outputBytes = rd.BufferGetData(buffer);
         var output = new float[xSize * ySize * zSize];
         Buffer.BlockCopy(outputBytes, 0, output, 0, outputBytes.Length);
-        string inputString = "Input : ";
-        foreach (float element in floats)
-        {
-            inputString += (element + ", ");
-        }
-        GD.Print(inputString);
-        string outputString = "Output: ";
-        foreach (float element in output)
-        {
-            outputString += (element + ", ");
-        }
-        GD.Print(outputString);
-
+        
     }
 
     

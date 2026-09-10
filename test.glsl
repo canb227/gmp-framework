@@ -2,7 +2,7 @@
 #version 450
 
 // Invocations in the (x, y, z) dimension
-layout(local_size_x = 3, local_size_y = 1024, local_size_z = 1024) in;
+layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
 // A binding to the buffer we create in our script
 layout(set = 0, binding = 0, std430) restrict buffer MyDataBuffer {
@@ -13,5 +13,5 @@ my_data_buffer;
 // The code we want to execute in each invocation
 void main() {
     // gl_GlobalInvocationID.x uniquely identifies this invocation across all work groups
-    my_data_buffer.data[gl_GlobalInvocationID.x + (gl_GlobalInvocationID.y * 3) + (gl_GlobalInvocationID.z * 3 * 1024)] *= 2.0;
+    my_data_buffer.data[gl_GlobalInvocationID.x + (gl_GlobalInvocationID.y * 1024) + (gl_GlobalInvocationID.z * 1024 * 1024)] *= 2.0;
 }
