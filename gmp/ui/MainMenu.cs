@@ -1,4 +1,7 @@
 using Godot;
+using Godot.NativeInterop;
+using System;
+using System.Linq;
 
 // Entry scene. Routes to the shared debug lobby (in LAN or Steam mode), options, or
 // quit. Also honours the command-line driving flags so the headless verification path
@@ -18,7 +21,78 @@ public partial class MainMenu : Control
         Button("QuitButton").Pressed += () => GetTree().Quit();
 
         CallDeferred(nameof(HandleCmdline));
+
+        RenderingDevice rd = RenderingServer.CreateLocalRenderingDevice();
+        var shaderFile = GD.Load<RDShaderFile>("res://test.glsl");
+        var shaderBytecode = shaderFile.GetSpirV();
+        var shader = rd.ShaderCreateFromSpirV(shaderBytecode);
+
+        // Prepare our data. We use floats in the shader, so we need 32 bit.
+        int xSize = 1024;
+        int ySize = 1024;
+        int zSize = 3;
+        float[] floats = new float[xSize*ySize*zSize];
+        for (int z = 0; z < zSize; z++)
+        {
+            for (int y = 0; y < ySize; y++)
+            {
+                for (int x = 0; x < xSize; x++)
+                {
+                    floats[x + (y * xSize) + (z * xSize * ySize)] = 1;
+                }
+            }
+        }
+
+        int totalBytes = floats.Length * sizeof(float);
+        byte[] byteArray = new byte[totalBytes];
+        Buffer.BlockCopy(floats, 0, byteArray, 0, totalBytes);
+
+        // Create a storage buffer that can hold our float values.
+        // Each float has 4 bytes (32 bit) so 10 x 4 = 40 bytes
+        var buffer = rd.StorageBufferCreate((uint)byteArray.Length, byteArray);
+
+
+        // Create a uniform to assign the buffer to the rendering device
+        var uniform = new RDUniform
+        {
+            UniformType = RenderingDevice.UniformType.StorageBuffer,
+            Binding = 0
+        };
+        uniform.AddId(buffer);
+        var uniformSet = rd.UniformSetCreate([uniform], shader, 0);
+
+        // Create a compute pipeline
+        var pipeline = rd.ComputePipelineCreate(shader);
+        var computeList = rd.ComputeListBegin();
+        rd.ComputeListBindComputePipeline(computeList, pipeline);
+        rd.ComputeListBindUniformSet(computeList, uniformSet, 0);
+        rd.ComputeListDispatch(computeList, xGroups: 1, yGroups: 1, zGroups: 1);
+        rd.ComputeListEnd();
+
+        // Submit to GPU and wait for sync
+        rd.Submit();
+        rd.Sync();
+
+        // Read back the data from the buffers
+        var outputBytes = rd.BufferGetData(buffer);
+        var output = new float[xSize * ySize * zSize];
+        Buffer.BlockCopy(outputBytes, 0, output, 0, outputBytes.Length);
+        string inputString = "Input : ";
+        foreach (float element in floats)
+        {
+            inputString += (element + ", ");
+        }
+        GD.Print(inputString);
+        string outputString = "Output: ";
+        foreach (float element in output)
+        {
+            outputString += (element + ", ");
+        }
+        GD.Print(outputString);
+
     }
+
+    
 
     private Button Button(string name) =>
         GetNode<Button>($"CenterContainer/VBoxContainer/ButtonList/{name}");

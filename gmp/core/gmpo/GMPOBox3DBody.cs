@@ -85,8 +85,8 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
                 BasicSyncMessage desiredStateData = GMPObject.serializer.Deserialize<BasicSyncMessage>(desiredState);
                 //Call("teleport", [new Transform3D(Basis.FromEuler(desiredStateData.rot), desiredStateData.pos)]);
                 // GD.Print(desiredStateData.pos);
-                this.Position = this.Position.Lerp(desiredStateData.pos, (float)(.1f));
-                this.Rotation = this.Rotation.Lerp(desiredStateData.rot, (float)(.1f));
+                this.Position = this.Position.Lerp(desiredStateData.pos, (float)(10*delta));
+                this.Rotation = this.Rotation.Lerp(desiredStateData.rot, (float)(10*delta));
             }
         }
         else
