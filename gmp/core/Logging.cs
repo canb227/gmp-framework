@@ -248,4 +248,3 @@ public static class Logging
         categories[category] = (false, categories[category].timesPrinted, categories[category].timesSilenced);
     }
 }
-
