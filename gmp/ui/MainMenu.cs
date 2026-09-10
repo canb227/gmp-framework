@@ -27,8 +27,8 @@ public partial class MainMenu : Control
         var shaderBytecode = shaderFile.GetSpirV();
         var shader = rd.ShaderCreateFromSpirV(shaderBytecode);
         // Prepare our data. We use floats in the shader, so we need 32 bit.
-        int xSize = 1000;
-        int ySize = 1000;
+        int xSize = 1024;
+        int ySize = 1024;
         int zSize = 3;
         float[] floats = new float[xSize*ySize*zSize];
         for (int z = 0; z < zSize; z++)
