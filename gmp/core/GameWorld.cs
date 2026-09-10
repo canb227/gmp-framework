@@ -18,6 +18,9 @@ public partial record WorldTickMessage
 [GenerateShapeFor<List<(ulong,byte[])>>]
 public partial class Witness;
 
+[GenerateShapeFor<Type>]
+public partial class Witness;
+
 public partial class GameWorld : Node3D
 {
     public static GameWorld instance;
@@ -364,6 +367,8 @@ public partial class GameWorld : Node3D
             maxTickSize *= 4;
             string levelPath = GameResources.LevelsList[gameInfo.levelIdx].levelPath;
             SpawnScene(levelPath);
+
+
         }
     }
      

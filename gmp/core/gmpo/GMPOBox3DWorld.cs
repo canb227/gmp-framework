@@ -1,5 +1,6 @@
 using Godot;
 using Godot.Collections;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,17 +18,32 @@ public partial class GMPOBox3DWorld : Node3D, GMPObject
     public int priorityAccumulator { get; set; }
     public byte[] desiredState { get; set; }
 
-    public void AfterInit()
+    public virtual void AfterInit()
     {
         
     }
 
-    public void ApplyStateUpdate(byte[] update)
+    public override void _Ready()
+    {
+        
+    }
+
+    public override void _Process(double delta)
+    {
+        
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        
+    }
+
+    public virtual void ApplyStateUpdate(byte[] update)
     {
        
     }
 
-    public byte[] GenerateStateUpdate()
+    public virtual byte[] GenerateStateUpdate()
     {
         return null;
     }

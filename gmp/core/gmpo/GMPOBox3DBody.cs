@@ -40,10 +40,14 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     {
         if (authority == Lobby.selfPeerID)
         {
-            BasicSyncMessage desiredStateData = GMPObject.serializer.Deserialize<BasicSyncMessage>(desiredState);
-           // GD.Print(desiredStateData.pos);
-            //Position = desiredStateData.pos;
-            Call("teleport", [new Transform3D(Basis.FromEuler(desiredStateData.rot), desiredStateData.pos)]);
+            if (desiredState != null && desiredState.Length > 0)
+            {
+                BasicSyncMessage desiredStateData = GMPObject.serializer.Deserialize<BasicSyncMessage>(desiredState);
+                // GD.Print(desiredStateData.pos);
+                //Position = desiredStateData.pos;
+                Call("teleport", [new Transform3D(Basis.FromEuler(desiredStateData.rot), desiredStateData.pos)]);
+            }
+
         }
         else
         {

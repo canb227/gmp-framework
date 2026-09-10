@@ -12,6 +12,7 @@ public static class GameResources
     {
         new LevelInfo ("B3DTestScene", "res://gmp/examples/SyncedBox3DLevel.tscn"),
         new LevelInfo ("B3DTerrainTest", "res://game/levels/B3DTerrainTest.tscn"),
+        new LevelInfo ("FluidSimTest","res://game/levels/FluidSimTest.tscn"),
     };
 }
 

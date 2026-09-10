@@ -8,11 +8,20 @@ using System.Threading.Tasks;
 
 public abstract partial class GMPOSingleton : Node, GMPObject
 {
+    [ExportGroup("Configuration")]
+    [Export]
     public int priority { get; set; }
+    [Export]
     public bool pauseable { get; set; }
+
+    [ExportGroup("READONLY")]
+    [Export]
     public ulong id { get; set; }
+    [Export]
     public ulong authority { get; set; }
+    [Export]
     public ulong owner { get; set; }
+    [Export]
     public int priorityAccumulator { get; set; }
     public byte[] desiredState { get; set; }
 
