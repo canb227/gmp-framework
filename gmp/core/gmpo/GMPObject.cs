@@ -57,7 +57,7 @@ public partial interface GMPObject
     public byte[] GenerateStateUpdate();
     public void ApplyStateUpdate(byte[] update);
 
-    public void _Ready()
+    public virtual void _Ready()
     {
         if (pauseable)
         {

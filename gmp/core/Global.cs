@@ -1,6 +1,7 @@
 using Godot;
 using Steamworks;
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 public partial class Global : Node
@@ -11,29 +12,38 @@ public partial class Global : Node
     public static bool bIsSteamConnected = false;
     public const int APP_ID = 480;
 
+    public static bool lanOnly = false;
+
     public override void _Ready()
     {
         ProcessMode = ProcessModeEnum.Always;
         instance = this;
-        switch (OS.GetName())
+
+        lanOnly = OS.GetCmdlineUserArgs().Contains("--lan")
+               || OS.GetCmdlineUserArgs().Contains("--host")
+               || OS.GetCmdlineUserArgs().Contains("--join");
+
+        if (!lanOnly)
         {
-            case "Windows":
-                break;
-            case "Linux":
-                RegisterSteamApiResolver();
-                break;
-            default:
-                break;
+            switch (OS.GetName())
+            {
+                case "Windows":
+                    break;
+                case "Linux":
+                    RegisterSteamApiResolver();
+                    break;
+                default:
+                    break;
+            }
+
+            SteamInit();
+            if (steamid == 1)
+            {
+                GetTree().Quit();
+            }
         }
 
-        SteamInit();
-        if (steamid==1)
-        {
-            //steam connection failed - rn we bail but eventually adding steamid==1 checks to places will allow for offline mode
-            GetTree().Quit();
-        }
-
-        Logging.Start(); //Also start logging here instead of Main so its ready super early to log stuff
+        Logging.Start();
 
         //This makes sure the file structure in the godot user data folder is setup correctly
         Logging.Log($" mkdir user://saves                    | {DirAccess.MakeDirAbsolute("user://saves").ToString()}", "FirstTimeSetup");
@@ -48,8 +58,13 @@ public partial class Global : Node
             Logging.StartLoggingToFile();
         }
 
-        Logging.Log("Connection to Steam successful.", "SteamAPI");
-        Logging.Log($"Steam ID: {steamid}", "SteamAPI");
+        if (lanOnly)
+            Logging.Log("LAN-only mode — Steam init skipped", "SteamAPI");
+        else
+        {
+            Logging.Log("Connection to Steam successful.", "SteamAPI");
+            Logging.Log($"Steam ID: {steamid}", "SteamAPI");
+        }
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.

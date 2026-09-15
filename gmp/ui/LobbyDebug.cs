@@ -30,6 +30,18 @@ public partial class LobbyDebug : Control
     private bool _started;
     private int _autoTick;
 
+    // --test mode fields
+    private bool _testMode;
+    private int _expectPeers;
+    private double _testTimeout = 30.0;
+    private double _testElapsed;
+    private bool _testDone;
+    private bool _testPassed;
+    private double _testPassedAt;
+    private const double TestGracePeriod = 3.0;
+    private int _peakMembers;
+    private readonly System.Collections.Generic.HashSet<ulong> _chatReceivedFrom = new();
+
     // Cached nodes.
     private Button _backButton;
     private Button _hostButton;
@@ -106,11 +118,10 @@ public partial class LobbyDebug : Control
         {
             _levelSelect.AddItem(item.levelName);
         }
-        _levelSelect.Select(2);
-        _levelSelect_ItemSelected(2);
+        _levelSelect.Select(3);
+        _levelSelect_ItemSelected(3);
+        ProcessMode = ProcessModeEnum.Always;
         Log($"lobby ready ({_mode}) as {_selfName} ({ShortId(_selfId)})");
-
-
 
         CallDeferred(nameof(HandleCmdline));
     }
@@ -119,6 +130,45 @@ public partial class LobbyDebug : Control
     {
         Lobby.gameInfo.levelIdx = (int)index;
         Lobby.SendGameInfoUpdate();
+    }
+
+    public override void _Process(double delta)
+    {
+        if (!_testMode || _testDone)
+            return;
+        _testElapsed += delta;
+
+        if (Lobby.MemberCount > _peakMembers)
+            _peakMembers = Lobby.MemberCount;
+
+        bool peersOk = _peakMembers >= _expectPeers;
+        bool chatOk = _chatReceivedFrom.Count >= _expectPeers - 1;
+        bool sentChat = _autoTick >= 1;
+
+        if (peersOk && chatOk && sentChat)
+        {
+            if (!_testPassed)
+            {
+                _testPassed = true;
+                _testPassedAt = _testElapsed;
+                Log($"TEST conditions met — holding {TestGracePeriod}s for peers to converge");
+            }
+            if (_testElapsed - _testPassedAt >= TestGracePeriod)
+            {
+                _testDone = true;
+                Log($"TEST PASS — peak {_peakMembers} peers, chat from {_chatReceivedFrom.Count} remote peer(s), sent {_autoTick} msg(s)");
+                GD.Print($"TEST_RESULT:PASS peers={_peakMembers} chat_from={_chatReceivedFrom.Count} sent={_autoTick}");
+                GetTree().Quit(0);
+                return;
+            }
+        }
+        if (_testElapsed >= _testTimeout)
+        {
+            _testDone = true;
+            Log($"TEST FAIL — timeout after {_testTimeout}s (peak_peers={_peakMembers}/{_expectPeers}, chat_from={_chatReceivedFrom.Count}/{_expectPeers - 1}, sent={_autoTick})");
+            GD.Print($"TEST_RESULT:FAIL peak_peers={_peakMembers}/{_expectPeers} chat_from={_chatReceivedFrom.Count}/{_expectPeers - 1} sent={_autoTick} elapsed={_testElapsed:F1}s");
+            GetTree().Quit(1);
+        }
     }
 
     public override void _ExitTree()
@@ -320,6 +370,9 @@ public partial class LobbyDebug : Control
             ? m.Name : ShortId(from);
         AppendChat(name, text, "#e0e4ec");
         Log($"recv chat from {name}: \"{text}\"");
+
+        if (_testMode && from != _selfId)
+            _chatReceivedFrom.Add(from);
     }
 
     private void RefreshGameInfo()
@@ -379,6 +432,7 @@ public partial class LobbyDebug : Control
     // ---- command-line driving --------------------------------------------
     //   LAN:   -- --name A --host 2272 --auto
     //          -- --name B --join 127.0.0.1:2272 --port 9101 --auto
+    //   Test:  -- --lan --name A --host 2272 --test --expect-peers 3 --test-timeout 30
     //   Steam: -- --steam --name A --host
     //          -- --steam --name B --join <steamid>
     private void HandleCmdline()
@@ -398,6 +452,15 @@ public partial class LobbyDebug : Control
                 case "--join": join = Next(args, ref i); break;
                 case "--port": port = Next(args, ref i); break;
                 case "--auto": auto = true; break;
+                case "--test": _testMode = true; auto = true; break;
+                case "--expect-peers":
+                    string ep = Next(args, ref i);
+                    if (ep != null) int.TryParse(ep, out _expectPeers);
+                    break;
+                case "--test-timeout":
+                    string tt = Next(args, ref i);
+                    if (tt != null) double.TryParse(tt, out _testTimeout);
+                    break;
             }
         }
 
@@ -436,6 +499,9 @@ public partial class LobbyDebug : Control
                 }
             }
         }
+
+        if (_testMode)
+            Log($"test mode: expect {_expectPeers} peers, timeout {_testTimeout}s");
 
         if (auto)
         {

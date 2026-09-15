@@ -32,6 +32,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="game\items\machines\" />
+    <Folder Include="game\items\resources\" />
+    <Folder Include="game\items\tools\" />
     <Folder Include="game\levels\" />
   </ItemGroup>
 </Project>

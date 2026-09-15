@@ -13,6 +13,18 @@ public static class GameResources
         new LevelInfo ("B3DTestScene", "res://gmp/examples/SyncedBox3DLevel.tscn"),
         new LevelInfo ("B3DTerrainTest", "res://game/levels/B3DTerrainTest.tscn"),
         new LevelInfo ("FluidSimTest","res://game/levels/FluidSimTest.tscn"),
+        new LevelInfo ("FactoryGameTest","res://game/levels/FactoryGameTest.tscn"),
+        new LevelInfo ("FactoryMap","res://game/levels/FactoryMap.tscn"),
+    };
+
+    public static Dictionary<string, string> FactoryItems = new Dictionary<string, string>()
+    {
+        { "test_cube","res://game/items/examples/TestFactoryCube.tscn" },
+        { "test_sphere","res://game/items/examples/TestFactorySphere.tscn" },
+        { "te3e","res://game/items/examples/TestFactoryCube.tscn" },
+        { "test4_cube","res://game/items/examples/TestFactoryCube.tscn" },
+        { "test3_cube","res://game/items/examples/TestFactoryCube.tscn" },
+
     };
 }
 

@@ -6,50 +6,38 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-public enum BodyTypeEnum
-{
-    Static = 0,
-    Kinematic = 1,
-    Dynamic = 2
-}
 
 
-public partial class GMPOBox3DBody : Node3D, GMPObject
+public partial class GMPOBox3DCharacter : Node3D, GMPObject
 {
+    [ExportGroup("Configuration")]
+    [Export]
     public int priority { get; set; }
+    [Export]
     public bool pauseable { get; set; }
+
+    [ExportGroup("READONLY")]
+    [Export]
     public ulong id { get; set; }
+    [Export]
     public ulong authority { get; set; }
+    [Export]
     public ulong owner { get; set; }
+    [Export]
     public int priorityAccumulator { get; set; }
     public byte[] desiredState { get; set; }
 
-
-
-    public BodyTypeEnum GetBodyType()
+    public Vector3 MoveAndSlide(Vector3 velocity, double delta)
     {
-        return (BodyTypeEnum)Get("body_type").AsInt32();
+        return Call("move_and_slide", [velocity, delta]).AsVector3();
     }
 
-    public void SetBodyType(BodyTypeEnum value)
+    public bool IsOnFloor()
     {
-        Set("body_type", (int)value);
+        return Call("is_on_floor").AsBool();
     }
 
-    public void Teleport(Transform3D transform)
-    {
-        Call("teleport", [transform]);
-    }
 
-    public void Teleport(Vector3 position, Vector3 rotation)
-    {
-        Call("teleport", [new Transform3D(Basis.FromEuler(rotation), position)]);
-    }
-
-    public void Teleport(Vector3 position)
-    {
-        Call("teleport", [new Transform3D(Basis, position)]);
-    }
     public virtual void AfterInit()
     {
         if (authority == Lobby.selfPeerID)
@@ -68,7 +56,7 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
             // Set("enabled", false);
             // body_type = 1;
             // Set("body_type", 1);
-            SetBodyType(BodyTypeEnum.Kinematic);
+
         }
 
 
@@ -101,10 +89,10 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
             if (desiredState != null && desiredState.Length > 0)
             {
                 BasicSyncMessage desiredStateData = GMPObject.serializer.Deserialize<BasicSyncMessage>(desiredState);
-                Call("teleport", [new Transform3D(Basis.FromEuler(this.Rotation.Lerp(desiredStateData.rot, (float)(10*delta))), this.Rotation.Lerp(desiredStateData.rot, (float)(10*delta)))]);
+                //Call("teleport", [new Transform3D(Basis.FromEuler(desiredStateData.rot), desiredStateData.pos)]);
                 // GD.Print(desiredStateData.pos);
-                //this.Position = this.Rotation.Lerp(desiredStateData.rot, (float)(10 * delta)));
-               // this.Rotation = this.Rotation.Lerp(desiredStateData.rot, (float)(10*delta));
+                this.Position = this.Position.Lerp(desiredStateData.pos, (float)(10*delta));
+                this.Rotation = this.Rotation.Lerp(desiredStateData.rot, (float)(10*delta));
             }
         }
         else
@@ -113,14 +101,18 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         }
     }
 
-    public void ApplyCentralForce(Vector3 force)
-    {
-        Call("apply_central_force", [force]);
-    }
+
     public override void _Ready()
     {
 
-        
+        if (pauseable)
+        {
+            (this as Node).ProcessMode = ProcessModeEnum.Pausable;
+        }
+        else
+        {
+            (this as Node).ProcessMode = ProcessModeEnum.Always;
+        }
     }
 }
 

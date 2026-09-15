@@ -24,6 +24,7 @@ public partial class Witness;
 public partial class GameWorld : Node3D
 {
     public static GameWorld instance;
+    public static Node3D b3droot; 
     public static Dictionary<ulong, GMPObject> syncedObjs = new();
     public static WorldTickMessage pendingOutgoingTick = new();
     public static List<WorldTickMessage> pendingIncomingTicks = new();
@@ -65,7 +66,12 @@ public partial class GameWorld : Node3D
         Lobby.ConnectedToHostEvent += Instance_ConnectedToHostEvent;
         Lobby.LobbyDoneLoadingEvent += Instance_LobbyDoneLoadingEvent;
         Lobby.LobbyDonePreloadingEvent += Instance_LobbyDonePreloadingEvent;
-        GetTree().Paused = true;
+        GetTree().Paused = true; 
+        if (ClassDB.ClassExists("Box3DWorld"))
+        {
+            
+            b3droot = ClassDB.Instantiate("Box3DWorld").As<Node3D>();
+        }
     }
 
     private static void Instance_LobbyDonePreloadingEvent()
@@ -194,7 +200,22 @@ public partial class GameWorld : Node3D
     private void _SpawnInternal(Node node, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null)
     {
         node.Name = node.GetType().ToString() + initData.id.ToString();
-        if (node is GMPOBox3DBody b3d)
+        if (node is GMPOBox3DWorld world)
+        {
+            if (b3dworld != null)
+            {
+                Logging.Error("Multiple B3DWorlds dectected. Not supported.", "GameWorld");
+                return;
+            }
+            else
+            {
+                Logging.Log("B3DWorld ID'ed and registered.", "GameWorld");
+                b3dworld = world;
+                AddChild(world);
+            }
+
+        }
+        else
         {
             if (b3dworld == null)
             {
@@ -203,34 +224,23 @@ public partial class GameWorld : Node3D
             else
             {
                 b3dworld.AddChild(node);
-                node.Call("teleport", [new Transform3D(Basis.FromEuler(rotation), position)]);
-            }
+                if (node is GMPOBox3DBody box)
+                {
+                    box.Call("teleport", [new Transform3D(Basis.FromEuler(rotation), position)]);
+                }
+                else if (node is Node3D n)
+                {
+                    n.Position = position;
 
-        }
-        else
-        {
-            instance.AddChild(node);
+                    n.Rotation = rotation;
+
+                }
+
+            }
         }
 
-        if (node is Node3D n3d)
-        {
-          //  GD.Print($"current pos {n3d.Position}, setting to {position}");
-            n3d.Position = position;
-            n3d.Rotation = rotation;
-        }
-        if (node is GMPOBox3DWorld world)
-        {
-            if (b3dworld != null)
-            {
-                Logging.Error("Multiple B3DWorlds dectected. Not supported.", "GameWorld");
-            }
-            else
-            {
-                Logging.Log("B3DWorld ID'ed and registered.", "GameWorld");
-                b3dworld = world;
-            }
 
-        }
+
         if (node is GMPObject gmpo)
         {
             gmpo.Init(initData, initState);
@@ -239,6 +249,12 @@ public partial class GameWorld : Node3D
         else
         {
             Logging.Warn($"Spawned node of type {node.GetType()} is not a GMPObject. It will not be synced.", "GameWorld");
+        }
+        if (node is Node3D n3d)
+        {
+          //  GD.Print($"current pos {n3d.Position}, setting to {position}");
+            n3d.Position = position;
+            n3d.Rotation = rotation;
         }
         if (childInit != null)
         {
@@ -260,6 +276,20 @@ public partial class GameWorld : Node3D
         }
 
     }
+    public static void DespawnObject(ulong id)
+    {
+        RPCManager.RPC(instance, "_DespawnObject", [id]);
+    }
+
+    private void _DespawnObject(ulong id)
+    {
+        if (syncedObjs.TryGetValue(id, out GMPObject gmpo))
+        {
+            syncedObjs.Remove(id);
+            (gmpo as Node)?.QueueFree();
+        }
+    }
+
     private static ulong GenRandomID()
     {
         return (ulong)Random.Shared.NextInt64();
@@ -377,10 +407,10 @@ public partial class GameWorld : Node3D
         //When this is called all players have completed the Preload function and are sitting staring at a loading screen.
 
         //Use it to slam a bunch of RPCs and other networked stuff before anyone else has a chance to do anything.
-        GodSync init = new GodSync();
+        PlayerSync init = new PlayerSync();
         init.controllingPeerID = Lobby.selfPeerID;
         init.isHuman = true;
-        ulong pid = SpawnScene("res://game/God.tscn",default,default,default,GMPObject.serializer.Serialize(init));
+        ulong pid = SpawnScene("res://game/player/FactoryPlayer.tscn", new Vector3(Random.Shared.Next(5), Random.Shared.Next(2,5), Random.Shared.Next(5)),default,default,GMPObject.serializer.Serialize(init));
         Lobby.SendToAllAndSelf(Channel.LOBBY_Control, [(byte)LobbyControlCode.DoneLoading]);
         
 

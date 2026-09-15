@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://bwysi8fb64cf"]
+
+[ext_resource type="Script" uid="uid://bjm062vq8by7q" path="res://game/items/ItemBox.cs" id="1_script"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
+size = Vector3(0.5, 0.5, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="Mat_1"]
+albedo_color = Color(0.45, 0.35, 0.25, 1)
+
+[node name="ItemBox" type="Box3DBody" unique_id=1886847237]
+shape_type = 7
+script = ExtResource("1_script")
+
+[node name="Mesh" type="MeshInstance3D" parent="." unique_id=1781337241]
+mesh = SubResource("BoxMesh_1")
+surface_material_override/0 = SubResource("Mat_1")
+
+[node name="NameLabel" type="Label3D" parent="." unique_id=1054883045]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+font_size = 24
+outline_size = 4
+
+[node name="IconSprite" type="Sprite3D" parent="." unique_id=1525586619]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.26)
+pixel_size = 0.005

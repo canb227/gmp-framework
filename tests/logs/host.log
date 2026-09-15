@@ -1,0 +1,30 @@
+Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org
+
+[Logging][10:21:37]Logger started!
+[FirstTimeSetup][10:21:37] mkdir user://saves                    | AlreadyExists
+[FirstTimeSetup][10:21:37] mkdir user://config                  | AlreadyExists
+[FirstTimeSetup][10:21:37] mkdir user://logs                      | AlreadyExists
+[FirstTimeSetup][10:21:37] mkdir user://saves/0   | AlreadyExists
+[FirstTimeSetup][10:21:37] mkdir user://config/0 | AlreadyExists
+[FirstTimeSetup][10:21:37] mkdir user://logs/0     | AlreadyExists
+[SteamAPI][10:21:37]LAN-only mode — Steam init skipped
+[LobbyDebug][10:21:37]lobby ready (Lan) as Peer-7578 (97578)
+[NetworkSession][10:21:37]listening on port 2272 (peer 1322944577297578)
+[NetworkSession][10:21:37]hosting lobby as Host (peer 1322944577297578)
+[LobbyDebug][10:21:37]connected to host 97578
+[LobbyDebug][10:21:37]hosting (Lan) as Host on port 2272
+[LobbyDebug][10:21:37]test mode: expect 3 peers, timeout 30s
+[LobbyDebug][10:21:39]auto-sent #1 to 1 peer(s)
+[NetworkSession][10:21:39]linked to peer 2568660362083333 (127.0.0.1:9101)
+[LobbyDebug][10:21:39]peer connected: 83333
+[NetworkSession][10:21:40]linked to peer 718173984690270 (127.0.0.1:9102)
+[LobbyDebug][10:21:40]peer connected: 90270
+[LobbyDebug][10:21:41]auto-sent #2 to 3 peer(s)
+[LobbyDebug][10:21:41]recv chat from Peer2: "auto #1 from Peer2"
+[LobbyDebug][10:21:42]recv chat from Peer3: "auto #1 from Peer3"
+[LobbyDebug][10:21:42]TEST conditions met — holding 3s for peers to converge
+[LobbyDebug][10:21:43]auto-sent #3 to 3 peer(s)
+[LobbyDebug][10:21:43]recv chat from Peer2: "auto #2 from Peer2"
+[LobbyDebug][10:21:44]recv chat from Peer3: "auto #2 from Peer3"
+[LobbyDebug][10:21:45]TEST PASS — peak 3 peers, chat from 2 remote peer(s), sent 3 msg(s)
+TEST_RESULT:PASS peers=3 chat_from=2 sent=3
