@@ -1,8 +1,8 @@
-[gd_scene format=3 uid="uid://dc5u8dodl7fcj"]
+[gd_scene format=3 uid="uid://bik3yc2le1rtt"]
 
 [ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://gmp/ui/theme/menu_theme.tres" id="1_obikm"]
 [ext_resource type="Texture2D" uid="uid://bmckesaf77x8c" path="res://gmp/ui/theme/bg_gradient.tres" id="2_m06ut"]
-[ext_resource type="Script" uid="uid://bsu5pmwktce4i" path="res://gmp/ui/LobbyLanDebug.cs" id="2_qsy4g"]
+[ext_resource type="Script" uid="uid://bptl0ywrqcw21" path="res://gmp/ui/LobbyDebug.cs" id="2_qsy4g"]
 
 [node name="LobbyLANDebug" type="Control" unique_id=1453070762]
 process_mode = 3

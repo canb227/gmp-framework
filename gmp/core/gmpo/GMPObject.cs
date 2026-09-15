@@ -69,13 +69,18 @@ public partial interface GMPObject
         }
     }
 
+
     public virtual void Init(GMPOInitData init, byte[] initState = null)
     {
         this.id = init.id;
         this.authority = init.authority;
-        if (init.priority!=0)
+        if (this.priority == 0 && init.priority!=0)
         {
             this.priority = init.priority;
+        }
+        else if (this.priority==0)
+        {
+            this.priority = 1;
         }
 
         this.pauseable = init.pauseable;
@@ -88,6 +93,9 @@ public partial interface GMPObject
         AfterInit();
     }
 
+    /// <summary>
+    /// This is called on all GMPO objects after they have been fully constructed and configured. The initState byte[] has already been applied.
+    /// </summary>
     protected void AfterInit();
 
 }

@@ -18,6 +18,9 @@ public partial record WorldTickMessage
 [GenerateShapeFor<List<(ulong,byte[])>>]
 public partial class Witness;
 
+[GenerateShapeFor<Type>]
+public partial class Witness;
+
 public partial class GameWorld : Node3D
 {
     public static GameWorld instance;
@@ -25,26 +28,35 @@ public partial class GameWorld : Node3D
     public static WorldTickMessage pendingOutgoingTick = new();
     public static List<WorldTickMessage> pendingIncomingTicks = new();
 
+    public static Dictionary<ulong, WorldTickMessage> mostRecentUpdates = new();
+
     public static MessagePackSerializer pack = new();
     
     private static int maxTickSize = 1024 //1kb
-                            * 256 //256kb
+                            *50 //50kb
                             / Engine.PhysicsTicksPerSecond; //per second 
     private static int waitTicks = 0 ;
     private static int waitTickCount = 0;
     private static ulong mostRecentInboundTick;
     private static bool started = false;
     public static ulong tickNum = 0;
+    public static GMPOBox3DWorld b3dworld;
+    public static bool displaySyncedObjectDebugInfo = false;
+
     public override void _Process(double delta)
     {
-       ImGui.Begin("Synced Objects");
-       ImGui.Text($"Synced Objects: {syncedObjs.Count}");
-       ImGui.Text($"Synced Objects with Auth: {syncedObjs.Count(o => o.Value.authority == Lobby.selfPeerID)}");
-       foreach(var kvp in syncedObjs.OrderByDescending(e => e.Value.priorityAccumulator).ToList())
+        if (displaySyncedObjectDebugInfo)
         {
-            ImGui.Text($"ID: {kvp.Key} | Auth: {kvp.Value.authority} | Owner: {kvp.Value.owner} | Priority: {kvp.Value.priority} | Accumulator: {kvp.Value.priorityAccumulator}");
+            ImGui.Begin("Synced Objects");
+            ImGui.Text($"Synced Objects: {syncedObjs.Count}");
+            ImGui.Text($"Synced Objects with Auth: {syncedObjs.Count(o => o.Value.authority == Lobby.selfPeerID)}");
+            foreach (var kvp in syncedObjs.OrderByDescending(e => e.Value.priorityAccumulator).ToList())
+            {
+                ImGui.Text($"ID: {kvp.Key} | Auth: {kvp.Value.authority} | Owner: {kvp.Value.owner} | Priority: {kvp.Value.priority} | Accumulator: {kvp.Value.priorityAccumulator}");
+            }
+            ImGui.End();
         }
-       ImGui.End();
+
     }
     public override void _Ready()
     {
@@ -78,6 +90,7 @@ public partial class GameWorld : Node3D
     }
 
 
+
     private static void OnMessageReceived(ulong from, Channel ch, byte[] msg)
     {
         //we may need to batch these and apply them all at the start of the next tick idk
@@ -85,93 +98,148 @@ public partial class GameWorld : Node3D
         {
             return;
         }
-        WorldTickMessage tick = pack.Deserialize<WorldTickMessage>(msg);
-        if (tick.tick>=mostRecentInboundTick)
+        WorldTickMessage tickmsg = pack.Deserialize<WorldTickMessage>(msg);
+        if (mostRecentUpdates.TryGetValue(from, out WorldTickMessage currentRecentTick))
         {
-            mostRecentInboundTick = tick.tick;
-            pendingIncomingTicks.Add(tick);
+
+            if (tickmsg.tick >= mostRecentUpdates[from].tick)
+            {
+
+                mostRecentUpdates[from] = tickmsg;
+            }
+            else
+            {
+                Logging.Warn("Mistimed tick, discarding! (If this is getting spammed lag compensation is broken)", "GameWorld");
+                //mistimed tick, discard it I guess?
+            }
         }
         else
         {
-            Logging.Warn($"Mistimed tick update ({tick.tick} vs {mostRecentInboundTick}) - investigate.", "GameWorld");
+            mostRecentUpdates[from] = tickmsg;
         }
+
+
        // Logging.Log($"Got a tick for tick# {tick.tick}", "help");
 
 
     }
-
-
-    private static ulong GenRandomID()
+    private static GMPOInitData initDataNormalizer(GMPOInitData initData)
     {
-        return (ulong)Random.Shared.NextInt64();
-    }
 
-    public static void Spawn3DSceneAt(string scenePath, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null)
-    {
-        if (position == default)
-        {
-            position = Vector3.Zero;
-        }
-        if (rotation == default)
-        {
-            rotation = Vector3.Zero;
-        }
         if (initData.id == 0)
         {
             initData.id = GenRandomID();
         }
-        if (initData.authority==0)
+        if (initData.authority == 0)
         {
             initData.authority = Lobby.selfPeerID;
         }
-        if (initData.owner==0)
+        if (initData.owner == 0)
         {
             initData.owner = Lobby.selfPeerID;
         }
+        return initData;
+    }
 
-        // Assign an ID for every child GMPObject here, on the spawner, and bake the
-        // map into the spawn RPC itself. The scene instantiates identically on every
-        // peer, so shipping the IDs alongside the spawn removes the need for a
-        // per-child _Register RPC. Those follow-up RPCs were also unsafe: local
-        // send-to-self runs synchronously mid-broadcast, so they reached remote peers
-        // *before* this spawn RPC and targeted nodes that did not exist yet.
-        var childInit = new Dictionary<string, GMPOInitData>();
-        Node3D probe = ResourceLoader.Load<PackedScene>(scenePath).Instantiate<Node3D>();
-        foreach (Node c in probe.FindChildren("*").ToList())
+    private static Dictionary<string,GMPOInitData> childGMPORegisterGenerator(Node node, GMPOInitData initData)
+    {
+        Dictionary<string, GMPOInitData> childInit = new();
+        foreach (Node c in node.FindChildren("*").ToList())
         {
             if (c is GMPObject gmpoChild)
             {
-                childInit[probe.GetPathTo(c)] = new GMPOInitData(
+                childInit[node.GetPathTo(c)] = new GMPOInitData(
                     GenRandomID(), initData.authority, initData.owner,
                     gmpoChild.priority, gmpoChild.pauseable);
             }
         }
-        probe.Free();
-
-        RPCManager.RPC(instance, "_Spawn3DSceneAt",
-            [scenePath, position, rotation, initData, initState, childInit]);
+        return childInit;
     }
-
-    private static void _Spawn3DSceneAt(string scenePath, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null)
+    public static ulong SpawnScene(string scenePath, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null)
     {
         PackedScene pck = ResourceLoader.Load<PackedScene>(scenePath);
-        Node3D node = pck.Instantiate() as Node3D;
-        instance.AddChild(node);
-        node.Position = position;
-        node.Rotation = rotation;
+        Node node = pck.Instantiate();
+        initData = initDataNormalizer(initData);
+        Dictionary<string, GMPOInitData> childInit = childGMPORegisterGenerator(node, initData);
+        node.Free();
+        RPCManager.RPC(instance, "_SpawnScene", [scenePath, position, rotation, initData, initState, childInit]);
+        return initData.id;
+    }
+
+    public static ulong SpawnNode(Type nodeType, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null)
+    {
+        Node node = (Node)Activator.CreateInstance(nodeType);
+        initData = initDataNormalizer(initData);
+
+        Dictionary<string, GMPOInitData> childInit = childGMPORegisterGenerator(node, initData);
+        node.Free();
+
+        RPCManager.RPC(instance, "_SpawnNode", [nodeType,position, rotation, initData, initState, childInit]);
+
+        return initData.id;
+    }
+
+    private void _SpawnNode(Type nodeType, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null)
+    {
+        Node node = (Node)Activator.CreateInstance(nodeType);
+        _SpawnInternal(node, position, rotation, initData, initState, childInit);
+    }
+
+    private void _SpawnScene(string scenePath, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null)
+    {
+        Node node = ResourceLoader.Load<PackedScene>(scenePath).Instantiate();
+        _SpawnInternal(node, position, rotation, initData, initState, childInit);
+    }
+
+    private void _SpawnInternal(Node node, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null)
+    {
+        node.Name = node.GetType().ToString() + initData.id.ToString();
+        if (node is GMPOBox3DBody b3d)
+        {
+            if (b3dworld == null)
+            {
+                Logging.Error("attempted to spawn b3dbody with no b3dworld!", "GameWorld");
+            }
+            else
+            {
+                b3dworld.AddChild(node);
+                node.Call("teleport", [new Transform3D(Basis.FromEuler(rotation), position)]);
+            }
+
+        }
+        else
+        {
+            instance.AddChild(node);
+        }
+
+        if (node is Node3D n3d)
+        {
+          //  GD.Print($"current pos {n3d.Position}, setting to {position}");
+            n3d.Position = position;
+            n3d.Rotation = rotation;
+        }
+        if (node is GMPOBox3DWorld world)
+        {
+            if (b3dworld != null)
+            {
+                Logging.Error("Multiple B3DWorlds dectected. Not supported.", "GameWorld");
+            }
+            else
+            {
+                Logging.Log("B3DWorld ID'ed and registered.", "GameWorld");
+                b3dworld = world;
+            }
+
+        }
         if (node is GMPObject gmpo)
         {
-            gmpo.Init(initData,initState);
+            gmpo.Init(initData, initState);
             syncedObjs.Add(gmpo.id, gmpo);
         }
         else
         {
-            Logging.Warn($"Spawned scene at {scenePath} is not a GMPObject. It will not be synced.", "GameWorld");
+            Logging.Warn($"Spawned node of type {node.GetType()} is not a GMPObject. It will not be synced.", "GameWorld");
         }
-
-        // Register child GMPObjects from the ID map the spawner baked into this RPC.
-        // Runs on every peer; the instantiated tree is identical, so the GetPathTo
-        // keys line up with what the spawner recorded.
         if (childInit != null)
         {
             foreach (Node c in node.FindChildren("*").ToList())
@@ -183,33 +251,21 @@ public partial class GameWorld : Node3D
                 string rel = node.GetPathTo(c);
                 if (!childInit.TryGetValue(rel, out GMPOInitData ci))
                 {
-                    Logging.Warn($"No init data for child GMPObject at '{rel}' under {scenePath}; it will not be synced.", "GameWorld");
+                    Logging.Warn($"No init data for child GMPObject at '{rel}' under {node}; it will not be synced.", "GameWorld");
                     continue;
                 }
                 gmpoChild.Init(ci, null);
                 syncedObjs.Add(gmpoChild.id, gmpoChild);
             }
         }
+
+    }
+    private static ulong GenRandomID()
+    {
+        return (ulong)Random.Shared.NextInt64();
     }
 
-    private void _Register(string NodePath, GMPOInitData InitData, byte[] initState)
-    {
-        Node node = instance.GetNodeOrNull(NodePath);
-        if (node == null)
-        {
-            Logging.Warn($"Registration failed: no node at {NodePath} (not spawned yet?). It will not be synced.", "GameWorld");
-            return;
-        }
-        if (node is GMPObject gmpo)
-        {
-            gmpo.Init(InitData, initState);
-            syncedObjs.Add(gmpo.id, gmpo);
-        }
-        else
-        {
-            Logging.Warn($"Registration Failed! Node at {NodePath} is not a GMPObject. (type is {node.GetType().Name}) It will not be synced.", "GameWorld");
-        }
-    }
+
     public override void _PhysicsProcess(double delta)
     {
         if (waitTicks < waitTickCount)
@@ -225,22 +281,26 @@ public partial class GameWorld : Node3D
         {
             tickNum++;
         }
-        if (pendingIncomingTicks.Count > 0)
+        else
         {
-          //  Logging.Log($"applying an update for tick# {pendingIncomingTicks.ElementAt(0).tick}", "dong");
-            List<(ulong, byte[])> pendingSyncs = pendingIncomingTicks.ElementAt(0).updates;  
-            foreach (var item in pendingSyncs)
+            return;
+        }
+        foreach (var kv in mostRecentUpdates)
+        {
+            foreach (var item in kv.Value.updates)
             {
-                //Logging.Log($"applying an update for item# {item.Item1}", "dong");
                 if (syncedObjs.TryGetValue(item.Item1, out GMPObject? gmpo))
                 {
-                   // Logging.Log($"4 REAL applying an update for item# {item.Item1}", "dong");
                     gmpo.ApplyStateUpdate(item.Item2);
                 }
-
+                else
+                {
+                    Logging.Warn("sync message for unknown object, ordering issue!", "GameWorld");
+                }
             }
-            pendingIncomingTicks.RemoveAt(0);
+            mostRecentUpdates.Remove(kv.Key);
         }
+
 
         int tickSize = 0;
         List<GMPObject> toBeSynced = new();
@@ -261,7 +321,6 @@ public partial class GameWorld : Node3D
                 entity.priorityAccumulator += entity.priority;
             }
         }
-
         List<GMPObject> temp = syncedObjs.Values.OrderByDescending(e => e.priorityAccumulator).ToList();
         foreach (GMPObject e in temp)
         {
@@ -281,17 +340,14 @@ public partial class GameWorld : Node3D
                 }
                 else
                 {
-                  // Logging.Log($"This update of size {update.Length} would exceed our tick size budget (at {tickSize} of {maxTickSize}. Stopping at {pendingOutgoingTick.updates.Count} updates", "GameWorld");
+                    break;
+                   Logging.Warn($"This update of size {update.Length} would exceed our tick size budget (at {tickSize} of {maxTickSize}. Stopping at {pendingOutgoingTick.updates.Count} updates. (If this is getting spammed something is broken)", "GameWorld");
                 }
             }
         }
         if (pendingOutgoingTick.updates.Count > 0)
         {
-            // Logging.Log($"TICK #{Engine.GetPhysicsFrames()} Sending {pendingOutgoingTick.updates.Count} updates of total size: {tickSize}", "GameWorld");
             pendingOutgoingTick.tick = tickNum;
-            //byte[] test = pack.Serialize<WorldTickMessage>(pendingOutgoingTick);
-            //WorldTickMessage test2 = pack.Deserialize<WorldTickMessage>(test);
-           // Logging.Log($"TICK #{test2.tick} Sending {test2.updates.Count} updates", "GameWorld");
             Lobby.SendToAllExceptSelf(Channel.GAME_State, pack.Serialize<WorldTickMessage>(pendingOutgoingTick));
             pendingOutgoingTick = new();
         }
@@ -309,21 +365,25 @@ public partial class GameWorld : Node3D
         if (Lobby.isHost)
         {
             maxTickSize *= 4;
-            string levelPath = gameInfo.LevelPath;
-            Spawn3DSceneAt(levelPath);
+            string levelPath = GameResources.LevelsList[gameInfo.levelIdx].levelPath;
+            SpawnScene(levelPath);
+
+
         }
     }
-
+     
     internal static void Init()
     {
         //When this is called all players have completed the Preload function and are sitting staring at a loading screen.
 
         //Use it to slam a bunch of RPCs and other networked stuff before anyone else has a chance to do anything.
-
+        GodSync init = new GodSync();
+        init.controllingPeerID = Lobby.selfPeerID;
+        init.isHuman = true;
+        ulong pid = SpawnScene("res://game/God.tscn",default,default,default,GMPObject.serializer.Serialize(init));
         Lobby.SendToAllAndSelf(Channel.LOBBY_Control, [(byte)LobbyControlCode.DoneLoading]);
         
 
     }
-
 
 }

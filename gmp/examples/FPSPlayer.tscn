@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://3a16lgn3sia6"]
 
-[ext_resource type="Script" path="res://gmp/core/gmpo/GMPOPlayer.cs" id="1_qtduu"]
+[ext_resource type="Script" uid="uid://b1j28ojr167ss" path="res://gmp/core/gmpo/GMPOFPSPlayer.cs" id="1_qtduu"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ug8er"]
 

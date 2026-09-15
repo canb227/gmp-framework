@@ -156,7 +156,7 @@ public partial class RPCManager : Node
             }
             else
             {
-                Logging.Warn($"RPC target not found: NodePath {rpc.NodePath}", "RPCManager");
+                Logging.Warn($"RPC target not found: NodePath {rpc.NodePath} (attempting to run {rpc.MethodName})", "RPCManager");
             }
         }
         else

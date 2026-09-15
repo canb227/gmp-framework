@@ -95,3 +95,16 @@ grow_vertical = 0
 theme_type_variation = &"HeaderLabel"
 text = "v0.1"
 horizontal_alignment = 2
+
+[node name="Label" type="Label" parent="." unique_id=2103829024]
+layout_mode = 0
+offset_left = 27.0
+offset_top = 214.0
+offset_right = 387.0
+offset_bottom = 367.0
+text = "\"~\" for console!
+
+In console:
+\"debugui lobby\" for lobby debug
+\"debugui syncedobjects\" for object sync debug
+\"debugui reset\" to reset windows"

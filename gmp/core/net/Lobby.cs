@@ -1,5 +1,6 @@
 using ENet;
 using Godot;
+using ImGuiNET;
 using Nerdbank.MessagePack;
 using PolyType;
 using System;
@@ -28,9 +29,11 @@ public enum LobbyControlCode : byte
 }
 public partial class Lobby : Node
 {
+
+    public static bool displayLobbyDebugInfo = false;
     public static Lobby instance;
     
-    private static GameInfo gameInfo = new();
+    public static GameInfo gameInfo = new();
     public static ulong hostID = 0;
     public static Network network;
 
@@ -80,6 +83,10 @@ public partial class Lobby : Node
     public double timer = 0;
     public override void _Process(double delta)
     {
+        if (displayLobbyDebugInfo)
+        {
+            renderLobbyDebugInfo();
+        }
         network?.service();
         foreach (var item in outgoingTracker.ToList())
         {
@@ -101,10 +108,24 @@ public partial class Lobby : Node
         timer += delta;
         if (timer>timerMax)
         {
-            Logging.Log($"{selfPeerID}: in: {incomingBandwidth/ (int)timerMax /1000} KB/s | out: {outgoingBandwidth/ (int)timerMax /1000} KB/s", "Lobby");
+         //   Logging.Log($"{selfPeerID}: in: {incomingBandwidth/ (int)timerMax /1000} KB/s | out: {outgoingBandwidth/ (int)timerMax /1000} KB/s", "Lobby");
             timer = 0;
         }
 
+    }
+
+    private void renderLobbyDebugInfo()
+    {
+        ImGui.Begin("debugui lobby");
+        ImGui.Text($"Network mode: {network?.GetType()}");
+        ImGui.Text($"My Peer ID: {Lobby.selfPeerID}");
+        ImGui.Text($"Lobby Host: {hostID} | Lobby Members: {members?.Count}");
+        ImGui.Text($"Bandwidth estimates (1s interval) in: {incomingBandwidth/ (int)timerMax /1000} KB/s | out: {outgoingBandwidth/ (int)timerMax /1000} KB/s");
+        foreach(var member in members)
+        {
+            ImGui.Text($"   Name: {member.Value.Name} | ID: {member.Value.PeerID}");
+        }
+        ImGui.End();
     }
 
     // ---- lifecycle -------------------------------------------------------------
@@ -115,7 +136,7 @@ public partial class Lobby : Node
         selfPeerID = selfID;
         _selfName = selfName;
 
-        net.MessageReceivedEvent += OnMessage;
+        net.MessageReceivedEvent += OnIncomingNetworkMessage;
         net.PeerConnectedEvent += OnPeerConnected;
         net.PeerDisconnectedEvent += OnPeerDisconnected;
 
@@ -142,10 +163,7 @@ public partial class Lobby : Node
         return err;
     }
 
-    // Bind locally and enter joining mode. The actual dial of the host endpoint is a
-    // transport specific (LAN ip:port / Steam lobby id) done by the caller against the
-    // concrete transport; Lobby only needs to know it is a joiner. The host's roster
-    // reply then meshes us with everyone else. The first peer to link is the host.
+
     public static Error StartJoin(Network net, ulong selfID, string selfName)
     {
         isHost = false;
@@ -157,15 +175,12 @@ public partial class Lobby : Node
         return err;
     }
 
-    // Tear down the active lobby and reset all state. Safe to call when idle. The
-    // transport Node itself is owned by (a child of) the leaving UI scene, so freeing
-    // that scene disposes it — here we just close its sessions and drop our references
-    // so the persistent autoload carries no stale state into the next lobby.
+
     public static void LeaveLobby()
     {
         if (network != null)
         {
-            network.MessageReceivedEvent -= OnMessage;
+            network.MessageReceivedEvent -= OnIncomingNetworkMessage;
             network.PeerConnectedEvent -= OnPeerConnected;
             network.PeerDisconnectedEvent -= OnPeerDisconnected;
             network.Disconnect();
@@ -179,7 +194,7 @@ public partial class Lobby : Node
         Logging.Log("left lobby — network and roster state reset", "NetworkSession");
     }
 
-    // ---- transport callbacks ---------------------------------------------------
+
 
     private static void OnPeerConnected(ulong peerID)
     {
@@ -215,27 +230,27 @@ public partial class Lobby : Node
         LobbyMembersChangedEvent?.Invoke();
     }
 
-    private static void OnMessage(ulong from, Channel ch, byte[] msg)
+    private static void OnIncomingNetworkMessage(ulong from, Channel ch, byte[] msg)
     {
         incomingTracker.Add((Time.GetTicksMsec(), msg.Length));
 
         switch (ch)
         {
             case Channel.LOBBY_Roster:
-                OnRoster(from, msg);
+                OnIncomingRosterNetMessage(from, msg);
                 break;
             case Channel.LOBBY_GameInfo:
-                OnGameInfo(from, msg);
+                OnIncomingGameInfoNetMessage(from, msg);
                 break;
             case Channel.LOBBY_Control:
-                LobbyControlDispatch(from, msg);
+                OnIncomingLobbyControlNetMessage(from, msg);
                 break;
             default:
                 break;
         }
     }
 
-    private static void LobbyControlDispatch(ulong from, byte[] msg)
+    private static void OnIncomingLobbyControlNetMessage(ulong from, byte[] msg)
     {
         switch ((LobbyControlCode)msg[0])
         {
@@ -268,7 +283,7 @@ public partial class Lobby : Node
         LobbyDoneLoadingEvent?.Invoke();
     }
 
-    // ---- roster protocol (channel LOBBY_Handshake), peerID-only ----------------
+
 
     private static void OnDonePreloading(ulong from, byte[] data)
     {
@@ -296,7 +311,7 @@ public partial class Lobby : Node
         SendToAllAndSelf(Channel.LOBBY_Control, [(byte)LobbyControlCode.DonePreloading]);
     }  
 
-    private static void OnGameInfo(ulong from, byte[] data)
+    private static void OnIncomingGameInfoNetMessage(ulong from, byte[] data)
     {
         MessagePackSerializer s = new();
         GameInfo gi = s.Deserialize<GameInfo>(data);
@@ -304,7 +319,7 @@ public partial class Lobby : Node
         LobbyGameInfoChangedEvent?.Invoke();
     }
 
-    private static void OnRoster(ulong from, byte[] data)
+    private static void OnIncomingRosterNetMessage(ulong from, byte[] data)
     {
         MessagePackSerializer s = new();
         PlayerInfo[] members =s.Deserialize<PlayerInfo[],Witness>(data);
@@ -320,7 +335,7 @@ public partial class Lobby : Node
 
     public static void SendStartGame()
     {
-        gameInfo.LevelPath = "res://gmp/examples/SyncedLevel.tscn";
+        //gameInfo.Level = GameResources.LevelsList[0];
         Logging.Log($"Host is starting the game", "Lobby");
         SendGameInfoUpdate();
         instance.GetTree().CreateTimer(1f).Connect("timeout", Callable.From(() =>
@@ -330,7 +345,7 @@ public partial class Lobby : Node
 
     }
 
-    private static void SendGameInfoUpdate()
+    public static void SendGameInfoUpdate()
     {
         if (network == null)
             return;

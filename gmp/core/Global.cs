@@ -1,6 +1,7 @@
 using Godot;
 using Steamworks;
 using System;
+using System.Runtime.InteropServices;
 
 public partial class Global : Node
 {
@@ -19,6 +20,7 @@ public partial class Global : Node
             case "Windows":
                 break;
             case "Linux":
+                RegisterSteamApiResolver();
                 break;
             default:
                 break;
@@ -96,5 +98,19 @@ public partial class Global : Node
 
 
         return true;
+    }
+
+    private void RegisterSteamApiResolver()
+    {
+        NativeLibrary.SetDllImportResolver(typeof(SteamAPI).Assembly, (libraryName, assembly, searchPath) =>
+        {
+            if (libraryName == "steam_api" || libraryName == "libsteam_api")
+            {
+                var path = ProjectSettings.GlobalizePath("res://lib/linux/libsteam_api.so");
+                return NativeLibrary.Load(path);
+            }
+
+            return IntPtr.Zero;
+        });
     }
 }

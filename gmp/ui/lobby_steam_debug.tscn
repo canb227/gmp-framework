@@ -1,10 +1,11 @@
-[gd_scene format=3 uid="uid://cg20xdka737fs"]
+[gd_scene format=3 uid="uid://6dovow4037l0"]
 
 [ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://gmp/ui/theme/menu_theme.tres" id="1_obikm"]
 [ext_resource type="Texture2D" uid="uid://bmckesaf77x8c" path="res://gmp/ui/theme/bg_gradient.tres" id="2_m06ut"]
-[ext_resource type="Script" uid="uid://ff8rxl23212h" path="res://gmp/ui/LobbySteamDebug.cs" id="2_qsy4g"]
+[ext_resource type="Script" uid="uid://bptl0ywrqcw21" path="res://gmp/ui/LobbyDebug.cs" id="2_qsy4g"]
 
 [node name="LobbySteamDebug" type="Control" unique_id=57453499]
+process_mode = 3
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -380,6 +381,7 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="StartGameButton" type="Button" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=1520338131]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_type_variation = &"PrimaryButton"
