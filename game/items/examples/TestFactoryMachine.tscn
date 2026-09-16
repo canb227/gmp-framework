@@ -1,8 +1,0 @@
-[gd_scene format=3 uid="uid://dto6t0orsn50v"]
-
-[ext_resource type="Script" uid="uid://c2rc3gtqjnuyn" path="res://game/items/examples/TestFactoryMachine.cs" id="1_y6at7"]
-
-[node name="TestFactoryMachine" type="Box3DBody" unique_id=1181618732]
-body_type = 0
-shape_type = 6
-script = ExtResource("1_y6at7")

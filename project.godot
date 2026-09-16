@@ -122,7 +122,7 @@ inventory={
 
 3d/run_on_separate_thread=true
 common/physics_jitter_fix=0.0
-3d/physics_engine="Jolt Physics"
+3d/physics_engine="Dummy"
 common/physics_interpolation=true
 
 [rendering]

@@ -4,10 +4,9 @@
 
 [sub_resource type="SphereMesh" id="SphereMesh_b6cd3"]
 
-[node name="TestFactoryCube" type="Box3DBody" unique_id=551866047 node_paths=PackedStringArray("inWorldMesh")]
+[node name="TestFactorySphere" type="Box3DBody" unique_id=551866047]
 shape_type = 7
 script = ExtResource("1_0hjwg")
-inWorldMesh = NodePath("inWorldMesh")
 itemID = "test_inert_sphere"
 displayName = "Test Inert Sphere"
 description = "its a sphere"

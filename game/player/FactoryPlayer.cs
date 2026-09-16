@@ -13,7 +13,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     float gravityMagnitude = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
     Vector3 gravityDirection = ProjectSettings.GetSetting("physics/3d/default_gravity_vector").AsVector3();
     Vector3 gravity;
-
+    public Vector3 cachedVel;
     public const float Speed = 5.0f;
     public Vector3 JumpVector = new Vector3(0, 5, 0);
     const float MouseSensitivity = 0.002f;
@@ -81,7 +81,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
         if (Lobby.selfPeerID != authority)
         {
-
+            Call("move_and_slide", [Velocity, delta]);
             return;
         }
 
@@ -114,7 +114,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             Velocity.X = Mathf.MoveToward(Velocity.X, 0, Speed);
             Velocity.Z = Mathf.MoveToward(Velocity.Z, 0, Speed);
         }
-
+        cachedVel = Velocity;
         Velocity = Call("move_and_slide", [Velocity, delta]).AsVector3();
 
 
@@ -153,6 +153,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             pos = this.Position,
             rot = this.Rotation,
             headRot = this.camera.Rotation,
+            vel= this.cachedVel,
         };
         return GMPObject.serializer.Serialize(msg);
     }
@@ -166,6 +167,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         Position = msg.pos;
         Rotation = msg.rot;
         camera.Rotation = msg.headRot;
+        this.Velocity = msg.vel;
     }
 
 
@@ -184,4 +186,5 @@ public partial record struct PlayerSync
     public string[] hotbarItems;
     public string[] gridItems;
     public int equippedSlot;
+    public Vector3 vel;
 }

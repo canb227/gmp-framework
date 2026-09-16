@@ -77,9 +77,9 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     public virtual void ApplyStateUpdate(byte[] update)
     {
         desiredState = update;
-        //BasicSyncMessage desiredStateData = GMPObject.serializer.Deserialize<BasicSyncMessage>(desiredState);
-
-        //  GD.Print(desiredStateData.pos);
+       // BasicSyncMessage desiredStateData = GMPObject.serializer.Deserialize<BasicSyncMessage>(desiredState);
+//
+       //   GD.Print(desiredStateData.pos);
 
 
     }
@@ -101,10 +101,10 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
             if (desiredState != null && desiredState.Length > 0)
             {
                 BasicSyncMessage desiredStateData = GMPObject.serializer.Deserialize<BasicSyncMessage>(desiredState);
-                Call("teleport", [new Transform3D(Basis.FromEuler(this.Rotation.Lerp(desiredStateData.rot, (float)(10*delta))), this.Rotation.Lerp(desiredStateData.rot, (float)(10*delta)))]);
+               // Call("teleport", [new Transform3D(Basis.FromEuler(this.Rotation.Lerp(desiredStateData.rot, (float)(10*delta))), this.Rotation.Lerp(desiredStateData.rot, (float)(10*delta)))]);
                 // GD.Print(desiredStateData.pos);
-                //this.Position = this.Rotation.Lerp(desiredStateData.rot, (float)(10 * delta)));
-               // this.Rotation = this.Rotation.Lerp(desiredStateData.rot, (float)(10*delta));
+                this.Position = this.Position.Lerp(desiredStateData.pos, (float)(10 * delta));
+                this.Rotation = this.Rotation.Lerp(desiredStateData.rot, (float)(10*delta));
             }
         }
         else
@@ -119,7 +119,7 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     }
     public override void _Ready()
     {
-
+        base._Ready();
         
     }
 }
