@@ -1,0 +1,17 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://b1yy2fm7bey04"]
+
+[ext_resource type="Texture2D" uid="uid://cycoi8ynxgl5s" path="res://assets/textures/floor_carpet_1/floor_carpet_1_diffuseOriginal.png" id="1_j6pjd"]
+[ext_resource type="Texture2D" uid="uid://dlqlunkp0u6jq" path="res://assets/textures/floor_carpet_1/floor_carpet_1_ao.png" id="2_d377d"]
+[ext_resource type="Texture2D" uid="uid://dl7iq2xra64mn" path="res://assets/textures/floor_carpet_1/floor_carpet_1_normal.png" id="3_yfwgc"]
+[ext_resource type="Texture2D" uid="uid://coxthkc4fc13b" path="res://assets/textures/floor_carpet_1/floor_carpet_1_smoothness.png" id="4_72w41"]
+
+[resource]
+albedo_texture = ExtResource("1_j6pjd")
+metallic_specular = 0.0
+roughness_texture = ExtResource("4_72w41")
+roughness_texture_channel = 4
+normal_enabled = true
+normal_texture = ExtResource("3_yfwgc")
+ao_enabled = true
+ao_texture = ExtResource("2_d377d")
+ao_texture_channel = 4

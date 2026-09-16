@@ -1,0 +1,13 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://kv3owg0reo0h"]
+
+[ext_resource type="Texture2D" uid="uid://dudbcdb7ex0qv" path="res://assets/textures/wall_white_brick/wall_white_brick_diffuseOriginal.png" id="1_80n0f"]
+[ext_resource type="Texture2D" uid="uid://dai3p48chnvni" path="res://assets/textures/wall_white_brick/wall_white_brick_normal.png" id="2_rky0f"]
+[ext_resource type="Texture2D" uid="uid://bnemfwnp757d1" path="res://assets/textures/wall_white_brick/wall_white_brick_smoothness.png" id="3_5xkpx"]
+
+[resource]
+albedo_texture = ExtResource("1_80n0f")
+metallic_specular = 0.01
+roughness_texture = ExtResource("3_5xkpx")
+normal_enabled = true
+normal_texture = ExtResource("2_rky0f")
+uv1_scale = Vector3(1.72, 1.72, 1.72)
