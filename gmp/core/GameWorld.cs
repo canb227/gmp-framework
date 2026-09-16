@@ -41,7 +41,6 @@ public partial class GameWorld : Node3D
     private static ulong mostRecentInboundTick;
     private static bool started = false;
     public static ulong tickNum = 0;
-    public static GMPOBox3DWorld b3dworld;
     public static bool displaySyncedObjectDebugInfo = false;
 
     public override void _Process(double delta)
@@ -66,14 +65,24 @@ public partial class GameWorld : Node3D
         Lobby.ConnectedToHostEvent += Instance_ConnectedToHostEvent;
         Lobby.LobbyDoneLoadingEvent += Instance_LobbyDoneLoadingEvent;
         Lobby.LobbyDonePreloadingEvent += Instance_LobbyDonePreloadingEvent;
-        GetTree().Paused = true; 
+        GetTree().Paused = true;
+        Logging.Log($"Atempting b3d init: {ClassDB.ClassExists("Box3DWorld")}", "GameWorld");
         if (ClassDB.ClassExists("Box3DWorld"))
         {
             
             b3droot = ClassDB.Instantiate("Box3DWorld").As<Node3D>();
+            AddChild(b3droot);  
         }
     }
+    public Godot.Collections.Dictionary<string, Variant> Raycast(Vector3 from, Vector3 to)
+    {
+        return b3droot.Call("raycast", [from, to]).AsGodotDictionary<string, Variant>();
+    }
 
+    public Godot.Collections.Array<Node> OverlapSphere(Vector3 center, float radius, int collisionMask = -1, int collisionLayer = -1)
+    {
+        return b3droot.Call("overlap_sphere", [center, radius, collisionMask, collisionLayer]).AsGodotArray<Node>();
+    }
     private static void Instance_LobbyDonePreloadingEvent()
     {
         Init();
@@ -200,30 +209,14 @@ public partial class GameWorld : Node3D
     private void _SpawnInternal(Node node, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null)
     {
         node.Name = node.GetType().ToString() + initData.id.ToString();
-        if (node is GMPOBox3DWorld world)
-        {
-            if (b3dworld != null)
-            {
-                Logging.Error("Multiple B3DWorlds dectected. Not supported.", "GameWorld");
-                return;
-            }
-            else
-            {
-                Logging.Log("B3DWorld ID'ed and registered.", "GameWorld");
-                b3dworld = world;
-                AddChild(world);
-            }
 
-        }
-        else
-        {
-            if (b3dworld == null)
+            if (b3droot == null)
             {
-                Logging.Error("attempted to spawn b3dbody with no b3dworld!", "GameWorld");
+                Logging.Error("attempted to spawn b3dbody with no b3droot!", "GameWorld");
             }
             else
             {
-                b3dworld.AddChild(node);
+                b3droot.AddChild(node);
                 if (node is GMPOBox3DBody box)
                 {
                     box.Call("teleport", [new Transform3D(Basis.FromEuler(rotation), position)]);
@@ -236,7 +229,7 @@ public partial class GameWorld : Node3D
 
                 }
 
-            }
+            
         }
 
 
