@@ -2,12 +2,9 @@ using Godot;
 using Godot.Collections;
 using PolyType;
 using System;
-using System.Reflection.Metadata;
-using static Godot.OpenXRInterface;
 
 public partial class FactoryPlayer : GMPOBox3DCharacter
 {
-
     public int team;
     public bool isHuman;
     public ulong controllingPeerID;
@@ -19,31 +16,31 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     public Vector3 JumpVector = new Vector3(0, 5, 0);
     const float MouseSensitivity = 0.002f;
 
+    public Inventory inventory = new();
+
     Vector3 Velocity = Vector3.Zero;
 
-    [Export]
-    Camera3D camera;
-
-    [Export]
-    Node3D head;
-
-    [Export]
-    Node3D body;
+    [Export] Camera3D camera;
+    [Export] Node3D head;
+    [Export] Node3D body;
+    [Export] Node3D itemHolder;
 
     Label3D playerNameLabel;
+    public bool inventoryOpen = false;
 
-    bool inventoryOpen = false;
-
-    [Export]
-    public float pickRange = 10f;
+    [Export] public float pickRange = 10f;
     public Object pickTarget;
     public Control hud;
+
+    Node3D currentInHandInstance;
+    int previousHotbarSlot = -1;
+
     public override void _Ready()
     {
-
         base._Ready();
         gravity = gravityDirection * gravityMagnitude;
         camera = GetNode<Camera3D>("Camera3D");
+        itemHolder = camera.GetNode<Node3D>("ItemHolder");
         hud = GetNode<Control>("PlayerHUD");
     }
 
@@ -58,21 +55,16 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
         if (@event is InputEventKey key && key.Pressed)
         {
-
             if (key.Keycode == Key.Escape)
             {
-                if (hud.GetNode<Control>("InventoryScreen").Visible)
+                if (inventoryOpen)
                 {
-                    hud.GetNode<Control>("InventoryScreen").Hide();
-                    Input.MouseMode = Input.MouseModeEnum.Captured;
+                    CloseInventory();
                     return;
                 }
                 Input.MouseMode = Input.MouseModeEnum.Visible;
             }
-
         }
-
-
 
         if (@event is InputEventMouseMotion motion && Input.MouseMode == Input.MouseModeEnum.Captured)
         {
@@ -85,6 +77,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             );
         }
 
+        // Item pickup
         if (@event.IsActionPressed("interact"))
         {
             if (pickTarget != null && pickTarget is PhysicalFactoryItem item)
@@ -93,32 +86,115 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
                 if (item.canBePickedUp)
                 {
                     InventoryItem ii = ResourceLoader.Load<InventoryItem>(GameResources.Items[item.itemID].inventoryItemPath);
-                    //GameWorld.Delete(pickTarget)
+                    int leftover = inventory.AddItem(ii, 1);
+                    if (leftover == 0)
+                    {
+                        GameWorld.DespawnObject(item.id);
+                    }
                 }
             }
-            else if(pickTarget != null && pickTarget is BasicButton button)
-            {
-                Logging.Log($"You just pressed interact on {button.Name}!", "Player");
-                button.OnPressed();
-            }
-            
         }
 
+        // Inventory toggle
         if (@event.IsActionPressed("inventory"))
         {
-            if (hud.GetNode<Control>("InventoryScreen").Visible)
-            {
-                hud.GetNode<Control>("InventoryScreen").Hide();
-                Input.MouseMode = Input.MouseModeEnum.Captured;
-            }
+            if (inventoryOpen)
+                CloseInventory();
             else
-            {
-                hud.GetNode<Control>("InventoryScreen").Show();
-                Input.MouseMode = Input.MouseModeEnum.Visible;
-            }
-
-
+                OpenInventory();
         }
+
+        // Hotbar slot selection via number keys
+        for (int i = 1; i <= 9; i++)
+        {
+            if (@event.IsActionPressed($"slot{i}"))
+            {
+                inventory.ActiveHotbarSlot = i - 1;
+                UpdateEquippedItem();
+            }
+        }
+        if (@event.IsActionPressed("slot0"))
+        {
+            inventory.ActiveHotbarSlot = 9;
+            UpdateEquippedItem();
+        }
+
+        // Scroll wheel hotbar cycling
+        if (@event is InputEventMouseButton scroll && scroll.Pressed && !inventoryOpen)
+        {
+            if (scroll.ButtonIndex == MouseButton.WheelDown)
+            {
+                inventory.ActiveHotbarSlot = (inventory.ActiveHotbarSlot + 1) % Inventory.HotbarSlots;
+                UpdateEquippedItem();
+            }
+            else if (scroll.ButtonIndex == MouseButton.WheelUp)
+            {
+                inventory.ActiveHotbarSlot = (inventory.ActiveHotbarSlot - 1 + Inventory.HotbarSlots) % Inventory.HotbarSlots;
+                UpdateEquippedItem();
+            }
+        }
+
+        // Drop item (Q) — drop 1 from active hotbar slot
+        if (@event.IsActionPressed("drop"))
+        {
+            DropFromActiveSlot(1);
+        }
+    }
+
+    void OpenInventory()
+    {
+        inventoryOpen = true;
+        hud.GetNode<Control>("InventoryScreen").Show();
+        Input.MouseMode = Input.MouseModeEnum.Visible;
+    }
+
+    void CloseInventory()
+    {
+        inventoryOpen = false;
+        hud.GetNode<Control>("InventoryScreen").Hide();
+        Input.MouseMode = Input.MouseModeEnum.Captured;
+    }
+
+    public void UpdateEquippedItem()
+    {
+        if (currentInHandInstance != null)
+        {
+            currentInHandInstance.QueueFree();
+            currentInHandInstance = null;
+        }
+
+        InventoryItem equipped = inventory.GetEquippedItem();
+        if (equipped?.inHandScene != null)
+        {
+            currentInHandInstance = equipped.inHandScene.Instantiate<Node3D>();
+            itemHolder.AddChild(currentInHandInstance);
+        }
+
+        previousHotbarSlot = inventory.ActiveHotbarSlot;
+    }
+
+    public void DropFromActiveSlot(int count)
+    {
+        var slot = inventory.GetSlot(inventory.ActiveHotbarSlot);
+        if (slot.IsEmpty) return;
+        if (slot.Item.droppedScene == null) return;
+
+        int toDrop = Math.Min(count, slot.Count);
+        Vector3 dropPos = camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * 2f;
+        Vector3 dropRot = GlobalRotation;
+
+        for (int i = 0; i < toDrop; i++)
+        {
+            Vector3 offset = new Vector3(
+                (float)(Random.Shared.NextDouble() - 0.5) * 0.5f,
+                0,
+                (float)(Random.Shared.NextDouble() - 0.5) * 0.5f
+            );
+            GameWorld.SpawnScene(slot.Item.droppedScene.ResourcePath, dropPos + offset, dropRot);
+        }
+
+        inventory.RemoveFromSlot(inventory.ActiveHotbarSlot, toDrop);
+        UpdateEquippedItem();
     }
 
     public override void _PhysicsProcess(double delta)
@@ -129,7 +205,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             return;
         }
 
-        Dictionary<string,Variant> ray = GameWorld.Raycast(camera.GlobalPosition, camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * pickRange);
+        Dictionary<string, Variant> ray = GameWorld.Raycast(camera.GlobalPosition, camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * pickRange);
         if (ray["hit"].AsBool())
         {
             Node hit = (Node)ray["collider"].AsGodotObject();
@@ -148,7 +224,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
                     hud.GetNode<Label>("%HoverInfoBelow").Hide();
                 }
             }
-            else if(hit is BasicButton button)
+            else if (hit is BasicButton button)
             {
                 pickTarget = button;
                 hud.GetNode<Label>("%HoverInfoBelow").Show();
@@ -168,12 +244,6 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             hud.GetNode<Label>("%HoverInfoBelow").Hide();
         }
 
-
-
-
-
-      
-
         if (!IsOnFloor())
         {
             Velocity += gravity * (float)delta;
@@ -185,7 +255,6 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
                 Velocity = Velocity + JumpVector;
             }
         }
-
 
         Vector2 inputDir = Input.GetVector("left", "right", "forward", "backward");
         Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
@@ -201,10 +270,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         }
         cachedVel = Velocity;
         Velocity = Call("move_and_slide", [Velocity, delta]).AsVector3();
-
-
     }
-
 
     public override void AfterInit()
     {
@@ -217,17 +283,12 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             playerNameLabel.Hide();
             body.Hide();
             head.Hide();
-
-
         }
         else
         {
             camera.Current = false;
         }
     }
-
-
-
 
     public override byte[] GenerateStateUpdate()
     {
@@ -238,7 +299,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             pos = this.Position,
             rot = this.Rotation,
             headRot = this.camera.Rotation,
-            vel= this.cachedVel,
+            vel = this.cachedVel,
         };
         return GMPObject.serializer.Serialize(msg);
     }
@@ -254,10 +315,6 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         camera.Rotation = msg.headRot;
         this.Velocity = msg.vel;
     }
-
-
-
-
 }
 
 [GenerateShape]
