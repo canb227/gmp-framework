@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://pkwdmuwpvbbu"]
+
+[ext_resource type="PackedScene" uid="uid://c5cg2nqrg54kc" path="res://game/assets/model_scenes/conveyor_straight.tscn" id="1_yl17n"]
+[ext_resource type="Texture2D" uid="uid://cs88p3lg7qps3" path="res://game/assets/textures/hazardstrip.webp" id="2_06d18"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pet1e"]
+albedo_texture = ExtResource("2_06d18")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_pet1e"]
+material = SubResource("StandardMaterial3D_pet1e")
+size = Vector2(1.5, 2)
+
+[node name="Node3D" type="Node3D" unique_id=224046845]
+
+[node name="conveyor_straight2" parent="." unique_id=145057803 instance=ExtResource("1_yl17n")]
+
+[node name="Belt" type="Box3DBody" parent="." unique_id=1918380525]
+body_type = 0
+tangent_velocity = Vector3(0, 0, 1)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Belt" unique_id=766214737]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+mesh = SubResource("PlaneMesh_pet1e")

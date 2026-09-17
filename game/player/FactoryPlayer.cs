@@ -36,7 +36,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
     [Export]
     public float pickRange = 10f;
-    public PhysicalFactoryItem pickTarget;
+    public Object pickTarget;
     public Control hud;
     public override void _Ready()
     {
@@ -87,14 +87,19 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
         if (@event.IsActionPressed("interact"))
         {
-            if (pickTarget != null)
+            if (pickTarget != null && pickTarget is PhysicalFactoryItem item)
             {
-                Logging.Log($"You just pressed interact on {pickTarget.Name}!", "Player");
-                if (pickTarget.canBePickedUp)
+                Logging.Log($"You just pressed interact on {item.Name}!", "Player");
+                if (item.canBePickedUp)
                 {
-                    InventoryItem ii = ResourceLoader.Load<InventoryItem>(GameResources.Items[pickTarget.itemID].inventoryItemPath);
+                    InventoryItem ii = ResourceLoader.Load<InventoryItem>(GameResources.Items[item.itemID].inventoryItemPath);
                     //GameWorld.Delete(pickTarget)
                 }
+            }
+            else if(pickTarget != null && pickTarget is BasicButton button)
+            {
+                Logging.Log($"You just pressed interact on {button.Name}!", "Player");
+                button.OnPressed();
             }
             
         }
@@ -142,6 +147,12 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
                 {
                     hud.GetNode<Label>("%HoverInfoBelow").Hide();
                 }
+            }
+            else if(hit is BasicButton button)
+            {
+                pickTarget = button;
+                hud.GetNode<Label>("%HoverInfoBelow").Show();
+                hud.GetNode<Label>("%HoverInfoBelow").Text = "Press F to Activate.";
             }
             else
             {

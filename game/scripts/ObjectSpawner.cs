@@ -5,10 +5,11 @@ using System.Linq;
 
 public partial class ObjectSpawner : Node3D
 {
-    [Export] public Godot.Collections.Array<PackedScene> spawnObjects;
     [Export] public float spawnRate = 0.1f;
+    [Export] public bool oneShot = false;
+    [Export] public Godot.Collections.Array<PackedScene> spawnObjects;
     private List<PackedScene> spawnObjectsList;
-    public bool startSpawning = false;
+    public bool spawning = false;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -20,12 +21,16 @@ public partial class ObjectSpawner : Node3D
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
-        if(startSpawning)
+        if(spawning)
         {
             deltaTotal += delta;
             if(deltaTotal > spawnRate)
             {
                 SpawnRandomObject();
+                if(oneShot)
+                {
+                    spawning = false;
+                }
                 deltaTotal = 0.0;
             }
         }

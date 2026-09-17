@@ -5,8 +5,11 @@ using System.Linq;
 
 public partial class BasicButton : Node3D
 {
+    [Export] public string displayName;
+    [Export] public AnimationPlayer animator;
     [Export] public Godot.Collections.Array<ObjectSpawner> targetObjectSpawner;
     private List<ObjectSpawner> targetSpawnerList;
+    
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -22,7 +25,8 @@ public partial class BasicButton : Node3D
     {
         foreach(ObjectSpawner spawner in targetSpawnerList)
         {
-            spawner.startSpawning = !spawner.startSpawning;
+            animator.Play("button_press");
+            spawner.spawning = !spawner.spawning;
         }
     }
 }

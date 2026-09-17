@@ -11,11 +11,13 @@
 [ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="8_5negq"]
 [ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/SkyDome.gd" id="9_vmujb"]
 [ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="10_8o1nu"]
-[ext_resource type="PackedScene" uid="uid://b7a3etxh7wq5c" path="res://game/items/examples/TestFactorySphere.tscn" id="12_laxwr"]
+[ext_resource type="PackedScene" uid="uid://b7a3etxh7wq5c" path="res://game/items/examples/test_inert_sphere_world.tscn" id="12_laxwr"]
+[ext_resource type="PackedScene" uid="uid://bsdttlf7ektg" path="res://game/items/examples/test_inert_cube_world.tscn" id="13_3rl5m"]
 [ext_resource type="Script" uid="uid://buq3xkquc7nsd" path="res://game/scripts/ObjectSpawner.cs" id="14_75n5a"]
 [ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="14_aqpx8"]
 [ext_resource type="Texture2D" uid="uid://c8knlhvemp8jf" path="res://game/assets/textures/grass_1/grass_ao.png" id="15_2usgl"]
 [ext_resource type="Script" uid="uid://cthpe3o2ur5ir" path="res://game/scripts/BasicButton.cs" id="15_aqpx8"]
+[ext_resource type="PackedScene" uid="uid://pkwdmuwpvbbu" path="res://game/items/factoryMachines/ConveyorBelt.tscn" id="18_dudsn"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
 material = ExtResource("1_2usgl")
@@ -74,8 +76,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.8259501, 0.8259501)
-shader_parameter/cirrus_position2 = Vector2(0.8259501, 0.8259501)
+shader_parameter/cirrus_position1 = Vector2(0.05452699, 0.05452699)
+shader_parameter/cirrus_position2 = Vector2(0.05452699, 0.05452699)
 shader_parameter/cirrus_texture = ExtResource("2_2usgl")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -85,7 +87,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(14.153926, 14.153926)
+shader_parameter/cumulus_position = Vector2(15.301715, 15.301715)
 shader_parameter/cumulus_texture = ExtResource("3_aqpx8")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -120,14 +122,65 @@ size = Vector3(15.959473, 2.826294, 1)
 
 [sub_resource type="PrismMesh" id="PrismMesh_c5vbb"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tt1o4"]
-albedo_color = Color(0.4392157, 0.3372549, 0.3764706, 1)
-metallic_specular = 1.0
-roughness = 0.0
+[sub_resource type="Animation" id="Animation_3rl5m"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:enabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
 
-[sub_resource type="BoxMesh" id="BoxMesh_c5vbb"]
-material = SubResource("StandardMaterial3D_tt1o4")
-size = Vector3(0.5, 1.5, 0.5)
+[sub_resource type="Animation" id="Animation_dudsn"]
+resource_name = "button_press"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.76666665, 1),
+"transitions": PackedFloat32Array(0.08537787, 0.96593666, 0.96593666, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, -0.2354753, 0), Vector3(0, -0.2354753, 0), Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:enabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ju7n5"]
+_data = {
+&"RESET": SubResource("Animation_3rl5m"),
+&"button_press": SubResource("Animation_dudsn")
+}
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vchc8"]
 albedo_color = Color(1.4954206, 0, 0.26787823, 1)
@@ -140,6 +193,15 @@ uv1_scale = Vector3(2, 2, 2)
 material = SubResource("StandardMaterial3D_vchc8")
 radius = 0.1
 height = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tt1o4"]
+albedo_color = Color(0.4392157, 0.3372549, 0.3764706, 1)
+metallic_specular = 1.0
+roughness = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_c5vbb"]
+material = SubResource("StandardMaterial3D_tt1o4")
+size = Vector3(0.5, 1.5, 0.5)
 
 [node name="FactoryGameTest" type="Node3D" unique_id=653852535]
 
@@ -205,23 +267,27 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.99035
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay1/Wall2" unique_id=1774329645]
 mesh = SubResource("BoxMesh_pet1e")
 
-[node name="ObjectDisplay2" type="Node3D" parent="." unique_id=1563058551]
+[node name="ObjectDisplayShapes" type="Node3D" parent="." unique_id=1563058551]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, -17.115532)
 
-[node name="Wall" type="Box3DBody" parent="ObjectDisplay2" unique_id=1255271046]
+[node name="test_inert_cube_world" parent="ObjectDisplayShapes" unique_id=551866047 instance=ExtResource("13_3rl5m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09132004, 0.6438818, 0.51044846)
+canBePickedUp = false
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplayShapes" unique_id=1255271046]
 body_type = 0
 box_size = Vector3(15.935, 2.845, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay2/Wall" unique_id=935209143]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplayShapes/Wall" unique_id=935209143]
 mesh = SubResource("BoxMesh_pet1e")
 
-[node name="Wall2" type="Box3DBody" parent="ObjectDisplay2" unique_id=240423440]
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplayShapes" unique_id=240423440]
 body_type = 0
 box_size = Vector3(15.935, 2.845, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay2/Wall2" unique_id=204894582]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplayShapes/Wall2" unique_id=204894582]
 mesh = SubResource("BoxMesh_pet1e")
 
 [node name="ObjectSpawnerDisplay" type="Node3D" parent="." unique_id=963253489]
@@ -252,29 +318,43 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.99035
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/Wall2" unique_id=1328351154]
 mesh = SubResource("BoxMesh_pet1e")
 
-[node name="Button" type="Node3D" parent="ObjectSpawnerDisplay" unique_id=1404761820]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8255463, 0, 5.36835)
-script = ExtResource("15_aqpx8")
+[node name="Node3D" type="Node3D" parent="ObjectSpawnerDisplay" unique_id=2106932011]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8255463, 1.6260744, 5.36835)
 
-[node name="ButtonBody" type="Box3DBody" parent="ObjectSpawnerDisplay/Button" unique_id=235472092]
-body_type = 0
-box_size = Vector3(0.5, 1.5, 0.5)
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7497097, 0)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/Button/ButtonBody" unique_id=979029047]
-mesh = SubResource("BoxMesh_c5vbb")
-
-[node name="ButtonTarget" type="Box3DBody" parent="ObjectSpawnerDisplay/Button" unique_id=158277334]
+[node name="Button" type="Box3DBody" parent="ObjectSpawnerDisplay/Node3D" unique_id=158277334 node_paths=PackedStringArray("animator", "targetObjectSpawner")]
 body_type = 0
 shape_type = 1
-sphere_radius = 0.09999999999999999
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6260744, 0)
+sphere_radius = 0.1
+script = ExtResource("15_aqpx8")
+displayName = "Button"
+animator = NodePath("AnimationPlayer")
+targetObjectSpawner = [NodePath("../../ObjectSpawner")]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/Button/ButtonTarget" unique_id=1624424765]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="ObjectSpawnerDisplay/Node3D/Button" unique_id=1650227249]
+libraries/ = SubResource("AnimationLibrary_ju7n5")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/Node3D/Button" unique_id=1624424765]
 mesh = SubResource("SphereMesh_c5vbb")
+
+[node name="ButtonBody" type="Box3DBody" parent="ObjectSpawnerDisplay/Node3D" unique_id=235472092]
+body_type = 0
+box_size = Vector3(0.5, 1.5, 0.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8763647, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/Node3D/ButtonBody" unique_id=979029047]
+mesh = SubResource("BoxMesh_c5vbb")
 
 [node name="ObjectDisplay4" type="Node3D" parent="." unique_id=2046489377]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, 17.736538)
+
+[node name="Node3D" parent="ObjectDisplay4" unique_id=224046845 instance=ExtResource("18_dudsn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4268366, -18.11671)
+
+[node name="Node3D2" parent="ObjectDisplay4" unique_id=2101965718 instance=ExtResource("18_dudsn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0351915, 0.4268366, -18.11671)
+
+[node name="Node3D3" parent="ObjectDisplay4" unique_id=1003430668 instance=ExtResource("18_dudsn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0849857, 0.4268366, -18.11671)
 
 [node name="Wall" type="Box3DBody" parent="ObjectDisplay4" unique_id=963976380]
 body_type = 0
