@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://cxiq4obo4sdmv"]
 
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/items/PhysicalFactoryItem.cs" id="1_33uh8"]
 [ext_resource type="Shader" uid="uid://cvd0x7lon1ur6" path="res://addons/sky_3d/shaders/SkyMaterial.gdshader" id="1_qhmkb"]
 [ext_resource type="Texture2D" uid="uid://cfqk60lpl5ljv" path="res://addons/sky_3d/assets/resources/SNoise.tres" id="2_8r3l4"]
 [ext_resource type="Texture2D" uid="uid://cecwdqjol0ckd" path="res://addons/sky_3d/assets/textures/noiseClouds.png" id="3_33uh8"]
@@ -10,11 +11,7 @@
 [ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="8_4nlxf"]
 [ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/SkyDome.gd" id="9_63jg2"]
 [ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="10_xnt1d"]
-[ext_resource type="PackedScene" uid="uid://bsdttlf7ektg" path="res://game/items/examples/TestFactoryCube.tscn" id="12_ey75n"]
-[ext_resource type="PackedScene" uid="uid://b7a3etxh7wq5c" path="res://game/items/examples/TestFactorySphere.tscn" id="13_63x70"]
-[ext_resource type="PackedScene" uid="uid://c0q5k5hvitbc0" path="res://game/items/examples/TestFactoryTool.tscn" id="14_4nlxf"]
-[ext_resource type="PackedScene" uid="uid://dto6t0orsn50v" path="res://game/items/examples/TestFactoryMachine.tscn" id="15_63jg2"]
-[ext_resource type="PackedScene" uid="uid://cnepf4qmdksw8" path="res://gmp/examples/GMPBox3DSphere.tscn" id="16_63x70"]
+[ext_resource type="PackedScene" uid="uid://bsdttlf7ektg" path="res://game/items/examples/test_inert_cube_world.tscn" id="12_ey75n"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
 size = Vector3(60.7956, 1, 51.42694)
@@ -72,8 +69,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.7547549, 0.7547549)
-shader_parameter/cirrus_position2 = Vector2(0.7547549, 0.7547549)
+shader_parameter/cirrus_position1 = Vector2(0.46599388, 0.46599388)
+shader_parameter/cirrus_position2 = Vector2(0.46599388, 0.46599388)
 shader_parameter/cirrus_texture = ExtResource("2_8r3l4")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -83,7 +80,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(3.7741191, 3.7741191)
+shader_parameter/cumulus_position = Vector2(2.329798, 2.329798)
 shader_parameter/cumulus_texture = ExtResource("3_33uh8")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -111,11 +108,14 @@ tonemap_white = 6.0
 
 [node name="FactoryGameTest" type="Node3D" unique_id=653852535]
 
-[node name="Box3DBody" type="Box3DBody" parent="." unique_id=29392313]
+[node name="floor" type="Box3DBody" parent="." unique_id=29392313]
 body_type = 0
 shape_type = 6
+script = ExtResource("1_33uh8")
+itemID = "floor"
+tags = Array[int]([0])
 
-[node name="m" type="MeshInstance3D" parent="Box3DBody" unique_id=1287053028]
+[node name="m" type="MeshInstance3D" parent="floor" unique_id=1287053028]
 mesh = SubResource("BoxMesh_7qi08")
 
 [node name="Sky3D" type="WorldEnvironment" parent="." unique_id=1329869569]
@@ -153,17 +153,23 @@ dome_path = NodePath("../SkyDome")
 current_time = 10.6
 day = 7
 
-[node name="TestFactoryCube" parent="." unique_id=551866047 instance=ExtResource("12_ey75n")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.837083, 4.281475, 4.616984)
+[node name="test_inert_cube_world" parent="." unique_id=551866047 instance=ExtResource("12_ey75n")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.3370056, 8.918341, -11.739068)
 
-[node name="TestFactoryCube2" parent="." unique_id=1083381408 instance=ExtResource("13_63x70")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.000031, 6.33894, 4.024764)
+[node name="test_inert_cube_world2" parent="." unique_id=1951208556 instance=ExtResource("12_ey75n")]
+body_type = 0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.447678, 7.6117916, -27.2814)
 
-[node name="TestFactoryTool" parent="." unique_id=2048155937 instance=ExtResource("14_4nlxf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.877299, 6.3964996, 1.2338064)
+[node name="floor2" type="Box3DBody" parent="." unique_id=2096630988]
+body_type = 0
+shape_type = 6
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15.005493, 0)
+script = ExtResource("1_33uh8")
 
-[node name="TestFactoryMachine" parent="." unique_id=552511168 instance=ExtResource("15_63jg2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.124365, 5.2659216, 8.6306305)
+[node name="m" type="MeshInstance3D" parent="floor2" unique_id=207023581]
+mesh = SubResource("BoxMesh_7qi08")
 
-[node name="b3dsphere" parent="." unique_id=2006279778 instance=ExtResource("16_63x70")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.972463, 5.6157265, 5.9960303)
+[node name="test_inert_cube_world3" parent="." unique_id=1918913314 instance=ExtResource("12_ey75n")]
+body_type = 0
+shape_type = 0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.829395, 8.541122, -27.91343)

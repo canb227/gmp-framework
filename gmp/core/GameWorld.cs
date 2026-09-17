@@ -74,12 +74,12 @@ public partial class GameWorld : Node3D
             AddChild(b3droot);  
         }
     }
-    public Godot.Collections.Dictionary<string, Variant> Raycast(Vector3 from, Vector3 to)
+    public static Godot.Collections.Dictionary<string, Variant> Raycast(Vector3 from, Vector3 to)
     {
         return b3droot.Call("raycast", [from, to]).AsGodotDictionary<string, Variant>();
     }
 
-    public Godot.Collections.Array<Node> OverlapSphere(Vector3 center, float radius, int collisionMask = -1, int collisionLayer = -1)
+    public static Godot.Collections.Array<Node> OverlapSphere(Vector3 center, float radius, int collisionMask = -1, int collisionLayer = -1)
     {
         return b3droot.Call("overlap_sphere", [center, radius, collisionMask, collisionLayer]).AsGodotArray<Node>();
     }

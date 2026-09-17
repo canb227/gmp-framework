@@ -1,0 +1,417 @@
+[gd_scene format=3 uid="uid://crjakyoau28wj"]
+
+[node name="PlayerHUD" type="Control" unique_id=1816686983]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Crosshair" type="Control" parent="." unique_id=1220370357]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dot" type="ColorRect" parent="Crosshair" unique_id=269363205]
+layout_mode = 1
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.9)
+
+[node name="HoverInfoName" type="Label" parent="Crosshair" unique_id=1792321632]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 12.0
+offset_top = -20.0
+offset_right = 200.0
+vertical_alignment = 1
+
+[node name="HoverInfoDetail" type="Label" parent="Crosshair" unique_id=1483058580]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 12.0
+offset_right = 200.0
+offset_bottom = 20.0
+theme_override_font_sizes/font_size = 12
+vertical_alignment = 1
+
+[node name="HoverInfoBelow" type="Label" parent="Crosshair" unique_id=569535888]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = -80.0
+offset_top = 12.0
+offset_right = 80.0
+offset_bottom = 32.0
+horizontal_alignment = 1
+
+[node name="HotbarAnchor" type="MarginContainer" parent="." unique_id=772620948]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -80.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/margin_bottom = 16
+
+[node name="HotbarCenter" type="CenterContainer" parent="HotbarAnchor" unique_id=582969120]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="HotbarSlots" type="HBoxContainer" parent="HotbarAnchor/HotbarCenter" unique_id=2037462036]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="Slot1" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=486663915]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="SlotNumber1" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot1" unique_id=266064622]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Slot2" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=639275171]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="SlotNumber2" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot2" unique_id=1431218320]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "2"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Slot3" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1328615350]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="SlotNumber3" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot3" unique_id=715471002]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Slot4" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1968859913]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="SlotNumber4" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot4" unique_id=413378889]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "4"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Slot5" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1337435114]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="SlotNumber5" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot5" unique_id=483500017]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "5"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Slot6" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1883257150]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="SlotNumber6" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot6" unique_id=690497215]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "6"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Slot7" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1475370306]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="SlotNumber7" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot7" unique_id=213478144]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "7"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Slot8" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=384540969]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="SlotNumber8" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot8" unique_id=1932911754]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "8"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Slot9" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1516961574]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="SlotNumber9" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot9" unique_id=1540931912]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "9"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Slot10" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1590373334]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="SlotNumber10" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot10" unique_id=1841845386]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="InventoryScreen" type="ColorRect" parent="." unique_id=2041596865]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 139.0
+offset_top = 48.0
+offset_right = -81.0
+offset_bottom = -94.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
+[node name="InventoryCenter" type="CenterContainer" parent="InventoryScreen" unique_id=1292995367]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="InventoryPanel" type="PanelContainer" parent="InventoryScreen/InventoryCenter" unique_id=166812524]
+custom_minimum_size = Vector2(360, 400)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="InventoryMargin" type="MarginContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel" unique_id=403617993]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="InventoryVBox" type="VBoxContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin" unique_id=752736276]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="InventoryTitle" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox" unique_id=1459604070]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Inventory"
+horizontal_alignment = 1
+
+[node name="InventoryGrid" type="GridContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox" unique_id=1784668630]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+columns = 5
+
+[node name="InvSlot1" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1876429773]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot2" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=429213375]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot3" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=895065240]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot4" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=257410622]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot5" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=533034859]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot6" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=431979998]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot7" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=195265130]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot8" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=27328521]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot9" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1768354996]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot10" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1091249165]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot11" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1852439380]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot12" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1421214871]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot13" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1983653083]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot14" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1493022904]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot15" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=85439282]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot16" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1259680170]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot17" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=2011251408]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot18" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=31195578]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot19" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1826484236]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot20" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1071546879]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot21" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=645528666]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot22" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=553817415]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot23" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=391647142]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot24" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1787087164]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="InvSlot25" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1256619333]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="DebugPanel" type="PanelContainer" parent="." unique_id=4963803]
+layout_mode = 1
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 260.0
+offset_bottom = 200.0
+mouse_filter = 2
+
+[node name="DebugMargin" type="MarginContainer" parent="DebugPanel" unique_id=1828095159]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="DebugVBox" type="VBoxContainer" parent="DebugPanel/DebugMargin" unique_id=651672130]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="DebugTitle" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=640538316]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Debug"
+
+[node name="FPSLabel" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=112180642]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "FPS: --"
+
+[node name="PositionLabel" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=1561633831]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Pos: --"
+
+[node name="VelocityLabel" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=1815999712]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Vel: --"
+
+[node name="GroundedLabel" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=1380525442]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Grounded: --"
+
+[node name="HealthLabel" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=224274529]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Health: --"
+
+[node name="StateLabel" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=105057752]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "State: --"
+
+[node name="PeerLabel" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=1167151399]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Peer: --"
+
+[node name="CustomLabel" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=1612139119]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12

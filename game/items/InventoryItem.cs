@@ -8,12 +8,18 @@ using System.Threading.Tasks;
 [GlobalClass]
 public partial class InventoryItem : Resource
 {
+    [Export]
     public string itemID;
-    public NodePath droppedScenePath;
+    [Export]
+    public PackedScene droppedScene;
+    [Export]
     public string displayName;
+    [Export]
     public string description;
+    [Export]
     public CompressedTexture2D icon;
-    public NodePath inHandScenePath;
+    [Export]
+    public PackedScene inHandScene;
 
     public InventoryItem()
     {
