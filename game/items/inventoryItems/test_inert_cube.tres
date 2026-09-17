@@ -13,4 +13,5 @@ displayName = "Inert Cube"
 description = "It's a boring cube"
 icon = ExtResource("1_5sxpt")
 inHandScene = ExtResource("3_uw3r7")
+maxStackSize = 10
 metadata/_custom_type_script = "uid://dhgs1v3od7iaw"

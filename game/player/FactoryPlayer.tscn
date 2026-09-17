@@ -12,11 +12,12 @@ albedo_texture = ExtResource("2_6tv66")
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_7qi08"]
 radius = 0.4
 
-[node name="FactoryPlayer" type="Box3DCharacterBody" unique_id=274687070 node_paths=PackedStringArray("camera", "head", "body")]
+[node name="FactoryPlayer" type="Box3DCharacterBody" unique_id=274687070 node_paths=PackedStringArray("camera", "head", "body", "itemHolder")]
 script = ExtResource("1_tuubh")
 camera = NodePath("Camera3D")
 head = NodePath("Camera3D/head")
 body = NodePath("body")
+itemHolder = NodePath("Camera3D/ItemHolder")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=962695158]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2790344, 0)
@@ -29,6 +30,9 @@ surface_material_override/0 = SubResource("StandardMaterial3D_ctqvv")
 [node name="Box3DCollisionShape" type="Box3DCollisionShape" parent="Camera3D" unique_id=445148656]
 shape_type = 1
 sphere_radius = 0.6
+
+[node name="ItemHolder" type="Node3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, -0.3, -0.5)
 
 [node name="label" type="Label3D" parent="." unique_id=1956124679]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0728626, 0)
