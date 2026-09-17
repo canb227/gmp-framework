@@ -26,6 +26,10 @@ current = true
 mesh = SubResource("SphereMesh_7qi08")
 surface_material_override/0 = SubResource("StandardMaterial3D_ctqvv")
 
+[node name="Box3DCollisionShape" type="Box3DCollisionShape" parent="Camera3D" unique_id=445148656]
+shape_type = 1
+sphere_radius = 0.6
+
 [node name="label" type="Label3D" parent="." unique_id=1956124679]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0728626, 0)
 billboard = 2
@@ -38,7 +42,6 @@ text = "Player"
 
 [node name="Box3DCollisionShape" type="Box3DCollisionShape" parent="body" unique_id=750957324]
 shape_type = 2
-capsule_radius = 0.4
 
 [node name="m" type="MeshInstance3D" parent="body" unique_id=1634638597]
 mesh = SubResource("CapsuleMesh_7qi08")

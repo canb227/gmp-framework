@@ -1,0 +1,16 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://csjhk6s016ofm"]
+
+[ext_resource type="Texture2D" uid="uid://chg1lghd8mqsx" path="res://assets/textures/floor_tile_2/floor_tile_2_diffuseOriginal.png" id="1_ri05u"]
+[ext_resource type="Texture2D" uid="uid://bjk8bs8la5aww" path="res://assets/textures/floor_tile_2/floor_tile_2_height.png" id="2_sylc2"]
+[ext_resource type="Texture2D" uid="uid://yrpjxpnh8nid" path="res://assets/textures/floor_tile_2/floor_tile_2_normal.png" id="3_r8d4g"]
+[ext_resource type="Texture2D" uid="uid://dvteenfqu67wd" path="res://assets/textures/floor_tile_2/floor_tile_2_smoothness.png" id="4_buvkh"]
+
+[resource]
+albedo_texture = ExtResource("1_ri05u")
+metallic_specular = 0.02
+roughness_texture = ExtResource("4_buvkh")
+normal_enabled = true
+normal_texture = ExtResource("3_r8d4g")
+heightmap_enabled = true
+heightmap_texture = ExtResource("2_sylc2")
+uv1_scale = Vector3(20, 12.195, 1.524)
