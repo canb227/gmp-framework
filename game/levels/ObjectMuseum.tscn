@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://b3ruqi3gub8yo"]
 
+[ext_resource type="Material" uid="uid://cm6q2knenjk4x" path="res://game/assets/materials/grass_1.tres" id="1_2usgl"]
 [ext_resource type="Shader" uid="uid://cvd0x7lon1ur6" path="res://addons/sky_3d/shaders/SkyMaterial.gdshader" id="1_5rkb6"]
 [ext_resource type="Texture2D" uid="uid://cfqk60lpl5ljv" path="res://addons/sky_3d/assets/resources/SNoise.tres" id="2_2usgl"]
 [ext_resource type="Texture2D" uid="uid://cecwdqjol0ckd" path="res://addons/sky_3d/assets/textures/noiseClouds.png" id="3_aqpx8"]
@@ -10,13 +11,15 @@
 [ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="8_5negq"]
 [ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/SkyDome.gd" id="9_vmujb"]
 [ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="10_8o1nu"]
-[ext_resource type="PackedScene" uid="uid://bsdttlf7ektg" path="res://game/items/examples/TestFactoryCube.tscn" id="11_nokvj"]
 [ext_resource type="PackedScene" uid="uid://b7a3etxh7wq5c" path="res://game/items/examples/TestFactorySphere.tscn" id="12_laxwr"]
-[ext_resource type="PackedScene" uid="uid://cnepf4qmdksw8" path="res://gmp/examples/GMPBox3DSphere.tscn" id="13_aa7uy"]
 [ext_resource type="Script" uid="uid://buq3xkquc7nsd" path="res://game/scripts/ObjectSpawner.cs" id="14_75n5a"]
+[ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="14_aqpx8"]
+[ext_resource type="Texture2D" uid="uid://c8knlhvemp8jf" path="res://game/assets/textures/grass_1/grass_ao.png" id="15_2usgl"]
+[ext_resource type="Script" uid="uid://cthpe3o2ur5ir" path="res://game/scripts/BasicButton.cs" id="15_aqpx8"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
-size = Vector3(80, 1, 80)
+material = ExtResource("1_2usgl")
+size = Vector3(80, 1, 120)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_iuiei"]
 shader = ExtResource("1_5rkb6")
@@ -71,8 +74,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.11045631, 0.11045631)
-shader_parameter/cirrus_position2 = Vector2(0.11045631, 0.11045631)
+shader_parameter/cirrus_position1 = Vector2(0.8259501, 0.8259501)
+shader_parameter/cirrus_position2 = Vector2(0.8259501, 0.8259501)
 shader_parameter/cirrus_texture = ExtResource("2_2usgl")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -82,7 +85,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(0.55222076, 0.55222076)
+shader_parameter/cumulus_position = Vector2(14.153926, 14.153926)
 shader_parameter/cumulus_texture = ExtResource("3_aqpx8")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -105,10 +108,38 @@ ambient_light_color = Color(1, 1, 1, 1)
 reflected_light_source = 2
 tonemap_mode = 3
 tonemap_white = 6.0
+sdfgi_enabled = true
+glow_enabled = true
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_ca3y6"]
 
+[sub_resource type="BoxMesh" id="BoxMesh_pet1e"]
+lightmap_size_hint = Vector2i(88, 114)
+material = ExtResource("14_aqpx8")
+size = Vector3(15.959473, 2.826294, 1)
+
 [sub_resource type="PrismMesh" id="PrismMesh_c5vbb"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tt1o4"]
+albedo_color = Color(0.4392157, 0.3372549, 0.3764706, 1)
+metallic_specular = 1.0
+roughness = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_c5vbb"]
+material = SubResource("StandardMaterial3D_tt1o4")
+size = Vector3(0.5, 1.5, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vchc8"]
+albedo_color = Color(1.4954206, 0, 0.26787823, 1)
+metallic = 1.0
+metallic_texture = ExtResource("15_2usgl")
+roughness = 0.7
+uv1_scale = Vector3(2, 2, 2)
+
+[sub_resource type="SphereMesh" id="SphereMesh_c5vbb"]
+material = SubResource("StandardMaterial3D_vchc8")
+radius = 0.1
+height = 0.2
 
 [node name="FactoryGameTest" type="Node3D" unique_id=653852535]
 
@@ -117,6 +148,7 @@ body_type = 0
 shape_type = 6
 
 [node name="m" type="MeshInstance3D" parent="Box3DBody" unique_id=1287053028]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 mesh = SubResource("BoxMesh_7qi08")
 
 [node name="Sky3D" type="WorldEnvironment" parent="." unique_id=1329869569]
@@ -154,20 +186,222 @@ dome_path = NodePath("../SkyDome")
 current_time = 10.6
 day = 7
 
-[node name="TestFactoryCube" parent="." unique_id=551866047 instance=ExtResource("11_nokvj")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.837083, 4.281475, 4.616984)
+[node name="ObjectDisplay1" type="Node3D" parent="." unique_id=549363124]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, -34.296867)
 
-[node name="TestFactorySphere?" parent="." unique_id=1083381408 instance=ExtResource("12_laxwr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.000031, 6.33894, 4.024764)
+[node name="Wall" type="Box3DBody" parent="ObjectDisplay1" unique_id=1586941774]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
 
-[node name="b3dsphere" parent="." unique_id=2006279778 instance=ExtResource("13_aa7uy")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.972463, 5.6157265, 5.9960303)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay1/Wall" unique_id=481222416]
+mesh = SubResource("BoxMesh_pet1e")
 
-[node name="ObjectSpawner" type="Node3D" parent="." unique_id=1494285893]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.92159, 7.260557, -0.7041435)
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplay1" unique_id=1398680385]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay1/Wall2" unique_id=1774329645]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ObjectDisplay2" type="Node3D" parent="." unique_id=1563058551]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, -17.115532)
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplay2" unique_id=1255271046]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay2/Wall" unique_id=935209143]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplay2" unique_id=240423440]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay2/Wall2" unique_id=204894582]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ObjectSpawnerDisplay" type="Node3D" parent="." unique_id=963253489]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, 0)
+
+[node name="ObjectSpawner" type="Node3D" parent="ObjectSpawnerDisplay" unique_id=1494285893]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.015460014, 7.260557, 0.06531119)
 script = ExtResource("14_75n5a")
 spawnObjects = Array[PackedScene]([ExtResource("12_laxwr")])
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawner" unique_id=2023083225]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/ObjectSpawner" unique_id=2023083225]
 transform = Transform3D(4.3711385e-08, -3.8213705e-15, 1, -8.742277e-08, -0.99999994, 0, 0.99999994, -8.742277e-08, -4.371139e-08, 0, 0.6839838, 0)
 mesh = SubResource("PrismMesh_c5vbb")
+
+[node name="Wall" type="Box3DBody" parent="ObjectSpawnerDisplay" unique_id=185160226]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/Wall" unique_id=1259603657]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectSpawnerDisplay" unique_id=209286287]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/Wall2" unique_id=1328351154]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Button" type="Node3D" parent="ObjectSpawnerDisplay" unique_id=1404761820]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8255463, 0, 5.36835)
+script = ExtResource("15_aqpx8")
+
+[node name="ButtonBody" type="Box3DBody" parent="ObjectSpawnerDisplay/Button" unique_id=235472092]
+body_type = 0
+box_size = Vector3(0.5, 1.5, 0.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7497097, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/Button/ButtonBody" unique_id=979029047]
+mesh = SubResource("BoxMesh_c5vbb")
+
+[node name="ButtonTarget" type="Box3DBody" parent="ObjectSpawnerDisplay/Button" unique_id=158277334]
+body_type = 0
+shape_type = 1
+sphere_radius = 0.09999999999999999
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6260744, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/Button/ButtonTarget" unique_id=1624424765]
+mesh = SubResource("SphereMesh_c5vbb")
+
+[node name="ObjectDisplay4" type="Node3D" parent="." unique_id=2046489377]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, 17.736538)
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplay4" unique_id=963976380]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay4/Wall" unique_id=1276293942]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplay4" unique_id=2126852131]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay4/Wall2" unique_id=219423950]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ObjectDisplay5" type="Node3D" parent="." unique_id=124099508]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, 34.917873)
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplay5" unique_id=984385558]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay5/Wall" unique_id=149992542]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplay5" unique_id=199425876]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay5/Wall2" unique_id=73178599]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ObjectDisplay6" type="Node3D" parent="." unique_id=297265058]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.934782, 0, -34.296867)
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplay6" unique_id=332176555]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay6/Wall" unique_id=1170687309]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplay6" unique_id=1378750579]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay6/Wall2" unique_id=856255905]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ObjectDisplay7" type="Node3D" parent="." unique_id=2140411636]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.934782, 0, -17.115532)
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplay7" unique_id=1965352175]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay7/Wall" unique_id=1955151021]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplay7" unique_id=1715924757]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay7/Wall2" unique_id=1288050781]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ObjectDisplay8" type="Node3D" parent="." unique_id=1740254756]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.934782, 0, 0)
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplay8" unique_id=1848674405]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay8/Wall" unique_id=589991857]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplay8" unique_id=573167530]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay8/Wall2" unique_id=338036443]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ObjectDisplay9" type="Node3D" parent="." unique_id=488803433]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.934782, 0, 17.736538)
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplay9" unique_id=1228873405]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay9/Wall" unique_id=1097718565]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplay9" unique_id=53397491]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay9/Wall2" unique_id=1087239844]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ObjectDisplay10" type="Node3D" parent="." unique_id=765878901]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.934782, 0, 34.917873)
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplay10" unique_id=2069463248]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay10/Wall" unique_id=1523725795]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplay10" unique_id=157026091]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay10/Wall2" unique_id=1253900611]
+mesh = SubResource("BoxMesh_pet1e")

@@ -118,8 +118,8 @@ public partial class LobbyDebug : Control
         {
             _levelSelect.AddItem(item.levelName);
         }
-        _levelSelect.Select(3);
-        _levelSelect_ItemSelected(3);
+        _levelSelect.Select(0);
+        _levelSelect_ItemSelected(0);
         ProcessMode = ProcessModeEnum.Always;
         Log($"lobby ready ({_mode}) as {_selfName} ({ShortId(_selfId)})");
 

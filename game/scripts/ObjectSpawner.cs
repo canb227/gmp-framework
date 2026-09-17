@@ -6,7 +6,9 @@ using System.Linq;
 public partial class ObjectSpawner : Node3D
 {
     [Export] public Godot.Collections.Array<PackedScene> spawnObjects;
+    [Export] public float spawnRate = 0.1f;
     private List<PackedScene> spawnObjectsList;
+    public bool startSpawning = false;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -18,15 +20,25 @@ public partial class ObjectSpawner : Node3D
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
-        deltaTotal += delta;
-        if(deltaTotal > 0.1)
+        if(startSpawning)
         {
-            Vector3 spawnPosition = GlobalPosition;
-            spawnPosition.X += Random.Shared.NextSingle()-0.5f;
-            spawnPosition.Y += Random.Shared.NextSingle()-0.5f;
-            spawnPosition.Z += Random.Shared.NextSingle()-0.5f;
-            GameWorld.SpawnScene(spawnObjects[0].ResourcePath, spawnPosition, GlobalRotation);
-            deltaTotal = 0.0;
+            deltaTotal += delta;
+            if(deltaTotal > spawnRate)
+            {
+                SpawnRandomObject();
+                deltaTotal = 0.0;
+            }
         }
+        
+    }
+
+
+    private void SpawnRandomObject()
+    {
+        Vector3 spawnPosition = GlobalPosition;
+        spawnPosition.X += Random.Shared.NextSingle()-0.5f;
+        spawnPosition.Y += Random.Shared.NextSingle()-0.5f;
+        spawnPosition.Z += Random.Shared.NextSingle()-0.5f;
+        GameWorld.SpawnScene(spawnObjects.PickRandom().ResourcePath, spawnPosition, GlobalRotation);
     }
 }
