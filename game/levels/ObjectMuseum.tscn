@@ -75,8 +75,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.15609486, 0.15609486)
-shader_parameter/cirrus_position2 = Vector2(0.15609486, 0.15609486)
+shader_parameter/cirrus_position1 = Vector2(0.006340401, 0.006340401)
+shader_parameter/cirrus_position2 = Vector2(0.006340401, 0.006340401)
 shader_parameter/cirrus_texture = ExtResource("2_2usgl")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -86,7 +86,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(0.7803559, 0.7803559)
+shader_parameter/cumulus_position = Vector2(0.031702, 0.031702)
 shader_parameter/cumulus_texture = ExtResource("3_aqpx8")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -287,10 +287,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.99035
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplayShapes/Wall2" unique_id=204894582]
 mesh = SubResource("BoxMesh_pet1e")
-
-[node name="test_inert_sphere_world" parent="ObjectDisplayShapes" unique_id=1652795541 instance=ExtResource("12_laxwr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8284035, 1.8576665, -1.552906)
-displayName = "Inert Sphere"
 
 [node name="test_inert_cube_world2" parent="ObjectDisplayShapes" unique_id=1063862523 instance=ExtResource("13_3rl5m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.66471, 2.132705, -0.254776)
