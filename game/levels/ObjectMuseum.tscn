@@ -11,7 +11,6 @@
 [ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="8_5negq"]
 [ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/SkyDome.gd" id="9_vmujb"]
 [ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="10_8o1nu"]
-[ext_resource type="PackedScene" uid="uid://b7a3etxh7wq5c" path="res://game/items/examples/test_inert_sphere_world.tscn" id="12_laxwr"]
 [ext_resource type="PackedScene" uid="uid://bsdttlf7ektg" path="res://game/items/examples/test_inert_cube_world.tscn" id="13_3rl5m"]
 [ext_resource type="Script" uid="uid://buq3xkquc7nsd" path="res://game/scripts/ObjectSpawner.cs" id="14_75n5a"]
 [ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="14_aqpx8"]
@@ -76,8 +75,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.05452699, 0.05452699)
-shader_parameter/cirrus_position2 = Vector2(0.05452699, 0.05452699)
+shader_parameter/cirrus_position1 = Vector2(0.09734937, 0.09734937)
+shader_parameter/cirrus_position2 = Vector2(0.09734937, 0.09734937)
 shader_parameter/cirrus_texture = ExtResource("2_2usgl")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -87,7 +86,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(15.301715, 15.301715)
+shader_parameter/cumulus_position = Vector2(0.48670262, 0.48670262)
 shader_parameter/cumulus_texture = ExtResource("3_aqpx8")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -296,7 +295,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, 0)
 [node name="ObjectSpawner" type="Node3D" parent="ObjectSpawnerDisplay" unique_id=1494285893]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.015460014, 7.260557, 0.06531119)
 script = ExtResource("14_75n5a")
-spawnObjects = Array[PackedScene]([ExtResource("12_laxwr")])
+spawnObjects = Array[PackedScene]([ExtResource("13_3rl5m")])
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/ObjectSpawner" unique_id=2023083225]
 transform = Transform3D(4.3711385e-08, -3.8213705e-15, 1, -8.742277e-08, -0.99999994, 0, 0.99999994, -8.742277e-08, -4.371139e-08, 0, 0.6839838, 0)
@@ -351,10 +350,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, 17.736538)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4268366, -18.11671)
 
 [node name="Node3D2" parent="ObjectDisplay4" unique_id=2101965718 instance=ExtResource("18_dudsn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0351915, 0.4268366, -18.11671)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0010185242, 0.4268366, -16.119488)
 
 [node name="Node3D3" parent="ObjectDisplay4" unique_id=1003430668 instance=ExtResource("18_dudsn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0849857, 0.4268366, -18.11671)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0018177032, 0.4268366, -14.1273)
 
 [node name="Wall" type="Box3DBody" parent="ObjectDisplay4" unique_id=963976380]
 body_type = 0

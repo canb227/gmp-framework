@@ -36,6 +36,10 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_uywqi")
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_131we"]
+albedo_color = Color(0.27022192, 0.27022192, 0.2702219, 1)
+metallic = 1.0
+
 [node name="conveyor_straight" unique_id=145057803 instance=ExtResource("1_0d0cg")]
 
 [node name="Box3DBody" type="Box3DBody" parent="." index="0" unique_id=368376488]
@@ -43,3 +47,6 @@ body_type = 0
 shape_type = 6
 collision_mesh = SubResource("ArrayMesh_0d0cg")
 transform = Transform3D(1, 0, 0, 0, 0.19387197, 0, 0, 0, 1, 0, 0.23582114, 0)
+
+[node name="Cube" parent="." index="1" unique_id=514288847]
+surface_material_override/0 = SubResource("StandardMaterial3D_131we")
