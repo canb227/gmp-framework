@@ -14,14 +14,12 @@ public static class GameResources
         new LevelInfo ("FactoryMap","res://game/levels/FactoryMap.tscn"),
     };
 
-    public static Dictionary<string, string> FactoryItems = new Dictionary<string, string>()
+    public static Dictionary<string, (string inventoryItemPath, string worldItemPath, string handItemPath)> Items = new Dictionary<string, (string,string,string)>()
     {
-        { "test_cube","res://game/items/examples/TestFactoryCube.tscn" },
-        { "test_sphere","res://game/items/examples/TestFactorySphere.tscn" },
-        { "te3e","res://game/items/examples/TestFactoryCube.tscn" },
-        { "test4_cube","res://game/items/examples/TestFactoryCube.tscn" },
-        { "test3_cube","res://game/items/examples/TestFactoryCube.tscn" },
+        { "test_inert_cube",("res://game/items/inventoryItems/test_inert_cube.tres","res://game/items/examples/test_inert_cube_world.tscn","res://game/items/examples/test_inert_cube_hand.tscn") },
 
     };
+
+
 }
 

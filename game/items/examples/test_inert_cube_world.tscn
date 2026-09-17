@@ -4,13 +4,12 @@
 
 [sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
 
-[node name="TestFactoryCube" type="Box3DBody" unique_id=551866047 node_paths=PackedStringArray("inWorldMesh")]
+[node name="test_inert_cube_world" type="Box3DBody" unique_id=551866047]
 shape_type = 7
 script = ExtResource("1_oy5oj")
-inWorldMesh = NodePath("inWorldMesh")
 itemID = "test_inert_cube"
-displayName = "Test Inert Cube"
-description = "its a cube"
+displayName = "Inert Cube"
+canBePickedUp = true
 tags = Array[int]([0])
 
 [node name="inWorldMesh" type="MeshInstance3D" parent="." unique_id=1145061474]

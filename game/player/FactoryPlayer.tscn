@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bprlsaqxj4fot" path="res://game/player/FactoryPlayer.cs" id="1_tuubh"]
 [ext_resource type="Texture2D" uid="uid://b646400pws0lh" path="res://icon.svg" id="2_6tv66"]
+[ext_resource type="PackedScene" uid="uid://crjakyoau28wj" path="res://game/player/PlayerHUD.tscn" id="3_ctqvv"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_7qi08"]
 
@@ -44,3 +45,5 @@ shape_type = 2
 
 [node name="m" type="MeshInstance3D" parent="body" unique_id=1634638597]
 mesh = SubResource("CapsuleMesh_7qi08")
+
+[node name="PlayerHUD" parent="." unique_id=1816686983 instance=ExtResource("3_ctqvv")]

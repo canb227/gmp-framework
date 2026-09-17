@@ -15,7 +15,7 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody
     public string displayName;
 
     [Export]
-    public string description;
+    public bool canBePickedUp;
 
     [Export]
     public Godot.Collections.Array<ItemTags> tags;

@@ -1,4 +1,5 @@
 using Godot;
+using Godot.Collections;
 using PolyType;
 using System;
 using System.Reflection.Metadata;
@@ -33,15 +34,17 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
     bool inventoryOpen = false;
 
-    const float PickupRange = 5f;
-    const float PickupDot = 0.97f;
-
+    [Export]
+    public float pickRange = 10f;
+    public PhysicalFactoryItem pickTarget;
+    public Control hud;
     public override void _Ready()
     {
 
         base._Ready();
         gravity = gravityDirection * gravityMagnitude;
         camera = GetNode<Camera3D>("Camera3D");
+        hud = GetNode<Control>("PlayerHUD");
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -55,8 +58,15 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
         if (@event is InputEventKey key && key.Pressed)
         {
+
             if (key.Keycode == Key.Escape)
             {
+                if (hud.GetNode<Control>("InventoryScreen").Visible)
+                {
+                    hud.GetNode<Control>("InventoryScreen").Hide();
+                    Input.MouseMode = Input.MouseModeEnum.Captured;
+                    return;
+                }
                 Input.MouseMode = Input.MouseModeEnum.Visible;
             }
 
@@ -74,16 +84,80 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
                 camera.Rotation.Z
             );
         }
+
+        if (@event.IsActionPressed("interact"))
+        {
+            if (pickTarget != null)
+            {
+                Logging.Log($"You just pressed interact on {pickTarget.Name}!", "Player");
+                if (pickTarget.canBePickedUp)
+                {
+                    InventoryItem ii = ResourceLoader.Load<InventoryItem>(GameResources.Items[pickTarget.itemID].inventoryItemPath);
+                    //GameWorld.Delete(pickTarget)
+                }
+            }
+            
+        }
+
+        if (@event.IsActionPressed("inventory"))
+        {
+            if (hud.GetNode<Control>("InventoryScreen").Visible)
+            {
+                hud.GetNode<Control>("InventoryScreen").Hide();
+                Input.MouseMode = Input.MouseModeEnum.Captured;
+            }
+            else
+            {
+                hud.GetNode<Control>("InventoryScreen").Show();
+                Input.MouseMode = Input.MouseModeEnum.Visible;
+            }
+
+
+        }
     }
 
     public override void _PhysicsProcess(double delta)
     {
-
         if (Lobby.selfPeerID != authority)
         {
             Call("move_and_slide", [Velocity, delta]);
             return;
         }
+
+        Dictionary<string,Variant> ray = GameWorld.Raycast(camera.GlobalPosition, camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * pickRange);
+        if (ray["hit"].AsBool())
+        {
+            Node hit = (Node)ray["collider"].AsGodotObject();
+            if (hit is PhysicalFactoryItem item)
+            {
+                pickTarget = item;
+                hud.GetNode<Label>("%HoverInfoName").Show();
+                hud.GetNode<Label>("%HoverInfoName").Text = item.displayName;
+                if (item.canBePickedUp)
+                {
+                    hud.GetNode<Label>("%HoverInfoBelow").Show();
+                    hud.GetNode<Label>("%HoverInfoBelow").Text = "Press F to pickup!";
+                }
+                else
+                {
+                    hud.GetNode<Label>("%HoverInfoBelow").Hide();
+                }
+            }
+            else
+            {
+                pickTarget = null;
+                hud.GetNode<Label>("%HoverInfoName").Hide();
+                hud.GetNode<Label>("%HoverInfoBelow").Hide();
+            }
+        }
+        else
+        {
+            pickTarget = null;
+            hud.GetNode<Label>("%HoverInfoName").Hide();
+            hud.GetNode<Label>("%HoverInfoBelow").Hide();
+        }
+
+
 
 
 
