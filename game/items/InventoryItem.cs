@@ -20,10 +20,12 @@ public partial class InventoryItem : Resource
     public CompressedTexture2D icon;
     [Export]
     public PackedScene inHandScene;
+    [Export]
+    public int maxStackSize = 1;
 
     public InventoryItem()
     {
 
     }
-    
+
 }
