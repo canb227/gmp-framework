@@ -145,6 +145,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     {
         inventoryOpen = true;
         hud.GetNode<Control>("InventoryScreen").Show();
+        hud.MouseFilter = Control.MouseFilterEnum.Stop;
         Input.MouseMode = Input.MouseModeEnum.Visible;
     }
 
@@ -152,6 +153,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     {
         inventoryOpen = false;
         hud.GetNode<Control>("InventoryScreen").Hide();
+        hud.MouseFilter = Control.MouseFilterEnum.Ignore;
         Input.MouseMode = Input.MouseModeEnum.Captured;
     }
 

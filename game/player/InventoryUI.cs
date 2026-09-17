@@ -51,6 +51,17 @@ public partial class InventoryUI : Control
             slotCounts[slotIndex] = panel.GetNode<Label>("StackCount");
         }
 
+        for (int i = 0; i < Inventory.TotalSlots; i++)
+        {
+            if (slotPanels[i] == null) continue;
+            slotPanels[i].MouseFilter = MouseFilterEnum.Pass;
+            foreach (Node child in slotPanels[i].GetChildren())
+            {
+                if (child is Control c)
+                    c.MouseFilter = MouseFilterEnum.Ignore;
+            }
+        }
+
         inventory.InventoryChanged += RefreshAllSlots;
         RefreshAllSlots();
     }
