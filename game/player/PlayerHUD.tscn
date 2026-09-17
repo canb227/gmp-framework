@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://crjakyoau28wj"]
 
+[ext_resource type="Script" path="res://game/player/InventoryUI.cs" id="inv_ui_script"]
+
 [node name="PlayerHUD" type="Control" unique_id=1816686983]
+script = ExtResource("inv_ui_script")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
