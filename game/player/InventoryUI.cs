@@ -1,6 +1,8 @@
 using Godot;
 using System;
 
+
+//claude wrote this so its kinda wack
 public partial class InventoryUI : Control
 {
     FactoryPlayer player;
