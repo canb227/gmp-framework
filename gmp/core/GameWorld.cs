@@ -410,4 +410,8 @@ public partial class GameWorld : Node3D
 
     }
 
+    internal static void Claim(PhysicalFactoryItem item)
+    {
+        //throw new NotImplementedException();
+    }
 }

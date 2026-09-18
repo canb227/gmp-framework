@@ -75,8 +75,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.006340401, 0.006340401)
-shader_parameter/cirrus_position2 = Vector2(0.006340401, 0.006340401)
+shader_parameter/cirrus_position1 = Vector2(0.29513216, 0.29513216)
+shader_parameter/cirrus_position2 = Vector2(0.29513216, 0.29513216)
 shader_parameter/cirrus_texture = ExtResource("2_2usgl")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -86,7 +86,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(0.031702, 0.031702)
+shader_parameter/cumulus_position = Vector2(1.4756072, 1.4756072)
 shader_parameter/cumulus_texture = ExtResource("3_aqpx8")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -238,6 +238,7 @@ sun_altitude = -0.7477271
 moon_azimuth = -1.2683393
 moon_altitude = -1.8743428
 wind_direction = 2.35619451204804
+process_method = 2
 
 [node name="TimeOfDay" type="Node" parent="Sky3D" unique_id=1721121076]
 script = ExtResource("10_8o1nu")

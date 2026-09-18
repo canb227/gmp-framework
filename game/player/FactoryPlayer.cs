@@ -28,12 +28,25 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     Label3D playerNameLabel;
     public bool inventoryOpen = false;
 
-    [Export] public float pickRange = 10f;
-    public Object pickTarget;
+    [Export] public float pickRange = 5f;
+    public Node3D pickTarget;
     public Control hud;
 
     Node3D currentInHandInstance;
     int previousHotbarSlot = -1;
+    private bool isGrabbing;
+    private PhysicalFactoryItem grabTarget;
+    public Node3D grabNode;
+    public float defaultGrabLocation;
+    private float grabMinimumDistance = -1f;
+    private float grabDistanceIncrement = .25f;
+    private float grabMaximumDistance = -4f;
+
+    private float grabForceBase = 25f;
+    private float grabForceExponent = 1.2f;
+    private float grabDamping = 10f;
+    private float grabNearDamping = 5f;
+    private float grabMaxForce = 400f;
 
     public override void _Ready()
     {
@@ -42,6 +55,8 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         camera = GetNode<Camera3D>("Camera3D");
         itemHolder = camera.GetNode<Node3D>("ItemHolder");
         hud = GetNode<Control>("PlayerHUD");
+        grabNode = GetNode<Node3D>("%grabNode");
+        defaultGrabLocation = grabNode.Position.Z;
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -104,40 +119,105 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
                 OpenInventory();
         }
 
-        // Hotbar slot selection via number keys
-        for (int i = 1; i <= 9; i++)
-        {
-            if (@event.IsActionPressed($"slot{i}"))
-            {
-                inventory.ActiveHotbarSlot = i - 1;
-                UpdateEquippedItem();
-            }
-        }
-        if (@event.IsActionPressed("slot0"))
-        {
-            inventory.ActiveHotbarSlot = 9;
-            UpdateEquippedItem();
-        }
+
+
 
         // Scroll wheel hotbar cycling
-        if (@event is InputEventMouseButton scroll && scroll.Pressed && !inventoryOpen)
+        if (@event.IsActionPressed("scrollDown"))
         {
-            if (scroll.ButtonIndex == MouseButton.WheelDown)
+            if (!inventoryOpen && grabTarget == null)
             {
+                if (inventory.ActiveHotbarSlot == -1 || inventory.ActiveHotbarSlot > Inventory.HotbarSlots)
+                {
+                    inventory.ActiveHotbarSlot = 0;
+                }
                 inventory.ActiveHotbarSlot = (inventory.ActiveHotbarSlot + 1) % Inventory.HotbarSlots;
                 UpdateEquippedItem();
             }
-            else if (scroll.ButtonIndex == MouseButton.WheelUp)
+            else if (!inventoryOpen && grabTarget != null)
             {
+
+                    grabNode.Position = new Vector3(grabNode.Position.X, grabNode.Position.Y, Math.Min(grabNode.Position.Z + grabDistanceIncrement, grabMinimumDistance));
+
+            }
+        }
+        if (@event.IsActionPressed("scrollUp"))
+        {
+            if (!inventoryOpen && grabTarget == null)
+            {
+                if (inventory.ActiveHotbarSlot == -1 || inventory.ActiveHotbarSlot > Inventory.HotbarSlots)
+                {
+                    inventory.ActiveHotbarSlot = 0;
+                }
                 inventory.ActiveHotbarSlot = (inventory.ActiveHotbarSlot - 1 + Inventory.HotbarSlots) % Inventory.HotbarSlots;
                 UpdateEquippedItem();
             }
+            else if (!inventoryOpen && grabTarget != null)
+            {
+
+                    grabNode.Position = new Vector3(grabNode.Position.X, grabNode.Position.Y, Math.Max(grabNode.Position.Z - grabDistanceIncrement, grabMaximumDistance));
+                
+
+            }
         }
+    
 
         // Drop item (Q) — drop 1 from active hotbar slot
         if (@event.IsActionPressed("drop"))
         {
             DropFromActiveSlot(1);
+        }
+
+        if (@event.IsActionPressed("primary"))
+
+        {
+            if (inventory.ActiveHotbarSlot==-1 || inventory.slots[inventory.ActiveHotbarSlot].IsEmpty)
+            {
+                Logging.Log($"empty click: {inventory.ActiveHotbarSlot}","GameWorld");
+                if (pickTarget != null && pickTarget is PhysicalFactoryItem item && item.canBeGrabbed)
+                {
+                    Logging.Log($"starting grab on {item.Name}", "Player");
+                    grabTarget = item;
+                    grabTarget.Set("gravity_scale", 0.1f);
+                    grabTarget.Set("linear_damping", 5f);
+                    grabTarget.Set("angular_damping", 4f);
+                    GameWorld.Claim(item);
+                }
+
+            }
+        }
+        if (@event.IsActionReleased("primary"))
+        {
+            if (grabTarget!=null)
+            {
+                grabTarget.Set("gravity_scale", 1f);
+                grabTarget.Set("linear_damping", 0f);
+                grabTarget.Set("angular_damping", 0f);
+                Logging.Log($"ending grab on {grabTarget.Name}", "Player");
+                grabNode.Position = new Vector3(grabNode.Position.X, grabNode.Position.Y, defaultGrabLocation);
+                grabTarget = null;
+            }
+
+        }
+        else
+        {
+            // Hotbar slot selection via number keys
+            for (int i = 0; i <= 9; i++)
+            {
+                if (@event.IsActionPressed($"slot{i}"))
+                {
+                    if (inventory.ActiveHotbarSlot == i)
+                    {
+                        inventory.ActiveHotbarSlot = -1;
+                        UpdateEquippedItem();
+                        break;
+                    }
+                    inventory.ActiveHotbarSlot = i;
+                    UpdateEquippedItem();
+                    break;
+                }
+
+            }
         }
     }
 
@@ -207,6 +287,29 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             return;
         }
 
+        if (grabTarget != null)
+        {
+            Vector3 displacement = grabNode.GlobalPosition - grabTarget.GlobalPosition;
+            float distance = displacement.Length();
+
+            if (distance > 0.001f)
+            {
+                Vector3 forceDir = displacement / distance;
+
+                float forceMagnitude = Mathf.Min(
+                    grabForceBase * (Mathf.Exp(grabForceExponent * distance) - 1f),
+                    grabMaxForce
+                );
+                Vector3 attractionForce = forceDir * forceMagnitude;
+
+                Vector3 velocity = (Vector3)grabTarget.Get("linear_velocity");
+                float dampingScale = grabDamping * (1f + grabNearDamping / Mathf.Max(distance, 0.1f));
+                Vector3 dampingForce = -velocity * dampingScale;
+
+                grabTarget.ApplyCentralForce(attractionForce + dampingForce);
+            }
+        }
+         
         Dictionary<string, Variant> ray = GameWorld.Raycast(camera.GlobalPosition, camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * pickRange);
         if (ray["hit"].AsBool())
         {

@@ -9,6 +9,10 @@
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ctqvv"]
 albedo_texture = ExtResource("2_6tv66")
 
+[sub_resource type="SphereMesh" id="SphereMesh_ug8er"]
+radius = 0.05
+height = 0.1
+
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_7qi08"]
 radius = 0.4
 
@@ -31,8 +35,15 @@ surface_material_override/0 = SubResource("StandardMaterial3D_ctqvv")
 shape_type = 1
 sphere_radius = 0.6
 
-[node name="ItemHolder" type="Node3D" parent="Camera3D"]
+[node name="ItemHolder" type="Node3D" parent="Camera3D" unique_id=861703223]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, -0.3, -0.5)
+
+[node name="grabNode" type="Node3D" parent="Camera3D" unique_id=1745422499]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.0268967)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Camera3D/grabNode" unique_id=663658023]
+mesh = SubResource("SphereMesh_ug8er")
 
 [node name="label" type="Label3D" parent="." unique_id=1956124679]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0728626, 0)

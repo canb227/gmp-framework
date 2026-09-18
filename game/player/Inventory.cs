@@ -119,6 +119,7 @@ public class Inventory
 
     public InventoryItem GetEquippedItem()
     {
+        if (ActiveHotbarSlot == -1 ) return null;
         var slot = slots[ActiveHotbarSlot];
         return slot.IsEmpty ? null : slot.Item;
     }

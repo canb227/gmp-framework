@@ -113,6 +113,7 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         }
     }
 
+
     public void ApplyCentralForce(Vector3 force)
     {
         Call("apply_central_force", [force]);

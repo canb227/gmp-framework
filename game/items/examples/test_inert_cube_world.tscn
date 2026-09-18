@@ -6,6 +6,7 @@
 
 [node name="test_inert_cube_world" type="Box3DBody" unique_id=551866047]
 shape_type = 7
+density = 10.299999999999999
 script = ExtResource("1_oy5oj")
 itemID = "test_inert_cube"
 displayName = "Inert Cube"
