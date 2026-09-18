@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://54i7aaioj1t3"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/items/PhysicalFactoryItem.cs" id="1_tj0mi"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_esc11"]
+
+[node name="test_inert_sphere_world" type="Box3DBody" unique_id=551866047]
+box_size = Vector3(0.4, 0.4, 0.4)
+density = 10.25
+restitution = 0.2
+script = ExtResource("1_tj0mi")
+itemID = "test_inert_sphere"
+tags = Array[int]([0])
+
+[node name="inWorldMesh" type="MeshInstance3D" parent="." unique_id=1145061474]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0, 0)
+mesh = SubResource("BoxMesh_esc11")

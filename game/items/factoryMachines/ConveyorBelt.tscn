@@ -4,25 +4,26 @@
 [ext_resource type="Shader" uid="uid://c5upcnlymcpkl" path="res://game/shaders/ConveyorBelt.gdshader" id="2_yl17n"]
 [ext_resource type="Texture2D" uid="uid://dfssoii6t84gn" path="res://game/assets/textures/wall_basic_1/wall_basic_1_diffuseOriginal.png" id="3_06d18"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_6hca6"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_06d18"]
 render_priority = 0
 shader = ExtResource("2_yl17n")
 shader_parameter/source_tex = ExtResource("3_06d18")
 shader_parameter/scroll_speed = -2.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_pet1e"]
-material = SubResource("ShaderMaterial_6hca6")
+material = SubResource("ShaderMaterial_06d18")
 size = Vector2(1.5, 2)
 
 [node name="Node3D" type="Node3D" unique_id=224046845]
 
 [node name="conveyor_straight2" parent="." unique_id=145057803 instance=ExtResource("1_yl17n")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.41063046, 0)
 
 [node name="Belt" type="Box3DBody" parent="." unique_id=1918380525]
 body_type = 0
 box_size = Vector3(1.5, 0.1, 2)
+friction = 0.8
 tangent_velocity = Vector3(0, 0, 5)
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.40444732, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Belt" unique_id=766214737]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.025426745, 0)

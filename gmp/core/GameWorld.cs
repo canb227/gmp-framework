@@ -71,7 +71,7 @@ public partial class GameWorld : Node3D
         {
             
             b3droot = ClassDB.Instantiate("Box3DWorld").As<Node3D>();
-            //b3droot.Set("contact_recycle_distance", 1);
+            b3droot.Set("debug_draw", true);
             AddChild(b3droot);  
         }
     }

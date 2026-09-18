@@ -16,7 +16,9 @@
 [ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="14_aqpx8"]
 [ext_resource type="Texture2D" uid="uid://c8knlhvemp8jf" path="res://game/assets/textures/grass_1/grass_ao.png" id="15_2usgl"]
 [ext_resource type="Script" uid="uid://cthpe3o2ur5ir" path="res://game/scripts/BasicButton.cs" id="15_aqpx8"]
+[ext_resource type="PackedScene" uid="uid://54i7aaioj1t3" path="res://game/items/examples/test_inert_block_world.tscn" id="15_ju7n5"]
 [ext_resource type="PackedScene" uid="uid://pkwdmuwpvbbu" path="res://game/items/factoryMachines/ConveyorBelt.tscn" id="18_dudsn"]
+[ext_resource type="PackedScene" uid="uid://ddpfwffpsstew" path="res://game/items/factoryMachines/ConveyorBelt(UpSlope).tscn" id="19_ju7n5"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
 material = ExtResource("1_2usgl")
@@ -117,7 +119,7 @@ glow_enabled = true
 [sub_resource type="BoxMesh" id="BoxMesh_pet1e"]
 lightmap_size_hint = Vector2i(88, 114)
 material = ExtResource("14_aqpx8")
-size = Vector3(15.959473, 2.826294, 1)
+size = Vector3(15.959473, 2.8047333, 1)
 
 [sub_resource type="PrismMesh" id="PrismMesh_c5vbb"]
 
@@ -305,9 +307,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8279915, 3.1325097, 1.6519
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, 0)
 
 [node name="ObjectSpawner" type="Node3D" parent="ObjectSpawnerDisplay" unique_id=1494285893]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.015460014, 7.260557, 0.06531119)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.355, 0)
 script = ExtResource("14_75n5a")
-spawnObjects = Array[PackedScene]([ExtResource("13_3rl5m")])
+spawnRate = 0.01
+spawnObjects = Array[PackedScene]([ExtResource("15_ju7n5")])
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/ObjectSpawner" unique_id=2023083225]
 transform = Transform3D(4.3711385e-08, -3.8213705e-15, 1, -8.742277e-08, -0.99999994, 0, 0.99999994, -8.742277e-08, -4.371139e-08, 0, 0.6839838, 0)
@@ -327,6 +330,7 @@ box_size = Vector3(15.935, 2.845, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/Wall2" unique_id=1328351154]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0107803345, 0)
 mesh = SubResource("BoxMesh_pet1e")
 
 [node name="Node3D" type="Node3D" parent="ObjectSpawnerDisplay" unique_id=2106932011]
@@ -355,32 +359,34 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8763647, 0)
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/Node3D/ButtonBody" unique_id=979029047]
 mesh = SubResource("BoxMesh_c5vbb")
 
-[node name="ObjectDisplay4" type="Node3D" parent="." unique_id=2046489377]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, 17.736538)
+[node name="Node3D2" parent="ObjectSpawnerDisplay" unique_id=224046845 instance=ExtResource("18_dudsn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 4)
 
-[node name="Node3D" parent="ObjectDisplay4" unique_id=224046845 instance=ExtResource("18_dudsn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4268366, -18.11671)
+[node name="Node3D3" parent="ObjectSpawnerDisplay" unique_id=2101965718 instance=ExtResource("18_dudsn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 6)
 
-[node name="Node3D2" parent="ObjectDisplay4" unique_id=2101965718 instance=ExtResource("18_dudsn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0010185242, 0.4268366, -16.119488)
+[node name="Node3D4" parent="ObjectSpawnerDisplay" unique_id=1003430668 instance=ExtResource("18_dudsn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 8)
 
-[node name="Node3D3" parent="ObjectDisplay4" unique_id=1003430668 instance=ExtResource("18_dudsn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0018177032, 0.4268366, -14.1273)
+[node name="Node3D5" parent="ObjectSpawnerDisplay" unique_id=2099015488 instance=ExtResource("19_ju7n5")]
 
-[node name="Wall" type="Box3DBody" parent="ObjectDisplay4" unique_id=963976380]
+[node name="ObjectSpawnerDisplay2" type="Node3D" parent="." unique_id=1474543159]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, 16.947058)
+
+[node name="Wall" type="Box3DBody" parent="ObjectSpawnerDisplay2" unique_id=1566143283]
 body_type = 0
 box_size = Vector3(15.935, 2.845, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay4/Wall" unique_id=1276293942]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay2/Wall" unique_id=1592151004]
 mesh = SubResource("BoxMesh_pet1e")
 
-[node name="Wall2" type="Box3DBody" parent="ObjectDisplay4" unique_id=2126852131]
+[node name="Wall2" type="Box3DBody" parent="ObjectSpawnerDisplay2" unique_id=1249897793]
 body_type = 0
 box_size = Vector3(15.935, 2.845, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay4/Wall2" unique_id=219423950]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay2/Wall2" unique_id=700968893]
 mesh = SubResource("BoxMesh_pet1e")
 
 [node name="ObjectDisplay5" type="Node3D" parent="." unique_id=124099508]

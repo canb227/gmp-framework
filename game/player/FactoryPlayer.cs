@@ -92,9 +92,10 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             );
         }
 
-        // Item pickup
+        // Interaction handling
         if (@event.IsActionPressed("interact"))
         {
+            // Item pickup
             if (pickTarget != null && pickTarget is PhysicalFactoryItem item)
             {
                 Logging.Log($"You just pressed interact on {item.Name}!", "Player");
@@ -107,6 +108,12 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
                         GameWorld.DespawnObject(item.id);
                     }
                 }
+            }
+            // Button pressing
+            if (pickTarget != null && pickTarget is BasicButton button)
+            {
+                Logging.Log($"You just pressed interact on {button.Name}!", "Player");
+                button.OnPressed();
             }
         }
 
