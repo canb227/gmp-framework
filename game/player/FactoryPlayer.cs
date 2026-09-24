@@ -33,6 +33,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
     [Export] public float pickRange = 5f;
     public Node3D pickTarget;
+    private FactoryItem pickTargetResource;
     public Control hud;
 
     Node3D currentInHandInstance;
@@ -59,7 +60,23 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         itemHolder = camera.GetNode<Node3D>("ItemHolder");
         hud = GetNode<Control>("PlayerHUD");
         grabNode = GetNode<Node3D>("%grabNode");
+
         defaultGrabLocation = grabNode.Position.Z;
+    }
+
+    public void SyncInventory()
+    {
+        RPCManager.RPC(this, "_SyncInventory", [inventory.slots]);
+    }
+
+    private void _SyncInventory(InventorySlot[] slots)
+    {
+        if (authority!=Lobby.selfPeerID)
+        {
+            this.inventory.slots = slots;
+            this.inventory.InventoryUpdated();
+        }
+
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -104,8 +121,8 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
                 Logging.Log($"You just pressed interact on {item.Name}!", "Player");
                 if (item.canBePickedUp)
                 {
-                    InventoryItem ii = ResourceLoader.Load<InventoryItem>(GameResources.Items[item.itemID].inventoryItemPath);
-                    int leftover = inventory.AddItem(ii, 1);
+                    int leftover = inventory.AddItem(item.itemID, 1);
+                    UpdateEquippedItem();
                     if (leftover == 0)
                     {
                         GameWorld.DespawnObject(item.id);
@@ -249,19 +266,33 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
     public void UpdateEquippedItem()
     {
+        if (inventory.GetEquippedItem()==null)
+        {
+            if (currentInHandInstance != null)
+            {
+                currentInHandInstance.QueueFree();
+                currentInHandInstance = null;
+            }
+            return;
+        }
         if (currentInHandInstance != null)
         {
             currentInHandInstance.QueueFree();
             currentInHandInstance = null;
         }
 
-        InventoryItem equipped = inventory.GetEquippedItem();
+        FactoryItem equipped = FactoryItem.Fetch(inventory.GetEquippedItem());
         if (equipped?.inHandScene != null)
         {
             currentInHandInstance = equipped.inHandScene.Instantiate<Node3D>();
-            itemHolder.AddChild(currentInHandInstance);
         }
-
+        else if (equipped!= null && equipped?.inHandScene == null) 
+        {
+            currentInHandInstance  = ResourceLoader.Load<PackedScene>("res://game/items/factoryItems/defaultHeldBox.tscn").Instantiate<Node3D>();
+            (currentInHandInstance as DefaultHeldBox).boxInit(equipped.itemID);
+            (currentInHandInstance as DefaultHeldBox).Disable();
+        }
+        itemHolder.AddChild(currentInHandInstance);
         previousHotbarSlot = inventory.ActiveHotbarSlot;
     }
 
@@ -269,7 +300,6 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     {
         var slot = inventory.GetSlot(inventory.ActiveHotbarSlot);
         if (slot.IsEmpty) return;
-        if (slot.Item.droppedScene == null) return;
 
         int toDrop = Math.Min(count, slot.Count);
         Vector3 dropPos = camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * 2f;
@@ -282,7 +312,16 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
                 0,
                 (float)(Random.Shared.NextDouble() - 0.5) * 0.5f
             );
-            GameWorld.SpawnScene(slot.Item.droppedScene.ResourcePath, dropPos + offset, dropRot);
+            if (FactoryItem.Fetch(slot.itemID).droppedScene == null)
+            {
+                ulong droppedID = GameWorld.SpawnScene("res://game/items/factoryItems/defaultDroppedBox.tscn", dropPos + offset, dropRot);
+                (GameWorld.syncedObjs[droppedID] as DefaultDroppedBox).boxInit(slot.itemID);
+            }
+            else
+            {
+                GameWorld.SpawnScene(FactoryItem.Fetch(slot.itemID).droppedScene.ResourcePath, dropPos + offset, dropRot);
+            }
+
         }
 
         inventory.RemoveFromSlot(inventory.ActiveHotbarSlot, toDrop);
@@ -305,6 +344,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         ImGui.Text($"Peer ID: {controllingPeerID} | Team: {team} | Human: {isHuman}");
         ImGui.Text($"Position: {GlobalPosition} | Velocity: {cachedVel}");
         ImGui.Text($"Grid Cell: ({cell.Item1}, {cell.Item2}, {cell.Item3})");
+        ImGui.Text($"Highlighted Cell: {(Grid.highlightedCell is (int, int, int) hc ? $"({hc.Item1}, {hc.Item2}, {hc.Item3})" : "none")}");
         ImGui.Text($"On Floor: {IsOnFloor()}");
         ImGui.Text($"Active Hotbar Slot: {inventory.ActiveHotbarSlot}");
         ImGui.Text($"Pick Target: {pickTarget?.Name ?? "none"}");
@@ -351,8 +391,9 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             if (hit is PhysicalFactoryItem item)
             {
                 pickTarget = item;
+                pickTargetResource = FactoryItem.Fetch(item.itemID);
                 hud.GetNode<Label>("%HoverInfoName").Show();
-                hud.GetNode<Label>("%HoverInfoName").Text = item.displayName;
+                hud.GetNode<Label>("%HoverInfoName").Text = pickTargetResource.displayName;
                 if (item.canBePickedUp)
                 {
                     hud.GetNode<Label>("%HoverInfoBelow").Show();
@@ -427,6 +468,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         {
             camera.Current = false;
         }
+        UpdateEquippedItem();
     }
 
     public override byte[] GenerateStateUpdate()

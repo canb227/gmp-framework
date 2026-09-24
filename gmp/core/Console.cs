@@ -34,6 +34,9 @@ public partial class Console : Node
             case "grid":
                 Grid.Toggle();
                 break;
+            case "gridhighlight":
+                Grid.ToggleHighlight();
+                break;
             case "player":
                 FactoryPlayer.displayPlayerDebugInfo = !FactoryPlayer.displayPlayerDebugInfo;
                 break;
@@ -54,6 +57,7 @@ public partial class Console : Node
             "lobby",
             "syncedobjects",
             "grid",
+            "gridhighlight",
             "player",
             "reset",
         };

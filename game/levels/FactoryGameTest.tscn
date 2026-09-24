@@ -11,7 +11,7 @@
 [ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="8_4nlxf"]
 [ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/SkyDome.gd" id="9_63jg2"]
 [ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="10_xnt1d"]
-[ext_resource type="PackedScene" uid="uid://bsdttlf7ektg" path="res://game/items/examples/test_inert_cube_world.tscn" id="12_ey75n"]
+[ext_resource type="PackedScene" uid="uid://bsdttlf7ektg" path="res://game/items/examples/test_1x1x1cube.tscn" id="12_ey75n"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
 size = Vector3(80, 1, 80)
@@ -53,8 +53,8 @@ shader_parameter/starmap_flip_u = false
 shader_parameter/starmap_flip_v = false
 shader_parameter/starmap_alignment = Vector3(2.68288, -0.25891, 0.40101)
 shader_parameter/star_rotation_offset = 9.38899
-shader_parameter/star_rotation = -10.982551993463867
-shader_parameter/star_tilt = -1.2915436464758039
+shader_parameter/star_rotation = -10.982551993463868
+shader_parameter/star_tilt = -1.291543646475804
 shader_parameter/star_field_color = Color(1, 1, 1, 1)
 shader_parameter/star_field_texture = ExtResource("6_ey75n")
 shader_parameter/star_scintillation = 0.75
@@ -122,10 +122,6 @@ mesh = SubResource("BoxMesh_7qi08")
 environment = SubResource("Environment_66yvx")
 camera_attributes = SubResource("CameraAttributesPractical_ca3y6")
 script = ExtResource("8_4nlxf")
-editor_time_enabled = false
-game_time_enabled = false
-current_time = 10.6
-wind_direction = 2.35619451204804
 metadata/_custom_type_script = "uid://deo0gxkmk2ahd"
 
 [node name="SunLight" type="DirectionalLight3D" parent="Sky3D" unique_id=1306436359]

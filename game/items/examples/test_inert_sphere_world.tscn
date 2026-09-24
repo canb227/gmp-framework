@@ -16,6 +16,9 @@ restitution = 0.2
 rolling_resistance = 0.8
 script = ExtResource("1_0hjwg")
 itemID = "test_inert_sphere"
+canBePickTarget = true
+canBeGrabbed = true
+canBePickedUp = true
 tags = Array[int]([0])
 
 [node name="inWorldMesh" type="MeshInstance3D" parent="." unique_id=1145061474]

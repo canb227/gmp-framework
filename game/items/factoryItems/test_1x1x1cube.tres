@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="FactoryItem" format=3 uid="uid://dkp07mtkfakfx"]
+
+[ext_resource type="PackedScene" uid="uid://bsdttlf7ektg" path="res://game/items/examples/test_1x1x1cube.tscn" id="1_3vpag"]
+[ext_resource type="Script" uid="uid://cw384fqykeue7" path="res://game/items/factoryItems/FactoryItem.cs" id="1_rjpm1"]
+[ext_resource type="Texture2D" uid="uid://b646400pws0lh" path="res://icon.svg" id="2_doydp"]
+[ext_resource type="PackedScene" uid="uid://xchsd45xtfxm" path="res://game/items/examples/hand/test_inert_cube_hand.tscn" id="3_rgf6l"]
+
+[resource]
+script = ExtResource("1_rjpm1")
+itemID = "test_1x1x1cube"
+droppedScene = ExtResource("1_3vpag")
+displayName = "Test Cube"
+description = "Test Cube"
+icon = ExtResource("2_doydp")
+inHandScene = ExtResource("3_rgf6l")
+maxStackSize = 10
+canBePickTarget = true
+canBeGrabbed = true
+canbBePickedUp = true
+metadata/_custom_type_script = "uid://cw384fqykeue7"

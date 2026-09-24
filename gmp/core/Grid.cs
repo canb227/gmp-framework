@@ -5,15 +5,21 @@ public partial class Grid : Node3D
 {
     public static Grid instance;
     public static bool enabled = false;
+    public static bool highlightLookedAtCell = false;
+    public static (int, int, int)? highlightedCell = null;
 
     public const float CellSize = 2.0f;
     private const float DrawExtent = 200.0f;
+    private const float HighlightRaycastRange = 20.0f;
+    private const float HighlightEdgeNudge = 0.001f;
 
     public static Dictionary<(int, int, int), object> cells = new();
 
     private MeshInstance3D _meshInstance;
     private ImmediateMesh _immediateMesh;
     private bool _meshBuilt = false;
+
+    private MeshInstance3D _highlightMeshInstance;
 
     public override void _Ready()
     {
@@ -37,6 +43,23 @@ public partial class Grid : Node3D
         };
 
         AddChild(_meshInstance);
+
+        var highlightMaterial = new StandardMaterial3D
+        {
+            ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+            Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+            AlbedoColor = new Color(1f, 0.8f, 0.1f, 0.35f),
+        };
+
+        _highlightMeshInstance = new MeshInstance3D
+        {
+            Mesh = new BoxMesh { Size = new Vector3(CellSize, CellSize, CellSize) },
+            MaterialOverride = highlightMaterial,
+            CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+            Visible = false,
+        };
+
+        AddChild(_highlightMeshInstance);
     }
 
     public override void _Process(double delta)
@@ -53,9 +76,54 @@ public partial class Grid : Node3D
         {
             _meshInstance.Visible = false;
         }
+
+        if (highlightLookedAtCell)
+        {
+            UpdateHighlightedCell();
+        }
+        else
+        {
+            _highlightMeshInstance.Visible = false;
+            highlightedCell = null;
+        }
     }
 
     public static void Toggle() => enabled = !enabled;
+    public static void ToggleHighlight() => highlightLookedAtCell = !highlightLookedAtCell;
+
+    private void UpdateHighlightedCell()
+    {
+        Camera3D camera = GetViewport().GetCamera3D();
+        if (camera == null)
+        {
+            _highlightMeshInstance.Visible = false;
+            highlightedCell = null;
+            return;
+        }
+
+        Vector3 from = camera.GlobalPosition;
+        Vector3 to = from + -camera.GlobalTransform.Basis.Z * HighlightRaycastRange;
+        var ray = GameWorld.Raycast(from, to);
+
+        if (!ray["hit"].AsBool())
+        {
+            _highlightMeshInstance.Visible = false;
+            highlightedCell = null;
+            return;
+        }
+
+        Vector3 hitPosition = ray["position"].AsVector3();
+        Vector3 hitNormal = ray["normal"].AsVector3();
+
+        // Nudge off the surface along its normal before flooring, so a hit that
+        // lands exactly on a cell boundary (e.g. a floor at a grid line) resolves
+        // to the cell above the surface rather than the one buried inside it.
+        var cell = WorldToCell(hitPosition + hitNormal * HighlightEdgeNudge);
+
+        highlightedCell = cell;
+        _highlightMeshInstance.Position = CellToWorld(cell);
+        _highlightMeshInstance.Visible = true;
+    }
 
     private void BuildGridMesh()
     {

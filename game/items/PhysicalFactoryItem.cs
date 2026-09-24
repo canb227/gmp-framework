@@ -12,14 +12,16 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody
     public string itemID;
 
     [Export]
-    public string displayName;
+    public bool canBePickTarget;
 
     [Export]
-    public bool canBePickedUp = false;
+    public bool canBeGrabbed;
 
     [Export]
-    public bool canBeGrabbed = true;
+    public bool canBePickedUp;
 
+    [Export]
+    public bool canBeInteractedWith;
     [Export]
     public Godot.Collections.Array<ItemTags> tags;
 

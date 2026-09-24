@@ -17,7 +17,7 @@ public partial class ExmapleGMPOSingletonSpawner : Node, GMPObject
 
     public override void _Ready()
     {
-        GameWorld.SpawnNode(typeof(ExampleGMPOSingleton));
+       /// GameWorld.SpawnNode(typeof(ExampleGMPOSingleton));
     }
 
 

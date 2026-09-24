@@ -1,9 +1,10 @@
 [gd_resource type="Resource" script_class="InventoryItem" format=3 uid="uid://d3ajsgojgngdk"]
 
 [ext_resource type="Texture2D" uid="uid://b646400pws0lh" path="res://icon.svg" id="1_5sxpt"]
-[ext_resource type="PackedScene" uid="uid://bsdttlf7ektg" path="res://game/items/examples/test_inert_cube_world.tscn" id="1_ahvap"]
-[ext_resource type="Script" uid="uid://dhgs1v3od7iaw" path="res://game/items/InventoryItem.cs" id="2_ahvap"]
-[ext_resource type="PackedScene" uid="uid://xchsd45xtfxm" path="res://game/items/examples/test_inert_cube_hand.tscn" id="3_uw3r7"]
+[ext_resource type="PackedScene" uid="uid://bsdttlf7ektg" path="res://game/items/examples/test_1x1x1cube.tscn" id="1_ahvap"]
+[ext_resource type="Script" path="res://game/items/InventoryItem.cs" id="2_ahvap"]
+[ext_resource type="PackedScene" uid="uid://xchsd45xtfxm" path="res://game/items/examples/hand/test_inert_cube_hand.tscn" id="3_uw3r7"]
+
 
 [resource]
 script = ExtResource("2_ahvap")

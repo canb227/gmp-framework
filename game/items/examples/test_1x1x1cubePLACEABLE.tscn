@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://shxhebj5ggs8"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/items/PhysicalFactoryItem.cs" id="1_wtd47"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
+
+[node name="test_1x1x1cubePLACEABLE" type="Box3DBody" unique_id=551866047]
+shape_type = 7
+density = 10.3
+script = ExtResource("1_wtd47")
+itemID = "test_1x1x1cubePLACEABLE"
+canBePickTarget = true
+canBeGrabbed = true
+canBePickedUp = true
+tags = Array[int]([0])
+
+[node name="inWorldMesh" type="MeshInstance3D" parent="." unique_id=1145061474]
+mesh = SubResource("BoxMesh_7qi08")

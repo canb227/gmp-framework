@@ -50,6 +50,8 @@ public partial class RPCManager : Node
         return Lobby.SendToAllAndSelf(Channel.RPC_Main, s.Serialize(rpc));
     }
 
+
+
     public static Error RPC(ulong objectID, string methodName, object[] args)
     {
         RPC rpc = new();

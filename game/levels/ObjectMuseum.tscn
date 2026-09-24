@@ -11,13 +11,11 @@
 [ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="8_5negq"]
 [ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/SkyDome.gd" id="9_vmujb"]
 [ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="10_8o1nu"]
-[ext_resource type="PackedScene" uid="uid://73q6vaim8lep" path="res://game/items/factoryMachines/test_placeable_1x1x1_world.tscn" id="12_jjpvi"]
-[ext_resource type="PackedScene" uid="uid://bsdttlf7ektg" path="res://game/items/examples/test_inert_cube_world.tscn" id="13_3rl5m"]
 [ext_resource type="Script" uid="uid://buq3xkquc7nsd" path="res://game/scripts/ObjectSpawner.cs" id="14_75n5a"]
 [ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="14_aqpx8"]
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/items/PhysicalFactoryItem.cs" id="14_dudsn"]
 [ext_resource type="Texture2D" uid="uid://c8knlhvemp8jf" path="res://game/assets/textures/grass_1/grass_ao.png" id="15_2usgl"]
 [ext_resource type="Script" uid="uid://cthpe3o2ur5ir" path="res://game/scripts/BasicButton.cs" id="15_aqpx8"]
-[ext_resource type="PackedScene" uid="uid://54i7aaioj1t3" path="res://game/items/examples/test_inert_block_world.tscn" id="15_ju7n5"]
 [ext_resource type="PackedScene" uid="uid://pkwdmuwpvbbu" path="res://game/items/factoryMachines/ConveyorBelt.tscn" id="18_dudsn"]
 [ext_resource type="PackedScene" uid="uid://ddpfwffpsstew" path="res://game/items/factoryMachines/ConveyorBelt(UpSlope).tscn" id="19_ju7n5"]
 
@@ -121,6 +119,23 @@ glow_enabled = true
 lightmap_size_hint = Vector2i(88, 114)
 material = ExtResource("14_aqpx8")
 size = Vector3(15.959473, 2.8047333, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_esc11"]
+
+[sub_resource type="PackedScene" id="PackedScene_ju7n5"]
+_bundled = {
+"conn_count": 0,
+"conns": PackedInt32Array(),
+"editable_instances": [],
+"id_paths": [],
+"names": PackedStringArray("test_inert_sphere_world", "box_size", "density", "restitution", "script", "itemID", "tags", "Box3DBody", "inWorldMesh", "transform", "mesh", "MeshInstance3D"),
+"node_count": 2,
+"node_ids": PackedInt32Array(551866047, 1145061474),
+"node_paths": [],
+"nodes": PackedInt32Array(-1, -1, 7, 0, -1, 6, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 6, 5, 0, 0, 0, 11, 8, -1, 2, 9, 6, 10, 7, 0),
+"variants": [Vector3(0.4, 0.4, 0.4), 10.25, 0.2, ExtResource("14_dudsn"), "test_inert_sphere", Array[int]([0]), Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0, 0), SubResource("BoxMesh_esc11")],
+"version": 3
+}
 
 [sub_resource type="PrismMesh" id="PrismMesh_c5vbb"]
 
@@ -251,9 +266,6 @@ dome_path = NodePath("../SkyDome")
 current_time = 10.6
 day = 7
 
-[node name="TestPlaceable1x1x1World" parent="Sky3D" unique_id=1165804371 instance=ExtResource("12_jjpvi")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.141704, 1.3633986, -15.484691)
-
 [node name="ObjectDisplay1" type="Node3D" parent="." unique_id=549363124]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, -34.296867)
 
@@ -276,9 +288,6 @@ mesh = SubResource("BoxMesh_pet1e")
 [node name="ObjectDisplayShapes" type="Node3D" parent="." unique_id=1563058551]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, -17.115532)
 
-[node name="test_inert_cube_world" parent="ObjectDisplayShapes" unique_id=551866047 instance=ExtResource("13_3rl5m")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09132004, 0.6438818, 0.51044846)
-
 [node name="Wall" type="Box3DBody" parent="ObjectDisplayShapes" unique_id=1255271046]
 body_type = 0
 box_size = Vector3(15.935, 2.845, 1)
@@ -295,18 +304,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.99035
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplayShapes/Wall2" unique_id=204894582]
 mesh = SubResource("BoxMesh_pet1e")
 
-[node name="test_inert_cube_world2" parent="ObjectDisplayShapes" unique_id=1063862523 instance=ExtResource("13_3rl5m")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.66471, 2.132705, -0.254776)
-
-[node name="test_inert_cube_world3" parent="ObjectDisplayShapes" unique_id=1109570436 instance=ExtResource("13_3rl5m")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.1266603, 2.1395583, 3.8795576)
-
-[node name="test_inert_cube_world4" parent="ObjectDisplayShapes" unique_id=1002996069 instance=ExtResource("13_3rl5m")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.24591255, 2.3312912, -4.891836)
-
-[node name="test_inert_cube_world5" parent="ObjectDisplayShapes" unique_id=1075114399 instance=ExtResource("13_3rl5m")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8279915, 3.1325097, 1.6519022)
-
 [node name="ObjectSpawnerDisplay" type="Node3D" parent="." unique_id=963253489]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, 0)
 
@@ -314,7 +311,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.355, 0)
 script = ExtResource("14_75n5a")
 spawnRate = 0.01
-spawnObjects = Array[PackedScene]([ExtResource("15_ju7n5")])
+spawnObjects = Array[PackedScene]([SubResource("PackedScene_ju7n5")])
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/ObjectSpawner" unique_id=2023083225]
 transform = Transform3D(4.3711385e-08, -3.8213705e-15, 1, -8.742277e-08, -0.99999994, 0, 0.99999994, -8.742277e-08, -4.371139e-08, 0, 0.6839838, 0)

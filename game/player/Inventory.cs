@@ -1,12 +1,18 @@
+using Godot;
+using PolyType;
 using System;
 
-public struct InventorySlot
+[GenerateShape]
+public partial struct InventorySlot
 {
-    public InventoryItem Item;
+    public string itemID;
     public int Count;
 
-    public bool IsEmpty => Item == null || Count <= 0;
+    public bool IsEmpty => itemID == null || Count <= 0;
 }
+
+[GenerateShapeFor<InventorySlot[]>]
+public partial class Witness { }
 
 public class Inventory
 {
@@ -24,10 +30,15 @@ public class Inventory
         return slots[index];
     }
 
-    public void SetSlot(int index, InventoryItem item, int count)
+    public void InventoryUpdated()
+    {
+        InventoryChanged?.Invoke();
+    }
+
+    public void SetSlot(int index, string itemID, int count)
     {
         if (index < 0 || index >= TotalSlots) return;
-        slots[index].Item = item;
+        slots[index].itemID = itemID;
         slots[index].Count = count;
         InventoryChanged?.Invoke();
     }
@@ -35,7 +46,7 @@ public class Inventory
     public void ClearSlot(int index)
     {
         if (index < 0 || index >= TotalSlots) return;
-        slots[index].Item = null;
+        slots[index].itemID = null;
         slots[index].Count = 0;
         InventoryChanged?.Invoke();
     }
@@ -52,9 +63,9 @@ public class Inventory
     {
         if (source < 0 || source >= TotalSlots || target < 0 || target >= TotalSlots) return 0;
         if (slots[source].IsEmpty || slots[target].IsEmpty) return 0;
-        if (slots[source].Item.itemID != slots[target].Item.itemID) return 0;
+        if (slots[source].itemID != slots[target].itemID) return 0;
 
-        int maxStack = slots[target].Item.maxStackSize;
+        int maxStack = FactoryItem.Fetch(slots[target].itemID).maxStackSize;
         int space = maxStack - slots[target].Count;
         int toMove = Math.Min(slots[source].Count, space);
 
@@ -62,15 +73,17 @@ public class Inventory
         slots[source].Count -= toMove;
         if (slots[source].Count <= 0)
         {
-            slots[source].Item = null;
+            slots[source].itemID = null;
             slots[source].Count = 0;
         }
         InventoryChanged?.Invoke();
         return slots[source].Count;
     }
 
-    public int AddItem(InventoryItem item, int count = 1)
+    public int AddItem(string itemID, int count = 1)
     {
+        FactoryItem item = FactoryItem.Fetch(itemID);
+        GD.Print($"loaded {item.itemID} by searching for {itemID}", "Inventory");
         if (item == null || count <= 0) return count;
         int remaining = count;
 
@@ -78,7 +91,7 @@ public class Inventory
         {
             for (int i = 0; i < TotalSlots && remaining > 0; i++)
             {
-                if (!slots[i].IsEmpty && slots[i].Item.itemID == item.itemID)
+                if (!slots[i].IsEmpty && slots[i].itemID == item.itemID)
                 {
                     int space = item.maxStackSize - slots[i].Count;
                     int toAdd = Math.Min(remaining, space);
@@ -93,7 +106,7 @@ public class Inventory
             if (slots[i].IsEmpty)
             {
                 int toAdd = Math.Min(remaining, item.maxStackSize);
-                slots[i].Item = item;
+                slots[i].itemID = itemID;
                 slots[i].Count = toAdd;
                 remaining -= toAdd;
             }
@@ -110,17 +123,17 @@ public class Inventory
         slots[index].Count -= toRemove;
         if (slots[index].Count <= 0)
         {
-            slots[index].Item = null;
+            slots[index].itemID = null;
             slots[index].Count = 0;
         }
         InventoryChanged?.Invoke();
         return toRemove;
     }
 
-    public InventoryItem GetEquippedItem()
+    public string GetEquippedItem()
     {
         if (ActiveHotbarSlot == -1 ) return null;
         var slot = slots[ActiveHotbarSlot];
-        return slot.IsEmpty ? null : slot.Item;
+        return slot.IsEmpty ? null : slot.itemID;
     }
 }

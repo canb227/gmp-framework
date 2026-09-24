@@ -15,6 +15,11 @@ public partial class InventoryUI : Control
     StyleBoxFlat normalStyle;
     StyleBoxFlat activeStyle;
 
+    PanelContainer itemTooltip;
+    Label tooltipName;
+    Label tooltipDescription;
+    int _hoveredSlot = -1;
+
     public override void _Ready()
     {
         player = GetParent<FactoryPlayer>();
@@ -51,6 +56,10 @@ public partial class InventoryUI : Control
             slotCounts[slotIndex] = panel.GetNode<Label>("StackCount");
         }
 
+        itemTooltip = GetNode<PanelContainer>("%ItemTooltip");
+        tooltipName = GetNode<Label>("%TooltipName");
+        tooltipDescription = GetNode<Label>("%TooltipDescription");
+
         for (int i = 0; i < Inventory.TotalSlots; i++)
         {
             if (slotPanels[i] == null) continue;
@@ -60,10 +69,49 @@ public partial class InventoryUI : Control
                 if (child is Control c)
                     c.MouseFilter = MouseFilterEnum.Ignore;
             }
+
+            int slotIndex = i;
+            slotPanels[i].MouseEntered += () => OnSlotMouseEntered(slotIndex);
+            slotPanels[i].MouseExited += () => OnSlotMouseExited(slotIndex);
         }
 
         inventory.InventoryChanged += RefreshAllSlots;
         RefreshAllSlots();
+    }
+
+    void OnSlotMouseEntered(int slotIndex)
+    {
+        _hoveredSlot = slotIndex;
+        UpdateTooltip();
+    }
+
+    void OnSlotMouseExited(int slotIndex)
+    {
+        if (_hoveredSlot == slotIndex)
+        {
+            _hoveredSlot = -1;
+            itemTooltip.Hide();
+        }
+    }
+
+    void UpdateTooltip()
+    {
+        if (_hoveredSlot < 0 || !player.inventoryOpen)
+        {
+            itemTooltip.Hide();
+            return;
+        }
+
+        var slot = inventory.GetSlot(_hoveredSlot);
+        if (slot.IsEmpty)
+        {
+            itemTooltip.Hide();
+            return;
+        }
+
+        tooltipName.Text = FactoryItem.Fetch(slot.itemID).displayName;
+        tooltipDescription.Text = FactoryItem.Fetch(slot.itemID).description;
+        itemTooltip.Show();
     }
 
     public override void _ExitTree()
@@ -84,7 +132,7 @@ public partial class InventoryUI : Control
             }
             else
             {
-                slotIcons[i].Texture = slot.Item.icon;
+                slotIcons[i].Texture = FactoryItem.Fetch(slot.itemID).icon;
                 slotCounts[i].Text = slot.Count > 1 ? slot.Count.ToString() : "";
             }
 
@@ -107,6 +155,27 @@ public partial class InventoryUI : Control
             RefreshAllSlots();
             _lastHighlightedSlot = inventory.ActiveHotbarSlot;
         }
+
+        if (_hoveredSlot >= 0 && player.inventoryOpen)
+        {
+            if (!itemTooltip.Visible)
+            {
+                UpdateTooltip();
+            }
+
+            Vector2 desiredPos = GetGlobalMousePosition() + new Vector2(16, 16);
+            Vector2 viewportSize = GetViewportRect().Size;
+            Vector2 tooltipSize = itemTooltip.Size;
+
+            desiredPos.X = Mathf.Clamp(desiredPos.X, 0, Mathf.Max(0, viewportSize.X - tooltipSize.X));
+            desiredPos.Y = Mathf.Clamp(desiredPos.Y, 0, Mathf.Max(0, viewportSize.Y - tooltipSize.Y));
+
+            itemTooltip.Position = desiredPos;
+        }
+        else if (itemTooltip.Visible)
+        {
+            itemTooltip.Hide();
+        }
     }
     int _lastHighlightedSlot = -1;
 
@@ -120,7 +189,7 @@ public partial class InventoryUI : Control
         if (slot.IsEmpty) return default;
 
         var preview = new TextureRect();
-        preview.Texture = slot.Item.icon;
+        preview.Texture = FactoryItem.Fetch(slot.itemID).icon;
         preview.CustomMinimumSize = new Vector2(48, 48);
         preview.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
         preview.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
@@ -150,7 +219,7 @@ public partial class InventoryUI : Control
         {
             inventory.SwapSlots(sourceSlot, targetSlot);
         }
-        else if (!source.IsEmpty && !target.IsEmpty && source.Item.itemID == target.Item.itemID)
+        else if (!source.IsEmpty && !target.IsEmpty && source.itemID == target.itemID)
         {
             inventory.MergeSlots(sourceSlot, targetSlot);
         }
@@ -181,7 +250,7 @@ public partial class InventoryUI : Control
     void DropEntireStack(int slotIndex)
     {
         var slot = inventory.GetSlot(slotIndex);
-        if (slot.IsEmpty || slot.Item.droppedScene == null) return;
+        if (slot.IsEmpty || FactoryItem.Fetch(slot.itemID).droppedScene == null) return;
 
         var camera = player.GetNode<Camera3D>("Camera3D");
         Vector3 dropPos = camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * 2f;
@@ -194,7 +263,7 @@ public partial class InventoryUI : Control
                 0,
                 (float)(Random.Shared.NextDouble() - 0.5) * 0.5f
             );
-            GameWorld.SpawnScene(slot.Item.droppedScene.ResourcePath, dropPos + offset, dropRot);
+            GameWorld.SpawnScene(FactoryItem.Fetch(slot.itemID).droppedScene.ResourcePath, dropPos + offset, dropRot);
         }
 
         inventory.ClearSlot(slotIndex);

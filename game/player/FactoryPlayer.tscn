@@ -36,7 +36,7 @@ shape_type = 1
 sphere_radius = 0.6
 
 [node name="ItemHolder" type="Node3D" parent="Camera3D" unique_id=861703223]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, -0.3, -0.5)
+transform = Transform3D(0.999883, 0, -0.015296704, 0, 1, 0, 0.015296704, 0, 0.999883, 0.3, -0.3, -1.3042746)
 
 [node name="grabNode" type="Node3D" parent="Camera3D" unique_id=1745422499]
 unique_name_in_owner = true

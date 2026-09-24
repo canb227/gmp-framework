@@ -175,66 +175,75 @@ public partial class GameWorld : Node3D
         }
         return childInit;
     }
-    public static ulong SpawnScene(string scenePath, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null)
+    public static ulong SpawnScene(string scenePath, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null, NodePath parent = null)
     {
-        PackedScene pck = ResourceLoader.Load<PackedScene>(scenePath);
+        return SpawnScene(ResourceLoader.Load<PackedScene>(scenePath), position, rotation, initData, initState,parent);
+    }
+
+    public static ulong SpawnScene(PackedScene pck, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null, NodePath parent = null)
+    {
         Node node = pck.Instantiate();
         initData = initDataNormalizer(initData);
         Dictionary<string, GMPOInitData> childInit = childGMPORegisterGenerator(node, initData);
         node.Free();
-        RPCManager.RPC(instance, "_SpawnScene", [scenePath, position, rotation, initData, initState, childInit]);
+        RPCManager.RPC(instance, "_SpawnScene", [pck.ResourcePath, position, rotation, initData, initState, childInit,parent]);
         return initData.id;
     }
 
-    public static ulong SpawnNode(Type nodeType, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null)
-    {
-        Node node = (Node)Activator.CreateInstance(nodeType);
-        initData = initDataNormalizer(initData);
 
-        Dictionary<string, GMPOInitData> childInit = childGMPORegisterGenerator(node, initData);
-        node.Free();
 
-        RPCManager.RPC(instance, "_SpawnNode", [nodeType,position, rotation, initData, initState, childInit]);
-
-        return initData.id;
-    }
-
-    private void _SpawnNode(Type nodeType, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null)
-    {
-        Node node = (Node)Activator.CreateInstance(nodeType);
-        _SpawnInternal(node, position, rotation, initData, initState, childInit);
-    }
-
-    private void _SpawnScene(string scenePath, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null)
+    private void _SpawnScene(string scenePath, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null, NodePath parent = null)
     {
         Node node = ResourceLoader.Load<PackedScene>(scenePath).Instantiate();
-        _SpawnInternal(node, position, rotation, initData, initState, childInit);
+        Node parentNode = null;
+        if (parent != null && parent != "")
+        {
+            parentNode = GetNode(parent);
+        }
+
+        _SpawnInternal(node, position, rotation, initData, initState, childInit, parentNode);
     }
 
-    private void _SpawnInternal(Node node, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null)
+    private void _SpawnPackedScene(PackedScene pck, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null, NodePath parent = null)
+    {
+        Node node = pck.Instantiate();
+                Node parentNode = null;
+        if (parent != null && parent!="")
+        {
+            parentNode = GetNode(parent);
+        }
+        _SpawnInternal(node, position, rotation, initData, initState, childInit, parentNode);
+    }
+
+    private void _SpawnInternal(Node node, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null, Node parent = null)
     {
         node.Name = node.GetType().ToString() + initData.id.ToString();
 
-            if (b3droot == null)
+        if (b3droot == null)
+        {
+            Logging.Error("attempted to spawn with no b3droot!", "GameWorld");
+        }
+        else
+        {
+            if (parent == null)
             {
-                Logging.Error("attempted to spawn b3dbody with no b3droot!", "GameWorld");
+                b3droot.AddChild(node);
             }
             else
             {
-                b3droot.AddChild(node);
-                if (node is GMPOBox3DBody box)
-                {
-                    box.Call("teleport", [new Transform3D(Basis.FromEuler(rotation), position)]);
-                }
-                else if (node is Node3D n)
-                {
-                    n.Position = position;
+                parent.AddChild(node);
+            }
+            if (node is GMPOBox3DBody box)
+            {
+                box.Call("teleport", [new Transform3D(Basis.FromEuler(rotation), position)]);
+            }
+            else if (node is Node3D n)
+            {
+                n.Position = position;
 
-                    n.Rotation = rotation;
+                n.Rotation = rotation;
 
-                }
-
-            
+            } 
         }
 
 
@@ -246,7 +255,7 @@ public partial class GameWorld : Node3D
         }
         else
         {
-            Logging.Warn($"Spawned node of type {node.GetType()} is not a GMPObject. It will not be synced.", "GameWorld");
+            Logging.Warn($"Spawned node of type {node.GetType()} with name {node.Name} is not a GMPObject. It will not be synced.", "GameWorld");
         }
         if (node is Node3D n3d)
         {
@@ -409,6 +418,8 @@ public partial class GameWorld : Node3D
         init.controllingPeerID = Lobby.selfPeerID;
         init.isHuman = true;
         ulong pid = SpawnScene("res://game/player/FactoryPlayer.tscn", new Vector3(Random.Shared.Next(5), Random.Shared.Next(2,5), Random.Shared.Next(5)),default,default,GMPObject.serializer.Serialize(init));
+        (syncedObjs[pid] as FactoryPlayer).inventory.AddItem("test_1x1x1cubePLACEABLE", 1);
+        (syncedObjs[pid] as FactoryPlayer).UpdateEquippedItem();
         Lobby.SendToAllAndSelf(Channel.LOBBY_Control, [(byte)LobbyControlCode.DoneLoading]);
         
 
@@ -418,47 +429,5 @@ public partial class GameWorld : Node3D
     {
         //throw new NotImplementedException();
     }
-    public static void InitGrid()
-    {
-       
-        // 1. Create a basic unlit material so the lines are visible without lighting
-        var material = new OrmMaterial3D
-        {
-            ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
-            VertexColorUseAsAlbedo = true,
-            Transparency = BaseMaterial3D.TransparencyEnum.Alpha
-        };
-
-        // 2. Initialize the ImmediateMesh
-        var immediateMesh = new ImmediateMesh();
-        gridMesh.Mesh = immediateMesh;
-
-        // 3. Begin drawing lines
-        immediateMesh.SurfaceBegin(Mesh.PrimitiveType.Lines, material);
-
-        float halfSize = (GridSize * CellSize) / 2.0f;
-
-        // Draw parallel lines across the grid
-        for (int i = 0; i <= GridSize; i++)
-        {
-            float offset = -halfSize + (i * CellSize);
-
-            // Lines parallel to the Z axis (varying Z, constant X)
-            immediateMesh.SurfaceSetColor(GridColor);
-            immediateMesh.SurfaceAddVertex(new Vector3(offset, 0, -halfSize));
-            immediateMesh.SurfaceAddVertex(new Vector3(offset, 0, halfSize));
-
-            // Lines parallel to the X axis (varying X, constant Z)
-            immediateMesh.SurfaceSetColor(GridColor);
-            immediateMesh.SurfaceAddVertex(new Vector3(-halfSize, 0, offset));
-            immediateMesh.SurfaceAddVertex(new Vector3(halfSize, 0, offset));
-        }
-
-        immediateMesh.SurfaceEnd();
-        b3droot.AddChild(gridMesh);
-    }
-    public static void DrawGrid()
-    {
-
-    }
+    
 }
