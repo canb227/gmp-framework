@@ -2,13 +2,16 @@ using Godot;
 using PolyType;
 using System;
 
-public partial class DefaultHeldBox : PhysicalFactoryItem
+public partial class DefaultHeldBox : GMPONode3D
 {
     [Export]
     public string labelName = null;
 
     [Export]
     public CompressedTexture2D icon = null;
+
+    [Export]
+    public string itemID = null;
 
 
     // Called when the node enters the scene tree for the first time.

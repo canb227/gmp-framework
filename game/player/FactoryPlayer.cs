@@ -290,7 +290,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         {
             currentInHandInstance  = ResourceLoader.Load<PackedScene>("res://game/items/factoryItems/defaultHeldBox.tscn").Instantiate<Node3D>();
             (currentInHandInstance as DefaultHeldBox).boxInit(equipped.itemID);
-            (currentInHandInstance as DefaultHeldBox).Disable();
+           // (currentInHandInstance as DefaultHeldBox).Disable();
         }
         itemHolder.AddChild(currentInHandInstance);
         previousHotbarSlot = inventory.ActiveHotbarSlot;
@@ -343,8 +343,8 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         ImGui.Begin("debugui player");
         ImGui.Text($"Peer ID: {controllingPeerID} | Team: {team} | Human: {isHuman}");
         ImGui.Text($"Position: {GlobalPosition} | Velocity: {cachedVel}");
-        ImGui.Text($"Grid Cell: ({cell.Item1}, {cell.Item2}, {cell.Item3})");
-        ImGui.Text($"Highlighted Cell: {(Grid.highlightedCell is (int, int, int) hc ? $"({hc.Item1}, {hc.Item2}, {hc.Item3})" : "none")}");
+        ImGui.Text($"Grid Cell: ({cell.X}, {cell.Y}, {cell.Z})");
+        ImGui.Text($"Highlighted Cell: {(Grid.highlightedCell is (int, int, int) hc ? $"({hc.X}, {hc.Y}, {hc.Z})" : "none")}");
         ImGui.Text($"On Floor: {IsOnFloor()}");
         ImGui.Text($"Active Hotbar Slot: {inventory.ActiveHotbarSlot}");
         ImGui.Text($"Pick Target: {pickTarget?.Name ?? "none"}");

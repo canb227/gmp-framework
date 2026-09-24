@@ -11,7 +11,8 @@ size = Vector2(0.5, 0.5)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hy4jy"]
 albedo_texture = ExtResource("2_331v2")
 
-[node name="DefaultHeldBox" type="Box3DBody" unique_id=294901450]
+[node name="DefaultHeldBox" type="Node3D" unique_id=1602477073]
+transform = Transform3D(0.37, 0, 0, 0, 0.37, 0, 0, 0, 0.37, 0, 0, 0)
 script = ExtResource("1_j0c02")
 
 [node name="Box" type="MeshInstance3D" parent="." unique_id=1298696253]
