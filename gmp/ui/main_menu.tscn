@@ -107,4 +107,7 @@ text = "\"~\" for console!
 In console:
 \"debugui lobby\" for lobby debug
 \"debugui syncedobjects\" for object sync debug
+\"debugui player\"
+\"debugui grid\"
+\"debugui gridhighlight\"
 \"debugui reset\" to reset windows"
