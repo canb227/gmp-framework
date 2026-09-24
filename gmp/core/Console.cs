@@ -31,6 +31,12 @@ public partial class Console : Node
             case "syncedobjects":
                 GameWorld.displaySyncedObjectDebugInfo = !GameWorld.displaySyncedObjectDebugInfo;
                 break;
+            case "grid":
+                Grid.Toggle();
+                break;
+            case "player":
+                FactoryPlayer.displayPlayerDebugInfo = !FactoryPlayer.displayPlayerDebugInfo;
+                break;
             case "reset":
                 foreach (string name in GetDebuguiOptions())
                 {
@@ -47,6 +53,8 @@ public partial class Console : Node
         return new Godot.Collections.Array {
             "lobby",
             "syncedobjects",
+            "grid",
+            "player",
             "reset",
         };
     }

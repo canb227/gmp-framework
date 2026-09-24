@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://b0ltddhpijrkv"]
+
+[ext_resource type="Script" uid="uid://csw5cljn0rcoj" path="res://game/items/machines/InHandBuilding.cs" id="1_yhkld"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ug8er"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.24705882)
+
+[node name="TestPlaceable1x1x1Hand" type="MeshInstance3D" unique_id=1643979219]
+script = ExtResource("1_yhkld")
+CellSize = 2.0
+GridColor = Color(0.15054536, 0.5260713, 0.79706085, 0.5019608)
+metadata/_custom_type_script = "uid://csw5cljn0rcoj"
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1760777403]
+mesh = SubResource("BoxMesh_7qi08")
+surface_material_override/0 = SubResource("StandardMaterial3D_ug8er")

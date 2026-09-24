@@ -1,9 +1,8 @@
 [gd_scene format=3 uid="uid://crjakyoau28wj"]
 
-[ext_resource type="Script" path="res://game/player/InventoryUI.cs" id="inv_ui_script"]
+[ext_resource type="Script" uid="uid://c5mov8x8q3i6s" path="res://game/player/InventoryUI.cs" id="inv_ui_script"]
 
 [node name="PlayerHUD" type="Control" unique_id=1816686983]
-script = ExtResource("inv_ui_script")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,6 +10,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("inv_ui_script")
 
 [node name="Crosshair" type="Control" parent="." unique_id=1220370357]
 layout_mode = 1
@@ -94,6 +94,12 @@ text = "1"
 horizontal_alignment = 1
 vertical_alignment = 2
 
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot1" unique_id=1815046180]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="Slot2" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=639275171]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
@@ -107,6 +113,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 10
 text = "2"
 horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot2" unique_id=650409386]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="Slot3" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1328615350]
@@ -124,6 +136,12 @@ text = "3"
 horizontal_alignment = 1
 vertical_alignment = 2
 
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot3" unique_id=395424217]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="Slot4" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1968859913]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
@@ -137,6 +155,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 10
 text = "4"
 horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot4" unique_id=1500462305]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="Slot5" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1337435114]
@@ -154,6 +178,12 @@ text = "5"
 horizontal_alignment = 1
 vertical_alignment = 2
 
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot5" unique_id=908556838]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="Slot6" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1883257150]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
@@ -167,6 +197,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 10
 text = "6"
 horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot6" unique_id=1041409986]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="Slot7" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1475370306]
@@ -184,6 +220,12 @@ text = "7"
 horizontal_alignment = 1
 vertical_alignment = 2
 
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot7" unique_id=214444387]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="Slot8" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=384540969]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
@@ -197,6 +239,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 10
 text = "8"
 horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot8" unique_id=982551859]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="Slot9" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1516961574]
@@ -214,6 +262,12 @@ text = "9"
 horizontal_alignment = 1
 vertical_alignment = 2
 
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot9" unique_id=901245294]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="Slot10" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1590373334]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
@@ -227,6 +281,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 10
 text = "0"
 horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot10" unique_id=944437375]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="InventoryScreen" type="ColorRect" parent="." unique_id=2041596865]
@@ -290,480 +350,347 @@ columns = 5
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot1" unique_id=78828170]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot1" unique_id=266387912]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="InvSlot2" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=429213375]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot2" unique_id=1184734810]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot2" unique_id=1903820039]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
 
 [node name="InvSlot3" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=895065240]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot3" unique_id=708309104]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot3" unique_id=79646672]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="InvSlot4" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=257410622]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot4" unique_id=1321820100]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot4" unique_id=1411786033]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
 
 [node name="InvSlot5" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=533034859]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot5" unique_id=758868043]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot5" unique_id=419181688]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="InvSlot6" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=431979998]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot6" unique_id=1971668745]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot6" unique_id=1432462225]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
 
 [node name="InvSlot7" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=195265130]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot7" unique_id=2048927673]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot7" unique_id=56786661]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="InvSlot8" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=27328521]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot8" unique_id=179306186]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot8" unique_id=1309449980]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
 
 [node name="InvSlot9" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1768354996]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot9" unique_id=751553317]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot9" unique_id=1263116804]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="InvSlot10" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1091249165]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot10" unique_id=1276659652]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot10" unique_id=361931957]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
 
 [node name="InvSlot11" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1852439380]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot11" unique_id=1258384888]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot11" unique_id=1297500871]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="InvSlot12" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1421214871]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot12" unique_id=132433777]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot12" unique_id=1161189732]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
 
 [node name="InvSlot13" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1983653083]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot13" unique_id=1965351706]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot13" unique_id=1251498517]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="InvSlot14" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1493022904]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot14" unique_id=1355756893]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot14" unique_id=847073574]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
 
 [node name="InvSlot15" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=85439282]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot15" unique_id=809951339]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot15" unique_id=488998785]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="InvSlot16" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1259680170]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot16" unique_id=966711993]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot16" unique_id=1616547040]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
 
 [node name="InvSlot17" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=2011251408]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot17" unique_id=1691116921]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot17" unique_id=344723889]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="InvSlot18" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=31195578]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot18" unique_id=1554963494]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot18" unique_id=1144465591]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
 
 [node name="InvSlot19" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1826484236]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot19" unique_id=287392307]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot19" unique_id=320917327]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="InvSlot20" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1071546879]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot20" unique_id=147179356]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot20" unique_id=2399865]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
 
 [node name="InvSlot21" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=645528666]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot21" unique_id=1407100711]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot21" unique_id=2090253555]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="InvSlot22" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=553817415]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot22" unique_id=1555209455]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot22" unique_id=1414589148]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
 
 [node name="InvSlot23" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=391647142]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot23" unique_id=1275889454]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot23" unique_id=676077692]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="InvSlot24" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1787087164]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot24" unique_id=2076676995]
+layout_mode = 2
+expand_mode = 4
+
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot24" unique_id=931942550]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 2
+vertical_alignment = 2
 
 [node name="InvSlot25" type="PanelContainer" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid" unique_id=1256619333]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 
-[node name="DebugPanel" type="PanelContainer" parent="." unique_id=4963803]
-layout_mode = 1
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 260.0
-offset_bottom = 200.0
-mouse_filter = 2
-
-[node name="DebugMargin" type="MarginContainer" parent="DebugPanel" unique_id=1828095159]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
-
-[node name="DebugVBox" type="VBoxContainer" parent="DebugPanel/DebugMargin" unique_id=651672130]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 2
-
-[node name="DebugTitle" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=640538316]
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-text = "Debug"
-
-[node name="FPSLabel" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=112180642]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "FPS: --"
-
-[node name="PositionLabel" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=1561633831]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Pos: --"
-
-[node name="VelocityLabel" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=1815999712]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Vel: --"
-
-[node name="GroundedLabel" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=1380525442]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Grounded: --"
-
-[node name="HealthLabel" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=224274529]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Health: --"
-
-[node name="StateLabel" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=105057752]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "State: --"
-
-[node name="PeerLabel" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=1167151399]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Peer: --"
-
-[node name="CustomLabel" type="Label" parent="DebugPanel/DebugMargin/DebugVBox" unique_id=1612139119]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot1"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot2"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot3"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot4"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot5"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot6"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot7"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot8"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot9"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot10"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot1"]
+[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot25" unique_id=1099106388]
 layout_mode = 2
 expand_mode = 4
 
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot1"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot2"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot2"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot3"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot3"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot4"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot4"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot5"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot5"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot6"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot6"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot7"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot7"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot8"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot8"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot9"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot9"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot10"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot10"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot11"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot11"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot12"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot12"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot13"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot13"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot14"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot14"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot15"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot15"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot16"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot16"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot17"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot17"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot18"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot18"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot19"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot19"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot20"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot20"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot21"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot21"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot22"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot22"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot23"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot23"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot24"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot24"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Icon" type="TextureRect" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot25"]
-layout_mode = 2
-expand_mode = 4
-
-[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot25"]
+[node name="StackCount" type="Label" parent="InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid/InvSlot25" unique_id=1477120419]
 layout_mode = 2
 theme_override_font_sizes/font_size = 10
 horizontal_alignment = 2

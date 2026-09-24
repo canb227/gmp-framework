@@ -5,6 +5,7 @@ using PolyType;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,7 +43,10 @@ public partial class GameWorld : Node3D
     private static bool started = false;
     public static ulong tickNum = 0;
     public static bool displaySyncedObjectDebugInfo = false;
-
+    public static MeshInstance3D gridMesh = new();
+    public static int GridSize = 200;      // Total size of the grid edge
+    public static float CellSize = 2f;  // Distance between lines
+    public static Color GridColor = new Color(0.5f, 0.5f, 0.5f, 0.5f); // Gray with alpha
     public override void _Process(double delta)
     {
         if (displaySyncedObjectDebugInfo)
@@ -413,5 +417,48 @@ public partial class GameWorld : Node3D
     internal static void Claim(PhysicalFactoryItem item)
     {
         //throw new NotImplementedException();
+    }
+    public static void InitGrid()
+    {
+       
+        // 1. Create a basic unlit material so the lines are visible without lighting
+        var material = new OrmMaterial3D
+        {
+            ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+            VertexColorUseAsAlbedo = true,
+            Transparency = BaseMaterial3D.TransparencyEnum.Alpha
+        };
+
+        // 2. Initialize the ImmediateMesh
+        var immediateMesh = new ImmediateMesh();
+        gridMesh.Mesh = immediateMesh;
+
+        // 3. Begin drawing lines
+        immediateMesh.SurfaceBegin(Mesh.PrimitiveType.Lines, material);
+
+        float halfSize = (GridSize * CellSize) / 2.0f;
+
+        // Draw parallel lines across the grid
+        for (int i = 0; i <= GridSize; i++)
+        {
+            float offset = -halfSize + (i * CellSize);
+
+            // Lines parallel to the Z axis (varying Z, constant X)
+            immediateMesh.SurfaceSetColor(GridColor);
+            immediateMesh.SurfaceAddVertex(new Vector3(offset, 0, -halfSize));
+            immediateMesh.SurfaceAddVertex(new Vector3(offset, 0, halfSize));
+
+            // Lines parallel to the X axis (varying X, constant Z)
+            immediateMesh.SurfaceSetColor(GridColor);
+            immediateMesh.SurfaceAddVertex(new Vector3(-halfSize, 0, offset));
+            immediateMesh.SurfaceAddVertex(new Vector3(halfSize, 0, offset));
+        }
+
+        immediateMesh.SurfaceEnd();
+        b3droot.AddChild(gridMesh);
+    }
+    public static void DrawGrid()
+    {
+
     }
 }

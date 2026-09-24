@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="8_5negq"]
 [ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/SkyDome.gd" id="9_vmujb"]
 [ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="10_8o1nu"]
+[ext_resource type="PackedScene" uid="uid://73q6vaim8lep" path="res://game/items/factoryMachines/test_placeable_1x1x1_world.tscn" id="12_jjpvi"]
 [ext_resource type="PackedScene" uid="uid://bsdttlf7ektg" path="res://game/items/examples/test_inert_cube_world.tscn" id="13_3rl5m"]
 [ext_resource type="Script" uid="uid://buq3xkquc7nsd" path="res://game/scripts/ObjectSpawner.cs" id="14_75n5a"]
 [ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="14_aqpx8"]
@@ -249,6 +250,9 @@ game_time_enabled = false
 dome_path = NodePath("../SkyDome")
 current_time = 10.6
 day = 7
+
+[node name="TestPlaceable1x1x1World" parent="Sky3D" unique_id=1165804371 instance=ExtResource("12_jjpvi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.141704, 1.3633986, -15.484691)
 
 [node name="ObjectDisplay1" type="Node3D" parent="." unique_id=549363124]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, -34.296867)

@@ -1,10 +1,13 @@
 using Godot;
 using Godot.Collections;
+using ImGuiNET;
 using PolyType;
 using System;
 
 public partial class FactoryPlayer : GMPOBox3DCharacter
 {
+    public static bool displayPlayerDebugInfo = false;
+
     public int team;
     public bool isHuman;
     public ulong controllingPeerID;
@@ -284,6 +287,30 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
         inventory.RemoveFromSlot(inventory.ActiveHotbarSlot, toDrop);
         UpdateEquippedItem();
+    }
+
+    public override void _Process(double delta)
+    {
+        if (displayPlayerDebugInfo && Lobby.selfPeerID == authority)
+        {
+            UpdateDebugUI();
+        }
+    }
+
+    private void UpdateDebugUI()
+    {
+        var cell = Grid.WorldToCell(GlobalPosition);
+
+        ImGui.Begin("debugui player");
+        ImGui.Text($"Peer ID: {controllingPeerID} | Team: {team} | Human: {isHuman}");
+        ImGui.Text($"Position: {GlobalPosition} | Velocity: {cachedVel}");
+        ImGui.Text($"Grid Cell: ({cell.Item1}, {cell.Item2}, {cell.Item3})");
+        ImGui.Text($"On Floor: {IsOnFloor()}");
+        ImGui.Text($"Active Hotbar Slot: {inventory.ActiveHotbarSlot}");
+        ImGui.Text($"Pick Target: {pickTarget?.Name ?? "none"}");
+        ImGui.Text($"Grab Target: {grabTarget?.Name ?? "none"}");
+        ImGui.Text($"Inventory Open: {inventoryOpen}");
+        ImGui.End();
     }
 
     public override void _PhysicsProcess(double delta)

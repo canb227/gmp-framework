@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://73q6vaim8lep"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/items/PhysicalFactoryItem.cs" id="1_ni8e3"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ug8er"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.24705882)
+
+[node name="TestPlaceable1x1x1World" type="Box3DBody" unique_id=1743945430]
+script = ExtResource("1_ni8e3")
+itemID = "test_placeable_1x1x1"
+displayName = "ItemBox: test placeable 1x1x1"
+canBePickedUp = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1760777403]
+mesh = SubResource("BoxMesh_7qi08")
+surface_material_override/0 = SubResource("StandardMaterial3D_ug8er")
+
+[node name="Label3D" type="Label3D" parent="." unique_id=484481014]
+billboard = 1
+text = "test_placeable_1x1x1"
