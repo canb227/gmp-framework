@@ -6,14 +6,14 @@ public partial class Grid : Node3D
     public static Grid instance;
     public static bool enabled = false;
     public static bool highlightLookedAtCell = false;
-    public static (int, int, int)? highlightedCell = null;
+    public static Vector3I? highlightedCell = null;
 
     public const float CellSize = 2.0f;
     private const float DrawExtent = 200.0f;
     private const float HighlightRaycastRange = 20.0f;
     private const float HighlightEdgeNudge = 0.001f;
 
-    public static Dictionary<(int, int, int), object> cells = new();
+    private static Dictionary<Vector3I, object> cells = new(); 
 
     private MeshInstance3D _meshInstance;
     private ImmediateMesh _immediateMesh;
@@ -160,21 +160,21 @@ public partial class Grid : Node3D
         _meshBuilt = true;
     }
 
-    public static (int, int, int) WorldToCell(Vector3 pos)
+    public static Vector3I WorldToCell(Vector3 pos)
     {
-        return (
+        return new Vector3I(
             Mathf.FloorToInt(pos.X / CellSize),
             Mathf.FloorToInt(pos.Y / CellSize),
             Mathf.FloorToInt(pos.Z / CellSize)
         );
     }
 
-    public static Vector3 CellToWorld((int, int, int) cell)
+    public static Vector3 CellToWorld(Vector3I cell)
     {
         return new Vector3(
-            (cell.Item1 + 0.5f) * CellSize,
-            (cell.Item2 + 0.5f) * CellSize,
-            (cell.Item3 + 0.5f) * CellSize
+            (cell.X + 0.5f) * CellSize,
+            (cell.Y + 0.5f) * CellSize,
+            (cell.Z + 0.5f) * CellSize
         );
     }
 
@@ -233,7 +233,7 @@ public partial class Grid : Node3D
 
     public static IEnumerable<object> GetNeighbors(Vector3 worldPos)
     {
-        var (cx, cy, cz) = WorldToCell(worldPos);
+        var veci = WorldToCell(worldPos);
 
         for (int dx = -1; dx <= 1; dx++)
         {
@@ -246,7 +246,7 @@ public partial class Grid : Node3D
                         continue;
                     }
 
-                    if (cells.TryGetValue((cx + dx, cy + dy, cz + dz), out var obj))
+                    if (cells.TryGetValue(new Vector3I(veci.X + dx, veci.Y + dy, veci.Z + dz), out var obj))
                     {
                         yield return obj;
                     }
