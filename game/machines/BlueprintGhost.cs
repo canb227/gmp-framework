@@ -7,7 +7,8 @@ using Godot;
 /// probe's sensors check against the simulation. Structures with a <see cref="Structure.flowArrow"/> (conveyors)
 /// also get a floating arrow showing which way they'll carry items. While shown it turns on the grid lines
 /// (<see cref="BuildGrid.placementActive"/>). Other players' copies stay empty. As a <see cref="HeldItem"/>
-/// it handles its own input: "rotate" turns the preview and primary builds it (host-arbitrated, see
+/// it handles its own input: "rotate" turns the preview, "alternate" switches a two-form blueprint (e.g. left/right
+/// turn, uphill/downhill slope) to its other form, and primary builds it (host-arbitrated, see
 /// BuildGrid.Placement.cs). Deconstructing is an interact on a structure (FactoryPlayer.Interaction.cs).
 /// </summary>
 public partial class BlueprintGhost : HeldItem
@@ -25,6 +26,15 @@ public partial class BlueprintGhost : HeldItem
     /// re-equipping (each placement re-creates the ghost); only the local player's ghost uses it.
     /// </summary>
     public static int quarterTurns { get; private set; }
+    /// <summary>
+    /// Whether the next structure uses the blueprint's <see cref="BlueprintItem.alternateStructureScene"/>. Static like
+    /// <see cref="quarterTurns"/>, so the chosen form survives re-equipping; ignored by blueprints with one form.
+    /// </summary>
+    public static bool useAlternate { get; private set; }
+    /// <summary>True when the preview shows the alternate form (the blueprint has one and it's selected).</summary>
+    public bool showingAlternate => useAlternate && blueprint?.alternateStructureScene != null;
+    /// <summary>The structure copy the preview shows (used by the headless multiplayer test).</summary>
+    public Structure previewStructure => probe?.structure;
     /// <summary>True when the probe has settled at <see cref="targetCell"/> and reports the placement allowed.</summary>
     public bool canPlace { get; private set; }
 
@@ -48,7 +58,16 @@ public partial class BlueprintGhost : HeldItem
             Logging.Warn($"Blueprint {blueprint?.itemID} has no structure scene", "BlueprintGhost");
             return;
         }
-        probe = PlacementProbe.Create(blueprint.structureScene, false);
+        BuildPreview();
+    }
+
+    // (Re)builds the translucent probe and its arrow for the selected form.
+    void BuildPreview()
+    {
+        probe?.Free();
+        targetCell = null; // forces the new probe to be moved into place
+        canPlace = false;
+        probe = PlacementProbe.Create(blueprint.StructureScene(showingAlternate), false);
         if (probe == null)
         {
             return;
@@ -88,15 +107,31 @@ public partial class BlueprintGhost : HeldItem
             quarterTurns = (quarterTurns + 1) % 4;
             return true;
         }
+        if (@event.IsActionPressed("alternate"))
+        {
+            if (blueprint?.alternateStructureScene != null)
+            {
+                SetAlternate(!useAlternate);
+            }
+            return true;
+        }
         if (@event.IsActionPressed("primary"))
         {
             if (canPlace && targetCell is Vector3I cell)
             {
-                BuildGrid.RequestPlace(player, blueprint, cell, quarterTurns);
+                BuildGrid.RequestPlace(player, blueprint, cell, quarterTurns, showingAlternate);
             }
             return true;
         }
         return false;
+    }
+
+    /// <summary>Selects the main or alternate form and rebuilds the preview (public for the headless multiplayer test).</summary>
+    public void SetAlternate(bool on)
+    {
+        if (useAlternate == on) return;
+        useAlternate = on;
+        if (probe != null) BuildPreview();
     }
 
     public override void _PhysicsProcess(double delta)

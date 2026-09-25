@@ -11,8 +11,8 @@ public static class GameBootstrap
     public const string PlayerScene = "res://game/player/FactoryPlayer.tscn";
     public static readonly string[] StartingBlueprints =
     [
-        "blueprint_test_block", "blueprint_conveyor", "blueprint_conveyor_slope", "blueprint_conveyor_turn_right",
-        "blueprint_conveyor_turn_left", "blueprint_item_void", "blueprint_grinder", "blueprint_item_spawner",
+        "blueprint_test_block", "blueprint_conveyor", "blueprint_conveyor_slope", "blueprint_conveyor_turn",
+        "blueprint_item_void", "blueprint_grinder", "blueprint_item_spawner",
         "blueprint_test_block_2x1x1",
     ];
     public const int StartingBlueprintCount = 3;

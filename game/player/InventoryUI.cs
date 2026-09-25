@@ -132,6 +132,8 @@ public partial class InventoryUI : Control
 
     void RefreshAllSlots()
     {
+        // Other players' copies of this HUD are hidden for good (FactoryPlayer.AfterInit); their inventories still sync.
+        if (!Visible) return;
         for (int i = 0; i < Inventory.TotalSlots; i++)
         {
             var slot = inventory.GetSlot(i);

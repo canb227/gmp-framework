@@ -71,6 +71,11 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         else
         {
             camera.Current = false;
+            // Every player scene carries a HUD, and Controls draw on screen whatever their parent, so other
+            // players' HUDs would cover this peer's own (whichever is last in the tree wins).
+            // Nothing on it is seen or used for them, so it needn't refresh either.
+            hud.Hide();
+            hud.ProcessMode = ProcessModeEnum.Disabled;
         }
         UpdateEquippedItem();
     }

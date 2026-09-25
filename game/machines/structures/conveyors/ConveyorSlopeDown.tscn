@@ -1,0 +1,92 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/machines/Structure.cs" id="1_r"]
+[ext_resource type="Shader" uid="uid://c5upcnlymcpkl" path="res://game/assets/shaders/ConveyorBelt.gdshader" id="2_r"]
+[ext_resource type="Texture2D" uid="uid://dfssoii6t84gn" path="res://game/assets/textures/wall_basic_1/wall_basic_1_diffuseOriginal.png" id="3_r"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1"]
+render_priority = 0
+shader = ExtResource("2_r")
+shader_parameter/source_tex = ExtResource("3_r")
+shader_parameter/scroll_speed = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
+albedo_color = Color(0.27, 0.27, 0.27, 1)
+metallic = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.85, 0.65, 0.1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
+size = Vector3(1.7, 0.1, 4.44563)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_5"]
+material = SubResource("ShaderMaterial_1")
+size = Vector2(1.7, 4.44563)
+
+[sub_resource type="BoxMesh" id="BoxMesh_6"]
+size = Vector3(0.15, 0.3, 4.44563)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7"]
+size = Vector3(0.15, 0.3, 4.44563)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8"]
+size = Vector3(1.2, 1.8245, 0.3)
+
+[node name="ConveyorSlopeDown" type="Box3DBody"]
+body_type = 0
+script = ExtResource("1_r")
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(0, 0, -1), Vector3i(0, 1, 0), Vector3i(0, 1, -1)])
+blueprintItemID = "blueprint_conveyor_slope"
+flowArrow = 4
+
+[node name="BeltShape" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.7, 0.1, 4.44563)
+position = Vector3(0, 0.105012, -0.978181)
+rotation = Vector3(-0.451576, 0, 0)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+
+[node name="BeltMesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_4")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+position = Vector3(0, 0.105012, -0.978181)
+rotation = Vector3(-0.451576, 0, 0)
+
+[node name="BeltSurface" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_5")
+position = Vector3(0, 0.1518, -1.00087)
+rotation = Vector3(-0.451576, 0, 0)
+
+[node name="WallLShape" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.15, 0.3, 4.44563)
+position = Vector3(-0.925, 0.194988, -1.02182)
+rotation = Vector3(-0.451576, 0, 0)
+friction = 0.1
+
+[node name="WallLMesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_6")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
+position = Vector3(-0.925, 0.194988, -1.02182)
+rotation = Vector3(-0.451576, 0, 0)
+
+[node name="WallRShape" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.15, 0.3, 4.44563)
+position = Vector3(0.925, 0.194988, -1.02182)
+rotation = Vector3(-0.451576, 0, 0)
+friction = 0.1
+
+[node name="WallRMesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_7")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
+position = Vector3(0.925, 0.194988, -1.02182)
+rotation = Vector3(-0.451576, 0, 0)
+
+[node name="PostShape" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.2, 1.8245, 0.3)
+position = Vector3(0, -0.08775, 0.7)
+
+[node name="PostMesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_8")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+position = Vector3(0, -0.08775, 0.7)

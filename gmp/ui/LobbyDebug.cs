@@ -83,6 +83,9 @@ public partial class LobbyDebug : Control
     private int _grinderSubStep;
     private int _resourceSubStep;
     private int _leverSubStep;
+    private int _altSubStep;
+    private string _altSnapshot = "none";
+    private bool _ghostAltOk;
     private int _buttonSpawned = -1, _leverSpawned = -1;
     private Vector3 _jumperStart;
     private float _jumperMaxMove;
@@ -288,6 +291,9 @@ public partial class LobbyDebug : Control
             // Host only: HUD named the held magnet rod; sprinting reached (nearly) sprint speed.
             FactoryPlayer self = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
             bool uiOk = !Lobby.isHost || (_hudHeldName == "Magnet Rod" && self != null && _sprintMaxSpeed > self.sprintSpeed * 0.9f);
+            // Every peer: only its own player's HUD is drawn (each player scene carries a HUD, and they overlap on screen).
+            string visibleHuds = string.Join("+", players.Where(p => p.hud.IsVisibleInTree()).Select(p => p.isLocal ? "self" : $"peer{p.controllingPeerID % 1000}"));
+            uiOk &= visibleHuds == "self";
             bool toolsOk = toolState == "ore_kept:True magnet:3/3->released:True" && grabOk && uiOk && sleepOk
                 && (!Lobby.isHost || (_jumperMaxMove > 0.5f && TagInteractions.temperatureContacts >= 2));
             machinesOk &= toolsOk;
@@ -300,7 +306,7 @@ public partial class LobbyDebug : Control
             bool demoGridOk = demoStructures.Count == 15 && demoAligned == 15 && demoRegistered == 15;
             machinesOk &= demoGridOk;
             // Every conveyor's placement preview gets a non-empty direction arrow; other structures get none.
-            string arrows = string.Join(",", new[] { "Conveyor", "ConveyorSlope", "ConveyorTurnLeft", "ConveyorTurnRight", "Grinder" }.Select(n =>
+            string arrows = string.Join(",", new[] { "conveyors/Conveyor", "conveyors/ConveyorSlope", "conveyors/ConveyorSlopeDown", "conveyors/ConveyorTurnLeft", "conveyors/ConveyorTurnRight", "Grinder" }.Select(n =>
             {
                 var st = GD.Load<PackedScene>($"res://game/machines/structures/{n}.tscn").Instantiate<Structure>();
                 MeshInstance3D arrow = FlowArrowMesh.Create(st, null);
@@ -309,12 +315,18 @@ public partial class LobbyDebug : Control
                 st.Free();
                 return tris.ToString();
             }));
-            bool arrowsOk = arrows.Split(',').Take(4).All(n => int.Parse(n) > 0) && arrows.EndsWith(",0");
+            bool arrowsOk = arrows.Split(',').Take(5).All(n => int.Parse(n) > 0) && arrows.EndsWith(",0");
             machinesOk &= arrowsOk;
+            // Every peer: one left turn and one downhill slope were built from the alternate forms, then the turn was
+            // deconstructed. Host only: the preview switched forms, and the turn gave back the shared turn blueprint.
+            string altState = $"{_altSnapshot}->{AlternateFormCounts()}";
+            int turnBlueprints = self?.inventory.slots.Where(sl => sl.itemID == "blueprint_conveyor_turn").Sum(sl => sl.Count) ?? -1;
+            bool altOk = altState == "1:1->0:1" && (!Lobby.isHost || (_ghostAltOk && turnBlueprints == GameBootstrap.StartingBlueprintCount));
+            machinesOk &= altOk;
             // Character movement queries hit sensors, so players must mask out the placement ghosts' layer.
             bool ghostMaskOk = players.All(p => (p.Get("collision_mask").AsInt64() & GameWorld.QueryHiddenLayer) == 0);
             bool ok = players.Count == _expectPeers && GameWorld.inboundTickCount > 0 && invOk && claimOk && buttonOk && buildOk && machinesOk && ghostMaskOk;
-            string summary = $"players={players.Count}/{_expectPeers} synced={GameWorld.syncedObjs.Count} inbound_ticks={GameWorld.inboundTickCount} inv_ok={invOk} consensus_claim={claimAuthority} consensus_button={buttonState} spawner={_buttonSpawned}/{leverStream}/{spawner?.spawnedCount}->voided:{roomVoided} consensus_build={buildState} snap_ok={_snapOk} collision_ok={collisionOk} consensus_machines={machineState.Replace(' ', '_')} ghost_mask_ok={ghostMaskOk} {spawnerState.Replace(' ', '_')} consensus_tools={toolState.Replace(' ', '_')} jumper_moved={_jumperMaxMove:F2} temp_contacts={TagInteractions.temperatureContacts} grab_rest={_grabRestError:F2}m/{_grabRestSpeed:F2}mps grab_track={_grabMaxError:F2}m/{_grabMaxSpeed:F2}of{_grabMaxPointSpeed:F2}mps hud_held={_hudHeldName.Replace(' ', '_')} sprint={_sprintMaxSpeed:F2} arrow_tris={arrows} demo_grid={demoStructures.Count}/aligned:{demoAligned}/registered:{demoRegistered} sleep_ok={sleepOk}(ore:{restingOre?.asleep}/{restingOre?.priority} jumper:{_jumperSeenAsleep}/{_jumperSeenAwake})";
+            string summary = $"players={players.Count}/{_expectPeers} synced={GameWorld.syncedObjs.Count} inbound_ticks={GameWorld.inboundTickCount} inv_ok={invOk} consensus_claim={claimAuthority} consensus_button={buttonState} spawner={_buttonSpawned}/{leverStream}/{spawner?.spawnedCount}->voided:{roomVoided} consensus_build={buildState} snap_ok={_snapOk} collision_ok={collisionOk} consensus_machines={machineState.Replace(' ', '_')} ghost_mask_ok={ghostMaskOk} {spawnerState.Replace(' ', '_')} consensus_tools={toolState.Replace(' ', '_')} jumper_moved={_jumperMaxMove:F2} temp_contacts={TagInteractions.temperatureContacts} grab_rest={_grabRestError:F2}m/{_grabRestSpeed:F2}mps grab_track={_grabMaxError:F2}m/{_grabMaxSpeed:F2}of{_grabMaxPointSpeed:F2}mps hud_held={_hudHeldName.Replace(' ', '_')} visible_huds={visibleHuds} sprint={_sprintMaxSpeed:F2} arrow_tris={arrows} consensus_alt={altState} ghost_alt={_ghostAltOk} turn_bp={turnBlueprints} demo_grid={demoStructures.Count}/aligned:{demoAligned}/registered:{demoRegistered} sleep_ok={sleepOk}(ore:{restingOre?.asleep}/{restingOre?.priority} jumper:{_jumperSeenAsleep}/{_jumperSeenAwake})";
             Log($"TEST GAME {(ok ? "PASS" : "FAIL")} — {summary}");
             GD.Print($"TEST_RESULT:{(ok ? "PASS" : "FAIL")} {summary}");
             GetTree().Quit(ok ? 0 : 1);
@@ -770,6 +782,68 @@ public partial class LobbyDebug : Control
         }
     }
 
+    // Alternate structure forms (the host's hotbar is otherwise idle from 7.5 to 8.4 s):
+    // 7.6 host builds the turn blueprint's alternate (left turn); 7.9 the slope's alternate (downhill);
+    // 8.2 host's ghost switches forms and its preview arrow follows; 9.0 every peer counts them; 9.2 host deconstructs the turn.
+    private void RunAlternateFormScenario(double t)
+    {
+        FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
+        if (_altSubStep == 0 && t >= 7.6)
+        {
+            _altSubStep++;
+            if (Lobby.isHost && local != null) BuildAlternate(local, "blueprint_conveyor_turn");
+        }
+        else if (_altSubStep == 1 && t >= 7.9)
+        {
+            _altSubStep++;
+            if (Lobby.isHost && local != null) BuildAlternate(local, "blueprint_conveyor_slope");
+        }
+        else if (_altSubStep == 2 && t >= 8.2)
+        {
+            _altSubStep++;
+            if (Lobby.isHost && local != null && HoldBlueprint(local, "blueprint_conveyor_slope"))
+            {
+                local.UpdateEquippedItem();
+                if (local.heldItem is BlueprintGhost ghost)
+                {
+                    ghost.SetAlternate(true);
+                    bool down = ghost.showingAlternate && ghost.previewStructure?.flowArrow == FlowArrow.StraightDown;
+                    ghost.SetAlternate(false);
+                    _ghostAltOk = down && ghost.previewStructure?.flowArrow == FlowArrow.Straight;
+                }
+            }
+        }
+        else if (_altSubStep == 3 && t >= 9.0)
+        {
+            _altSubStep++;
+            _altSnapshot = AlternateFormCounts();
+        }
+        else if (_altSubStep == 4 && t >= 9.2)
+        {
+            _altSubStep++;
+            Structure leftTurn = GameWorld.syncedObjs.Values.OfType<Structure>().FirstOrDefault(st => st.SceneFilePath.EndsWith("/ConveyorTurnLeft.tscn"));
+            if (Lobby.isHost && local != null && leftTurn != null) BuildGrid.RequestDeconstruct(local, leftTurn);
+        }
+    }
+
+    // Holds a blueprint and builds its alternate form on free floor.
+    private static void BuildAlternate(FactoryPlayer local, string blueprintID)
+    {
+        if (!HoldBlueprint(local, blueprintID) || ItemInfo.Fetch(blueprintID) is not BlueprintItem blueprint) return;
+        Structure shape = blueprint.StructureScene(true).Instantiate<Structure>();
+        Vector3I[] offsets = shape.cellOffsets.ToArray();
+        shape.Free();
+        if (TryFindOpenFloorCell(out Vector3I cell, offsets))
+            BuildGrid.RequestPlace(local, blueprint, cell, 0, true);
+    }
+
+    // "left turns:downhill slopes" among the synced structures (the museum has neither).
+    private static string AlternateFormCounts()
+    {
+        var structures = GameWorld.syncedObjs.Values.OfType<Structure>().ToList();
+        return $"{structures.Count(st => st.SceneFilePath.EndsWith("/ConveyorTurnLeft.tscn"))}:{structures.Count(st => st.SceneFilePath.EndsWith("/ConveyorSlopeDown.tscn"))}";
+    }
+
     private void RunResourceScenario(double t)
     {
         var items = GameWorld.syncedObjs.Values.OfType<PhysicalFactoryItem>();
@@ -916,6 +990,7 @@ public partial class LobbyDebug : Control
         RunMachineScenario(t);
         RunResourceScenario(t);
         RunLeverScenario(t);
+        RunAlternateFormScenario(t);
         // 8.5-12: host scrolls its hotbar every frame with a forced GC each time; this crashed when item
         // definitions weren't held (GC finalizer disposing one while ItemInfo.Fetch reloaded it).
         if (Lobby.isHost && t >= 8.5 && t < 12.0)
@@ -956,7 +1031,7 @@ public partial class LobbyDebug : Control
         {
             _scenarioStep++;
             FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
-            if (local != null && ItemInfo.Fetch(SeedItemId) is BlueprintItem blueprint)
+            if (local != null && HoldSeedBlueprint(local) && ItemInfo.Fetch(SeedItemId) is BlueprintItem blueprint)
                 BuildGrid.RequestPlace(local, blueprint, TestBuildCell, 1);
         }
         else if (_scenarioStep == 5 && t >= 6.0)
@@ -975,14 +1050,18 @@ public partial class LobbyDebug : Control
             if (!_snapOk)
                 Log($"TEST snap check failed: got {snapped}, expected {TestBuildCell - new Vector3I(2, 0, 0)}");
 
-            // Thin structures snap by their whole cell: aim at the museum line's first conveyor 1.5 m above the
-            // floor, clear over its belt and walls, and expect the cell on that side of it.
-            Vector3I startConveyor = new(-18, 0, 20);
-            Vector3 aimFrom = new Vector3(-45, 1.5f, BuildGrid.CellToWorld(startConveyor).Z);
-            bool thinOk = BuildGrid.TryGetPlacementTarget(aimFrom, Vector3.Right, 12f, [Vector3I.Zero], 0, out Vector3I thinSnap)
-                && thinSnap == startConveyor - new Vector3I(1, 0, 0);
+            // Thin structures snap by their whole cell: aim across the museum line's first conveyor from its side,
+            // 1.5 m above the floor (clear over its belt and walls), and expect the cell on that side of it.
+            Structure start = GameWorld.syncedObjs.Values.OfType<Structure>().FirstOrDefault(st => st.Name == "Start" && st.GetParent()?.Name == "ConveyorDemo");
+            Vector3I startConveyor = start?.anchor ?? Vector3I.Zero;
+            Vector3 side = BuildGrid.QuarterTurnBasis(start?.quarterTurns ?? 0) * Vector3.Right;
+            Vector3 aimFrom = BuildGrid.CellToWorld(startConveyor) - side * 6f + Vector3.Up * (1.5f - BuildGrid.CellSize / 2);
+            Vector3I expectedThin = startConveyor - new Vector3I(Mathf.RoundToInt(side.X), 0, Mathf.RoundToInt(side.Z));
+            Vector3I thinSnap = default;
+            bool thinOk = start != null && BuildGrid.TryGetPlacementTarget(aimFrom, side, 12f, [Vector3I.Zero], 0, out thinSnap)
+                && thinSnap == expectedThin;
             if (!thinOk)
-                Log($"TEST thin snap check failed: got {thinSnap}, expected {startConveyor - new Vector3I(1, 0, 0)}");
+                Log($"TEST thin snap check failed: got {thinSnap}, expected {expectedThin}");
             _snapOk &= thinOk;
         }
         else if (_scenarioStep == 6 && t >= 6.5)
@@ -996,7 +1075,7 @@ public partial class LobbyDebug : Control
         {
             _scenarioStep++;
             FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
-            if (Lobby.isHost && local != null && ItemInfo.Fetch(SeedItemId) is BlueprintItem blueprint && TryFindLevelWallCell(out Vector3I sunk))
+            if (Lobby.isHost && local != null && HoldSeedBlueprint(local) && ItemInfo.Fetch(SeedItemId) is BlueprintItem blueprint && TryFindLevelWallCell(out Vector3I sunk))
             {
                 _embeddedAttempted = true;
                 BuildGrid.RequestPlace(local, blueprint, sunk, 0);
@@ -1007,10 +1086,56 @@ public partial class LobbyDebug : Control
             _scenarioStep++;
             FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
             // Open floor in the museum (its floor's top is at y=0, a cell boundary, so the block rests flush).
-            var ray = GameWorld.Raycast(new Vector3(-19, 10, -19), new Vector3(-19, -10, -19));
-            if (Lobby.isHost && local != null && ray["hit"].AsBool() && ItemInfo.Fetch(SeedItemId) is BlueprintItem blueprint)
-                BuildGrid.RequestPlace(local, blueprint, BuildGrid.WorldToCell(ray["position"].AsVector3() + Vector3.Up * 0.05f), 0);
+            if (Lobby.isHost && local != null && TryFindOpenFloorCell(out Vector3I floorCell) && HoldSeedBlueprint(local) && ItemInfo.Fetch(SeedItemId) is BlueprintItem blueprint)
+                BuildGrid.RequestPlace(local, blueprint, floorCell, 0);
         }
+    }
+
+    // A free anchor on bare museum floor near (-19, -19) for a footprint (default one cell, unrotated): every
+    // footprint cell is free in the grid, and above each of its columns a ray straight down lands on level geometry
+    // at y=0 rather than a structure or prop. Searched so level edits don't break the test.
+    private static bool TryFindOpenFloorCell(out Vector3I cell, Vector3I[] offsets = null)
+    {
+        offsets ??= [Vector3I.Zero];
+        for (int r = 0; r <= 6; r++)
+        for (int dx = -r; dx <= r; dx++)
+        for (int dz = -r; dz <= r; dz++)
+        {
+            if (Mathf.Max(Mathf.Abs(dx), Mathf.Abs(dz)) != r) continue; // ring by ring, nearest first
+            Vector3I anchor = BuildGrid.WorldToCell(new Vector3(-19 + dx * BuildGrid.CellSize, 0.05f, -19 + dz * BuildGrid.CellSize));
+            bool clear = BuildGrid.CanPlace(anchor, offsets, 0);
+            foreach (Vector3I c in offsets)
+            {
+                if (!clear) break;
+                Vector3 at = BuildGrid.CellToWorld(anchor + new Vector3I(c.X, 0, c.Z)) with { Y = 0 };
+                var ray = GameWorld.Raycast(at + Vector3.Up * 10, at + Vector3.Down * 10);
+                clear = ray["hit"].AsBool() && Mathf.Abs(ray["position"].AsVector3().Y) <= 0.01f
+                    && BuildGrid.FindStructure(ray["collider"].AsGodotObject() as Node) == null;
+            }
+            if (clear)
+            {
+                cell = anchor;
+                return true;
+            }
+        }
+        cell = default;
+        return false;
+    }
+
+    // Builds consume the blueprint in the active hotbar slot, so hold the seed blueprint wherever the bootstrap put it.
+    private static bool HoldSeedBlueprint(FactoryPlayer player) => HoldBlueprint(player, SeedItemId);
+
+    private static bool HoldBlueprint(FactoryPlayer player, string itemID)
+    {
+        for (int i = 0; i < Inventory.HotbarSlots; i++)
+        {
+            if (player.inventory.GetSlot(i).itemID == itemID)
+            {
+                player.inventory.ActiveHotbarSlot = i;
+                return true;
+            }
+        }
+        return false;
     }
 
     private static Lever FindTestLever() => GameWorld.b3droot?.FindChild("SpawnLever", true, false) as Lever;

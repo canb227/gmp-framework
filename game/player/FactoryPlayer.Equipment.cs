@@ -10,6 +10,8 @@ public partial class FactoryPlayer
     const string DefaultHeldScene = "res://game/items/held/DefaultHeldBox.tscn";
 
     HeldItem currentInHandItem;
+    /// <summary>The held item's in-hand scene (a blueprint's ghost, the magnet rod, ...), or null.</summary>
+    public HeldItem heldItem => currentInHandItem;
 
     void HandleEquipmentInput(InputEvent @event)
     {

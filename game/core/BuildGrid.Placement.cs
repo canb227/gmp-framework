@@ -27,7 +27,7 @@ public partial class BuildGrid
     /// <summary>Place requests the host refused because of a physical overlap (used by the headless multiplayer test).</summary>
     public static int collisionRefusals;
 
-    record PendingPlacement(PlacementProbe probe, string blueprintItemID, ulong requester, ulong playerObjectId);
+    record PendingPlacement(PlacementProbe probe, string blueprintItemID, bool alternate, ulong requester, ulong playerObjectId);
     static readonly List<PendingPlacement> pendingPlacements = new(); // host only
 
     /// <summary>Drops the host's undecided place requests. Called from <see cref="GameWorld.ResetSession"/>.</summary>
@@ -51,9 +51,10 @@ public partial class BuildGrid
 
     /// <summary>
     /// Consumes one <paramref name="blueprint"/> from <paramref name="player"/>'s active hotbar slot and asks
-    /// the host to build its structure at <paramref name="anchor"/>. The blueprint is refunded if the host refuses.
+    /// the host to build its structure at <paramref name="anchor"/>, in its <see cref="BlueprintItem.alternateStructureScene"/>
+    /// form if <paramref name="alternate"/>. The blueprint is refunded if the host refuses.
     /// </summary>
-    public static void RequestPlace(FactoryPlayer player, BlueprintItem blueprint, Vector3I anchor, int quarterTurns)
+    public static void RequestPlace(FactoryPlayer player, BlueprintItem blueprint, Vector3I anchor, int quarterTurns, bool alternate = false)
     {
         InventorySlot slot = player.inventory.GetSlot(player.inventory.ActiveHotbarSlot);
         if (slot.IsEmpty || slot.itemID != blueprint.itemID)
@@ -62,7 +63,7 @@ public partial class BuildGrid
         }
         player.inventory.RemoveFromSlot(player.inventory.ActiveHotbarSlot, 1);
         player.UpdateEquippedItem();
-        RPCManager.RPCTo(Lobby.hostID, instance, nameof(_RequestPlace), [blueprint.itemID, anchor, quarterTurns, player.id]);
+        RPCManager.RPCTo(Lobby.hostID, instance, nameof(_RequestPlace), [blueprint.itemID, anchor, quarterTurns, alternate, player.id]);
     }
 
     /// <summary>Asks the host to remove <paramref name="structure"/> and give its blueprint to <paramref name="player"/>.</summary>
@@ -73,7 +74,7 @@ public partial class BuildGrid
 
     // Runs on the host: quick grid check now, collision check once the probe has settled (_PhysicsProcess).
     [RPC]
-    private void _RequestPlace(string blueprintItemID, Vector3I anchor, int quarterTurns, ulong playerObjectId)
+    private void _RequestPlace(string blueprintItemID, Vector3I anchor, int quarterTurns, bool alternate, ulong playerObjectId)
     {
         if (!RequesterControls(playerObjectId))
         {
@@ -84,7 +85,7 @@ public partial class BuildGrid
             Logging.Warn($"Place request for {blueprintItemID}, which is not a blueprint with a structure scene", "BuildGrid");
             return;
         }
-        PlacementProbe probe = PlacementProbe.Create(blueprint.structureScene, false);
+        PlacementProbe probe = PlacementProbe.Create(blueprint.StructureScene(alternate), false);
         if (probe == null || !CanPlace(anchor, probe.structure.cellOffsets, quarterTurns))
         {
             probe?.Free();
@@ -92,7 +93,7 @@ public partial class BuildGrid
             return;
         }
         probe.MoveTo(anchor, Mathf.PosMod(quarterTurns, 4));
-        pendingPlacements.Add(new PendingPlacement(probe, blueprintItemID, RPCManager.sender, playerObjectId));
+        pendingPlacements.Add(new PendingPlacement(probe, blueprintItemID, alternate, RPCManager.sender, playerObjectId));
     }
 
     public override void _PhysicsProcess(double delta)
@@ -129,7 +130,7 @@ public partial class BuildGrid
         GMPOInitData init = new() { owner = p.requester };
         Transform3D pose = probe.structure.PlacementTransform(probe.anchor, probe.quarterTurns);
         BlueprintItem blueprint = (BlueprintItem)ItemInfo.Fetch(p.blueprintItemID);
-        GameWorld.SpawnScene(blueprint.structureScene, pose.Origin, pose.Basis.GetEuler(), init, GMPObject.serializer.Serialize(state));
+        GameWorld.SpawnScene(blueprint.StructureScene(p.alternate), pose.Origin, pose.Basis.GetEuler(), init, GMPObject.serializer.Serialize(state));
     }
 
     // Runs on the host. A structure already despawned by an earlier request is simply not found.

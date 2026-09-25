@@ -26,7 +26,7 @@ size = Vector3(2, 0.44990236, 0.15)
 body_type = 0
 shape_type = 6
 script = ExtResource("1_r")
-blueprintItemID = "blueprint_conveyor_turn_right"
+blueprintItemID = "blueprint_conveyor_turn"
 flowArrow = 3
 
 [node name="Belt" type="Box3DCollisionShape" parent="." unique_id=110112917]

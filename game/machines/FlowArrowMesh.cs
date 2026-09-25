@@ -5,12 +5,15 @@ using System.Collections.Generic;
 public enum FlowArrow
 {
     None,
-    /// <summary>Straight toward the front (local -Z), across the whole footprint; tilted to follow a slope.</summary>
+    /// <summary>Straight toward the front (local -Z), across the whole footprint; tilted to climb a slope toward the front.</summary>
     Straight,
     /// <summary>Enters from the back moving -Z and leaves through the left side (-X).</summary>
     TurnLeft,
     /// <summary>Enters from the back moving -Z and leaves through the right side (+X).</summary>
     TurnRight,
+    // Appended, not inserted: scenes store these by number.
+    /// <summary>Like <see cref="Straight"/>, but a slope descends toward the front (the downhill conveyor).</summary>
+    StraightDown,
 }
 
 /// <summary>
@@ -45,14 +48,15 @@ public static class FlowArrowMesh
 
         List<Vector2> outline; // (x, z) points of the arrow's outline
         Transform3D placement;
-        if (structure.flowArrow == FlowArrow.Straight)
+        if (structure.flowArrow is FlowArrow.Straight or FlowArrow.StraightDown)
         {
             float back = max.Z + half * 0.6f, front = min.Z - half * 0.6f;
             outline = StraightArrow(back, front);
             // A footprint several cells tall is a slope climbing toward the front: tilt the arrow to match.
             float rise = max.Y - min.Y, run = max.Z - min.Z + BuildGrid.CellSize;
             Vector3 centre = new((min.X + max.X) / 2, beltY + rise / 2, (min.Z + max.Z) / 2);
-            placement = new Transform3D(new Basis(Vector3.Right, Mathf.Atan2(rise, run)), centre);
+            float pitch = Mathf.Atan2(rise, run) * (structure.flowArrow == FlowArrow.StraightDown ? -1 : 1);
+            placement = new Transform3D(new Basis(Vector3.Right, pitch), centre);
             outline = outline.ConvertAll(p => new Vector2(p.X - centre.X, p.Y - centre.Z));
         }
         else
