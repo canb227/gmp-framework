@@ -22,3 +22,6 @@ export_credentials.cfg
 .mono/
 data_*/
 mono_crash.*.json
+
+# Test run logs (rewritten every run)
+tests/logs/

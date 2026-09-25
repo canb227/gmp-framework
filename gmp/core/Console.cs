@@ -32,10 +32,10 @@ public partial class Console : Node
                 GameWorld.displaySyncedObjectDebugInfo = !GameWorld.displaySyncedObjectDebugInfo;
                 break;
             case "grid":
-                Grid.Toggle();
+                BuildGrid.Toggle();
                 break;
             case "gridhighlight":
-                Grid.ToggleHighlight();
+                BuildGrid.ToggleHighlight();
                 break;
             case "player":
                 FactoryPlayer.displayPlayerDebugInfo = !FactoryPlayer.displayPlayerDebugInfo;

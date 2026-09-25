@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://b7a3etxh7wq5c"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/items/world/PhysicalFactoryItem.cs" id="1_0hjwg"]
+[ext_resource type="Texture2D" uid="uid://b646400pws0lh" path="res://icon.svg" id="2_b6cd3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_be84g"]
+albedo_texture = ExtResource("2_b6cd3")
+
+[sub_resource type="SphereMesh" id="SphereMesh_b6cd3"]
+material = SubResource("StandardMaterial3D_be84g")
+
+[node name="test_inert_sphere_world" type="Box3DBody" unique_id=551866047]
+shape_type = 1
+density = 10.25
+restitution = 0.2
+rolling_resistance = 0.8
+script = ExtResource("1_0hjwg")
+itemID = "test_inert_sphere"
+canBePickTarget = true
+canBeGrabbed = true
+canBePickedUp = true
+tags = Array[int]([0])
+
+[node name="inWorldMesh" type="MeshInstance3D" parent="." unique_id=1145061474]
+mesh = SubResource("SphereMesh_b6cd3")

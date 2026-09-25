@@ -27,10 +27,17 @@ param(
     [int]$PeerCount = 3,
     [int]$HostPort = 2272,
     [int]$TestTimeout = 30,
-    [int]$ScriptTimeout = 45
+    [int]$ScriptTimeout = 45,
+    [switch]$Game
 )
 
 $ErrorActionPreference = "Stop"
+
+if ($Game) {
+    if (-not $PSBoundParameters.ContainsKey('TestTimeout')) { $TestTimeout = 60 }
+    if (-not $PSBoundParameters.ContainsKey('ScriptTimeout')) { $ScriptTimeout = 80 }
+}
+$testFlag = if ($Game) { @("--test-game") } else { @("--test") }
 
 $projectDir = Split-Path -Parent $PSScriptRoot
 
@@ -44,6 +51,7 @@ Write-Host "  Godot:     $GodotPath"
 Write-Host "  Peers:     $PeerCount (1 host + $($PeerCount - 1) joiners)"
 Write-Host "  Host port: $HostPort"
 Write-Host "  Timeout:   ${TestTimeout}s per instance, ${ScriptTimeout}s script"
+Write-Host "  Mode:      $(if ($Game) { 'game' } else { 'lobby' })"
 Write-Host ""
 
 $logDir = Join-Path $PSScriptRoot "logs"
@@ -59,14 +67,16 @@ $hostArgs = @(
     "--"
     "--lan", "--name", "Host"
     "--host", $HostPort.ToString()
-    "--test", "--expect-peers", $PeerCount.ToString()
+) + $testFlag + @(
+    "--expect-peers", $PeerCount.ToString()
     "--test-timeout", $TestTimeout.ToString()
 )
+$hostErrLog = Join-Path $logDir "host_err.log"
 Write-Host "Starting HOST on port $HostPort..." -ForegroundColor Yellow
 $hostProc = Start-Process -FilePath $GodotPath -ArgumentList $hostArgs `
-    -RedirectStandardOutput $hostLog -RedirectStandardError (Join-Path $logDir "host_err.log") `
+    -RedirectStandardOutput $hostLog -RedirectStandardError $hostErrLog `
     -NoNewWindow -PassThru
-$processes += @{ Name = "Host"; Proc = $hostProc; Log = $hostLog }
+$processes += @{ Name = "Host"; Proc = $hostProc; Log = $hostLog; ErrLog = $hostErrLog }
 
 Start-Sleep -Seconds 2
 
@@ -83,14 +93,16 @@ for ($i = 1; $i -lt $PeerCount; $i++) {
         "--lan", "--name", $peerName
         "--join", "127.0.0.1:$HostPort"
         "--port", $listenPort.ToString()
-        "--test", "--expect-peers", $PeerCount.ToString()
+    ) + $testFlag + @(
+        "--expect-peers", $PeerCount.ToString()
         "--test-timeout", $TestTimeout.ToString()
     )
+    $peerErrLog = Join-Path $logDir "${peerName}_err.log"
     Write-Host "Starting $peerName (listen $listenPort, joining 127.0.0.1:$HostPort)..." -ForegroundColor Yellow
     $peerProc = Start-Process -FilePath $GodotPath -ArgumentList $peerArgs `
-        -RedirectStandardOutput $peerLog -RedirectStandardError (Join-Path $logDir "${peerName}_err.log") `
+        -RedirectStandardOutput $peerLog -RedirectStandardError $peerErrLog `
         -NoNewWindow -PassThru
-    $processes += @{ Name = $peerName; Proc = $peerProc; Log = $peerLog }
+    $processes += @{ Name = $peerName; Proc = $peerProc; Log = $peerLog; ErrLog = $peerErrLog }
 
     Start-Sleep -Milliseconds 500
 }
@@ -131,16 +143,44 @@ foreach ($entry in $processes) {
     $entry.Proc.WaitForExit()
     $code = $entry.Proc.ExitCode
     $logContent = if (Test-Path $entry.Log) { Get-Content $entry.Log -Raw } else { "" }
+    $errContent = if (Test-Path $entry.ErrLog) { Get-Content $entry.ErrLog -Raw } else { "" }
 
     $testLine = ($logContent -split "`n" | Where-Object { $_ -match "TEST_RESULT:" }) | Select-Object -Last 1
 
-    $passed = $testLine -match "PASS"
+    $exceptionLines = @($logContent, $errContent) | ForEach-Object { $_ -split "`n" } |
+        Where-Object { $_ -match "Unhandled exception|System\.[A-Za-z.]*Exception" }
+
+    $passed = ($testLine -match "PASS") -and -not $exceptionLines
     if ($passed) {
         Write-Host "  $($entry.Name): PASS (exit $code)" -ForegroundColor Green
     } else {
         Write-Host "  $($entry.Name): FAIL (exit $code)" -ForegroundColor Red
         if ($testLine) { Write-Host "    $testLine" -ForegroundColor DarkGray }
+        if ($exceptionLines) { $exceptionLines | Select-Object -First 5 | ForEach-Object { Write-Host "    $_" -ForegroundColor DarkGray } }
         $allPassed = $false
+    }
+}
+
+# --- Consensus: every instance must report identical consensus_<name>=<value> tokens ---
+$consensus = @{}
+foreach ($entry in $processes) {
+    $logContent = if (Test-Path $entry.Log) { Get-Content $entry.Log -Raw } else { "" }
+    $testLine = ($logContent -split "`n" | Where-Object { $_ -match "TEST_RESULT:" }) | Select-Object -Last 1
+    foreach ($m in [regex]::Matches([string]$testLine, "consensus_(\w+)=(\S+)")) {
+        $key = $m.Groups[1].Value
+        if (-not $consensus.ContainsKey($key)) { $consensus[$key] = @{} }
+        $consensus[$key][$entry.Name] = $m.Groups[2].Value
+    }
+}
+foreach ($key in $consensus.Keys) {
+    $values = @($consensus[$key].Values | Sort-Object -Unique)
+    $missing = $processes.Count - $consensus[$key].Count
+    if ($values.Count -ne 1 -or $missing -gt 0) {
+        $detail = ($consensus[$key].GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" }) -join ", "
+        Write-Host "  CONSENSUS MISMATCH on ${key}: $detail" -ForegroundColor Red
+        $allPassed = $false
+    } else {
+        Write-Host "  consensus ${key}: $($values[0])" -ForegroundColor Green
     }
 }
 

@@ -1,0 +1,79 @@
+using Godot;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+public partial class PhysicalFactoryItem : GMPOBox3DBody
+{
+
+    [Export]
+    public string itemID;
+
+    [Export]
+    public bool canBePickTarget;
+
+    [Export]
+    public bool canBeGrabbed;
+
+    [Export]
+    public bool canBePickedUp;
+
+    [Export]
+    public bool canBeInteractedWith;
+    [Export]
+    public Godot.Collections.Array<ItemTags> tags;
+
+    /// <summary>Set once a pickup has been granted, so later simultaneous requests lose.</summary>
+    bool taken;
+
+    public override void _Ready()
+    {
+        base._Ready();
+        GD.Print(GetType());
+    }
+
+    /// <summary>
+    /// Asks this item's authority to let <paramref name="player"/> pick it up. If several players try at
+    /// once, the authority accepts only the first; everyone then sees the same player get it.
+    /// </summary>
+    public void RequestPickup(FactoryPlayer player)
+    {
+        RPCManager.RequestFromAuthority(this, nameof(_RequestPickup), [player.id]);
+    }
+
+    // Runs on this item's authority.
+    [RPC]
+    private void _RequestPickup(ulong playerObjectId)
+    {
+        if (taken || authority != Lobby.selfPeerID)
+        {
+            return;
+        }
+        // Someone else is holding it (grab tool).
+        if (GameWorld.heldBy.TryGetValue(id, out ulong holder) && holder != RPCManager.sender)
+        {
+            return;
+        }
+        // The requester must actually control the player it names.
+        if (!GameWorld.syncedObjs.TryGetValue(playerObjectId, out GMPObject p) || p.authority != RPCManager.sender)
+        {
+            return;
+        }
+        taken = true;
+        RPCManager.RPC(id, nameof(_ApplyPickup), [playerObjectId]);
+    }
+
+    [RPC(requireAuthority = true)]
+    private void _ApplyPickup(ulong playerObjectId)
+    {
+        taken = true;
+        if (GameWorld.syncedObjs.TryGetValue(playerObjectId, out GMPObject p) && p is FactoryPlayer player && player.isLocal)
+        {
+            player.ReceivePickedUpItem(itemID);
+        }
+        GameWorld.RemoveLocal(id);
+    }
+}
+

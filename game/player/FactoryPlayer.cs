@@ -1,9 +1,14 @@
 using Godot;
-using Godot.Collections;
 using ImGuiNET;
 using PolyType;
-using System;
 
+/// <summary>
+/// The networked player character. This file holds identity, movement, mouse look, input dispatch
+/// and state sync; features live in partial-class files alongside it:
+/// FactoryPlayer.Interaction.cs (looks-at target + interact), FactoryPlayer.Grab.cs (physics grab tool)
+/// and FactoryPlayer.Equipment.cs (hotbar, in-hand item, dropping). The inventory screen is
+/// <see cref="InventoryUI"/> (the PlayerHUD root).
+/// </summary>
 public partial class FactoryPlayer : GMPOBox3DCharacter
 {
     public static bool displayPlayerDebugInfo = false;
@@ -23,34 +28,16 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
     Vector3 Velocity = Vector3.Zero;
 
-    [Export] Camera3D camera;
+    [Export] public Camera3D camera;
     [Export] Node3D head;
     [Export] Node3D body;
     [Export] Node3D itemHolder;
 
     Label3D playerNameLabel;
-    public bool inventoryOpen = false;
+    public InventoryUI hud;
 
-    [Export] public float pickRange = 5f;
-    public Node3D pickTarget;
-    private FactoryItem pickTargetResource;
-    public Control hud;
-
-    Node3D currentInHandInstance;
-    int previousHotbarSlot = -1;
-    private bool isGrabbing;
-    private PhysicalFactoryItem grabTarget;
-    public Node3D grabNode;
-    public float defaultGrabLocation;
-    private float grabMinimumDistance = -1f;
-    private float grabDistanceIncrement = .25f;
-    private float grabMaximumDistance = -4f;
-
-    private float grabForceBase = 25f;
-    private float grabForceExponent = 1.2f;
-    private float grabDamping = 10f;
-    private float grabNearDamping = 5f;
-    private float grabMaxForce = 400f;
+    /// <summary>True on the peer that controls this player (its authority).</summary>
+    public bool isLocal => authority == Lobby.selfPeerID;
 
     public override void _Ready()
     {
@@ -58,47 +45,68 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         gravity = gravityDirection * gravityMagnitude;
         camera = GetNode<Camera3D>("Camera3D");
         itemHolder = camera.GetNode<Node3D>("ItemHolder");
-        hud = GetNode<Control>("PlayerHUD");
-        grabNode = GetNode<Node3D>("%grabNode");
-
-        defaultGrabLocation = grabNode.Position.Z;
+        hud = GetNode<InventoryUI>("PlayerHUD");
+        ReadyInteraction();
+        ReadyGrab();
     }
 
-    public void SyncInventory()
+    public override void AfterInit()
     {
-        RPCManager.RPC(this, "_SyncInventory", [inventory.slots]);
-    }
-
-    private void _SyncInventory(InventorySlot[] slots)
-    {
-        if (authority!=Lobby.selfPeerID)
+        playerNameLabel = GetNode<Label3D>("label");
+        playerNameLabel.Text = Lobby.members[controllingPeerID].Name;
+        if (isLocal)
         {
-            this.inventory.slots = slots;
-            this.inventory.InventoryUpdated();
+            camera.Current = true;
+            Input.MouseMode = Input.MouseModeEnum.Captured;
+            playerNameLabel.Hide();
+            body.Hide();
+            head.Hide();
+            SubscribeGrabClaims();
+            // Replicate every local inventory change (pickups, drops, drag-and-drop, bootstrap seed).
+            inventory.InventoryChanged += SyncInventory;
         }
-
+        else
+        {
+            camera.Current = false;
+        }
+        UpdateEquippedItem();
     }
+
+    public override void _ExitTree()
+    {
+        // Unconditional: on LeaveLobby selfPeerID is already cleared by the time this runs.
+        UnsubscribeGrabClaims();
+    }
+
+    // ---- input ------------------------------------------------------------
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (Lobby.selfPeerID != authority) return;
+        if (!isLocal) return;
 
-        if (@event is InputEventMouseButton mb && mb.Pressed && !inventoryOpen)
+        if (HandleMouseAndMenuInput(@event)) return;
+        HandleScrollWheel(@event);
+        HandleInteractionInput(@event);
+        HandleEquipmentInput(@event);
+        HandleGrabInput(@event);
+    }
+
+    /// <summary>Mouse capture, mouse look, Escape and the inventory key. Returns true if the event was consumed.</summary>
+    bool HandleMouseAndMenuInput(InputEvent @event)
+    {
+        if (@event is InputEventMouseButton mb && mb.Pressed && !hud.isOpen)
         {
             Input.MouseMode = Input.MouseModeEnum.Captured;
         }
 
-        if (@event is InputEventKey key && key.Pressed)
+        if (@event is InputEventKey key && key.Pressed && key.Keycode == Key.Escape)
         {
-            if (key.Keycode == Key.Escape)
+            if (hud.isOpen)
             {
-                if (inventoryOpen)
-                {
-                    CloseInventory();
-                    return;
-                }
-                Input.MouseMode = Input.MouseModeEnum.Visible;
+                hud.Close();
+                return true;
             }
+            Input.MouseMode = Input.MouseModeEnum.Visible;
         }
 
         if (@event is InputEventMouseMotion motion && Input.MouseMode == Input.MouseModeEnum.Captured)
@@ -112,328 +120,55 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             );
         }
 
-        // Interaction handling
-        if (@event.IsActionPressed("interact"))
-        {
-            // Item pickup
-            if (pickTarget != null && pickTarget is PhysicalFactoryItem item)
-            {
-                Logging.Log($"You just pressed interact on {item.Name}!", "Player");
-                if (item.canBePickedUp)
-                {
-                    int leftover = inventory.AddItem(item.itemID, 1);
-                    UpdateEquippedItem();
-                    if (leftover == 0)
-                    {
-                        GameWorld.DespawnObject(item.id);
-                    }
-                }
-            }
-            // Button pressing
-            if (pickTarget != null && pickTarget is BasicButton button)
-            {
-                Logging.Log($"You just pressed interact on {button.Name}!", "Player");
-                button.OnPressed();
-            }
-        }
-
-        // Inventory toggle
         if (@event.IsActionPressed("inventory"))
         {
-            if (inventoryOpen)
-                CloseInventory();
+            if (hud.isOpen)
+                hud.Close();
             else
-                OpenInventory();
+                hud.Open();
         }
+        return false;
+    }
 
+    /// <summary>The scroll wheel moves the grab point while grabbing, otherwise cycles the hotbar.</summary>
+    void HandleScrollWheel(InputEvent @event)
+    {
+        if (hud.isOpen) return;
 
+        int step = @event.IsActionPressed("scrollDown") ? +1 : @event.IsActionPressed("scrollUp") ? -1 : 0;
+        if (step == 0) return;
 
-
-        // Scroll wheel hotbar cycling
-        if (@event.IsActionPressed("scrollDown"))
-        {
-            if (!inventoryOpen && grabTarget == null)
-            {
-                if (inventory.ActiveHotbarSlot == -1 || inventory.ActiveHotbarSlot > Inventory.HotbarSlots)
-                {
-                    inventory.ActiveHotbarSlot = 0;
-                }
-                inventory.ActiveHotbarSlot = (inventory.ActiveHotbarSlot + 1) % Inventory.HotbarSlots;
-                UpdateEquippedItem();
-            }
-            else if (!inventoryOpen && grabTarget != null)
-            {
-
-                    grabNode.Position = new Vector3(grabNode.Position.X, grabNode.Position.Y, Math.Min(grabNode.Position.Z + grabDistanceIncrement, grabMinimumDistance));
-
-            }
-        }
-        if (@event.IsActionPressed("scrollUp"))
-        {
-            if (!inventoryOpen && grabTarget == null)
-            {
-                if (inventory.ActiveHotbarSlot == -1 || inventory.ActiveHotbarSlot > Inventory.HotbarSlots)
-                {
-                    inventory.ActiveHotbarSlot = 0;
-                }
-                inventory.ActiveHotbarSlot = (inventory.ActiveHotbarSlot - 1 + Inventory.HotbarSlots) % Inventory.HotbarSlots;
-                UpdateEquippedItem();
-            }
-            else if (!inventoryOpen && grabTarget != null)
-            {
-
-                    grabNode.Position = new Vector3(grabNode.Position.X, grabNode.Position.Y, Math.Max(grabNode.Position.Z - grabDistanceIncrement, grabMaximumDistance));
-                
-
-            }
-        }
-    
-
-        // Drop item (Q) — drop 1 from active hotbar slot
-        if (@event.IsActionPressed("drop"))
-        {
-            DropFromActiveSlot(1);
-        }
-
-        if (@event.IsActionPressed("primary"))
-
-        {
-            if (inventory.ActiveHotbarSlot==-1 || inventory.slots[inventory.ActiveHotbarSlot].IsEmpty)
-            {
-                Logging.Log($"empty click: {inventory.ActiveHotbarSlot}","GameWorld");
-                if (pickTarget != null && pickTarget is PhysicalFactoryItem item && item.canBeGrabbed)
-                {
-                    Logging.Log($"starting grab on {item.Name}", "Player");
-                    grabTarget = item;
-                    grabTarget.Set("gravity_scale", 0.1f);
-                    grabTarget.Set("linear_damping", 5f);
-                    grabTarget.Set("angular_damping", 4f);
-                    GameWorld.Claim(item);
-                }
-
-            }
-        }
-        if (@event.IsActionReleased("primary"))
-        {
-            if (grabTarget!=null)
-            {
-                grabTarget.Set("gravity_scale", 1f);
-                grabTarget.Set("linear_damping", 0f);
-                grabTarget.Set("angular_damping", 0f);
-                Logging.Log($"ending grab on {grabTarget.Name}", "Player");
-                grabNode.Position = new Vector3(grabNode.Position.X, grabNode.Position.Y, defaultGrabLocation);
-                grabTarget = null;
-            }
-
-        }
+        if (isGrabbing)
+            MoveGrabPoint(step);
         else
-        {
-            // Hotbar slot selection via number keys
-            for (int i = 0; i <= 9; i++)
-            {
-                if (@event.IsActionPressed($"slot{i}"))
-                {
-                    if (inventory.ActiveHotbarSlot == i)
-                    {
-                        inventory.ActiveHotbarSlot = -1;
-                        UpdateEquippedItem();
-                        break;
-                    }
-                    inventory.ActiveHotbarSlot = i;
-                    UpdateEquippedItem();
-                    break;
-                }
-
-            }
-        }
+            CycleHotbar(step);
     }
 
-    void OpenInventory()
-    {
-        inventoryOpen = true;
-        hud.GetNode<Control>("InventoryScreen").Show();
-        hud.MouseFilter = Control.MouseFilterEnum.Stop;
-        Input.MouseMode = Input.MouseModeEnum.Visible;
-    }
-
-    void CloseInventory()
-    {
-        inventoryOpen = false;
-        hud.GetNode<Control>("InventoryScreen").Hide();
-        hud.MouseFilter = Control.MouseFilterEnum.Ignore;
-        Input.MouseMode = Input.MouseModeEnum.Captured;
-    }
-
-    public void UpdateEquippedItem()
-    {
-        if (inventory.GetEquippedItem()==null)
-        {
-            if (currentInHandInstance != null)
-            {
-                currentInHandInstance.QueueFree();
-                currentInHandInstance = null;
-            }
-            return;
-        }
-        if (currentInHandInstance != null)
-        {
-            currentInHandInstance.QueueFree();
-            currentInHandInstance = null;
-        }
-
-        FactoryItem equipped = FactoryItem.Fetch(inventory.GetEquippedItem());
-        if (equipped?.inHandScene != null)
-        {
-            currentInHandInstance = equipped.inHandScene.Instantiate<Node3D>();
-        }
-        else if (equipped!= null && equipped?.inHandScene == null) 
-        {
-            currentInHandInstance  = ResourceLoader.Load<PackedScene>("res://game/items/factoryItems/defaultHeldBox.tscn").Instantiate<Node3D>();
-            (currentInHandInstance as DefaultHeldBox).boxInit(equipped.itemID);
-           // (currentInHandInstance as DefaultHeldBox).Disable();
-        }
-        itemHolder.AddChild(currentInHandInstance);
-        previousHotbarSlot = inventory.ActiveHotbarSlot;
-    }
-
-    public void DropFromActiveSlot(int count)
-    {
-        var slot = inventory.GetSlot(inventory.ActiveHotbarSlot);
-        if (slot.IsEmpty) return;
-
-        int toDrop = Math.Min(count, slot.Count);
-        Vector3 dropPos = camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * 2f;
-        Vector3 dropRot = GlobalRotation;
-
-        for (int i = 0; i < toDrop; i++)
-        {
-            Vector3 offset = new Vector3(
-                (float)(Random.Shared.NextDouble() - 0.5) * 0.5f,
-                0,
-                (float)(Random.Shared.NextDouble() - 0.5) * 0.5f
-            );
-            if (FactoryItem.Fetch(slot.itemID).droppedScene == null)
-            {
-                ulong droppedID = GameWorld.SpawnScene("res://game/items/factoryItems/defaultDroppedBox.tscn", dropPos + offset, dropRot);
-                (GameWorld.syncedObjs[droppedID] as DefaultDroppedBox).boxInit(slot.itemID);
-            }
-            else
-            {
-                GameWorld.SpawnScene(FactoryItem.Fetch(slot.itemID).droppedScene.ResourcePath, dropPos + offset, dropRot);
-            }
-
-        }
-
-        inventory.RemoveFromSlot(inventory.ActiveHotbarSlot, toDrop);
-        UpdateEquippedItem();
-    }
-
-    public override void _Process(double delta)
-    {
-        if (displayPlayerDebugInfo && Lobby.selfPeerID == authority)
-        {
-            UpdateDebugUI();
-        }
-    }
-
-    private void UpdateDebugUI()
-    {
-        var cell = Grid.WorldToCell(GlobalPosition);
-
-        ImGui.Begin("debugui player");
-        ImGui.Text($"Peer ID: {controllingPeerID} | Team: {team} | Human: {isHuman}");
-        ImGui.Text($"Position: {GlobalPosition} | Velocity: {cachedVel}");
-        ImGui.Text($"Grid Cell: ({cell.X}, {cell.Y}, {cell.Z})");
-        ImGui.Text($"Highlighted Cell: {(Grid.highlightedCell is (int, int, int) hc ? $"({hc.X}, {hc.Y}, {hc.Z})" : "none")}");
-        ImGui.Text($"On Floor: {IsOnFloor()}");
-        ImGui.Text($"Active Hotbar Slot: {inventory.ActiveHotbarSlot}");
-        ImGui.Text($"Pick Target: {pickTarget?.Name ?? "none"}");
-        ImGui.Text($"Grab Target: {grabTarget?.Name ?? "none"}");
-        ImGui.Text($"Inventory Open: {inventoryOpen}");
-        ImGui.End();
-    }
+    // ---- movement ---------------------------------------------------------
 
     public override void _PhysicsProcess(double delta)
     {
-        if (Lobby.selfPeerID != authority)
+        if (!isLocal)
         {
+            // Remote copy: keep sliding along the last replicated velocity between state updates.
             Call("move_and_slide", [Velocity, delta]);
             return;
         }
 
-        if (grabTarget != null)
-        {
-            Vector3 displacement = grabNode.GlobalPosition - grabTarget.GlobalPosition;
-            float distance = displacement.Length();
+        ApplyGrabForce();
+        UpdatePickTarget();
+        ApplyMovement(delta);
+    }
 
-            if (distance > 0.001f)
-            {
-                Vector3 forceDir = displacement / distance;
-
-                float forceMagnitude = Mathf.Min(
-                    grabForceBase * (Mathf.Exp(grabForceExponent * distance) - 1f),
-                    grabMaxForce
-                );
-                Vector3 attractionForce = forceDir * forceMagnitude;
-
-                Vector3 velocity = (Vector3)grabTarget.Get("linear_velocity");
-                float dampingScale = grabDamping * (1f + grabNearDamping / Mathf.Max(distance, 0.1f));
-                Vector3 dampingForce = -velocity * dampingScale;
-
-                grabTarget.ApplyCentralForce(attractionForce + dampingForce);
-            }
-        }
-         
-        Dictionary<string, Variant> ray = GameWorld.Raycast(camera.GlobalPosition, camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * pickRange);
-        if (ray["hit"].AsBool())
-        {
-            Node hit = (Node)ray["collider"].AsGodotObject();
-            if (hit is PhysicalFactoryItem item)
-            {
-                pickTarget = item;
-                pickTargetResource = FactoryItem.Fetch(item.itemID);
-                hud.GetNode<Label>("%HoverInfoName").Show();
-                hud.GetNode<Label>("%HoverInfoName").Text = pickTargetResource.displayName;
-                if (item.canBePickedUp)
-                {
-                    hud.GetNode<Label>("%HoverInfoBelow").Show();
-                    hud.GetNode<Label>("%HoverInfoBelow").Text = "Press F to pickup!";
-                }
-                else
-                {
-                    hud.GetNode<Label>("%HoverInfoBelow").Hide();
-                }
-            }
-            else if (hit is BasicButton button)
-            {
-                pickTarget = button;
-                hud.GetNode<Label>("%HoverInfoBelow").Show();
-                hud.GetNode<Label>("%HoverInfoBelow").Text = "Press F to Activate.";
-            }
-            else
-            {
-                pickTarget = null;
-                hud.GetNode<Label>("%HoverInfoName").Hide();
-                hud.GetNode<Label>("%HoverInfoBelow").Hide();
-            }
-        }
-        else
-        {
-            pickTarget = null;
-            hud.GetNode<Label>("%HoverInfoName").Hide();
-            hud.GetNode<Label>("%HoverInfoBelow").Hide();
-        }
-
+    void ApplyMovement(double delta)
+    {
         if (!IsOnFloor())
         {
             Velocity += gravity * (float)delta;
         }
-        else
+        else if (Input.IsActionJustPressed("jump"))
         {
-            if (Input.IsActionJustPressed("jump"))
-            {
-                Velocity = Velocity + JumpVector;
-            }
+            Velocity = Velocity + JumpVector;
         }
 
         Vector2 inputDir = Input.GetVector("left", "right", "forward", "backward");
@@ -452,24 +187,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         Velocity = Call("move_and_slide", [Velocity, delta]).AsVector3();
     }
 
-    public override void AfterInit()
-    {
-        playerNameLabel = GetNode<Label3D>("label");
-        playerNameLabel.Text = Lobby.members[controllingPeerID].Name;
-        if (Lobby.selfPeerID == authority)
-        {
-            camera.Current = true;
-            Input.MouseMode = Input.MouseModeEnum.Captured;
-            playerNameLabel.Hide();
-            body.Hide();
-            head.Hide();
-        }
-        else
-        {
-            camera.Current = false;
-        }
-        UpdateEquippedItem();
-    }
+    // ---- state sync -------------------------------------------------------
 
     public override byte[] GenerateStateUpdate()
     {
@@ -481,6 +199,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             rot = this.Rotation,
             headRot = this.camera.Rotation,
             vel = this.cachedVel,
+            equippedSlot = inventory.ActiveHotbarSlot,
         };
         return GMPObject.serializer.Serialize(msg);
     }
@@ -495,6 +214,39 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         Rotation = msg.rot;
         camera.Rotation = msg.headRot;
         this.Velocity = msg.vel;
+        // Remote copies mirror the controlling peer's hotbar selection so the held item shows for everyone.
+        if (!isLocal && msg.equippedSlot != inventory.ActiveHotbarSlot)
+        {
+            inventory.ActiveHotbarSlot = msg.equippedSlot;
+            UpdateEquippedItem();
+        }
+    }
+
+    // ---- debug ------------------------------------------------------------
+
+    public override void _Process(double delta)
+    {
+        if (displayPlayerDebugInfo && isLocal)
+        {
+            UpdateDebugUI();
+        }
+    }
+
+    private void UpdateDebugUI()
+    {
+        var cell = BuildGrid.WorldToCell(GlobalPosition);
+
+        ImGui.Begin("debugui player");
+        ImGui.Text($"Peer ID: {controllingPeerID} | Team: {team} | Human: {isHuman}");
+        ImGui.Text($"Position: {GlobalPosition} | Velocity: {cachedVel}");
+        ImGui.Text($"Grid Cell: ({cell.X}, {cell.Y}, {cell.Z})");
+        ImGui.Text($"Highlighted Cell: {(BuildGrid.highlightedCell is (int, int, int) hc ? $"({hc.X}, {hc.Y}, {hc.Z})" : "none")}");
+        ImGui.Text($"On Floor: {IsOnFloor()}");
+        ImGui.Text($"Active Hotbar Slot: {inventory.ActiveHotbarSlot}");
+        ImGui.Text($"Pick Target: {pickTarget?.Name ?? "none"}");
+        ImGui.Text($"Grab Target: {grabTarget?.Name ?? "none"}");
+        ImGui.Text($"Inventory Open: {hud.isOpen}");
+        ImGui.End();
     }
 }
 
@@ -506,8 +258,6 @@ public partial record struct PlayerSync
     public Vector3 pos;
     public Vector3 rot;
     public Vector3 headRot;
-    public string[] hotbarItems;
-    public string[] gridItems;
     public int equippedSlot;
     public Vector3 vel;
 }

@@ -29,10 +29,4 @@ public partial record GameInfo
     public int levelIdx;
     public Dictionary<ulong, PlayerInfo> Players;
     public ulong tick;
-    public int bulk1size;
-    public int bulk2size;
-    public int bulk1flag;
-    public int bulk2flag;
-    public byte[] bulk1;
-    public byte[] bulk2;
 }

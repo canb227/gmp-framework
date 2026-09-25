@@ -130,6 +130,19 @@ public class Inventory
         return toRemove;
     }
 
+    /// <summary>True if at least one more of <paramref name="itemID"/> fits (a free slot or a stack with space).</summary>
+    public bool HasRoomFor(string itemID)
+    {
+        FactoryItem item = FactoryItem.Fetch(itemID);
+        if (item == null) return false;
+        foreach (InventorySlot slot in slots)
+        {
+            if (slot.IsEmpty || (slot.itemID == itemID && slot.Count < item.maxStackSize))
+                return true;
+        }
+        return false;
+    }
+
     public string GetEquippedItem()
     {
         if (ActiveHotbarSlot == -1 ) return null;

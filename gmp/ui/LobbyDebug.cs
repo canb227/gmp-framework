@@ -41,6 +41,20 @@ public partial class LobbyDebug : Control
     private const double TestGracePeriod = 3.0;
     private int _peakMembers;
     private readonly System.Collections.Generic.HashSet<ulong> _chatReceivedFrom = new();
+    private bool _testGame;               // --test-game: after the lobby test passes, host starts the game
+    private double _testGameSeconds = 8.0; // how long to run in-game before evaluating
+    private bool _gameStartSent;
+    private bool _gameLoaded;
+    private double _gameLoadedAt;
+    // --test-game scripted multiplayer scenario (times are seconds after load):
+    //   0.5  host spawns the claim-test cube (fixed id so every peer can find it)
+    //   2.0  every peer presses the museum button at once  -> arbitration must accept exactly one
+    //   3.0  every NON-host peer claims the cube at once   -> exactly one non-host winner everywhere
+    //   4.0  host alone presses the button                 -> button ends 2 presses, spawner off
+    private const ulong TestCubeId = 0x7E57C0BE;
+    private const string TestCubeScene = "res://game/dev/items/test_1x1x1cube.tscn";
+    private const string SeedItemId = "test_1x1x1cubePLACEABLE";
+    private int _scenarioStep;
 
     // Cached nodes.
     private Button _backButton;
@@ -155,18 +169,52 @@ public partial class LobbyDebug : Control
             }
             if (_testElapsed - _testPassedAt >= TestGracePeriod)
             {
-                _testDone = true;
-                Log($"TEST PASS — peak {_peakMembers} peers, chat from {_chatReceivedFrom.Count} remote peer(s), sent {_autoTick} msg(s)");
-                GD.Print($"TEST_RESULT:PASS peers={_peakMembers} chat_from={_chatReceivedFrom.Count} sent={_autoTick}");
-                GetTree().Quit(0);
-                return;
+                if (!_testGame)
+                {
+                    _testDone = true;
+                    Log($"TEST PASS — peak {_peakMembers} peers, chat from {_chatReceivedFrom.Count} remote peer(s), sent {_autoTick} msg(s)");
+                    GD.Print($"TEST_RESULT:PASS peers={_peakMembers} chat_from={_chatReceivedFrom.Count} sent={_autoTick}");
+                    GetTree().Quit(0);
+                    return;
+                }
+                if (Lobby.isHost && !_gameStartSent)
+                {
+                    _gameStartSent = true;
+                    Log("TEST host starting game");
+                    Lobby.SendStartGame();
+                }
             }
         }
+
+        if (_testGame && _gameLoaded)
+            RunGameScenario(_testElapsed - _gameLoadedAt);
+
+        // --test-game: evaluate once the world has been running for _testGameSeconds.
+        if (_testGame && _gameLoaded && _testElapsed - _gameLoadedAt >= _testGameSeconds)
+        {
+            _testDone = true;
+            var players = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().ToList();
+            // Every copy of every player (local and remote) must hold the bootstrap seed item.
+            bool invOk = players.Count > 0 && players.All(p => p.inventory.slots.Any(sl => sl.itemID == SeedItemId && sl.Count == 1));
+            ulong claimAuthority = GameWorld.syncedObjs.TryGetValue(TestCubeId, out GMPObject cube) ? cube.authority : 0;
+            bool claimOk = claimAuthority != 0 && claimAuthority != Lobby.hostID && Lobby.members.ContainsKey(claimAuthority);
+            BasicButton button = FindTestButton();
+            ObjectSpawner spawner = button?.targetObjectSpawner.FirstOrDefault();
+            string buttonState = button == null ? "missing" : $"{button.acceptedPresses}:{spawner?.spawning}";
+            bool buttonOk = buttonState == "2:False";
+            bool ok = players.Count == _expectPeers && GameWorld.inboundTickCount > 0 && invOk && claimOk && buttonOk;
+            string summary = $"players={players.Count}/{_expectPeers} synced={GameWorld.syncedObjs.Count} inbound_ticks={GameWorld.inboundTickCount} inv_ok={invOk} consensus_claim={claimAuthority} consensus_button={buttonState}";
+            Log($"TEST GAME {(ok ? "PASS" : "FAIL")} — {summary}");
+            GD.Print($"TEST_RESULT:{(ok ? "PASS" : "FAIL")} {summary}");
+            GetTree().Quit(ok ? 0 : 1);
+            return;
+        }
+
         if (_testElapsed >= _testTimeout)
         {
             _testDone = true;
-            Log($"TEST FAIL — timeout after {_testTimeout}s (peak_peers={_peakMembers}/{_expectPeers}, chat_from={_chatReceivedFrom.Count}/{_expectPeers - 1}, sent={_autoTick})");
-            GD.Print($"TEST_RESULT:FAIL peak_peers={_peakMembers}/{_expectPeers} chat_from={_chatReceivedFrom.Count}/{_expectPeers - 1} sent={_autoTick} elapsed={_testElapsed:F1}s");
+            Log($"TEST FAIL — timeout after {_testTimeout}s (peak_peers={_peakMembers}/{_expectPeers}, chat_from={_chatReceivedFrom.Count}/{_expectPeers - 1}, sent={_autoTick}, game_loaded={_gameLoaded})");
+            GD.Print($"TEST_RESULT:FAIL peak_peers={_peakMembers}/{_expectPeers} chat_from={_chatReceivedFrom.Count}/{_expectPeers - 1} sent={_autoTick} game_loaded={_gameLoaded} elapsed={_testElapsed:F1}s");
             GetTree().Quit(1);
         }
     }
@@ -385,6 +433,12 @@ public partial class LobbyDebug : Control
     private void DoneLoading()
     {
         Hide();
+        if (_testGame && !_gameLoaded)
+        {
+            _gameLoaded = true;
+            _gameLoadedAt = _testElapsed;
+            Log("TEST game loaded — running in-game checks");
+        }
     }
 
     // ---- rendering --------------------------------------------------------
@@ -433,6 +487,7 @@ public partial class LobbyDebug : Control
     //   LAN:   -- --name A --host 2272 --auto
     //          -- --name B --join 127.0.0.1:2272 --port 9101 --auto
     //   Test:  -- --lan --name A --host 2272 --test --expect-peers 3 --test-timeout 30
+    //          -- --lan --name A --host 2272 --test-game [--test-game-seconds 8] --expect-peers 3
     //   Steam: -- --steam --name A --host
     //          -- --steam --name B --join <steamid>
     private void HandleCmdline()
@@ -460,6 +515,11 @@ public partial class LobbyDebug : Control
                 case "--test-timeout":
                     string tt = Next(args, ref i);
                     if (tt != null) double.TryParse(tt, out _testTimeout);
+                    break;
+                case "--test-game": _testMode = true; _testGame = true; auto = true; break;
+                case "--test-game-seconds":
+                    string gs = Next(args, ref i);
+                    if (gs != null) double.TryParse(gs, out _testGameSeconds);
                     break;
             }
         }
@@ -510,6 +570,35 @@ public partial class LobbyDebug : Control
             AddChild(timer);
         }
     }
+
+    private void RunGameScenario(double t)
+    {
+        if (_scenarioStep == 0 && t >= 0.5)
+        {
+            _scenarioStep++;
+            if (Lobby.isHost)
+                GameWorld.SpawnScene(TestCubeScene, new Vector3(0, 3, 0), default, new GMPOInitData(TestCubeId, 0, 0, 0, false));
+        }
+        else if (_scenarioStep == 1 && t >= 2.0)
+        {
+            _scenarioStep++;
+            FindTestButton()?.OnPressed();
+        }
+        else if (_scenarioStep == 2 && t >= 3.0)
+        {
+            _scenarioStep++;
+            if (!Lobby.isHost && GameWorld.syncedObjs.TryGetValue(TestCubeId, out GMPObject cube))
+                GameWorld.Claim(cube as PhysicalFactoryItem);
+        }
+        else if (_scenarioStep == 3 && t >= 4.0)
+        {
+            _scenarioStep++;
+            if (Lobby.isHost)
+                FindTestButton()?.OnPressed();
+        }
+    }
+
+    private static BasicButton FindTestButton() => GameWorld.b3droot?.FindChild("Button", true, false) as BasicButton;
 
     private void AutoChat()
     {

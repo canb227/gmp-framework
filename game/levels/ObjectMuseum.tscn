@@ -11,13 +11,13 @@
 [ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="8_5negq"]
 [ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/SkyDome.gd" id="9_vmujb"]
 [ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="10_8o1nu"]
-[ext_resource type="Script" uid="uid://buq3xkquc7nsd" path="res://game/scripts/ObjectSpawner.cs" id="14_75n5a"]
+[ext_resource type="Script" uid="uid://buq3xkquc7nsd" path="res://game/props/ObjectSpawner.cs" id="14_75n5a"]
 [ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="14_aqpx8"]
-[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/items/PhysicalFactoryItem.cs" id="14_dudsn"]
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/items/world/PhysicalFactoryItem.cs" id="14_dudsn"]
 [ext_resource type="Texture2D" uid="uid://c8knlhvemp8jf" path="res://game/assets/textures/grass_1/grass_ao.png" id="15_2usgl"]
-[ext_resource type="Script" uid="uid://cthpe3o2ur5ir" path="res://game/scripts/BasicButton.cs" id="15_aqpx8"]
-[ext_resource type="PackedScene" uid="uid://pkwdmuwpvbbu" path="res://game/items/factoryMachines/ConveyorBelt.tscn" id="18_dudsn"]
-[ext_resource type="PackedScene" uid="uid://ddpfwffpsstew" path="res://game/items/factoryMachines/ConveyorBelt(UpSlope).tscn" id="19_ju7n5"]
+[ext_resource type="Script" uid="uid://cthpe3o2ur5ir" path="res://game/props/BasicButton.cs" id="15_aqpx8"]
+[ext_resource type="PackedScene" uid="uid://pkwdmuwpvbbu" path="res://game/machines/ConveyorBelt.tscn" id="18_dudsn"]
+[ext_resource type="PackedScene" uid="uid://ddpfwffpsstew" path="res://game/machines/ConveyorBeltUpSlope.tscn" id="19_ju7n5"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
 material = ExtResource("1_2usgl")

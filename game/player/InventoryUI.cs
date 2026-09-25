@@ -20,10 +20,16 @@ public partial class InventoryUI : Control
     Label tooltipDescription;
     int _hoveredSlot = -1;
 
+    Control inventoryScreen;
+
+    /// <summary>True while the full inventory screen is shown. The mouse is released and hotbar/grab scrolling and click-to-capture are suppressed; other player input still works.</summary>
+    public bool isOpen { get; private set; }
+
     public override void _Ready()
     {
         player = GetParent<FactoryPlayer>();
         inventory = player.inventory;
+        inventoryScreen = GetNode<Control>("InventoryScreen");
 
         normalStyle = new StyleBoxFlat();
         normalStyle.BgColor = new Color(0.15f, 0.15f, 0.15f, 0.8f);
@@ -96,7 +102,7 @@ public partial class InventoryUI : Control
 
     void UpdateTooltip()
     {
-        if (_hoveredSlot < 0 || !player.inventoryOpen)
+        if (_hoveredSlot < 0 || !isOpen)
         {
             itemTooltip.Hide();
             return;
@@ -156,7 +162,7 @@ public partial class InventoryUI : Control
             _lastHighlightedSlot = inventory.ActiveHotbarSlot;
         }
 
-        if (_hoveredSlot >= 0 && player.inventoryOpen)
+        if (_hoveredSlot >= 0 && isOpen)
         {
             if (!itemTooltip.Visible)
             {
@@ -238,7 +244,7 @@ public partial class InventoryUI : Control
             if (!IsDragSuccessful())
             {
                 var dragData = GetViewport().GuiGetDragData();
-                if (dragData.VariantType == Variant.Type.Int && player.inventoryOpen)
+                if (dragData.VariantType == Variant.Type.Int && isOpen)
                 {
                     int sourceSlot = dragData.AsInt32();
                     DropEntireStack(sourceSlot);
@@ -252,7 +258,7 @@ public partial class InventoryUI : Control
         var slot = inventory.GetSlot(slotIndex);
         if (slot.IsEmpty || FactoryItem.Fetch(slot.itemID).droppedScene == null) return;
 
-        var camera = player.GetNode<Camera3D>("Camera3D");
+        var camera = player.camera;
         Vector3 dropPos = camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * 2f;
         Vector3 dropRot = player.GlobalRotation;
 
@@ -268,6 +274,22 @@ public partial class InventoryUI : Control
 
         inventory.ClearSlot(slotIndex);
         player.UpdateEquippedItem();
+    }
+
+    public void Open()
+    {
+        isOpen = true;
+        inventoryScreen.Show();
+        MouseFilter = MouseFilterEnum.Stop;
+        Input.MouseMode = Input.MouseModeEnum.Visible;
+    }
+
+    public void Close()
+    {
+        isOpen = false;
+        inventoryScreen.Hide();
+        MouseFilter = MouseFilterEnum.Ignore;
+        Input.MouseMode = Input.MouseModeEnum.Captured;
     }
 
     int GetSlotIndexAtPosition(Vector2 position)
