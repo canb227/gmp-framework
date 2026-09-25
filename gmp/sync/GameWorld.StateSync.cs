@@ -35,8 +35,8 @@ public partial class GameWorld
 
     public static MessagePackSerializer pack = new();
 
-    /// <summary>Outbound state bytes allowed per physics tick: 50 KB/s spread over the physics rate.</summary>
-    private static readonly int baseMaxTickSize = 1024 * 50 / Engine.PhysicsTicksPerSecond;
+    /// <summary>Outbound state bytes allowed per physics tick: 500 KB/s spread over the physics rate.</summary>
+    private static readonly int baseMaxTickSize = 1024 * 500 / Engine.PhysicsTicksPerSecond;
 
     /// <summary>This session's per-tick budget; the host gets 4× (set in <see cref="Preload"/>).</summary>
     private static int maxTickSize = baseMaxTickSize;
@@ -95,7 +95,7 @@ public partial class GameWorld
             }
             else
             {
-                Logging.Warn($"State update for unknown object {id} (not spawned yet, or already despawned)", "GameWorld");
+                //Logging.Warn($"State update for unknown object {id} (not spawned yet, or already despawned)", "GameWorld");
             }
         }
         pendingStates.Clear();

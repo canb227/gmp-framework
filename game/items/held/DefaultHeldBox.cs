@@ -2,7 +2,7 @@ using Godot;
 using PolyType;
 using System;
 
-public partial class DefaultHeldBox : GMPONode3D
+public partial class DefaultHeldBox : HeldItem
 {
     [Export]
     public string labelName = null;
@@ -28,7 +28,7 @@ public partial class DefaultHeldBox : GMPONode3D
     public void boxInit(string itemID)
     {
         this.itemID = itemID;
-        FactoryItem item = FactoryItem.Fetch(itemID);
+        ItemInfo item = ItemInfo.Fetch(itemID);
         this.labelName = item.displayName;
         this.icon = item.icon;
         GetNode<Label3D>("%L1").Text = labelName;

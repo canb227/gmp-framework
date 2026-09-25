@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BlueprintItem" format=3]
+[gd_resource type="Resource" script_class="BlueprintItem" format=3 uid="uid://b1ntm3skln54y"]
 
 [ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/items/BlueprintItem.cs" id="1_bp"]
 [ext_resource type="Texture2D" uid="uid://bek02b146xdq7" path="res://game/assets/icons/blueprints/blueprint_conveyor_turn_left.png" id="2_icon"]

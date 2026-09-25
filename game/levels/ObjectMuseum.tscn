@@ -346,7 +346,7 @@ sphere_radius = 0.1
 script = ExtResource("15_aqpx8")
 displayName = "Button"
 animator = NodePath("AnimationPlayer")
-targetObjectSpawner = []
+targetObjectSpawner = [NodePath("../../ObjectSpawner")]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="ObjectSpawnerDisplay/Node3D/Button" unique_id=1650227249]
 libraries/ = SubResource("AnimationLibrary_ju7n5")
@@ -365,7 +365,7 @@ mesh = SubResource("BoxMesh_c5vbb")
 [node name="SpawnLever" parent="ObjectSpawnerDisplay" unique_id=1709115799 node_paths=PackedStringArray("targetObjectSpawner") instance=ExtResource("sp_lever")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -6.8255463, 0.8, 3.4)
 displayName = "Spawn Lever"
-targetObjectSpawner = []
+targetObjectSpawner = [NodePath("../ObjectSpawner")]
 
 [node name="SpawnerConveyorLine" type="Node3D" parent="." unique_id=1564043353]
 

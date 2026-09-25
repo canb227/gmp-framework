@@ -23,13 +23,15 @@ public partial class DefaultDroppedBox : PhysicalFactoryItem
 
     public void boxInit(string itemID)
     {
+
         RPCManager.RPC(this, nameof(_boxInit), [itemID]);
     }
     [RPC]
     private void _boxInit(string itemID)
     {
         this.itemID = itemID;
-        FactoryItem item = FactoryItem.Fetch(itemID);
+        ItemInfo item = ItemInfo.Fetch(itemID);
+
         this.labelName = item.displayName;
         this.icon = item.icon;
         GetNode<Label3D>("%L1").Text = labelName;

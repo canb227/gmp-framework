@@ -46,7 +46,7 @@ public partial class ObjectSpawner : Node3D
         string itemID = ItemSpawner.PickWeighted(itemWeights);
         if (itemID == null) return;
         Vector3 jitter = new Vector3(Random.Shared.NextSingle(), Random.Shared.NextSingle(), Random.Shared.NextSingle()) * 2 - Vector3.One;
-        FactoryItem.SpawnInWorld(itemID, GlobalPosition + jitter * spawnJitter, GlobalRotation);
+        ItemInfo.SpawnInWorld(itemID, GlobalPosition + jitter * spawnJitter, GlobalRotation);
         spawnedCount++;
     }
 }

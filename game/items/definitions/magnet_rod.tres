@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="ToolItem" format=3]
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
 
-[ext_resource type="Script" path="res://game/items/ToolItem.cs" id="1_tool"]
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/items/ItemInfo.cs" id="1_tool"]
 [ext_resource type="Texture2D" path="res://game/assets/icons/items/magnet_rod.png" id="2_icon"]
 [ext_resource type="PackedScene" path="res://game/items/held/MagnetRod.tscn" id="3_hand"]
 

@@ -36,7 +36,7 @@ public partial class ItemSpawner : Structure
         untilNextSpawn += interval;
         string itemID = PickWeighted(itemWeights);
         if (itemID == null) return;
-        FactoryItem.SpawnInWorld(itemID, GlobalTransform * outputPoint, GlobalRotation);
+        ItemInfo.SpawnInWorld(itemID, GlobalTransform * outputPoint, GlobalRotation);
         spawnedCount++;
     }
 

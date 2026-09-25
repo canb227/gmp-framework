@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BlueprintItem" format=3]
+[gd_resource type="Resource" script_class="BlueprintItem" format=3 uid="uid://csaidk4sxa1f3"]
 
 [ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/items/BlueprintItem.cs" id="1_bp"]
 [ext_resource type="Texture2D" uid="uid://basnc4yfd4lw3" path="res://game/assets/icons/blueprints/blueprint_conveyor_slope.png" id="2_icon"]

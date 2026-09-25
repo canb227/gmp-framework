@@ -917,7 +917,7 @@ public partial class LobbyDebug : Control
         RunResourceScenario(t);
         RunLeverScenario(t);
         // 8.5-12: host scrolls its hotbar every frame with a forced GC each time; this crashed when item
-        // definitions weren't held (GC finalizer disposing one while FactoryItem.Fetch reloaded it).
+        // definitions weren't held (GC finalizer disposing one while ItemInfo.Fetch reloaded it).
         if (Lobby.isHost && t >= 8.5 && t < 12.0)
         {
             FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
@@ -956,7 +956,7 @@ public partial class LobbyDebug : Control
         {
             _scenarioStep++;
             FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
-            if (local != null && FactoryItem.Fetch(SeedItemId) is BlueprintItem blueprint)
+            if (local != null && ItemInfo.Fetch(SeedItemId) is BlueprintItem blueprint)
                 BuildGrid.RequestPlace(local, blueprint, TestBuildCell, 1);
         }
         else if (_scenarioStep == 5 && t >= 6.0)
@@ -996,7 +996,7 @@ public partial class LobbyDebug : Control
         {
             _scenarioStep++;
             FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
-            if (Lobby.isHost && local != null && FactoryItem.Fetch(SeedItemId) is BlueprintItem blueprint && TryFindLevelWallCell(out Vector3I sunk))
+            if (Lobby.isHost && local != null && ItemInfo.Fetch(SeedItemId) is BlueprintItem blueprint && TryFindLevelWallCell(out Vector3I sunk))
             {
                 _embeddedAttempted = true;
                 BuildGrid.RequestPlace(local, blueprint, sunk, 0);
@@ -1008,7 +1008,7 @@ public partial class LobbyDebug : Control
             FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
             // Open floor in the museum (its floor's top is at y=0, a cell boundary, so the block rests flush).
             var ray = GameWorld.Raycast(new Vector3(-19, 10, -19), new Vector3(-19, -10, -19));
-            if (Lobby.isHost && local != null && ray["hit"].AsBool() && FactoryItem.Fetch(SeedItemId) is BlueprintItem blueprint)
+            if (Lobby.isHost && local != null && ray["hit"].AsBool() && ItemInfo.Fetch(SeedItemId) is BlueprintItem blueprint)
                 BuildGrid.RequestPlace(local, blueprint, BuildGrid.WorldToCell(ray["position"].AsVector3() + Vector3.Up * 0.05f), 0);
         }
     }

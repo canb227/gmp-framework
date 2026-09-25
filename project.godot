@@ -24,7 +24,6 @@ GameWorld="*uid://diwgca4ea4mq8"
 Lobby="*uid://dfuapltpe6pga"
 RpcManager="*uid://cisvc3rton0m"
 Console="*uid://dle03qiwu8337"
-Grid="*res://gmp/core/Grid.cs"
 BuildGrid="*res://game/core/BuildGrid.cs"
 
 [display]

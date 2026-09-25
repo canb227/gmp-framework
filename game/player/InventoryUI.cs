@@ -119,8 +119,8 @@ public partial class InventoryUI : Control
             return;
         }
 
-        tooltipName.Text = FactoryItem.Fetch(slot.itemID).displayName;
-        tooltipDescription.Text = FactoryItem.Fetch(slot.itemID).description;
+        tooltipName.Text = ItemInfo.Fetch(slot.itemID).displayName;
+        tooltipDescription.Text = ItemInfo.Fetch(slot.itemID).description;
         itemTooltip.Show();
     }
 
@@ -142,7 +142,7 @@ public partial class InventoryUI : Control
             }
             else
             {
-                slotIcons[i].Texture = FactoryItem.Fetch(slot.itemID).icon;
+                slotIcons[i].Texture = ItemInfo.Fetch(slot.itemID).icon;
                 slotCounts[i].Text = slot.Count > 1 ? slot.Count.ToString() : "";
             }
 
@@ -159,7 +159,7 @@ public partial class InventoryUI : Control
 
         // Name of the item in hand, shown above the hotbar.
         string equipped = inventory.GetEquippedItem();
-        heldItemName.Text = equipped == null ? "" : FactoryItem.Fetch(equipped)?.displayName ?? equipped;
+        heldItemName.Text = equipped == null ? "" : ItemInfo.Fetch(equipped)?.displayName ?? equipped;
     }
 
     public override void _Process(double delta)
@@ -203,7 +203,7 @@ public partial class InventoryUI : Control
         if (slot.IsEmpty) return default;
 
         var preview = new TextureRect();
-        preview.Texture = FactoryItem.Fetch(slot.itemID).icon;
+        preview.Texture = ItemInfo.Fetch(slot.itemID).icon;
         preview.CustomMinimumSize = new Vector2(48, 48);
         preview.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
         preview.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
@@ -264,7 +264,7 @@ public partial class InventoryUI : Control
     void DropEntireStack(int slotIndex)
     {
         var slot = inventory.GetSlot(slotIndex);
-        if (slot.IsEmpty || FactoryItem.Fetch(slot.itemID).droppedScene == null) return;
+        if (slot.IsEmpty || ItemInfo.Fetch(slot.itemID).droppedScene == null) return;
 
         var camera = player.camera;
         Vector3 dropPos = camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * 2f;
@@ -277,7 +277,7 @@ public partial class InventoryUI : Control
                 0,
                 (float)(Random.Shared.NextDouble() - 0.5) * 0.5f
             );
-            GameWorld.SpawnScene(FactoryItem.Fetch(slot.itemID).droppedScene.ResourcePath, dropPos + offset, dropRot);
+            GameWorld.SpawnScene(ItemInfo.Fetch(slot.itemID).droppedScene.ResourcePath, dropPos + offset, dropRot);
         }
 
         inventory.ClearSlot(slotIndex);

@@ -73,7 +73,7 @@ public partial class FactoryPlayer
             pickTarget = item;
             hoverInfoName.Show();
             // Items without a definition resource (e.g. test props) fall back to their id.
-            hoverInfoName.Text = FactoryItem.Fetch(item.itemID)?.displayName ?? item.itemID;
+            hoverInfoName.Text = ItemInfo.Fetch(item.itemID)?.displayName ?? item.itemID;
             if (item.canBePickedUp)
             {
                 hoverInfoBelow.Show();

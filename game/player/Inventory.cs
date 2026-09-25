@@ -65,7 +65,7 @@ public class Inventory
         if (slots[source].IsEmpty || slots[target].IsEmpty) return 0;
         if (slots[source].itemID != slots[target].itemID) return 0;
 
-        int maxStack = FactoryItem.Fetch(slots[target].itemID).maxStackSize;
+        int maxStack = ItemInfo.Fetch(slots[target].itemID).maxStackSize;
         int space = maxStack - slots[target].Count;
         int toMove = Math.Min(slots[source].Count, space);
 
@@ -82,7 +82,7 @@ public class Inventory
 
     public int AddItem(string itemID, int count = 1)
     {
-        FactoryItem item = FactoryItem.Fetch(itemID);
+        ItemInfo item = ItemInfo.Fetch(itemID);
         GD.Print($"loaded {item.itemID} by searching for {itemID}", "Inventory");
         if (item == null || count <= 0) return count;
         int remaining = count;
@@ -133,7 +133,7 @@ public class Inventory
     /// <summary>True if at least one more of <paramref name="itemID"/> fits (a free slot or a stack with space).</summary>
     public bool HasRoomFor(string itemID)
     {
-        FactoryItem item = FactoryItem.Fetch(itemID);
+        ItemInfo item = ItemInfo.Fetch(itemID);
         if (item == null) return false;
         foreach (InventorySlot slot in slots)
         {

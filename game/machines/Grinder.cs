@@ -59,7 +59,7 @@ public partial class Grinder : Structure
             for (int i = 0; output != null && i < count; i++)
             {
                 Vector3 side = new((i - (count - 1) / 2f) * outputSpacing, 0, 0);
-                FactoryItem.SpawnInWorld(output, GlobalTransform * (outputPoint + side), GlobalRotation);
+                ItemInfo.SpawnInWorld(output, GlobalTransform * (outputPoint + side), GlobalRotation);
                 producedCount++;
             }
             untilNextOutput = processTime;

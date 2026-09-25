@@ -6,7 +6,7 @@ using PolyType;
 /// The networked player character. This file holds identity, movement, mouse look, input dispatch
 /// and state sync; features live in partial-class files alongside it:
 /// FactoryPlayer.Interaction.cs (looks-at target + interact), FactoryPlayer.Grab.cs (physics grab tool),
-/// and FactoryPlayer.Equipment.cs (hotbar, in-hand item, dropping). A held <see cref="HeldTool"/> (magnet
+/// and FactoryPlayer.Equipment.cs (hotbar, in-hand item, dropping). A held <see cref="HeldItem"/> (magnet
 /// rod, blueprint preview, ...) gets first refusal on input. The inventory screen is
 /// <see cref="InventoryUI"/> (the PlayerHUD root).
 /// </summary>
@@ -89,14 +89,12 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
         if (HandleMouseAndMenuInput(@event)) return;
         HandleScrollWheel(@event);
-        if (!hud.isOpen && heldTool != null && heldTool.HandleInput(@event)) return;
+        if (!hud.isOpen && currentInHandItem != null && currentInHandItem.HandleInput(@event)) return;
         HandleInteractionInput(@event);
         HandleEquipmentInput(@event);
         HandleGrabInput(@event);
     }
 
-    /// <summary>The tool in hand, if the equipped item is a <see cref="ToolItem"/>.</summary>
-    HeldTool heldTool => currentInHandInstance as HeldTool;
 
     /// <summary>Mouse capture, mouse look, Escape and the inventory key. Returns true if the event was consumed.</summary>
     bool HandleMouseAndMenuInput(InputEvent @event)
@@ -147,7 +145,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
         if (isGrabbing)
             MoveGrabPoint(step);
-        else if (heldTool == null || !heldTool.HandleScroll(step))
+        else if (currentInHandItem == null || !currentInHandItem.HandleScroll(step))
             CycleHotbar(step);
     }
 

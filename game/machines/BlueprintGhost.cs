@@ -6,11 +6,11 @@ using Godot;
 /// <see cref="BuildGrid.TryGetPlacementTarget"/>), tinted by whether the placement is allowed, which the
 /// probe's sensors check against the simulation. Structures with a <see cref="Structure.flowArrow"/> (conveyors)
 /// also get a floating arrow showing which way they'll carry items. While shown it turns on the grid lines
-/// (<see cref="BuildGrid.placementActive"/>). Other players' copies stay empty. As a <see cref="HeldTool"/>
+/// (<see cref="BuildGrid.placementActive"/>). Other players' copies stay empty. As a <see cref="HeldItem"/>
 /// it handles its own input: "rotate" turns the preview and primary builds it (host-arbitrated, see
 /// BuildGrid.Placement.cs). Deconstructing is an interact on a structure (FactoryPlayer.Interaction.cs).
 /// </summary>
-public partial class BlueprintGhost : HeldTool
+public partial class BlueprintGhost : HeldItem
 {
     [Export] public float placeRange = 10f;
     [Export] public Color validColor = new(0.2f, 1f, 0.3f, 0.35f);
@@ -36,7 +36,7 @@ public partial class BlueprintGhost : HeldTool
     };
 
     /// <summary>Builds the preview (on the holder's peer only).</summary>
-    public override void Equip(FactoryItem item, FactoryPlayer player)
+    public override void Equip(ItemInfo item, FactoryPlayer player)
     {
         base.Equip(item, player);
         if (!isLocal)

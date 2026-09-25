@@ -16,7 +16,7 @@ using System.Collections.Generic;
 /// collide with each other, which packs them into a ball.
 /// </para>
 /// </summary>
-public partial class MagnetRod : HeldTool
+public partial class MagnetRod : HeldItem
 {
     [ExportGroup("Reach")]
     /// <summary>Items within this distance of the ball centre are caught.</summary>
@@ -53,7 +53,7 @@ public partial class MagnetRod : HeldTool
     static readonly Vector3 gravity = ProjectSettings.GetSetting("physics/3d/default_gravity_vector").AsVector3()
         * ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
 
-    public override void Equip(FactoryItem item, FactoryPlayer player)
+    public override void Equip(ItemInfo item, FactoryPlayer player)
     {
         base.Equip(item, player);
         if (!isLocal) return;

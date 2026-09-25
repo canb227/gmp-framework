@@ -232,7 +232,7 @@ public partial class RPCManager : Node
         try
         {
             object[] callArgs = DeserializeArgs(rpc.args, method.GetParameters());
-            method.Invoke(method.IsStatic ? null : target, callArgs);
+            method.Invoke(target, callArgs);
         }
         catch (TargetInvocationException e)
         {

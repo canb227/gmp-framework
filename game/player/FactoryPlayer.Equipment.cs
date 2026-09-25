@@ -9,7 +9,7 @@ public partial class FactoryPlayer
 {
     const string DefaultHeldScene = "res://game/items/held/DefaultHeldBox.tscn";
 
-    Node3D currentInHandInstance;
+    HeldItem currentInHandItem;
 
     void HandleEquipmentInput(InputEvent @event)
     {
@@ -23,27 +23,27 @@ public partial class FactoryPlayer
     /// <summary>Replaces the in-hand visual with the currently equipped item's (or clears it). Runs on every peer.</summary>
     public void UpdateEquippedItem()
     {
-        if (currentInHandInstance != null)
+        if (currentInHandItem != null)
         {
-            currentInHandInstance.QueueFree();
-            currentInHandInstance = null;
+            currentInHandItem.QueueFree();
+            currentInHandItem = null;
         }
 
         string equippedID = inventory.GetEquippedItem();
         if (equippedID == null) return;
 
-        FactoryItem equipped = FactoryItem.Fetch(equippedID);
+        ItemInfo equipped = ItemInfo.Fetch(equippedID);
         if (equipped?.inHandScene != null)
         {
-            currentInHandInstance = equipped.inHandScene.Instantiate<Node3D>();
+            currentInHandItem = equipped.inHandScene.Instantiate<HeldItem>();
         }
         else if (equipped != null)
         {
-            currentInHandInstance = ResourceLoader.Load<PackedScene>(DefaultHeldScene).Instantiate<Node3D>();
-            (currentInHandInstance as DefaultHeldBox).boxInit(equipped.itemID);
+            currentInHandItem = ResourceLoader.Load<PackedScene>(DefaultHeldScene).Instantiate<HeldItem>();
+            (currentInHandItem as DefaultHeldBox).boxInit(equipped.itemID);
         }
-        itemHolder.AddChild(currentInHandInstance);
-        if (currentInHandInstance is HeldTool tool)
+        itemHolder.AddChild(currentInHandItem);
+        if (currentInHandItem is HeldItem tool)
         {
             tool.Equip(equipped, this);
         }
@@ -66,7 +66,7 @@ public partial class FactoryPlayer
                 0,
                 (float)(Random.Shared.NextDouble() - 0.5) * 0.5f
             );
-            FactoryItem.SpawnInWorld(slot.itemID, dropPos + offset, dropRot);
+            ItemInfo.SpawnInWorld(slot.itemID, dropPos + offset, dropRot);
         }
 
         inventory.RemoveFromSlot(inventory.ActiveHotbarSlot, toDrop);

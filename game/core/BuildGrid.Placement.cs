@@ -79,7 +79,7 @@ public partial class BuildGrid
         {
             return;
         }
-        if (FactoryItem.Fetch(blueprintItemID) is not BlueprintItem blueprint || blueprint.structureScene == null)
+        if (ItemInfo.Fetch(blueprintItemID) is not BlueprintItem blueprint || blueprint.structureScene == null)
         {
             Logging.Warn($"Place request for {blueprintItemID}, which is not a blueprint with a structure scene", "BuildGrid");
             return;
@@ -128,7 +128,7 @@ public partial class BuildGrid
         StructureState state = new() { anchor = probe.anchor, quarterTurns = probe.quarterTurns };
         GMPOInitData init = new() { owner = p.requester };
         Transform3D pose = probe.structure.PlacementTransform(probe.anchor, probe.quarterTurns);
-        BlueprintItem blueprint = (BlueprintItem)FactoryItem.Fetch(p.blueprintItemID);
+        BlueprintItem blueprint = (BlueprintItem)ItemInfo.Fetch(p.blueprintItemID);
         GameWorld.SpawnScene(blueprint.structureScene, pose.Origin, pose.Basis.GetEuler(), init, GMPObject.serializer.Serialize(state));
     }
 
