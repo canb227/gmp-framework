@@ -34,6 +34,7 @@ size = Vector3(0.15, 0.35, 2)
 body_type = 0
 script = ExtResource("1_r")
 blueprintItemID = "blueprint_conveyor"
+flowArrow = 1
 
 [node name="BeltShape" type="Box3DCollisionShape" parent="."]
 box_size = Vector3(1.7, 0.1, 2)

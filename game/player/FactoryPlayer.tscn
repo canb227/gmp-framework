@@ -18,6 +18,7 @@ radius = 0.4
 
 [node name="FactoryPlayer" type="Box3DCharacterBody" unique_id=274687070 node_paths=PackedStringArray("camera", "head", "body", "itemHolder")]
 script = ExtResource("1_tuubh")
+priority = 1000
 camera = NodePath("Camera3D")
 head = NodePath("Camera3D/head")
 body = NodePath("body")

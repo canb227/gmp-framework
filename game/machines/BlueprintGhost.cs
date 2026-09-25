@@ -4,7 +4,8 @@ using Godot;
 /// The in-hand scene of every <see cref="BlueprintItem"/>. On the local player it shows a translucent
 /// <see cref="PlacementProbe"/> of the blueprint's structure where it would be built (face-snapped, see
 /// <see cref="BuildGrid.TryGetPlacementTarget"/>), tinted by whether the placement is allowed, which the
-/// probe's sensors check against the simulation. While shown it turns on the grid lines
+/// probe's sensors check against the simulation. Structures with a <see cref="Structure.flowArrow"/> (conveyors)
+/// also get a floating arrow showing which way they'll carry items. While shown it turns on the grid lines
 /// (<see cref="BuildGrid.placementActive"/>). Other players' copies stay empty. As a <see cref="HeldTool"/>
 /// it handles its own input: "rotate" turns the preview and primary builds it (host-arbitrated, see
 /// BuildGrid.Placement.cs). Deconstructing is an interact on a structure (FactoryPlayer.Interaction.cs).
@@ -14,6 +15,7 @@ public partial class BlueprintGhost : HeldTool
     [Export] public float placeRange = 10f;
     [Export] public Color validColor = new(0.2f, 1f, 0.3f, 0.35f);
     [Export] public Color invalidColor = new(1f, 0.2f, 0.2f, 0.35f);
+    [Export] public Color arrowColor = new(1f, 1f, 1f, 0.55f);
 
     public BlueprintItem blueprint => item as BlueprintItem;
     /// <summary>The anchor cell the structure would be built at, or null when not looking at anything in range.</summary>
@@ -56,6 +58,16 @@ public partial class BlueprintGhost : HeldTool
             var mesh = (MeshInstance3D)n;
             mesh.MaterialOverride = material;
             mesh.CastShadow = GeometryInstance3D.ShadowCastingSetting.Off;
+        }
+        // Conveyors show which way they'll carry items; the arrow belongs to the preview only.
+        if (FlowArrowMesh.Create(probe.structure, new StandardMaterial3D
+            {
+                ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+                Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+                AlbedoColor = arrowColor,
+            }) is MeshInstance3D arrow)
+        {
+            probe.structure.AddChild(arrow);
         }
     }
 

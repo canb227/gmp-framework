@@ -29,6 +29,8 @@ public partial class GameWorld : Node3D
             b3droot = ClassDB.Instantiate("Box3DWorld").As<Node3D>();
             b3droot.Set("debug_draw", false);
             AddChild(b3droot);
+            // Box3D reports sleep per world, not per body; hand it to the body (it has no matching wake signal).
+            b3droot.Connect("body_fell_asleep", Callable.From<Node>(body => (body as GMPOBox3DBody)?.OnFellAsleep()));
         }
     }
 

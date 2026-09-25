@@ -1,0 +1,61 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/props/Lever.cs" id="1_lever"]
+
+[sub_resource type="StandardMaterial3D" id="mat_base"]
+albedo_color = Color(0.32, 0.3, 0.33, 1)
+metallic = 0.6
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="mat_handle"]
+albedo_color = Color(0.75, 0.75, 0.78, 1)
+metallic = 0.9
+roughness = 0.3
+
+[sub_resource type="StandardMaterial3D" id="mat_knob"]
+albedo_color = Color(1, 0.55, 0.05, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="base_mesh"]
+material = SubResource("mat_base")
+size = Vector3(0.4, 0.8, 0.4)
+
+[sub_resource type="BoxMesh" id="slot_mesh"]
+material = SubResource("mat_base")
+size = Vector3(0.2, 0.08, 0.5)
+
+[sub_resource type="CylinderMesh" id="handle_mesh"]
+material = SubResource("mat_handle")
+top_radius = 0.035
+bottom_radius = 0.035
+height = 0.7
+
+[sub_resource type="SphereMesh" id="knob_mesh"]
+material = SubResource("mat_knob")
+radius = 0.09
+height = 0.18
+
+[node name="Lever" type="Box3DBody" node_paths=PackedStringArray("handle")]
+body_type = 0
+box_size = Vector3(0.6, 1.6, 0.9)
+script = ExtResource("1_lever")
+handle = NodePath("Pivot")
+
+[node name="Base" type="MeshInstance3D" parent="."]
+mesh = SubResource("base_mesh")
+position = Vector3(0, -0.4, 0)
+
+[node name="Slot" type="MeshInstance3D" parent="."]
+mesh = SubResource("slot_mesh")
+position = Vector3(0, 0.04, 0)
+
+[node name="Pivot" type="Node3D" parent="."]
+position = Vector3(0, 0.02, 0)
+
+[node name="Handle" type="MeshInstance3D" parent="Pivot"]
+mesh = SubResource("handle_mesh")
+position = Vector3(0, 0.35, 0)
+
+[node name="Knob" type="MeshInstance3D" parent="Pivot"]
+mesh = SubResource("knob_mesh")
+position = Vector3(0, 0.72, 0)

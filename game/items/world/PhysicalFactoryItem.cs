@@ -25,8 +25,36 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody
     [Export]
     public Godot.Collections.Array<ItemTags> tags;
 
+    [ExportGroup("Sync")]
+    /// <summary>
+    /// Sync <see cref="GMPObject.priority"/> while Box3D has this item asleep. While it's awake the item uses its
+    /// normal priority (<see cref="DefaultPriority"/> unless the scene sets one), so moving items win the
+    /// state-update budget over resting ones. One last update is always queued as the item falls asleep, so every
+    /// peer sees where it came to rest.
+    /// </summary>
+    [Export]
+    public int sleepingPriority = 1;
+
+    /// <summary>Sync priority of an awake item unless its scene sets its own.</summary>
+    public const int DefaultPriority = 10;
+    /// <summary>
+    /// How often (s) a sleeping item checks whether it has woken. Box3D signals falling asleep but not waking, so
+    /// waking is polled, and only while asleep; until it's noticed the item just syncs at its sleeping priority.
+    /// </summary>
+    const double WakeCheckInterval = 0.2;
+
     /// <summary>Set once a pickup has been granted, so later simultaneous requests lose.</summary>
     bool taken;
+
+    int awakePriority;
+    double untilWakeCheck;
+    /// <summary>Whether this item is asleep in this peer's simulation (tracked on the authority only).</summary>
+    public bool asleep { get; private set; }
+
+    public PhysicalFactoryItem()
+    {
+        priority = DefaultPriority; // scene/spawn values still override (see GMPObject.Init)
+    }
 
     public override void _Ready()
     {
@@ -37,6 +65,49 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody
             Set("contact_monitor", true);
             Connect("body_entered", Callable.From<Node>(OnBodyEntered));
         }
+    }
+
+    public override void AfterInit()
+    {
+        base.AfterInit();
+        awakePriority = priority; // Init has resolved the scene/spawn priority by now
+        // Level items can settle while the level loads, before this point, and Box3D won't report it again.
+        if (authority == Lobby.selfPeerID && !Call("is_awake").AsBool()) OnFellAsleep();
+    }
+
+    public override void OnAuthorityChanged()
+    {
+        base.OnAuthorityChanged();
+        // Start awake on the new authority, and wake the body so Box3D reports it when it settles again.
+        SetAwake();
+        if (authority == Lobby.selfPeerID && id != 0) Call("set_awake", [true]);
+    }
+
+    // Only the authority simulates the item (everyone else has it Kinematic), so only its sleep state counts.
+    public override void OnFellAsleep()
+    {
+        if (id == 0 || authority != Lobby.selfPeerID || awakePriority <= 0 || asleep) return;
+        asleep = true;
+        untilWakeCheck = WakeCheckInterval;
+        priority = sleepingPriority;
+        // Queue one more update so peers get the resting pose, not the last one sent while it settled.
+        priorityAccumulator = Math.Max(priorityAccumulator, awakePriority);
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        base._PhysicsProcess(delta);
+        if (!asleep) return;
+        untilWakeCheck -= delta;
+        if (untilWakeCheck > 0) return;
+        untilWakeCheck = WakeCheckInterval;
+        if (authority != Lobby.selfPeerID || Call("is_awake").AsBool()) SetAwake();
+    }
+
+    void SetAwake()
+    {
+        asleep = false;
+        if (awakePriority > 0) priority = awakePriority;
     }
 
     // Reactions run on this item's authority, which is the peer simulating it.

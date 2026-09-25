@@ -60,6 +60,9 @@ public partial class Structure : GMPOBox3DBody
     /// <summary>The blueprint given back when this structure is deconstructed.</summary>
     [Export]
     public string blueprintItemID;
+    /// <summary>Direction arrow drawn above this structure's placement preview (not the built structure); see <see cref="FlowArrowMesh"/>.</summary>
+    [Export]
+    public FlowArrow flowArrow = FlowArrow.None;
 
     public string displayName => FactoryItem.Fetch(blueprintItemID)?.displayName ?? Name;
 
@@ -100,6 +103,16 @@ public partial class Structure : GMPOBox3DBody
         return new Transform3D(basis, BuildGrid.CellToWorld(anchor) + basis * placementOffset);
     }
 
+    /// <summary>Whether the root stands exactly where <see cref="PlacementTransform"/> puts it for its anchor and turns.</summary>
+    public bool isGridAligned
+    {
+        get
+        {
+            Transform3D expected = PlacementTransform(anchor, quarterTurns);
+            return GlobalPosition.DistanceTo(expected.Origin) < 0.01f && GlobalBasis.IsEqualApprox(expected.Basis);
+        }
+    }
+
     public override byte[] GenerateStateUpdate() => null;
 
     public override void ApplyStateUpdate(byte[] update)
@@ -119,6 +132,10 @@ public partial class Structure : GMPOBox3DBody
             // Placed by hand in a level rather than built: derive the cell from where it stands.
             quarterTurns = Mathf.PosMod(Mathf.RoundToInt(GlobalRotation.Y / (Mathf.Pi / 2)), 4);
             anchor = BuildGrid.WorldToCell(GlobalPosition - BuildGrid.QuarterTurnBasis(quarterTurns) * placementOffset);
+            if (!isGridAligned)
+            {
+                Logging.Warn($"{Name} is placed off the build grid (nearest: cell {anchor}, {quarterTurns} quarter turns); snap it in the editor", "Structure");
+            }
         }
         if (!BuildGrid.Occupy(this))
         {

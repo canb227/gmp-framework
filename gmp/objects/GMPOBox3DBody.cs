@@ -71,6 +71,13 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         SetBodyType(authority == Lobby.selfPeerID ? authoredBodyType : BodyTypeEnum.Kinematic);
     }
 
+    /// <summary>
+    /// Called (via <see cref="GameWorld"/>) when Box3D puts this body to sleep in this peer's simulation, on any
+    /// peer, so check <c>authority</c> if only the simulating peer should react. Box3D has no wake signal; poll
+    /// <c>is_awake</c> to notice waking.
+    /// </summary>
+    public virtual void OnFellAsleep() { }
+
     public virtual byte[] GenerateStateUpdate()
     {
         return SyncHelpers.WriteTransform(this);

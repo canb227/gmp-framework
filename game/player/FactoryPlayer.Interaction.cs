@@ -3,14 +3,14 @@ using Godot.Collections;
 
 /// <summary>
 /// FactoryPlayer: looks-at targeting. Raycasts from the camera each physics tick to find the item or
-/// button or structure under the crosshair, shows the hover labels, and handles the "interact" action
-/// (pick up an item / press a button / deconstruct a structure).
+/// button, lever or structure under the crosshair, shows the hover labels, and handles the "interact" action
+/// (pick up an item / press a button / flip a lever / deconstruct a structure).
 /// </summary>
 public partial class FactoryPlayer
 {
     [Export] public float pickRange = 5f;
 
-    /// <summary>The PhysicalFactoryItem, BasicButton or Structure currently under the crosshair, or null.</summary>
+    /// <summary>The PhysicalFactoryItem, BasicButton, Lever or Structure currently under the crosshair, or null.</summary>
     public Node3D pickTarget { get; private set; }
 
     Label hoverInfoName;
@@ -39,6 +39,10 @@ public partial class FactoryPlayer
         {
             Logging.Log($"You just pressed interact on {button.Name}!", "Player");
             button.OnPressed();
+        }
+        if (pickTarget is Lever lever)
+        {
+            lever.OnPressed();
         }
         if (pickTarget is Structure structure && inventory.HasRoomFor(structure.blueprintItemID))
         {
@@ -86,6 +90,14 @@ public partial class FactoryPlayer
             hoverInfoName.Hide();
             hoverInfoBelow.Show();
             hoverInfoBelow.Text = "Press F to Activate.";
+        }
+        else if (hit is Lever lever)
+        {
+            pickTarget = lever;
+            hoverInfoName.Show();
+            hoverInfoName.Text = lever.displayName;
+            hoverInfoBelow.Show();
+            hoverInfoBelow.Text = lever.pulled ? "Press F to push." : "Press F to pull.";
         }
         else if (BuildGrid.FindStructure(hit) is Structure structure)
         {

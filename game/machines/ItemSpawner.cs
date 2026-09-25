@@ -34,14 +34,14 @@ public partial class ItemSpawner : Structure
         untilNextSpawn -= delta;
         if (untilNextSpawn > 0) return;
         untilNextSpawn += interval;
-        string itemID = PickItem();
+        string itemID = PickWeighted(itemWeights);
         if (itemID == null) return;
         FactoryItem.SpawnInWorld(itemID, GlobalTransform * outputPoint, GlobalRotation);
         spawnedCount++;
     }
 
-    // Weighted random pick; null if no item has a positive weight.
-    string PickItem()
+    /// <summary>Picks a key at random in proportion to its weight; null if no key has a positive weight.</summary>
+    public static string PickWeighted(Godot.Collections.Dictionary<string, float> itemWeights)
     {
         float total = 0;
         foreach (float w in itemWeights.Values) total += Mathf.Max(0f, w);

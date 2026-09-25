@@ -1,60 +1,52 @@
 using Godot;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 /// <summary>
-/// Spawns random objects from <see cref="spawnObjects"/> while <see cref="spawning"/> is on. The flag is
-/// kept in sync on every peer (toggled by <see cref="BasicButton"/>), but only the host actually spawns,
-/// so each object is created once for everyone.
+/// Level prop that spawns items, each picked at random from <see cref="itemWeights"/> in proportion to its
+/// weight, at its position plus a little random jitter. <see cref="BasicButton"/> presses call
+/// <see cref="SpawnOnce"/>; a <see cref="Lever"/> sets <see cref="spawning"/>, which spawns one item every
+/// <see cref="spawnInterval"/> seconds while on. Controls change these on every peer (host-arbitrated), but
+/// only the host actually spawns, so each item is created once for everyone.
 /// </summary>
 public partial class ObjectSpawner : Node3D
 {
-    [Export] public float spawnRate = 0.1f;
-    [Export] public bool oneShot = false;
-    [Export] public Godot.Collections.Array<PackedScene> spawnObjects;
-    private List<PackedScene> spawnObjectsList;
-    public bool spawning = false;
+    /// <summary>Item ids to spawn and their relative weights.</summary>
+    [Export] public Godot.Collections.Dictionary<string, float> itemWeights = new();
+    /// <summary>Seconds between items while <see cref="spawning"/> is on.</summary>
+    [Export] public double spawnInterval = 0.5;
+    /// <summary>Items appear up to this far (m) from the spawner on each axis, so a stream doesn't stack up.</summary>
+    [Export] public float spawnJitter = 0.5f;
 
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-        spawnObjectsList = spawnObjects.ToList();
-    }
+    /// <summary>Whether items keep spawning (set on every peer by a lever).</summary>
+    public bool spawning;
+    /// <summary>Items this peer has spawned (host only; used by the headless multiplayer test).</summary>
+    public int spawnedCount;
 
-    private double deltaTotal = 0.0;
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
+    double untilNextSpawn;
+
     public override void _Process(double delta)
     {
         if (!spawning || !Lobby.isHost)
         {
+            untilNextSpawn = 0; // the first item comes straight away when switched on
             return;
         }
-        deltaTotal += delta;
-        if (deltaTotal > spawnRate)
+        untilNextSpawn -= delta;
+        if (untilNextSpawn <= 0)
         {
-            SpawnRandomObject();
-            if (oneShot)
-            {
-                RPCManager.RPC(this, nameof(_ApplySpawning), [false]);
-            }
-            deltaTotal = 0.0;
+            untilNextSpawn = spawnInterval;
+            SpawnOnce();
         }
     }
 
-    [RPC(requireAuthority = true)]
-    private void _ApplySpawning(bool on)
+    /// <summary>Spawns one item. Only the host spawns; elsewhere this does nothing.</summary>
+    public void SpawnOnce()
     {
-        spawning = on;
-    }
-
-
-    private void SpawnRandomObject()
-    {
-        Vector3 spawnPosition = GlobalPosition;
-        spawnPosition.X += Random.Shared.NextSingle()-0.5f;
-        spawnPosition.Y += Random.Shared.NextSingle()-0.5f;
-        spawnPosition.Z += Random.Shared.NextSingle()-0.5f;
-        GameWorld.SpawnScene(spawnObjects.PickRandom().ResourcePath, spawnPosition, GlobalRotation);
+        if (!Lobby.isHost) return;
+        string itemID = ItemSpawner.PickWeighted(itemWeights);
+        if (itemID == null) return;
+        Vector3 jitter = new Vector3(Random.Shared.NextSingle(), Random.Shared.NextSingle(), Random.Shared.NextSingle()) * 2 - Vector3.One;
+        FactoryItem.SpawnInWorld(itemID, GlobalPosition + jitter * spawnJitter, GlobalRotation);
+        spawnedCount++;
     }
 }

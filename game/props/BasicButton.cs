@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// A pressable level prop that toggles its target spawners. Presses are decided by the lobby host
+/// A pressable level prop: each accepted press spawns one item from each target spawner
+/// (<see cref="ObjectSpawner.SpawnOnce"/>, which only the host carries out). Presses are decided by the lobby host
 /// (level props aren't GMPObjects): simultaneous presses within <see cref="pressCooldown"/> count once,
 /// and every peer applies the same accepted presses.
 /// </summary>
@@ -57,7 +58,7 @@ public partial class BasicButton : Node3D
         animator.Play("button_press");
         foreach (ObjectSpawner spawner in targetSpawnerList)
         {
-            spawner.spawning = !spawner.spawning;
+            spawner.SpawnOnce();
         }
     }
 }

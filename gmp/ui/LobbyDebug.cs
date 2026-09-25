@@ -50,7 +50,8 @@ public partial class LobbyDebug : Control
     //   0.5  host spawns the claim-test cube (fixed id so every peer can find it)
     //   2.0  every peer presses the museum button at once  -> arbitration must accept exactly one
     //   3.0  every NON-host peer claims the cube at once   -> exactly one non-host winner everywhere
-    //   4.0  host alone presses the button                 -> button ends 2 presses, spawner off
+    //   4.0  host alone presses the button                 -> button ends 2 presses; each spawned one ore (host)
+    //   8.0  first joiner pulls the spawn lever; 10.0 host pushes it back -> ore streams out meanwhile, then stops
     //   5.0  every peer builds a test block in the same cell -> exactly one structure everywhere, losers refunded
     //   6.0  snapshot structure / occupied-cell counts; check that a 2x1x1 aimed at the block's -X face
     //        snaps to the two cells west of it
@@ -81,8 +82,11 @@ public partial class LobbyDebug : Control
     private bool _demoCubeSeen;
     private int _grinderSubStep;
     private int _resourceSubStep;
+    private int _leverSubStep;
+    private int _buttonSpawned = -1, _leverSpawned = -1;
     private Vector3 _jumperStart;
     private float _jumperMaxMove;
+    private bool _jumperSeenAsleep, _jumperSeenAwake;
     private string _magnetSnapshot = "none";
     private float _grabRestError = -1f, _grabRestSpeed;
     private string _hudHeldName = "none";
@@ -245,14 +249,23 @@ public partial class LobbyDebug : Control
             bool claimOk = claimAuthority != 0 && claimAuthority != Lobby.hostID && Lobby.members.ContainsKey(claimAuthority);
             BasicButton button = FindTestButton();
             ObjectSpawner spawner = button?.targetObjectSpawner.FirstOrDefault();
-            string buttonState = button == null ? "missing" : $"{button.acceptedPresses}:{spawner?.spawning}";
-            bool buttonOk = buttonState == "2:False";
+            Lever lever = FindTestLever();
+            // Every peer agrees on 2 presses and 2 lever flips (pulled, then pushed back: spawner off). Host only: each
+            // press spawned exactly one item, and the lever spawned a stream (0.5 s apart) for its ~2 s, then stopped.
+            string buttonState = button == null || lever == null ? "missing"
+                : $"{button.acceptedPresses}:lever{lever.acceptedToggles}:{lever.pulled}:{spawner?.spawning}";
+            int leverStream = _leverSpawned - _buttonSpawned;
+            // Host only, reported but not required: how much ore rode the spawner room's line into its void. Big ore
+            // (a rolling sphere) can stall on the slope or bounce off the start belt, which is left for later.
+            int roomVoided = GameWorld.syncedObjs.Values.OfType<ItemVoid>().FirstOrDefault(v => v.Name == "SpawnerVoid")?.despawnedCount ?? -1;
+            bool buttonOk = buttonState == "2:lever2:False:False"
+                && (!Lobby.isHost || (_buttonSpawned == 2 && leverStream >= 3 && leverStream <= 6 && spawner.spawnedCount == _leverSpawned));
             bool demoCubeGone = !GameWorld.syncedObjs.Values.Any(o => (o as Node)?.Name == DemoCubeName);
             string machineState = $"demo:{_demoCubeSeen}->{demoCubeGone} grinder:{CountGrinderOutputs()}";
             // Host only (the museum machines' authority): the spawner has been feeding the line a cube a second
             // and those cubes are reaching the void (the preplaced cube plus spawned ones).
             var cubeSpawner = GameWorld.syncedObjs.Values.OfType<ItemSpawner>().FirstOrDefault();
-            var sink = GameWorld.syncedObjs.Values.OfType<ItemVoid>().FirstOrDefault();
+            var sink = GameWorld.syncedObjs.Values.OfType<ItemVoid>().FirstOrDefault(v => v.Name == "CatchVoid");
             // ...and the line's grinder is turning that ore into two ground chunks each.
             var lineGrinder = GameWorld.syncedObjs.Values.OfType<Grinder>().FirstOrDefault(g => g.Name == "LineGrinder");
             string spawnerState = $"spawned:{cubeSpawner?.spawnedCount} ground:{lineGrinder?.consumedCount}->{lineGrinder?.producedCount} voided:{sink?.despawnedCount}";
@@ -261,6 +274,10 @@ public partial class LobbyDebug : Control
             bool machinesOk = machineState == "demo:True->True grinder:1" && spawnerOk;
             // Resources and tools. Ore and the jumping/tagged chunks belong to the level, so the host runs them.
             bool oreKept = GameWorld.syncedObjs.Values.OfType<PhysicalFactoryItem>().Any(i => i.Name == "IronOre");
+            // Host only: the resting museum ore is asleep at its sleeping priority; the jumper went both ways.
+            var restingOre = GameWorld.syncedObjs.Values.OfType<PhysicalFactoryItem>().FirstOrDefault(i => i.Name == "IronOre");
+            bool sleepOk = !Lobby.isHost || (restingOre != null && restingOre.asleep && restingOre.priority == restingOre.sleepingPriority
+                && _jumperSeenAsleep && _jumperSeenAwake);
             bool released = MagnetTestIds.All(id => !GameWorld.heldBy.ContainsKey(id));
             string toolState = $"ore_kept:{oreKept} magnet:{_magnetSnapshot}->released:{released}";
             // Host only: at rest the featherweight sat within 5 cm of the grab point, nearly still; while the host
@@ -271,13 +288,33 @@ public partial class LobbyDebug : Control
             // Host only: HUD named the held magnet rod; sprinting reached (nearly) sprint speed.
             FactoryPlayer self = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
             bool uiOk = !Lobby.isHost || (_hudHeldName == "Magnet Rod" && self != null && _sprintMaxSpeed > self.sprintSpeed * 0.9f);
-            bool toolsOk = toolState == "ore_kept:True magnet:3/3->released:True" && grabOk && uiOk
+            bool toolsOk = toolState == "ore_kept:True magnet:3/3->released:True" && grabOk && uiOk && sleepOk
                 && (!Lobby.isHost || (_jumperMaxMove > 0.5f && TagInteractions.temperatureContacts >= 2));
             machinesOk &= toolsOk;
+            // Every peer: the museum's hand-placed conveyor lines (the demo line and the spawner room's line) stand
+            // exactly on the grid, and each of their structures registered every cell of its footprint in BuildGrid.
+            var demoStructures = GameWorld.syncedObjs.Values.OfType<Structure>()
+                .Where(st => st.GetParent()?.Name.ToString() is "ConveyorDemo" or "SpawnerConveyorLine").ToList();
+            int demoAligned = demoStructures.Count(st => st.isGridAligned);
+            int demoRegistered = demoStructures.Count(st => BuildGrid.FootprintCells(st.anchor, st.cellOffsets, st.quarterTurns).All(c => BuildGrid.GetStructureAt(c) == st));
+            bool demoGridOk = demoStructures.Count == 15 && demoAligned == 15 && demoRegistered == 15;
+            machinesOk &= demoGridOk;
+            // Every conveyor's placement preview gets a non-empty direction arrow; other structures get none.
+            string arrows = string.Join(",", new[] { "Conveyor", "ConveyorSlope", "ConveyorTurnLeft", "ConveyorTurnRight", "Grinder" }.Select(n =>
+            {
+                var st = GD.Load<PackedScene>($"res://game/machines/structures/{n}.tscn").Instantiate<Structure>();
+                MeshInstance3D arrow = FlowArrowMesh.Create(st, null);
+                int tris = arrow?.Mesh is ArrayMesh m && m.GetSurfaceCount() > 0 ? m.SurfaceGetArrayLen(0) / 3 : 0;
+                arrow?.Free();
+                st.Free();
+                return tris.ToString();
+            }));
+            bool arrowsOk = arrows.Split(',').Take(4).All(n => int.Parse(n) > 0) && arrows.EndsWith(",0");
+            machinesOk &= arrowsOk;
             // Character movement queries hit sensors, so players must mask out the placement ghosts' layer.
             bool ghostMaskOk = players.All(p => (p.Get("collision_mask").AsInt64() & GameWorld.QueryHiddenLayer) == 0);
             bool ok = players.Count == _expectPeers && GameWorld.inboundTickCount > 0 && invOk && claimOk && buttonOk && buildOk && machinesOk && ghostMaskOk;
-            string summary = $"players={players.Count}/{_expectPeers} synced={GameWorld.syncedObjs.Count} inbound_ticks={GameWorld.inboundTickCount} inv_ok={invOk} consensus_claim={claimAuthority} consensus_button={buttonState} consensus_build={buildState} snap_ok={_snapOk} collision_ok={collisionOk} consensus_machines={machineState.Replace(' ', '_')} ghost_mask_ok={ghostMaskOk} {spawnerState.Replace(' ', '_')} consensus_tools={toolState.Replace(' ', '_')} jumper_moved={_jumperMaxMove:F2} temp_contacts={TagInteractions.temperatureContacts} grab_rest={_grabRestError:F2}m/{_grabRestSpeed:F2}mps grab_track={_grabMaxError:F2}m/{_grabMaxSpeed:F2}of{_grabMaxPointSpeed:F2}mps hud_held={_hudHeldName.Replace(' ', '_')} sprint={_sprintMaxSpeed:F2}";
+            string summary = $"players={players.Count}/{_expectPeers} synced={GameWorld.syncedObjs.Count} inbound_ticks={GameWorld.inboundTickCount} inv_ok={invOk} consensus_claim={claimAuthority} consensus_button={buttonState} spawner={_buttonSpawned}/{leverStream}/{spawner?.spawnedCount}->voided:{roomVoided} consensus_build={buildState} snap_ok={_snapOk} collision_ok={collisionOk} consensus_machines={machineState.Replace(' ', '_')} ghost_mask_ok={ghostMaskOk} {spawnerState.Replace(' ', '_')} consensus_tools={toolState.Replace(' ', '_')} jumper_moved={_jumperMaxMove:F2} temp_contacts={TagInteractions.temperatureContacts} grab_rest={_grabRestError:F2}m/{_grabRestSpeed:F2}mps grab_track={_grabMaxError:F2}m/{_grabMaxSpeed:F2}of{_grabMaxPointSpeed:F2}mps hud_held={_hudHeldName.Replace(' ', '_')} sprint={_sprintMaxSpeed:F2} arrow_tris={arrows} demo_grid={demoStructures.Count}/aligned:{demoAligned}/registered:{demoRegistered} sleep_ok={sleepOk}(ore:{restingOre?.asleep}/{restingOre?.priority} jumper:{_jumperSeenAsleep}/{_jumperSeenAwake})";
             Log($"TEST GAME {(ok ? "PASS" : "FAIL")} — {summary}");
             GD.Print($"TEST_RESULT:{(ok ? "PASS" : "FAIL")} {summary}");
             GetTree().Quit(ok ? 0 : 1);
@@ -705,6 +742,34 @@ public partial class LobbyDebug : Control
         }
     }
 
+    // 5.0 host notes the button's spawns; 8.0 the first joiner pulls the spawn lever; 10.0 the host pushes it back;
+    // 11.0 host notes the total, which must not grow afterwards.
+    private void RunLeverScenario(double t)
+    {
+        ObjectSpawner spawner = FindTestButton()?.targetObjectSpawner.FirstOrDefault();
+        if (_leverSubStep == 0 && t >= 5.0)
+        {
+            _leverSubStep++;
+            _buttonSpawned = spawner?.spawnedCount ?? -1;
+        }
+        else if (_leverSubStep == 1 && t >= 8.0)
+        {
+            _leverSubStep++;
+            bool firstJoiner = !Lobby.isHost && Lobby.selfPeerID == Lobby.members.Keys.Where(k => k != Lobby.hostID).Min();
+            if (firstJoiner) FindTestLever()?.OnPressed();
+        }
+        else if (_leverSubStep == 2 && t >= 10.0)
+        {
+            _leverSubStep++;
+            if (Lobby.isHost) FindTestLever()?.OnPressed();
+        }
+        else if (_leverSubStep == 3 && t >= 11.0)
+        {
+            _leverSubStep++;
+            _leverSpawned = spawner?.spawnedCount ?? -1;
+        }
+    }
+
     private void RunResourceScenario(double t)
     {
         var items = GameWorld.syncedObjs.Values.OfType<PhysicalFactoryItem>();
@@ -715,6 +780,12 @@ public partial class LobbyDebug : Control
         {
             if (_jumperStart == Vector3.Zero) _jumperStart = jumper.GlobalPosition;
             _jumperMaxMove = Mathf.Max(_jumperMaxMove, jumper.GlobalPosition.DistanceTo(_jumperStart));
+            // Sleep-based sync priority: between hops it should settle, drop its priority, and restore it on the next hop.
+            if (jumper.authority == Lobby.selfPeerID && t >= 2.0)
+            {
+                if (jumper.asleep && jumper.priority == jumper.sleepingPriority) _jumperSeenAsleep = true;
+                if (!jumper.asleep && jumper.priority > jumper.sleepingPriority) _jumperSeenAwake = true;
+            }
         }
 
         if (_resourceSubStep == 0 && t >= 2.0)
@@ -844,6 +915,7 @@ public partial class LobbyDebug : Control
     {
         RunMachineScenario(t);
         RunResourceScenario(t);
+        RunLeverScenario(t);
         // 8.5-12: host scrolls its hotbar every frame with a forced GC each time; this crashed when item
         // definitions weren't held (GC finalizer disposing one while FactoryItem.Fetch reloaded it).
         if (Lobby.isHost && t >= 8.5 && t < 12.0)
@@ -941,6 +1013,7 @@ public partial class LobbyDebug : Control
         }
     }
 
+    private static Lever FindTestLever() => GameWorld.b3droot?.FindChild("SpawnLever", true, false) as Lever;
     private static BasicButton FindTestButton() => GameWorld.b3droot?.FindChild("Button", true, false) as BasicButton;
 
     private void AutoChat()

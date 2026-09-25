@@ -38,6 +38,7 @@ body_type = 0
 script = ExtResource("1_r")
 cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(0, 0, -1), Vector3i(0, 1, 0), Vector3i(0, 1, -1)])
 blueprintItemID = "blueprint_conveyor_slope"
+flowArrow = 1
 
 [node name="BeltShape" type="Box3DCollisionShape" parent="."]
 box_size = Vector3(1.7, 0.1, 4.48563)
