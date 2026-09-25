@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://b3ruqi3gub8yo"]
 
 [ext_resource type="Material" uid="uid://cm6q2knenjk4x" path="res://game/assets/materials/grass_1.tres" id="1_2usgl"]
-[ext_resource type="PackedScene" path="res://game/props/Lever.tscn" id="sp_lever"]
 [ext_resource type="Shader" uid="uid://cvd0x7lon1ur6" path="res://addons/sky_3d/shaders/SkyMaterial.gdshader" id="1_5rkb6"]
 [ext_resource type="Texture2D" uid="uid://cfqk60lpl5ljv" path="res://addons/sky_3d/assets/resources/SNoise.tres" id="2_2usgl"]
 [ext_resource type="Texture2D" uid="uid://cecwdqjol0ckd" path="res://addons/sky_3d/assets/textures/noiseClouds.png" id="3_aqpx8"]
@@ -14,25 +13,25 @@
 [ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="10_8o1nu"]
 [ext_resource type="Script" uid="uid://buq3xkquc7nsd" path="res://game/props/ObjectSpawner.cs" id="14_75n5a"]
 [ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="14_aqpx8"]
-[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/items/world/PhysicalFactoryItem.cs" id="14_dudsn"]
 [ext_resource type="Texture2D" uid="uid://c8knlhvemp8jf" path="res://game/assets/textures/grass_1/grass_ao.png" id="15_2usgl"]
 [ext_resource type="Script" uid="uid://cthpe3o2ur5ir" path="res://game/props/BasicButton.cs" id="15_aqpx8"]
-[ext_resource type="PackedScene" path="res://game/machines/structures/Conveyor.tscn" id="cd_conveyor"]
+[ext_resource type="PackedScene" uid="uid://cl0nqhivv3sw4" path="res://game/machines/structures/conveyors/ConveyorTurnRight_fix.tscn" id="21_0wuwa"]
+[ext_resource type="PackedScene" uid="uid://ddnbcmgebhnoe" path="res://game/machines/structures/conveyors/Conveyor.tscn" id="cd_conveyor"]
 [ext_resource type="PackedScene" uid="uid://bsdttlf7ektg" path="res://game/dev/items/test_1x1x1cube.tscn" id="cd_cube"]
 [ext_resource type="PackedScene" path="res://game/machines/structures/Grinder.tscn" id="cd_grinder"]
-[ext_resource type="PackedScene" path="res://game/machines/structures/ConveyorSlope.tscn" id="cd_slope"]
+[ext_resource type="PackedScene" path="res://game/machines/structures/conveyors/ConveyorSlope.tscn" id="cd_slope"]
 [ext_resource type="PackedScene" path="res://game/machines/structures/ItemSpawner.tscn" id="cd_spawner"]
-[ext_resource type="PackedScene" path="res://game/machines/structures/ConveyorTurnRight.tscn" id="cd_turn"]
 [ext_resource type="PackedScene" path="res://game/machines/structures/ItemVoid.tscn" id="cd_void"]
-[ext_resource type="PackedScene" path="res://game/items/world/resources/copper_ore.tscn" id="rd_copper_ore"]
-[ext_resource type="PackedScene" path="res://game/items/world/resources/copper_ore_ground.tscn" id="rd_copper_ore_ground"]
-[ext_resource type="PackedScene" path="res://game/items/world/resources/iron_ore.tscn" id="rd_iron_ore"]
-[ext_resource type="PackedScene" path="res://game/items/world/resources/iron_ore_ground.tscn" id="rd_iron_ore_ground"]
+[ext_resource type="PackedScene" uid="uid://dlnyuu4mrmp1r" path="res://game/items/world/resources/copper_ore.tscn" id="rd_copper_ore"]
+[ext_resource type="PackedScene" uid="uid://b4in0pqckrbvy" path="res://game/items/world/resources/copper_ore_ground.tscn" id="rd_copper_ore_ground"]
+[ext_resource type="PackedScene" uid="uid://bvun7kiv1cftb" path="res://game/items/world/resources/iron_ore.tscn" id="rd_iron_ore"]
+[ext_resource type="PackedScene" uid="uid://crsto0401xd6i" path="res://game/items/world/resources/iron_ore_ground.tscn" id="rd_iron_ore_ground"]
 [ext_resource type="PackedScene" path="res://game/dev/items/test_chunk_cold.tscn" id="rd_test_chunk_cold"]
 [ext_resource type="PackedScene" path="res://game/dev/items/test_chunk_heavy.tscn" id="rd_test_chunk_heavy"]
 [ext_resource type="PackedScene" path="res://game/dev/items/test_chunk_hot.tscn" id="rd_test_chunk_hot"]
 [ext_resource type="PackedScene" path="res://game/dev/items/test_chunk_jumping.tscn" id="rd_test_chunk_jumping"]
 [ext_resource type="PackedScene" path="res://game/dev/items/test_chunk_light.tscn" id="rd_test_chunk_light"]
+[ext_resource type="PackedScene" path="res://game/props/Lever.tscn" id="sp_lever"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
 material = ExtResource("1_2usgl")
@@ -134,23 +133,6 @@ glow_enabled = true
 lightmap_size_hint = Vector2i(88, 114)
 material = ExtResource("14_aqpx8")
 size = Vector3(15.959473, 2.8047333, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_esc11"]
-
-[sub_resource type="PackedScene" id="PackedScene_ju7n5"]
-_bundled = {
-"conn_count": 0,
-"conns": PackedInt32Array(),
-"editable_instances": [],
-"id_paths": [],
-"names": PackedStringArray("test_inert_sphere_world", "box_size", "density", "restitution", "script", "itemID", "tags", "Box3DBody", "inWorldMesh", "transform", "mesh", "MeshInstance3D"),
-"node_count": 2,
-"node_ids": PackedInt32Array(551866047, 1145061474),
-"node_paths": [],
-"nodes": PackedInt32Array(-1, -1, 7, 0, -1, 6, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 6, 5, 0, 0, 0, 11, 8, -1, 2, 9, 6, 10, 7, 0),
-"variants": [Vector3(0.4, 0.4, 0.4), 10.25, 0.2, ExtResource("14_dudsn"), "test_inert_sphere", Array[int]([0]), Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0, 0), SubResource("BoxMesh_esc11")],
-"version": 3
-}
 
 [sub_resource type="PrismMesh" id="PrismMesh_c5vbb"]
 
@@ -364,7 +346,7 @@ sphere_radius = 0.1
 script = ExtResource("15_aqpx8")
 displayName = "Button"
 animator = NodePath("AnimationPlayer")
-targetObjectSpawner = [NodePath("../../ObjectSpawner")]
+targetObjectSpawner = []
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="ObjectSpawnerDisplay/Node3D/Button" unique_id=1650227249]
 libraries/ = SubResource("AnimationLibrary_ju7n5")
@@ -380,26 +362,26 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8763647, 0)
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/Node3D/ButtonBody" unique_id=979029047]
 mesh = SubResource("BoxMesh_c5vbb")
 
-[node name="SpawnLever" parent="ObjectSpawnerDisplay" node_paths=PackedStringArray("targetObjectSpawner") instance=ExtResource("sp_lever")]
+[node name="SpawnLever" parent="ObjectSpawnerDisplay" unique_id=1709115799 node_paths=PackedStringArray("targetObjectSpawner") instance=ExtResource("sp_lever")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -6.8255463, 0.8, 3.4)
 displayName = "Spawn Lever"
-targetObjectSpawner = [NodePath("../ObjectSpawner")]
+targetObjectSpawner = []
 
-[node name="SpawnerConveyorLine" type="Node3D" parent="."]
+[node name="SpawnerConveyorLine" type="Node3D" parent="." unique_id=1564043353]
 
-[node name="Start" parent="SpawnerConveyorLine" instance=ExtResource("cd_conveyor")]
+[node name="Start" parent="SpawnerConveyorLine" unique_id=183790409 instance=ExtResource("cd_conveyor")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13, 1, 1)
 
-[node name="Slope" parent="SpawnerConveyorLine" instance=ExtResource("cd_slope")]
+[node name="Slope" parent="SpawnerConveyorLine" unique_id=1346301794 instance=ExtResource("cd_slope")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15, 1, 1)
 
-[node name="Run1" parent="SpawnerConveyorLine" instance=ExtResource("cd_conveyor")]
+[node name="Run1" parent="SpawnerConveyorLine" unique_id=507056064 instance=ExtResource("cd_conveyor")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 19, 3, 1)
 
-[node name="Run2" parent="SpawnerConveyorLine" instance=ExtResource("cd_conveyor")]
+[node name="Run2" parent="SpawnerConveyorLine" unique_id=1748191575 instance=ExtResource("cd_conveyor")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 21, 3, 1)
 
-[node name="SpawnerVoid" parent="SpawnerConveyorLine" instance=ExtResource("cd_void")]
+[node name="SpawnerVoid" parent="SpawnerConveyorLine" unique_id=287666115 instance=ExtResource("cd_void")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 1, 3)
 
 [node name="ObjectSpawnerDisplay2" type="Node3D" parent="." unique_id=1474543159]
@@ -557,7 +539,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 3, 35)
 [node name="Slope3" parent="ConveyorDemo" unique_id=1554726262 instance=ExtResource("cd_slope")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 5, 31)
 
-[node name="TurnRight" parent="ConveyorDemo" unique_id=850848216 instance=ExtResource("cd_turn")]
+[node name="ConveyorTurnRight" parent="ConveyorDemo" unique_id=2020778206 instance=ExtResource("21_0wuwa")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 7, 27)
 
 [node name="Run1" parent="ConveyorDemo" unique_id=2146980209 instance=ExtResource("cd_conveyor")]

@@ -57,8 +57,8 @@ rings = 6
 [node name="copper_ore" type="Box3DBody" unique_id=126599523]
 shape_type = 1
 density = 5.0
-friction = 1.0
-rolling_resistance = 0.3
+friction = 0.8
+rolling_resistance = 0.6
 script = ExtResource("1_s")
 itemID = "copper_ore"
 canBePickTarget = true

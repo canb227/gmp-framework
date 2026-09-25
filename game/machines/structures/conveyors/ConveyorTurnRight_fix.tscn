@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://cl0nqhivv3sw4"]
+
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/machines/Structure.cs" id="1_r"]
+[ext_resource type="Shader" uid="uid://c5upcnlymcpkl" path="res://game/assets/shaders/ConveyorBelt.gdshader" id="2_r"]
+[ext_resource type="Texture2D" uid="uid://dfssoii6t84gn" path="res://game/assets/textures/wall_basic_1/wall_basic_1_diffuseOriginal.png" id="3_r"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_6"]
+size = Vector3(1.8535156, 0.1, 1.8496094)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fahnn"]
+render_priority = 0
+shader = ExtResource("2_r")
+shader_parameter/source_tex = ExtResource("3_r")
+shader_parameter/scroll_speed = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
+size = Vector3(0.15, 0.45078126, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.85, 0.65, 0.1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5"]
+size = Vector3(2, 0.44990236, 0.15)
+
+[node name="ConveyorTurnRight" type="Box3DBody" unique_id=2020778206]
+body_type = 0
+shape_type = 6
+script = ExtResource("1_r")
+blueprintItemID = "blueprint_conveyor_turn_right"
+flowArrow = 3
+
+[node name="Belt" type="Box3DCollisionShape" parent="." unique_id=110112917]
+box_size = Vector3(1.8535156, 0.1, 1.8496094)
+tangent_velocity = Vector3(2, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07324219, -0.901, 0.07519531)
+
+[node name="Slab" type="MeshInstance3D" parent="Belt" unique_id=290713291]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
+mesh = SubResource("BoxMesh_6")
+surface_material_override/0 = SubResource("ShaderMaterial_fahnn")
+
+[node name="LeftWall" type="Box3DCollisionShape" parent="." unique_id=1081519995]
+box_size = Vector3(0.15, 0.45078126, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.925, -0.6253906, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="LeftWall" unique_id=881420665]
+mesh = SubResource("BoxMesh_4")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
+
+[node name="RightWall" type="Box3DCollisionShape" parent="." unique_id=1530689422]
+box_size = Vector3(2, 0.44990236, 0.15)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6249511, -0.925)
+
+[node name="Mesh" type="MeshInstance3D" parent="RightWall" unique_id=1296152108]
+mesh = SubResource("BoxMesh_5")
+surface_material_override/0 = SubResource("StandardMaterial3D_3")
