@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ToolItem" format=3]
+
+[ext_resource type="Script" path="res://game/items/ToolItem.cs" id="1_tool"]
+[ext_resource type="Texture2D" path="res://game/assets/icons/items/magnet_rod.png" id="2_icon"]
+[ext_resource type="PackedScene" path="res://game/items/held/MagnetRod.tscn" id="3_hand"]
+
+[resource]
+script = ExtResource("1_tool")
+itemID = "magnet_rod"
+displayName = "Magnet Rod"
+description = "Hold primary to pull nearby loose objects into a floating ball. Scroll to move it."
+icon = ExtResource("2_icon")
+inHandScene = ExtResource("3_hand")
+maxStackSize = 1

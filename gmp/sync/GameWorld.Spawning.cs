@@ -111,6 +111,13 @@ public partial class GameWorld
         else
         {
             spawnedRoots.Add(node);
+            // Place before entering the tree: Box3D bodies take their transform when they enter it
+            // (moving the node afterwards doesn't move the body), including static child bodies.
+            if (node is Node3D placed)
+            {
+                placed.Position = position;
+                placed.Rotation = rotation;
+            }
             if (parent == null)
             {
                 b3droot.AddChild(node);

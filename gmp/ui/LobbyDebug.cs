@@ -42,7 +42,7 @@ public partial class LobbyDebug : Control
     private int _peakMembers;
     private readonly System.Collections.Generic.HashSet<ulong> _chatReceivedFrom = new();
     private bool _testGame;               // --test-game: after the lobby test passes, host starts the game
-    private double _testGameSeconds = 8.0; // how long to run in-game before evaluating
+    private double _testGameSeconds = 20.5; // how long to run in-game before evaluating (the sprint step ends at 20.3)
     private bool _gameStartSent;
     private bool _gameLoaded;
     private double _gameLoadedAt;
@@ -51,9 +51,46 @@ public partial class LobbyDebug : Control
     //   2.0  every peer presses the museum button at once  -> arbitration must accept exactly one
     //   3.0  every NON-host peer claims the cube at once   -> exactly one non-host winner everywhere
     //   4.0  host alone presses the button                 -> button ends 2 presses, spawner off
+    //   5.0  every peer builds a test block in the same cell -> exactly one structure everywhere, losers refunded
+    //   6.0  snapshot structure / occupied-cell counts; check that a 2x1x1 aimed at the block's -X face
+    //        snaps to the two cells west of it
+    //   6.5  host deconstructs it                          -> grid empty everywhere, blueprint back to host
+    //   7.0  host tries to build a block straddling a level wall -> refused for level-geometry overlap, refunded
+    //   7.3  host builds a block resting on the floor      -> allowed (flush contact isn't an overlap); stays built
+    //   1.0  host spawns a grinder; 3.0 host drops a test cube into its hopper -> a test sphere comes out the front
+    //   all  the museum's preplaced conveyor line carries its cube up, round and into a void box -> despawned everywhere
+    //   8.5  host scrolls its hotbar every frame for 3.5 s with forced GCs  -> no crash (regression)
+    //   2.0  host tries to pick up the museum's iron ore -> refused (ore can't enter inventories)
+    //   all  the jumping chunk hops on its own; the cold chunk lands on the hot one -> both report the touch
+    //  12.3  first joiner spawns 3 chunks in front of the host; 13 host holds its magnet rod
+    //  15.5  every peer: the chunks float in the host's ball, host is their authority and holder
+    //  16.0  host lets go -> chunks released everywhere
+    //  16.5  host grabs a featherweight chunk; 17.0-17.5 at rest it must sit still at the grab point (the old
+    //        grab made light items oscillate wildly); from 17.5 the host turns, and from 18.0 it must track the point
+    //  15.5  (host) the HUD shows "Magnet Rod" as the held item's name
+    //  19.6  host walks forward holding sprint until 20.3 -> reaches sprint speed
     private const ulong TestCubeId = 0x7E57C0BE;
     private const string TestCubeScene = "res://game/dev/items/test_1x1x1cube.tscn";
-    private const string SeedItemId = "test_1x1x1cubePLACEABLE";
+    private const string SeedItemId = "blueprint_test_block";
+    private static readonly Vector3I TestBuildCell = new(40, 10, 40); // in the air, clear of the level
+    private string _buildSnapshot = "none";
+    private bool _snapOk;
+    private bool _embeddedAttempted;
+    private static readonly Vector3I TestGrinderCell = new(-14, 0, -12);
+    private const string DemoCubeName = "ConveyorDemoCube";
+    private bool _demoCubeSeen;
+    private int _grinderSubStep;
+    private int _resourceSubStep;
+    private Vector3 _jumperStart;
+    private float _jumperMaxMove;
+    private string _magnetSnapshot = "none";
+    private float _grabRestError = -1f, _grabRestSpeed;
+    private string _hudHeldName = "none";
+    private float _sprintMaxSpeed;
+    private float _grabMaxError = -1f, _grabMaxSpeed, _grabMaxPointSpeed;
+    private Vector3 _lastGrabPoint;
+    private const ulong GrabTestId = 0x7E570010;
+    private static readonly ulong[] MagnetTestIds = [0x7E570001, 0x7E570002, 0x7E570003];
     private int _scenarioStep;
 
     // Cached nodes.
@@ -195,15 +232,52 @@ public partial class LobbyDebug : Control
             _testDone = true;
             var players = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().ToList();
             // Every copy of every player (local and remote) must hold the bootstrap seed item.
-            bool invOk = players.Count > 0 && players.All(p => p.inventory.slots.Any(sl => sl.itemID == SeedItemId && sl.Count == 1));
+            // Blueprints are conserved: one was built by the winner and returned to the host on deconstruct,
+            // refunds went back to the losers and the wall block, and one is still built on the floor, so every
+            // copy of the inventories adds up to the seed minus one.
+            int seedTotal = players.Sum(p => p.inventory.slots.Where(sl => sl.itemID == SeedItemId).Sum(sl => sl.Count));
+            bool invOk = players.Count > 0 && seedTotal == players.Count * GameBootstrap.StartingBlueprintCount - 1;
+            string buildState = $"{_buildSnapshot}->{TestBlockCounts()}";
+            // Host only: the block built into a wall must have been refused for its overlap.
+            bool collisionOk = !Lobby.isHost || (_embeddedAttempted && BuildGrid.collisionRefusals == 1);
+            bool buildOk = buildState == "1:1->1:1" && _snapOk && collisionOk;
             ulong claimAuthority = GameWorld.syncedObjs.TryGetValue(TestCubeId, out GMPObject cube) ? cube.authority : 0;
             bool claimOk = claimAuthority != 0 && claimAuthority != Lobby.hostID && Lobby.members.ContainsKey(claimAuthority);
             BasicButton button = FindTestButton();
             ObjectSpawner spawner = button?.targetObjectSpawner.FirstOrDefault();
             string buttonState = button == null ? "missing" : $"{button.acceptedPresses}:{spawner?.spawning}";
             bool buttonOk = buttonState == "2:False";
-            bool ok = players.Count == _expectPeers && GameWorld.inboundTickCount > 0 && invOk && claimOk && buttonOk;
-            string summary = $"players={players.Count}/{_expectPeers} synced={GameWorld.syncedObjs.Count} inbound_ticks={GameWorld.inboundTickCount} inv_ok={invOk} consensus_claim={claimAuthority} consensus_button={buttonState}";
+            bool demoCubeGone = !GameWorld.syncedObjs.Values.Any(o => (o as Node)?.Name == DemoCubeName);
+            string machineState = $"demo:{_demoCubeSeen}->{demoCubeGone} grinder:{CountGrinderOutputs()}";
+            // Host only (the museum machines' authority): the spawner has been feeding the line a cube a second
+            // and those cubes are reaching the void (the preplaced cube plus spawned ones).
+            var cubeSpawner = GameWorld.syncedObjs.Values.OfType<ItemSpawner>().FirstOrDefault();
+            var sink = GameWorld.syncedObjs.Values.OfType<ItemVoid>().FirstOrDefault();
+            // ...and the line's grinder is turning that ore into two ground chunks each.
+            var lineGrinder = GameWorld.syncedObjs.Values.OfType<Grinder>().FirstOrDefault(g => g.Name == "LineGrinder");
+            string spawnerState = $"spawned:{cubeSpawner?.spawnedCount} ground:{lineGrinder?.consumedCount}->{lineGrinder?.producedCount} voided:{sink?.despawnedCount}";
+            bool spawnerOk = !Lobby.isHost || (cubeSpawner?.spawnedCount >= 10 && sink?.despawnedCount >= 3
+                && lineGrinder?.consumedCount >= 3 && lineGrinder.producedCount >= 2 * lineGrinder.consumedCount - 3);
+            bool machinesOk = machineState == "demo:True->True grinder:1" && spawnerOk;
+            // Resources and tools. Ore and the jumping/tagged chunks belong to the level, so the host runs them.
+            bool oreKept = GameWorld.syncedObjs.Values.OfType<PhysicalFactoryItem>().Any(i => i.Name == "IronOre");
+            bool released = MagnetTestIds.All(id => !GameWorld.heldBy.ContainsKey(id));
+            string toolState = $"ore_kept:{oreKept} magnet:{_magnetSnapshot}->released:{released}";
+            // Host only: at rest the featherweight sat within 5 cm of the grab point, nearly still; while the host
+            // turned it trailed the point by under 0.5 m and never went more than 20% faster than the point itself
+            // (sustained overshoot or oscillation shows up as extra speed).
+            bool grabOk = !Lobby.isHost || (_grabRestError >= 0 && _grabRestError < 0.05f && _grabRestSpeed < 0.2f
+                && _grabMaxError >= 0 && _grabMaxError < 0.5f && _grabMaxPointSpeed > 1f && _grabMaxSpeed < _grabMaxPointSpeed * 1.2f);
+            // Host only: HUD named the held magnet rod; sprinting reached (nearly) sprint speed.
+            FactoryPlayer self = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
+            bool uiOk = !Lobby.isHost || (_hudHeldName == "Magnet Rod" && self != null && _sprintMaxSpeed > self.sprintSpeed * 0.9f);
+            bool toolsOk = toolState == "ore_kept:True magnet:3/3->released:True" && grabOk && uiOk
+                && (!Lobby.isHost || (_jumperMaxMove > 0.5f && TagInteractions.temperatureContacts >= 2));
+            machinesOk &= toolsOk;
+            // Character movement queries hit sensors, so players must mask out the placement ghosts' layer.
+            bool ghostMaskOk = players.All(p => (p.Get("collision_mask").AsInt64() & GameWorld.QueryHiddenLayer) == 0);
+            bool ok = players.Count == _expectPeers && GameWorld.inboundTickCount > 0 && invOk && claimOk && buttonOk && buildOk && machinesOk && ghostMaskOk;
+            string summary = $"players={players.Count}/{_expectPeers} synced={GameWorld.syncedObjs.Count} inbound_ticks={GameWorld.inboundTickCount} inv_ok={invOk} consensus_claim={claimAuthority} consensus_button={buttonState} consensus_build={buildState} snap_ok={_snapOk} collision_ok={collisionOk} consensus_machines={machineState.Replace(' ', '_')} ghost_mask_ok={ghostMaskOk} {spawnerState.Replace(' ', '_')} consensus_tools={toolState.Replace(' ', '_')} jumper_moved={_jumperMaxMove:F2} temp_contacts={TagInteractions.temperatureContacts} grab_rest={_grabRestError:F2}m/{_grabRestSpeed:F2}mps grab_track={_grabMaxError:F2}m/{_grabMaxSpeed:F2}of{_grabMaxPointSpeed:F2}mps hud_held={_hudHeldName.Replace(' ', '_')} sprint={_sprintMaxSpeed:F2}";
             Log($"TEST GAME {(ok ? "PASS" : "FAIL")} — {summary}");
             GD.Print($"TEST_RESULT:{(ok ? "PASS" : "FAIL")} {summary}");
             GetTree().Quit(ok ? 0 : 1);
@@ -571,8 +645,218 @@ public partial class LobbyDebug : Control
         }
     }
 
+    // A cell that straddles the face of a level-geometry wall, found by probing sideways between the museum's
+    // spawner-display walls. (Floors can be triangle meshes, which are hollow, so a block buried under one
+    // overlaps nothing.)
+    private static bool TryFindLevelWallCell(out Vector3I cell)
+    {
+        foreach (Vector3 dir in new[] { Vector3.Forward, Vector3.Back })
+        {
+            Vector3 from = new Vector3(16, 1.5f, 0);
+            var ray = GameWorld.Raycast(from, from + dir * 60f);
+            if (!ray["hit"].AsBool()) continue;
+            Node hit = ray["collider"].AsGodotObject() as Node;
+            bool isLevel = true;
+            for (Node n = hit; n != null; n = n.GetParent())
+                if (n is GMPObject) { isLevel = false; break; }
+            // The face must lie well inside a cell, or no cell straddles it.
+            float along = ray["position"].AsVector3().Dot(dir.Abs()) / BuildGrid.CellSize;
+            float fromBoundary = Mathf.Abs(along - Mathf.Round(along)) * BuildGrid.CellSize;
+            cell = BuildGrid.WorldToCell(ray["position"].AsVector3() + dir * 0.05f);
+            if (isLevel && fromBoundary > 0.2f && BuildGrid.GetStructureAt(cell) == null) return true;
+        }
+        cell = default;
+        return false;
+    }
+
+    // "structures:cells" for the test blocks the scenario builds (the level and the test grinder have
+    // structures too): how many exist, and how many grid cells are registered to them.
+    private static string TestBlockCounts()
+    {
+        var blocks = GameWorld.syncedObjs.Values.OfType<Structure>().Where(s => s.blueprintItemID == SeedItemId).ToList();
+        int cells = blocks.Sum(s => BuildGrid.FootprintCells(s.anchor, s.cellOffsets, s.quarterTurns).Count(c => BuildGrid.GetStructureAt(c) == s));
+        return $"{blocks.Count}:{cells}";
+    }
+
+    // Test spheres lying within reach of the test grinder's output.
+    private static int CountGrinderOutputs()
+    {
+        Vector3 output = BuildGrid.CellToWorld(TestGrinderCell) + new Vector3(0, -0.3f, -1.6f);
+        return GameWorld.syncedObjs.Values.OfType<PhysicalFactoryItem>()
+            .Count(i => i.itemID == "test_inert_sphere" && i.GlobalPosition.DistanceTo(output) < 3f);
+    }
+
+    private void RunMachineScenario(double t)
+    {
+        if (!_demoCubeSeen && GameWorld.syncedObjs.Values.Any(o => (o as Node)?.Name == DemoCubeName))
+            _demoCubeSeen = true;
+        if (!Lobby.isHost) return;
+        if (_grinderSubStep == 0 && t >= 1.0)
+        {
+            _grinderSubStep++;
+            var state = new StructureState { anchor = TestGrinderCell, quarterTurns = 0 };
+            GameWorld.SpawnScene("res://game/machines/structures/Grinder.tscn", BuildGrid.CellToWorld(TestGrinderCell), default,
+                default, GMPObject.serializer.Serialize(state));
+        }
+        else if (_grinderSubStep == 1 && t >= 3.0)
+        {
+            _grinderSubStep++;
+            GameWorld.SpawnScene(TestCubeScene, BuildGrid.CellToWorld(TestGrinderCell + Vector3I.Up) + Vector3.Up * 0.3f);
+        }
+    }
+
+    private void RunResourceScenario(double t)
+    {
+        var items = GameWorld.syncedObjs.Values.OfType<PhysicalFactoryItem>();
+        FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
+        FactoryPlayer hostPlayer = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.controllingPeerID == Lobby.hostID);
+
+        if (items.FirstOrDefault(i => i.Name == "JumpingChunk") is PhysicalFactoryItem jumper)
+        {
+            if (_jumperStart == Vector3.Zero) _jumperStart = jumper.GlobalPosition;
+            _jumperMaxMove = Mathf.Max(_jumperMaxMove, jumper.GlobalPosition.DistanceTo(_jumperStart));
+        }
+
+        if (_resourceSubStep == 0 && t >= 2.0)
+        {
+            _resourceSubStep++;
+            if (Lobby.isHost && local != null && items.FirstOrDefault(i => i.Name == "IronOre") is PhysicalFactoryItem ore)
+                ore.RequestPickup(local);
+        }
+        else if (_resourceSubStep == 1 && t >= 12.3)
+        {
+            _resourceSubStep++;
+            bool firstJoiner = !Lobby.isHost && Lobby.selfPeerID == Lobby.members.Keys.Where(k => k != Lobby.hostID).Min();
+            if (firstJoiner && hostPlayer != null)
+            {
+                Vector3 ball = hostPlayer.camera.GlobalPosition - hostPlayer.camera.GlobalTransform.Basis.Z * 3f;
+                for (int i = 0; i < MagnetTestIds.Length; i++)
+                {
+                    Vector3 offset = new((i - 1) * 1.0f, 0.5f, 0.5f);
+                    GameWorld.SpawnScene("res://game/items/world/resources/copper_ore_ground.tscn", ball + offset, default,
+                        new GMPOInitData(MagnetTestIds[i], 0, 0, 0, false));
+                }
+            }
+        }
+        else if (_resourceSubStep == 2 && t >= 13.0)
+        {
+            _resourceSubStep++;
+            if (Lobby.isHost && local != null)
+            {
+                int slot = System.Array.FindIndex(local.inventory.slots, sl => sl.itemID == "magnet_rod");
+                local.inventory.ActiveHotbarSlot = slot;
+                local.UpdateEquippedItem();
+                if (local.FindChildren("*", "", true, false).OfType<MagnetRod>().FirstOrDefault() is MagnetRod rod) rod.forceActive = true;
+            }
+        }
+        else if (_resourceSubStep == 3 && t >= 15.5)
+        {
+            _resourceSubStep++;
+            float floor = hostPlayer != null ? hostPlayer.GlobalPosition.Y : 0f;
+            int floating = MagnetTestIds.Count(id => GameWorld.syncedObjs.TryGetValue(id, out GMPObject o)
+                && o.authority == Lobby.hostID
+                && GameWorld.heldBy.TryGetValue(id, out ulong holder) && holder == Lobby.hostID
+                && (o as Node3D).GlobalPosition.Y > floor + 0.5f);
+            _magnetSnapshot = $"{floating}/{MagnetTestIds.Length}";
+            if (Lobby.isHost && local != null) _hudHeldName = local.hud.heldItemText;
+            if (floating != MagnetTestIds.Length)
+            {
+                foreach (ulong id in MagnetTestIds)
+                    if (GameWorld.syncedObjs.TryGetValue(id, out GMPObject o))
+                        Log($"TEST magnet chunk {id:X}: authority={o.authority} held={(GameWorld.heldBy.TryGetValue(id, out ulong h) ? h : 0)} y={(o as Node3D).GlobalPosition.Y:F2} floor={floor:F2}");
+            }
+        }
+        else if (_resourceSubStep == 4 && t >= 16.0)
+        {
+            _resourceSubStep++;
+            if (Lobby.isHost && local != null && local.FindChildren("*", "", true, false).OfType<MagnetRod>().FirstOrDefault() is MagnetRod rod)
+                rod.forceActive = false;
+        }
+        else if (_resourceSubStep == 5 && t >= 16.3)
+        {
+            _resourceSubStep++;
+            if (Lobby.isHost && local != null)
+            {
+                // Empty hand, then a featherweight chunk right at the grab point.
+                local.inventory.ActiveHotbarSlot = -1;
+                local.UpdateEquippedItem();
+                GameWorld.SpawnScene("res://game/dev/items/test_chunk_light.tscn", local.grabPoint, default, new GMPOInitData(GrabTestId, 0, 0, 0, false));
+            }
+        }
+        else if (_resourceSubStep == 6 && t >= 16.5)
+        {
+            _resourceSubStep++;
+            if (Lobby.isHost && local != null && GameWorld.syncedObjs.TryGetValue(GrabTestId, out GMPObject chunk))
+            {
+                local.forceGrabHeld = true;
+                local.RequestGrab((PhysicalFactoryItem)chunk);
+            }
+        }
+        else if (_resourceSubStep == 7 && t >= 19.5)
+        {
+            _resourceSubStep++;
+            if (Lobby.isHost && local != null)
+            {
+                local.forceGrabHeld = false;
+                local.ReleaseGrab();
+            }
+        }
+        // Sprint: walk forward with sprint held, recording the horizontal speed reached.
+        if (Lobby.isHost && local != null && t >= 19.6 && t < 20.3)
+        {
+            Input.ActionPress("forward");
+            Input.ActionPress("sprint");
+            _sprintMaxSpeed = Mathf.Max(_sprintMaxSpeed, new Vector2(local.cachedVel.X, local.cachedVel.Z).Length());
+        }
+        else if (Lobby.isHost && t >= 20.3 && Input.IsActionPressed("sprint"))
+        {
+            Input.ActionRelease("forward");
+            Input.ActionRelease("sprint");
+        }
+
+        // Half a second after grabbing, sample the chunk at rest; from 17.5 turn on the spot (swinging the grab
+        // point at a few m/s) and, once past the start-up transient, sample how closely it tracks.
+        if (Lobby.isHost && _resourceSubStep == 7 && t >= 17.0 && local?.grabbedItem is PhysicalFactoryItem held && held.id == GrabTestId)
+        {
+            float error = held.GlobalPosition.DistanceTo(local.grabPoint);
+            float speed = held.Call("get_linear_velocity").AsVector3().Length();
+            if (t < 17.5)
+            {
+                _grabRestError = Mathf.Max(_grabRestError, error);
+                _grabRestSpeed = Mathf.Max(_grabRestSpeed, speed);
+            }
+            else
+            {
+                float dt = (float)GetProcessDeltaTime();
+                local.RotateY(1.5f * dt);
+                if (t >= 18.0)
+                {
+                    _grabMaxPointSpeed = Mathf.Max(_grabMaxPointSpeed, local.grabPoint.DistanceTo(_lastGrabPoint) / dt);
+                    _grabMaxError = Mathf.Max(_grabMaxError, error);
+                    _grabMaxSpeed = Mathf.Max(_grabMaxSpeed, speed);
+                }
+                _lastGrabPoint = local.grabPoint;
+            }
+        }
+    }
+
     private void RunGameScenario(double t)
     {
+        RunMachineScenario(t);
+        RunResourceScenario(t);
+        // 8.5-12: host scrolls its hotbar every frame with a forced GC each time; this crashed when item
+        // definitions weren't held (GC finalizer disposing one while FactoryItem.Fetch reloaded it).
+        if (Lobby.isHost && t >= 8.5 && t < 12.0)
+        {
+            FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
+            if (local != null)
+            {
+                local.inventory.ActiveHotbarSlot = (local.inventory.ActiveHotbarSlot + 1) % 8;
+                local.UpdateEquippedItem();
+                local.inventory.InventoryUpdated();
+                System.GC.Collect();
+            }
+        }
         if (_scenarioStep == 0 && t >= 0.5)
         {
             _scenarioStep++;
@@ -595,6 +879,65 @@ public partial class LobbyDebug : Control
             _scenarioStep++;
             if (Lobby.isHost)
                 FindTestButton()?.OnPressed();
+        }
+        else if (_scenarioStep == 4 && t >= 5.0)
+        {
+            _scenarioStep++;
+            FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
+            if (local != null && FactoryItem.Fetch(SeedItemId) is BlueprintItem blueprint)
+                BuildGrid.RequestPlace(local, blueprint, TestBuildCell, 1);
+        }
+        else if (_scenarioStep == 5 && t >= 6.0)
+        {
+            _scenarioStep++;
+            // A ray straight down through the cell must hit the structure's collision, i.e. its static
+            // body was placed at the built cell rather than left at the origin.
+            Vector3 centre = BuildGrid.CellToWorld(TestBuildCell);
+            var ray = GameWorld.Raycast(centre + Vector3.Up * BuildGrid.CellSize, centre);
+            bool hitsStructure = ray["hit"].AsBool() && BuildGrid.FindStructure(ray["collider"].AsGodotObject() as Node) != null;
+            _buildSnapshot = $"{TestBlockCounts()}{(hitsStructure ? "" : "(no collision)")}";
+
+            Vector3I[] longBlock = [Vector3I.Zero, new Vector3I(1, 0, 0)];
+            _snapOk = BuildGrid.TryGetPlacementTarget(centre - Vector3.Right * 6f, Vector3.Right, 10f, longBlock, 0, out Vector3I snapped)
+                && snapped == TestBuildCell - new Vector3I(2, 0, 0);
+            if (!_snapOk)
+                Log($"TEST snap check failed: got {snapped}, expected {TestBuildCell - new Vector3I(2, 0, 0)}");
+
+            // Thin structures snap by their whole cell: aim at the museum line's first conveyor 1.5 m above the
+            // floor, clear over its belt and walls, and expect the cell on that side of it.
+            Vector3I startConveyor = new(-18, 0, 20);
+            Vector3 aimFrom = new Vector3(-45, 1.5f, BuildGrid.CellToWorld(startConveyor).Z);
+            bool thinOk = BuildGrid.TryGetPlacementTarget(aimFrom, Vector3.Right, 12f, [Vector3I.Zero], 0, out Vector3I thinSnap)
+                && thinSnap == startConveyor - new Vector3I(1, 0, 0);
+            if (!thinOk)
+                Log($"TEST thin snap check failed: got {thinSnap}, expected {startConveyor - new Vector3I(1, 0, 0)}");
+            _snapOk &= thinOk;
+        }
+        else if (_scenarioStep == 6 && t >= 6.5)
+        {
+            _scenarioStep++;
+            FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
+            if (Lobby.isHost && local != null && BuildGrid.GetStructureAt(TestBuildCell) is Structure built)
+                BuildGrid.RequestDeconstruct(local, built);
+        }
+        else if (_scenarioStep == 7 && t >= 7.0)
+        {
+            _scenarioStep++;
+            FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
+            if (Lobby.isHost && local != null && FactoryItem.Fetch(SeedItemId) is BlueprintItem blueprint && TryFindLevelWallCell(out Vector3I sunk))
+            {
+                _embeddedAttempted = true;
+                BuildGrid.RequestPlace(local, blueprint, sunk, 0);
+            }
+        }
+        else if (_scenarioStep == 8 && t >= 7.3)
+        {
+            _scenarioStep++;
+            FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
+            // Open floor in the museum (its floor's top is at y=0, a cell boundary, so the block rests flush).
+            var ray = GameWorld.Raycast(new Vector3(-19, 10, -19), new Vector3(-19, -10, -19));
+            if (Lobby.isHost && local != null && ray["hit"].AsBool() && FactoryItem.Fetch(SeedItemId) is BlueprintItem blueprint)
+                BuildGrid.RequestPlace(local, blueprint, BuildGrid.WorldToCell(ray["position"].AsVector3() + Vector3.Up * 0.05f), 0);
         }
     }
 

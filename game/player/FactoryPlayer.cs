@@ -5,8 +5,9 @@ using PolyType;
 /// <summary>
 /// The networked player character. This file holds identity, movement, mouse look, input dispatch
 /// and state sync; features live in partial-class files alongside it:
-/// FactoryPlayer.Interaction.cs (looks-at target + interact), FactoryPlayer.Grab.cs (physics grab tool)
-/// and FactoryPlayer.Equipment.cs (hotbar, in-hand item, dropping). The inventory screen is
+/// FactoryPlayer.Interaction.cs (looks-at target + interact), FactoryPlayer.Grab.cs (physics grab tool),
+/// and FactoryPlayer.Equipment.cs (hotbar, in-hand item, dropping). A held <see cref="HeldTool"/> (magnet
+/// rod, blueprint preview, ...) gets first refusal on input. The inventory screen is
 /// <see cref="InventoryUI"/> (the PlayerHUD root).
 /// </summary>
 public partial class FactoryPlayer : GMPOBox3DCharacter
@@ -21,6 +22,8 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     Vector3 gravity;
     public Vector3 cachedVel;
     public const float Speed = 5.0f;
+    /// <summary>Walking speed while "sprint" (left Shift) is held, m/s.</summary>
+    [Export] public float sprintSpeed = 9.0f;
     public Vector3 JumpVector = new Vector3(0, 5, 0);
     const float MouseSensitivity = 0.002f;
 
@@ -86,10 +89,14 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
         if (HandleMouseAndMenuInput(@event)) return;
         HandleScrollWheel(@event);
+        if (!hud.isOpen && heldTool != null && heldTool.HandleInput(@event)) return;
         HandleInteractionInput(@event);
         HandleEquipmentInput(@event);
         HandleGrabInput(@event);
     }
+
+    /// <summary>The tool in hand, if the equipped item is a <see cref="ToolItem"/>.</summary>
+    HeldTool heldTool => currentInHandInstance as HeldTool;
 
     /// <summary>Mouse capture, mouse look, Escape and the inventory key. Returns true if the event was consumed.</summary>
     bool HandleMouseAndMenuInput(InputEvent @event)
@@ -140,7 +147,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
         if (isGrabbing)
             MoveGrabPoint(step);
-        else
+        else if (heldTool == null || !heldTool.HandleScroll(step))
             CycleHotbar(step);
     }
 
@@ -155,7 +162,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             return;
         }
 
-        ApplyGrabForce();
+        ApplyGrabForce(delta);
         UpdatePickTarget();
         ApplyMovement(delta);
     }
@@ -175,8 +182,9 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
         if (direction != Vector3.Zero)
         {
-            Velocity.X = direction.X * Speed;
-            Velocity.Z = direction.Z * Speed;
+            float speed = Input.IsActionPressed("sprint") ? sprintSpeed : Speed;
+            Velocity.X = direction.X * speed;
+            Velocity.Z = direction.Z * speed;
         }
         else
         {

@@ -32,7 +32,7 @@ public partial class GMPONode3D : Node3D, GMPObject
     public int priorityAccumulator { get; set; }
     public byte[] desiredState { get; set; }
 
-    public void AfterInit()
+    public virtual void AfterInit()
     {
 
     }

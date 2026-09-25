@@ -3,14 +3,14 @@ using Godot.Collections;
 
 /// <summary>
 /// FactoryPlayer: looks-at targeting. Raycasts from the camera each physics tick to find the item or
-/// button under the crosshair, shows the hover labels, and handles the "interact" action
-/// (pick up an item / press a button).
+/// button or structure under the crosshair, shows the hover labels, and handles the "interact" action
+/// (pick up an item / press a button / deconstruct a structure).
 /// </summary>
 public partial class FactoryPlayer
 {
     [Export] public float pickRange = 5f;
 
-    /// <summary>The PhysicalFactoryItem or BasicButton currently under the crosshair, or null.</summary>
+    /// <summary>The PhysicalFactoryItem, BasicButton or Structure currently under the crosshair, or null.</summary>
     public Node3D pickTarget { get; private set; }
 
     Label hoverInfoName;
@@ -40,15 +40,20 @@ public partial class FactoryPlayer
             Logging.Log($"You just pressed interact on {button.Name}!", "Player");
             button.OnPressed();
         }
+        if (pickTarget is Structure structure && inventory.HasRoomFor(structure.blueprintItemID))
+        {
+            // Arbitrated by the host so two players can't both take the blueprint back.
+            BuildGrid.RequestDeconstruct(this, structure);
+        }
     }
 
-    /// <summary>Adds an item whose pickup the item's authority granted to this (local) player.</summary>
-    public void ReceivePickedUpItem(string itemID)
+    /// <summary>Adds an item granted to this (local) player by an arbiter (a pickup, refund or deconstruct).</summary>
+    public void ReceiveItem(string itemID)
     {
         int leftover = inventory.AddItem(itemID, 1);
         if (leftover > 0)
         {
-            Logging.Warn($"Picked up {itemID} but the inventory filled up in the meantime; item lost", "Player");
+            Logging.Warn($"Received {itemID} but the inventory filled up in the meantime; item lost", "Player");
         }
         UpdateEquippedItem();
     }
@@ -81,6 +86,14 @@ public partial class FactoryPlayer
             hoverInfoName.Hide();
             hoverInfoBelow.Show();
             hoverInfoBelow.Text = "Press F to Activate.";
+        }
+        else if (BuildGrid.FindStructure(hit) is Structure structure)
+        {
+            pickTarget = structure;
+            hoverInfoName.Show();
+            hoverInfoName.Text = structure.displayName;
+            hoverInfoBelow.Show();
+            hoverInfoBelow.Text = "Press F to deconstruct.";
         }
         else
         {

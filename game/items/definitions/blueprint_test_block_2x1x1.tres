@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BlueprintItem" format=3]
+
+[ext_resource type="Script" path="res://game/items/BlueprintItem.cs" id="1_bp"]
+[ext_resource type="Texture2D" path="res://game/assets/icons/blueprints/blueprint_test_block_2x1x1.png" id="2_icon"]
+[ext_resource type="PackedScene" path="res://game/machines/BlueprintGhost.tscn" id="3_ghost"]
+[ext_resource type="PackedScene" path="res://game/machines/structures/TestBlock2x1x1.tscn" id="4_struct"]
+
+[resource]
+script = ExtResource("1_bp")
+structureScene = ExtResource("4_struct")
+itemID = "blueprint_test_block_2x1x1"
+displayName = "Blueprint: Long Test Block"
+description = "A 2x1x1 test block."
+icon = ExtResource("2_icon")
+inHandScene = ExtResource("3_ghost")
+maxStackSize = 10

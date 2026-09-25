@@ -31,6 +31,13 @@ public partial class GMPOBox3DCharacter : Node3D, GMPObject
     public int priorityAccumulator { get; set; }
     public byte[] desiredState { get; set; }
 
+    public override void _EnterTree()
+    {
+        // Box3DCharacterBody's move_and_slide queries don't skip sensor shapes, so a character would walk
+        // into (and be stopped by) query-hidden sensors such as placement previews. Never collide with them.
+        Set("collision_mask", Get("collision_mask").AsInt64() & ~GameWorld.QueryHiddenLayer);
+    }
+
     public virtual void AfterInit()
     {
         if (authority == Lobby.selfPeerID)

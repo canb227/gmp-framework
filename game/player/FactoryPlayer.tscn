@@ -43,6 +43,7 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.0268967)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Camera3D/grabNode" unique_id=663658023]
+visible = false
 mesh = SubResource("SphereMesh_ug8er")
 
 [node name="label" type="Label3D" parent="." unique_id=1956124679]

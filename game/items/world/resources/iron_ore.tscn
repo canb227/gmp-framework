@@ -1,0 +1,104 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/items/world/PhysicalFactoryItem.cs" id="1_s"]
+
+[sub_resource type="StandardMaterial3D" id="mat0"]
+albedo_color = Color(0.33, 0.24, 0.21, 1)
+metallic = 0.3
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="mat1"]
+albedo_color = Color(0.45, 0.28, 0.22, 1)
+metallic = 0.3
+roughness = 0.9
+
+[sub_resource type="SphereMesh" id="lobe0"]
+radius = 0.41
+height = 0.82
+radial_segments = 12
+rings = 6
+
+[sub_resource type="SphereMesh" id="lobe1"]
+radius = 0.1999
+height = 0.3998
+radial_segments = 12
+rings = 6
+
+[sub_resource type="SphereMesh" id="lobe2"]
+radius = 0.2283
+height = 0.4566
+radial_segments = 12
+rings = 6
+
+[sub_resource type="SphereMesh" id="lobe3"]
+radius = 0.2042
+height = 0.4084
+radial_segments = 12
+rings = 6
+
+[sub_resource type="SphereMesh" id="lobe4"]
+radius = 0.2375
+height = 0.4751
+radial_segments = 12
+rings = 6
+
+[sub_resource type="SphereMesh" id="lobe5"]
+radius = 0.2051
+height = 0.4102
+radial_segments = 12
+rings = 6
+
+[sub_resource type="SphereMesh" id="lobe6"]
+radius = 0.2227
+height = 0.4453
+radial_segments = 12
+rings = 6
+
+[node name="iron_ore" type="Box3DBody"]
+shape_type = 1
+sphere_radius = 0.5
+density = 5.0
+friction = 0.8
+rolling_resistance = 0.3
+script = ExtResource("1_s")
+itemID = "iron_ore"
+canBePickTarget = true
+canBeGrabbed = true
+canBePickedUp = false
+tags = Array[int]([])
+
+[node name="Lobe0" type="MeshInstance3D" parent="."]
+mesh = SubResource("lobe0")
+surface_material_override/0 = SubResource("mat0")
+position = Vector3(0, 0, 0)
+
+[node name="Lobe1" type="MeshInstance3D" parent="."]
+mesh = SubResource("lobe1")
+surface_material_override/0 = SubResource("mat0")
+position = Vector3(0.176, 0.2675, 0.02263)
+
+[node name="Lobe2" type="MeshInstance3D" parent="."]
+mesh = SubResource("lobe2")
+surface_material_override/0 = SubResource("mat0")
+position = Vector3(-0.133, 0.1483, 0.2197)
+
+[node name="Lobe3" type="MeshInstance3D" parent="."]
+mesh = SubResource("lobe3")
+surface_material_override/0 = SubResource("mat1")
+position = Vector3(0.04262, 0.04978, -0.2914)
+
+[node name="Lobe4" type="MeshInstance3D" parent="."]
+mesh = SubResource("lobe4")
+surface_material_override/0 = SubResource("mat0")
+position = Vector3(0.2453, -0.04929, 0.1577)
+
+[node name="Lobe5" type="MeshInstance3D" parent="."]
+mesh = SubResource("lobe5")
+surface_material_override/0 = SubResource("mat0")
+position = Vector3(-0.2465, -0.1442, 0.04028)
+
+[node name="Lobe6" type="MeshInstance3D" parent="."]
+mesh = SubResource("lobe6")
+surface_material_override/0 = SubResource("mat0")
+position = Vector3(0.1319, -0.2269, -0.07257)
+

@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/machines/Structure.cs" id="1_struct"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_block"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="Mat_block"]
+albedo_color = Color(0.55, 0.6, 0.7, 1)
+
+[node name="TestBlock" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(2, 2, 2)
+script = ExtResource("1_struct")
+blueprintItemID = "blueprint_test_block"
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_block")
+surface_material_override/0 = SubResource("Mat_block")

@@ -14,6 +14,11 @@ public enum BodyTypeEnum
 }
 
 
+/// <summary>
+/// GMPObject base for Box3D physics bodies. Box3D is a GDExtension and isn't exposed to C#, so a script
+/// deriving from this class is attached to a node of type <c>Box3DBody</c> in the editor (C# sees it as a
+/// Node3D) and reaches the Box3DBody API through <c>Call</c>/<c>Get</c>/<c>Set</c>.
+/// </summary>
 public partial class GMPOBox3DBody : Node3D, GMPObject
 {
     // Godot only reads [Export] on the node class, so each GMPO base repeats this block.
@@ -38,7 +43,7 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     public byte[] desiredState { get; set; }
 
     /// <summary>The body type set in the scene; restored whenever this peer becomes the authority.</summary>
-    BodyTypeEnum authoredBodyType;
+    public BodyTypeEnum authoredBodyType { get; private set; }
 
     public virtual void AfterInit()
     {

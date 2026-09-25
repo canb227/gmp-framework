@@ -1,0 +1,82 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/items/world/PhysicalFactoryItem.cs" id="1_s"]
+
+[sub_resource type="StandardMaterial3D" id="mat0"]
+albedo_color = Color(0.74, 0.43, 0.22, 1)
+metallic = 0.5
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="mat1"]
+albedo_color = Color(0.35, 0.58, 0.46, 1)
+metallic = 0.5
+roughness = 0.8
+
+[sub_resource type="SphereMesh" id="lobe0"]
+radius = 0.205
+height = 0.41
+radial_segments = 12
+rings = 6
+
+[sub_resource type="SphereMesh" id="lobe1"]
+radius = 0.1023
+height = 0.2046
+radial_segments = 12
+rings = 6
+
+[sub_resource type="SphereMesh" id="lobe2"]
+radius = 0.1069
+height = 0.2138
+radial_segments = 12
+rings = 6
+
+[sub_resource type="SphereMesh" id="lobe3"]
+radius = 0.1028
+height = 0.2056
+radial_segments = 12
+rings = 6
+
+[sub_resource type="SphereMesh" id="lobe4"]
+radius = 0.1088
+height = 0.2175
+radial_segments = 12
+rings = 6
+
+[node name="copper_ore_ground" type="Box3DBody"]
+shape_type = 1
+sphere_radius = 0.25
+density = 5.0
+friction = 0.8
+rolling_resistance = 0.3
+script = ExtResource("1_s")
+itemID = "copper_ore_ground"
+canBePickTarget = true
+canBeGrabbed = true
+canBePickedUp = false
+tags = Array[int]([])
+
+[node name="Lobe0" type="MeshInstance3D" parent="."]
+mesh = SubResource("lobe0")
+surface_material_override/0 = SubResource("mat0")
+position = Vector3(0, 0, 0)
+
+[node name="Lobe1" type="MeshInstance3D" parent="."]
+mesh = SubResource("lobe1")
+surface_material_override/0 = SubResource("mat0")
+position = Vector3(0.09838, 0.1116, 0.0001408)
+
+[node name="Lobe2" type="MeshInstance3D" parent="."]
+mesh = SubResource("lobe2")
+surface_material_override/0 = SubResource("mat0")
+position = Vector3(-0.1011, 0.03601, 0.09605)
+
+[node name="Lobe3" type="MeshInstance3D" parent="."]
+mesh = SubResource("lobe3")
+surface_material_override/0 = SubResource("mat1")
+position = Vector3(0.05678, -0.03719, -0.1324)
+
+[node name="Lobe4" type="MeshInstance3D" parent="."]
+mesh = SubResource("lobe4")
+surface_material_override/0 = SubResource("mat0")
+position = Vector3(0.08519, -0.117, 0.05822)
+

@@ -18,6 +18,22 @@
 [ext_resource type="Script" uid="uid://cthpe3o2ur5ir" path="res://game/props/BasicButton.cs" id="15_aqpx8"]
 [ext_resource type="PackedScene" uid="uid://pkwdmuwpvbbu" path="res://game/machines/ConveyorBelt.tscn" id="18_dudsn"]
 [ext_resource type="PackedScene" uid="uid://ddpfwffpsstew" path="res://game/machines/ConveyorBeltUpSlope.tscn" id="19_ju7n5"]
+[ext_resource type="PackedScene" path="res://game/machines/structures/Conveyor.tscn" id="cd_conveyor"]
+[ext_resource type="PackedScene" path="res://game/machines/structures/ConveyorSlope.tscn" id="cd_slope"]
+[ext_resource type="PackedScene" path="res://game/machines/structures/ConveyorTurnRight.tscn" id="cd_turn"]
+[ext_resource type="PackedScene" path="res://game/machines/structures/ItemVoid.tscn" id="cd_void"]
+[ext_resource type="PackedScene" uid="uid://bsdttlf7ektg" path="res://game/dev/items/test_1x1x1cube.tscn" id="cd_cube"]
+[ext_resource type="PackedScene" path="res://game/machines/structures/ItemSpawner.tscn" id="cd_spawner"]
+[ext_resource type="PackedScene" path="res://game/machines/structures/Grinder.tscn" id="cd_grinder"]
+[ext_resource type="PackedScene" path="res://game/items/world/resources/iron_ore.tscn" id="rd_iron_ore"]
+[ext_resource type="PackedScene" path="res://game/items/world/resources/iron_ore_ground.tscn" id="rd_iron_ore_ground"]
+[ext_resource type="PackedScene" path="res://game/items/world/resources/copper_ore.tscn" id="rd_copper_ore"]
+[ext_resource type="PackedScene" path="res://game/items/world/resources/copper_ore_ground.tscn" id="rd_copper_ore_ground"]
+[ext_resource type="PackedScene" path="res://game/dev/items/test_chunk_light.tscn" id="rd_test_chunk_light"]
+[ext_resource type="PackedScene" path="res://game/dev/items/test_chunk_heavy.tscn" id="rd_test_chunk_heavy"]
+[ext_resource type="PackedScene" path="res://game/dev/items/test_chunk_jumping.tscn" id="rd_test_chunk_jumping"]
+[ext_resource type="PackedScene" path="res://game/dev/items/test_chunk_hot.tscn" id="rd_test_chunk_hot"]
+[ext_resource type="PackedScene" path="res://game/dev/items/test_chunk_cold.tscn" id="rd_test_chunk_cold"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
 material = ExtResource("1_2usgl")
@@ -503,3 +519,73 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.99035
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay10/Wall2" unique_id=1253900611]
 mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ConveyorDemo" type="Node3D" parent="."]
+
+[node name="OreSpawner" parent="ConveyorDemo" instance=ExtResource("cd_spawner")]
+position = Vector3(-35, 1, 43)
+itemWeights = Dictionary[String, float]({"iron_ore": 1.0, "copper_ore": 1.0})
+
+[node name="Start" parent="ConveyorDemo" instance=ExtResource("cd_conveyor")]
+position = Vector3(-35, 1, 41)
+
+[node name="Slope1" parent="ConveyorDemo" instance=ExtResource("cd_slope")]
+position = Vector3(-35, 1, 39)
+
+[node name="Slope2" parent="ConveyorDemo" instance=ExtResource("cd_slope")]
+position = Vector3(-35, 3, 35)
+
+[node name="Slope3" parent="ConveyorDemo" instance=ExtResource("cd_slope")]
+position = Vector3(-35, 5, 31)
+
+[node name="TurnRight" parent="ConveyorDemo" instance=ExtResource("cd_turn")]
+position = Vector3(-35, 7, 27)
+
+[node name="Run1" parent="ConveyorDemo" instance=ExtResource("cd_conveyor")]
+position = Vector3(-33, 7, 27)
+rotation = Vector3(0, -1.5707963, 0)
+
+[node name="Run2" parent="ConveyorDemo" instance=ExtResource("cd_conveyor")]
+position = Vector3(-31, 7, 27)
+rotation = Vector3(0, -1.5707963, 0)
+
+[node name="LineGrinder" parent="ConveyorDemo" instance=ExtResource("cd_grinder")]
+position = Vector3(-29, 3, 27)
+rotation = Vector3(0, -1.5707963, 0)
+processTime = 0.8
+
+[node name="CatchVoid" parent="ConveyorDemo" instance=ExtResource("cd_void")]
+position = Vector3(-29, 1, 27)
+
+[node name="ConveyorDemoCube" parent="ConveyorDemo" instance=ExtResource("cd_cube")]
+position = Vector3(-35, 0.7, 41.4)
+
+[node name="ResourceDisplay" type="Node3D" parent="."]
+position = Vector3(0, 0, -30)
+
+[node name="IronOre" parent="ResourceDisplay" instance=ExtResource("rd_iron_ore")]
+position = Vector3(-6, 0.52, 0)
+
+[node name="GroundIronOre" parent="ResourceDisplay" instance=ExtResource("rd_iron_ore_ground")]
+position = Vector3(-4, 0.27, 0)
+
+[node name="CopperOre" parent="ResourceDisplay" instance=ExtResource("rd_copper_ore")]
+position = Vector3(-2, 0.52, 0)
+
+[node name="GroundCopperOre" parent="ResourceDisplay" instance=ExtResource("rd_copper_ore_ground")]
+position = Vector3(0, 0.27, 0)
+
+[node name="LightChunk" parent="ResourceDisplay" instance=ExtResource("rd_test_chunk_light")]
+position = Vector3(2, 0.42, 0)
+
+[node name="HeavyChunk" parent="ResourceDisplay" instance=ExtResource("rd_test_chunk_heavy")]
+position = Vector3(4, 0.42, 0)
+
+[node name="JumpingChunk" parent="ResourceDisplay" instance=ExtResource("rd_test_chunk_jumping")]
+position = Vector3(6, 0.37, 0)
+
+[node name="HotChunk" parent="ResourceDisplay" instance=ExtResource("rd_test_chunk_hot")]
+position = Vector3(0, 0.37, -4)
+
+[node name="ColdChunk" parent="ResourceDisplay" instance=ExtResource("rd_test_chunk_cold")]
+position = Vector3(0.05, 1.8, -4)

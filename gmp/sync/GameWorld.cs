@@ -27,15 +27,21 @@ public partial class GameWorld : Node3D
         {
 
             b3droot = ClassDB.Instantiate("Box3DWorld").As<Node3D>();
-            b3droot.Set("debug_draw", true);
+            b3droot.Set("debug_draw", false);
             AddChild(b3droot);
         }
     }
 
-    /// <summary>Raycasts against the Box3D physics world.</summary>
-    public static Godot.Collections.Dictionary<string, Variant> Raycast(Vector3 from, Vector3 to)
+    /// <summary>
+    /// Collision layer for bodies that world queries should never hit (e.g. placement-preview sensors).
+    /// Excluded from <see cref="Raycast"/> by default.
+    /// </summary>
+    public const long QueryHiddenLayer = 1L << 30;
+
+    /// <summary>Raycasts against the Box3D physics world. By default ignores <see cref="QueryHiddenLayer"/>.</summary>
+    public static Godot.Collections.Dictionary<string, Variant> Raycast(Vector3 from, Vector3 to, long collisionMask = ~QueryHiddenLayer)
     {
-        return b3droot.Call("raycast", [from, to]).AsGodotDictionary<string, Variant>();
+        return b3droot.Call("raycast", [from, to, collisionMask, -1]).AsGodotDictionary<string, Variant>();
     }
 
     /// <summary>Queries the Box3D physics world for nodes overlapping a sphere.</summary>
@@ -91,6 +97,7 @@ public partial class GameWorld : Node3D
         spawnedRoots.Clear();
         syncedObjs.Clear();
         heldBy.Clear();
+        BuildGrid.ResetSession();
         ResetStateSync();
         tickNum = 0;
         started = false;

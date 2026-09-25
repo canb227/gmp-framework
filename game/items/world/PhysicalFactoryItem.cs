@@ -31,7 +31,21 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody
     public override void _Ready()
     {
         base._Ready();
-        GD.Print(GetType());
+        // Tagged items report touches so TagInteractions can react (Box3D then signals both bodies of a contact).
+        if (tags != null && tags.Count > 0)
+        {
+            Set("contact_monitor", true);
+            Connect("body_entered", Callable.From<Node>(OnBodyEntered));
+        }
+    }
+
+    // Reactions run on this item's authority, which is the peer simulating it.
+    void OnBodyEntered(Node other)
+    {
+        if (id != 0 && authority == Lobby.selfPeerID && other is PhysicalFactoryItem otherItem && otherItem.id != 0)
+        {
+            TagInteractions.OnTouch(this, otherItem);
+        }
     }
 
     /// <summary>
@@ -47,7 +61,7 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody
     [RPC]
     private void _RequestPickup(ulong playerObjectId)
     {
-        if (taken || authority != Lobby.selfPeerID)
+        if (taken || !canBePickedUp || authority != Lobby.selfPeerID)
         {
             return;
         }
@@ -71,7 +85,7 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody
         taken = true;
         if (GameWorld.syncedObjs.TryGetValue(playerObjectId, out GMPObject p) && p is FactoryPlayer player && player.isLocal)
         {
-            player.ReceivePickedUpItem(itemID);
+            player.ReceiveItem(itemID);
         }
         GameWorld.RemoveLocal(id);
     }

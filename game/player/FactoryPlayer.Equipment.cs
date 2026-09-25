@@ -8,7 +8,6 @@ using System;
 public partial class FactoryPlayer
 {
     const string DefaultHeldScene = "res://game/items/held/DefaultHeldBox.tscn";
-    const string DefaultDroppedScene = "res://game/items/world/DefaultDroppedBox.tscn";
 
     Node3D currentInHandInstance;
 
@@ -44,6 +43,10 @@ public partial class FactoryPlayer
             (currentInHandInstance as DefaultHeldBox).boxInit(equipped.itemID);
         }
         itemHolder.AddChild(currentInHandInstance);
+        if (currentInHandInstance is HeldTool tool)
+        {
+            tool.Equip(equipped, this);
+        }
     }
 
     /// <summary>Spawns up to <paramref name="count"/> of the active hotbar item in front of the player.</summary>
@@ -63,15 +66,7 @@ public partial class FactoryPlayer
                 0,
                 (float)(Random.Shared.NextDouble() - 0.5) * 0.5f
             );
-            if (FactoryItem.Fetch(slot.itemID).droppedScene == null)
-            {
-                ulong droppedID = GameWorld.SpawnScene(DefaultDroppedScene, dropPos + offset, dropRot);
-                (GameWorld.syncedObjs[droppedID] as DefaultDroppedBox).boxInit(slot.itemID);
-            }
-            else
-            {
-                GameWorld.SpawnScene(FactoryItem.Fetch(slot.itemID).droppedScene.ResourcePath, dropPos + offset, dropRot);
-            }
+            FactoryItem.SpawnInWorld(slot.itemID, dropPos + offset, dropRot);
         }
 
         inventory.RemoveFromSlot(inventory.ActiveHotbarSlot, toDrop);

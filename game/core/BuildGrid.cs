@@ -1,14 +1,20 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 
 /// <summary>
-/// Build-placement grid: debug line mesh, looked-at cell highlight, and a local cell-occupancy map.
-/// Not networked (Phase 2+).
+/// The build grid: cell/world conversion, which <see cref="Structure"/> occupies each cell, and the
+/// debug line mesh / looked-at cell highlight. Occupancy is kept identical on every peer because each
+/// peer registers structures as they spawn and despawn; placement and deconstruction are decided by
+/// the host (BuildGrid.Placement.cs).
 /// </summary>
 public partial class BuildGrid : Node3D
 {
     public static BuildGrid instance;
+    /// <summary>Debug toggle for the grid lines (console: debugui grid).</summary>
     public static bool enabled = false;
+    /// <summary>Set while the local player holds a blueprint; also shows the grid lines.</summary>
+    public static bool placementActive = false;
     public static bool highlightLookedAtCell = false;
     public static Vector3I? highlightedCell = null;
 
@@ -17,7 +23,7 @@ public partial class BuildGrid : Node3D
     private const float HighlightRaycastRange = 20.0f;
     private const float HighlightEdgeNudge = 0.001f;
 
-    private static Dictionary<Vector3I, object> cells = new(); 
+    private static readonly Dictionary<Vector3I, Structure> cells = new();
 
     private MeshInstance3D _meshInstance;
     private ImmediateMesh _immediateMesh;
@@ -68,7 +74,7 @@ public partial class BuildGrid : Node3D
 
     public override void _Process(double delta)
     {
-        if (enabled)
+        if (enabled || placementActive)
         {
             if (!_meshBuilt)
             {
@@ -98,35 +104,154 @@ public partial class BuildGrid : Node3D
     private void UpdateHighlightedCell()
     {
         Camera3D camera = GetViewport().GetCamera3D();
-        if (camera == null)
+        if (camera != null && TryGetLookedAtCell(camera, HighlightRaycastRange, out Vector3I cell))
+        {
+            highlightedCell = cell;
+            _highlightMeshInstance.Position = CellToWorld(cell);
+            _highlightMeshInstance.Visible = true;
+        }
+        else
         {
             _highlightMeshInstance.Visible = false;
             highlightedCell = null;
-            return;
         }
+    }
 
+    /// <summary>
+    /// Raycasts along the camera's view and returns the empty-side cell of the surface it hits: the cell
+    /// in front of whatever face you look at (on top of a floor, beside a wall or structure).
+    /// </summary>
+    public static bool TryGetLookedAtCell(Camera3D camera, float range, out Vector3I cell)
+    {
         Vector3 from = camera.GlobalPosition;
-        Vector3 to = from + -camera.GlobalTransform.Basis.Z * HighlightRaycastRange;
+        Vector3 to = from + -camera.GlobalTransform.Basis.Z * range;
         var ray = GameWorld.Raycast(from, to);
-
         if (!ray["hit"].AsBool())
         {
-            _highlightMeshInstance.Visible = false;
-            highlightedCell = null;
-            return;
+            cell = default;
+            return false;
         }
 
-        Vector3 hitPosition = ray["position"].AsVector3();
-        Vector3 hitNormal = ray["normal"].AsVector3();
+        // Nudge off the surface along its normal before flooring, so a hit that lands exactly on a
+        // cell boundary (e.g. a floor at a grid line) resolves to the cell above the surface rather
+        // than the one buried inside it.
+        cell = WorldToCell(ray["position"].AsVector3() + ray["normal"].AsVector3() * HighlightEdgeNudge);
+        return true;
+    }
 
-        // Nudge off the surface along its normal before flooring, so a hit that
-        // lands exactly on a cell boundary (e.g. a floor at a grid line) resolves
-        // to the cell above the surface rather than the one buried inside it.
-        var cell = WorldToCell(hitPosition + hitNormal * HighlightEdgeNudge);
+    /// <summary>
+    /// Where a structure with footprint <paramref name="offsets"/> (rotated by <paramref name="quarterTurns"/>)
+    /// would be anchored when placed by looking along a ray. The ray picks a face:
+    /// <list type="bullet">
+    /// <item>If the ray enters a cell occupied by a structure before it hits any collider, it snaps to the face
+    /// of that cell it crossed: whatever the structure's colliders look like (a thin conveyor, a slope), every
+    /// occupied cell presents its full faces, and the target is the cell across that face.</item>
+    /// <item>Otherwise the target is the cell on the open side of the surface the ray hit (its normal snapped to
+    /// the nearest axis, so slopes work).</item>
+    /// </list>
+    /// The footprint then grows away from that face: it is shifted along the face normal so its rearmost
+    /// cell sits in the target cell, e.g. a 2x1x1 put against a wall's side sticks out of the wall.
+    /// </summary>
+    public static bool TryGetPlacementTarget(Vector3 from, Vector3 direction, float range, IEnumerable<Vector3I> offsets, int quarterTurns, out Vector3I anchor)
+    {
+        anchor = default;
+        direction = direction.Normalized();
+        var ray = GameWorld.Raycast(from, from + direction * range);
+        bool hit = ray["hit"].AsBool();
+        float hitDistance = hit ? from.DistanceTo(ray["position"].AsVector3()) : range;
 
-        highlightedCell = cell;
-        _highlightMeshInstance.Position = CellToWorld(cell);
-        _highlightMeshInstance.Visible = true;
+        Vector3I target, normal;
+        if (TryFindOccupiedCellAlongRay(from, direction, hitDistance, out Vector3I entered, out normal))
+        {
+            // The ray reached a structure's cell before any collider: snap to the face of that cell it crossed.
+            target = entered + normal;
+        }
+        else if (hit)
+        {
+            // Otherwise the cell on the open side of the surface that was hit.
+            normal = DominantAxis(ray["normal"].AsVector3());
+            target = WorldToCell(ray["position"].AsVector3() + (Vector3)normal * HighlightEdgeNudge);
+        }
+        else
+        {
+            return false;
+        }
+
+        int rearmost = int.MaxValue;
+        foreach (Vector3I offset in offsets)
+        {
+            Vector3I o = RotateOffset(offset, quarterTurns);
+            rearmost = Mathf.Min(rearmost, o.X * normal.X + o.Y * normal.Y + o.Z * normal.Z);
+        }
+        anchor = target - normal * rearmost;
+        return true;
+    }
+
+    /// <summary>
+    /// Walks the ray cell by cell (Amanatides-Woo voxel traversal) and returns the first cell occupied by a
+    /// structure that it enters within <paramref name="maxDistance"/>, with the normal of the face it entered
+    /// through (pointing back out of that cell). The cell the ray starts in is skipped, so standing inside or
+    /// on a structure's cell doesn't hide its neighbours.
+    /// </summary>
+    static bool TryFindOccupiedCellAlongRay(Vector3 from, Vector3 direction, float maxDistance, out Vector3I cell, out Vector3I normal)
+    {
+        cell = WorldToCell(from);
+        normal = default;
+        Vector3I step = new(Math.Sign(direction.X), Math.Sign(direction.Y), Math.Sign(direction.Z));
+        // Distance along the ray to the next cell boundary on each axis, and between boundaries.
+        Vector3 next = default, delta = default;
+        for (int axis = 0; axis < 3; axis++)
+        {
+            float d = direction[axis];
+            if (d == 0)
+            {
+                next[axis] = float.PositiveInfinity;
+                delta[axis] = float.PositiveInfinity;
+                continue;
+            }
+            float boundary = (cell[axis] + (d > 0 ? 1 : 0)) * CellSize;
+            next[axis] = (boundary - from[axis]) / d;
+            delta[axis] = CellSize / Math.Abs(d);
+        }
+
+        while (true)
+        {
+            int axis = next.X < next.Y ? (next.X < next.Z ? 0 : 2) : (next.Y < next.Z ? 1 : 2);
+            if (next[axis] > maxDistance)
+            {
+                return false;
+            }
+            cell[axis] += step[axis];
+            next[axis] += delta[axis];
+            if (GetStructureAt(cell) != null)
+            {
+                normal = default;
+                normal[axis] = -step[axis];
+                return true;
+            }
+        }
+    }
+
+    /// <summary>The unit grid axis closest to <paramref name="v"/>.</summary>
+    public static Vector3I DominantAxis(Vector3 v)
+    {
+        Vector3 a = v.Abs();
+        if (a.X >= a.Y && a.X >= a.Z) return new Vector3I(Math.Sign(v.X), 0, 0);
+        if (a.Y >= a.Z) return new Vector3I(0, Math.Sign(v.Y), 0);
+        return new Vector3I(0, 0, Math.Sign(v.Z));
+    }
+
+    /// <summary>The Structure a collider belongs to (it may be a child body), or null.</summary>
+    public static Structure FindStructure(Node node)
+    {
+        for (Node n = node; n != null; n = n.GetParent())
+        {
+            if (n is Structure s)
+            {
+                return s;
+            }
+        }
+        return null;
     }
 
     private void BuildGridMesh()
@@ -182,80 +307,81 @@ public partial class BuildGrid : Node3D
         );
     }
 
-    public static bool Add(object obj, Vector3 worldPos)
+    // ---- occupancy --------------------------------------------------------
+
+    /// <summary>
+    /// Rotates a cell offset by <paramref name="quarterTurns"/> steps of +90° yaw (Godot's positive Y
+    /// rotation, counter-clockwise seen from above), matching a node rotated by the same angle.
+    /// </summary>
+    public static Vector3I RotateOffset(Vector3I offset, int quarterTurns)
     {
-        var cell = WorldToCell(worldPos);
-        if (cells.ContainsKey(cell))
+        for (int i = 0; i < Mathf.PosMod(quarterTurns, 4); i++)
         {
-            return false;
+            offset = new Vector3I(offset.Z, offset.Y, -offset.X);
         }
-        cells[cell] = obj;
-        return true;
+        return offset;
     }
 
-    public static bool Remove(object obj, Vector3 worldPos)
+    /// <summary>The rotation of a structure turned by <paramref name="quarterTurns"/> steps of +90° yaw.</summary>
+    public static Basis QuarterTurnBasis(int quarterTurns)
     {
-        var cell = WorldToCell(worldPos);
-        if (cells.TryGetValue(cell, out var existing) && Equals(existing, obj))
-        {
-            cells.Remove(cell);
-            return true;
-        }
-        return false;
+        return Basis.FromEuler(new Vector3(0, Mathf.PosMod(quarterTurns, 4) * Mathf.Pi / 2, 0));
     }
 
-    public static bool Move(object obj, Vector3 oldWorldPos, Vector3 newWorldPos)
+    /// <summary>The world cells covered by a footprint of <paramref name="offsets"/> anchored at <paramref name="anchor"/>.</summary>
+    public static IEnumerable<Vector3I> FootprintCells(Vector3I anchor, IEnumerable<Vector3I> offsets, int quarterTurns)
     {
-        var oldCell = WorldToCell(oldWorldPos);
-        var newCell = WorldToCell(newWorldPos);
-
-        if (oldCell == newCell)
+        foreach (Vector3I offset in offsets)
         {
-            return true;
+            yield return anchor + RotateOffset(offset, quarterTurns);
         }
-
-        if (!cells.TryGetValue(oldCell, out var existing) || !Equals(existing, obj))
-        {
-            return false;
-        }
-
-        if (cells.ContainsKey(newCell))
-        {
-            return false;
-        }
-
-        cells.Remove(oldCell);
-        cells[newCell] = obj;
-        return true;
     }
 
-    public static object GetObjectAt(Vector3 worldPos)
+    /// <summary>True if every cell of the footprint is free.</summary>
+    public static bool CanPlace(Vector3I anchor, IEnumerable<Vector3I> offsets, int quarterTurns)
     {
-        var cell = WorldToCell(worldPos);
-        return cells.TryGetValue(cell, out var obj) ? obj : null;
-    }
-
-    public static IEnumerable<object> GetNeighbors(Vector3 worldPos)
-    {
-        var veci = WorldToCell(worldPos);
-
-        for (int dx = -1; dx <= 1; dx++)
+        foreach (Vector3I cell in FootprintCells(anchor, offsets, quarterTurns))
         {
-            for (int dy = -1; dy <= 1; dy++)
+            if (cells.ContainsKey(cell))
             {
-                for (int dz = -1; dz <= 1; dz++)
-                {
-                    if (dx == 0 && dy == 0 && dz == 0)
-                    {
-                        continue;
-                    }
+                return false;
+            }
+        }
+        return true;
+    }
 
-                    if (cells.TryGetValue(new Vector3I(veci.X + dx, veci.Y + dy, veci.Z + dz), out var obj))
-                    {
-                        yield return obj;
-                    }
-                }
+    /// <summary>Registers every cell of <paramref name="structure"/>. Fails (registering nothing) if any is taken.</summary>
+    public static bool Occupy(Structure structure)
+    {
+        if (!CanPlace(structure.anchor, structure.cellOffsets, structure.quarterTurns))
+        {
+            return false;
+        }
+        foreach (Vector3I cell in FootprintCells(structure.anchor, structure.cellOffsets, structure.quarterTurns))
+        {
+            cells[cell] = structure;
+        }
+        return true;
+    }
+
+    /// <summary>Frees every cell registered to <paramref name="structure"/>.</summary>
+    public static void Vacate(Structure structure)
+    {
+        foreach (Vector3I cell in FootprintCells(structure.anchor, structure.cellOffsets, structure.quarterTurns))
+        {
+            if (cells.TryGetValue(cell, out Structure existing) && existing == structure)
+            {
+                cells.Remove(cell);
             }
         }
     }
+
+    /// <summary>The structure occupying <paramref name="cell"/>, or null.</summary>
+    public static Structure GetStructureAt(Vector3I cell)
+    {
+        return cells.TryGetValue(cell, out Structure s) ? s : null;
+    }
+
+    /// <summary>Number of occupied cells (used by the headless multiplayer test).</summary>
+    public static int occupiedCellCount => cells.Count;
 }

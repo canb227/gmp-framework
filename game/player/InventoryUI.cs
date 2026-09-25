@@ -21,6 +21,9 @@ public partial class InventoryUI : Control
     int _hoveredSlot = -1;
 
     Control inventoryScreen;
+    Label heldItemName;
+    /// <summary>The held-item name currently shown above the hotbar.</summary>
+    public string heldItemText => heldItemName.Text;
 
     /// <summary>True while the full inventory screen is shown. The mouse is released and hotbar/grab scrolling and click-to-capture are suppressed; other player input still works.</summary>
     public bool isOpen { get; private set; }
@@ -30,6 +33,7 @@ public partial class InventoryUI : Control
         player = GetParent<FactoryPlayer>();
         inventory = player.inventory;
         inventoryScreen = GetNode<Control>("InventoryScreen");
+        heldItemName = GetNode<Label>("%HeldItemName");
 
         normalStyle = new StyleBoxFlat();
         normalStyle.BgColor = new Color(0.15f, 0.15f, 0.15f, 0.8f);
@@ -152,6 +156,10 @@ public partial class InventoryUI : Control
                 slotPanels[i].AddThemeStyleboxOverride("panel", normalStyle);
             }
         }
+
+        // Name of the item in hand, shown above the hotbar.
+        string equipped = inventory.GetEquippedItem();
+        heldItemName.Text = equipped == null ? "" : FactoryItem.Fetch(equipped)?.displayName ?? equipped;
     }
 
     public override void _Process(double delta)

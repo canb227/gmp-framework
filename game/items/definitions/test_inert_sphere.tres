@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FactoryItem" format=3]
+
+[ext_resource type="Script" uid="uid://cw384fqykeue7" path="res://game/items/FactoryItem.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://b646400pws0lh" path="res://icon.svg" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://b7a3etxh7wq5c" path="res://game/dev/items/test_inert_sphere_world.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "test_inert_sphere"
+droppedScene = ExtResource("3_scene")
+displayName = "Test Sphere"
+description = "What a grinder makes of a test cube."
+icon = ExtResource("2_icon")
+maxStackSize = 10
