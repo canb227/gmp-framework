@@ -33,7 +33,7 @@ public static class GameBootstrap
         PlayerSync init = new PlayerSync();
         init.controllingPeerID = Lobby.selfPeerID;
         init.isHuman = true;
-        Vector3 spawnPos = new Vector3(Random.Shared.Next(5), Random.Shared.Next(2, 5), Random.Shared.Next(5));
+        Vector3 spawnPos = PickSpawnPosition();
         ulong pid = GameWorld.SpawnScene(PlayerScene, spawnPos, default, default, GMPObject.serializer.Serialize(init));
         FactoryPlayer player = GameWorld.syncedObjs[pid] as FactoryPlayer;
         player.inventory.AddItem("magnet_rod", 1);
@@ -43,5 +43,22 @@ public static class GameBootstrap
         }
         player.inventory.AddItem("magnet_rod", 1);
         player.UpdateEquippedItem();
+    }
+
+    /// <summary>Group for spawn markers placed in level scenes (e.g. a Marker3D named PlayerStart).</summary>
+    public const string PlayerSpawnGroup = "player_spawn";
+
+    /// <summary>
+    /// A spot near the level's <see cref="PlayerSpawnGroup"/> marker, jittered so peers don't spawn inside each
+    /// other. Falls back to the old random spot near the origin for levels without a marker.
+    /// </summary>
+    static Vector3 PickSpawnPosition()
+    {
+        Vector3 jitter = new Vector3((float)(Random.Shared.NextDouble() * 3.0 - 1.5), 0f, (float)(Random.Shared.NextDouble() * 3.0 - 1.5));
+        if (GameWorld.instance?.GetTree().GetFirstNodeInGroup(PlayerSpawnGroup) is Node3D marker)
+        {
+            return marker.GlobalPosition + jitter + Vector3.Up;
+        }
+        return new Vector3(Random.Shared.Next(5), Random.Shared.Next(2, 5), Random.Shared.Next(5));
     }
 }

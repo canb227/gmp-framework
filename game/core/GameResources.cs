@@ -12,6 +12,8 @@ public static class GameResources
     {
         new LevelInfo ("ObjectMuseum","res://game/levels/ObjectMuseum.tscn"),
         new LevelInfo ("FactoryMap","res://game/levels/FactoryMap.tscn"),
+        new LevelInfo ("MineCavern","res://game/levels/MineCavern.tscn"),
+        new LevelInfo ("TestFacility","res://game/levels/TestFacility.tscn"),
     };
 
 }

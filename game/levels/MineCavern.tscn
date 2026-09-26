@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://game/assets/levels/mine_cavern/mine_cavern.glb" id="1_level"]
+
+[sub_resource type="Environment" id="Environment_cavern"]
+background_mode = 1
+background_color = Color(0.004, 0.005, 0.007, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.08, 0.085, 0.1, 1)
+ambient_light_energy = 0.25
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 0.6
+glow_bloom = 0.05
+sdfgi_enabled = true
+sdfgi_use_occlusion = true
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.015
+volumetric_fog_albedo = Color(0.55, 0.52, 0.48, 1)
+
+[node name="MineCavern" type="Node3D"]
+
+[node name="Level" parent="." instance=ExtResource("1_level")]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_cavern")
+
+[node name="PlayerStart" type="Marker3D" parent="." groups=["player_spawn"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0, 0.5, 3.0)
