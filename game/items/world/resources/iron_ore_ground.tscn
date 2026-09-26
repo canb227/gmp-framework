@@ -1,12 +1,11 @@
 [gd_scene format=3 uid="uid://crsto0401xd6i"]
 
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/items/world/PhysicalFactoryItem.cs" id="1_s"]
-
 [ext_resource type="PackedScene" uid="uid://3sc8vascbul8" path="res://game/assets/models/props/iron_ore_ground.glb" id="model"]
 
 [node name="iron_ore_ground" type="Box3DBody" unique_id=1876539666]
 shape_type = 1
-sphere_radius = 0.25
+sphere_radius = 0.15000000000000002
 density = 5.0
 friction = 1.0
 rolling_resistance = 0.3
@@ -16,4 +15,4 @@ canBePickTarget = true
 canBeGrabbed = true
 tags = Array[int]([])
 
-[node name="Model" parent="." instance=ExtResource("model")]
+[node name="Model" parent="." unique_id=1451603002 instance=ExtResource("model")]
