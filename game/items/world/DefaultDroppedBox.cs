@@ -29,6 +29,21 @@ public partial class DefaultDroppedBox : PhysicalFactoryItem
     [RPC]
     private void _boxInit(string itemID)
     {
+        ApplyItem(itemID);
+    }
+
+    // A box placed by hand in a level (itemID set in the scene) labels itself; every peer loads the same value.
+    public override void AfterInit()
+    {
+        base.AfterInit();
+        if (labelName == null && !string.IsNullOrEmpty(itemID))
+        {
+            ApplyItem(itemID);
+        }
+    }
+
+    void ApplyItem(string itemID)
+    {
         this.itemID = itemID;
         ItemInfo item = ItemInfo.Fetch(itemID);
 

@@ -21,7 +21,7 @@ public enum Channel : byte
     GAME_Input = 10,
     GAME_State = 11,
     GAME_Voice = 12,
-    GAME_tba1 = 13,
+    GAME_Effects = 13,
     GAME_tba2 = 14,
     GAME_tba3 = 15,
 

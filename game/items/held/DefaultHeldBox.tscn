@@ -1,64 +1,81 @@
 [gd_scene format=3 uid="uid://drrxsfrr8qoft"]
 
 [ext_resource type="Script" uid="uid://6cyj0uv1he5k" path="res://game/items/held/DefaultHeldBox.cs" id="1_j0c02"]
-[ext_resource type="Texture2D" uid="uid://b646400pws0lh" path="res://icon.svg" id="2_331v2"]
+[ext_resource type="PackedScene" uid="uid://c71hpn107i28i" path="res://game/assets/models/props/item_crate.glb" id="model"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_7qi08"]
+[sub_resource type="PlaneMesh" id="icon_plane"]
 size = Vector2(0.5, 0.5)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hy4jy"]
-albedo_texture = ExtResource("2_331v2")
 
 [node name="DefaultHeldBox" type="Node3D" unique_id=1602477073]
 transform = Transform3D(0.37, 0, 0, 0, 0.37, 0, 0, 0, 0.37, 0, 0, 0)
 script = ExtResource("1_j0c02")
 
-[node name="Box" type="MeshInstance3D" parent="." unique_id=1298696253]
-unique_name_in_owner = true
-mesh = SubResource("BoxMesh_7qi08")
+[node name="Model" parent="." instance=ExtResource("model")]
 
-[node name="L1" type="Label3D" parent="." unique_id=1606310106]
+[node name="M1" type="MeshInstance3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0.3902337, -0.6809669)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, 0, -0.06, -0.478)
+mesh = SubResource("icon_plane")
+
+[node name="L1" type="Label3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.33, -0.478)
+pixel_size = 0.0035
+modulate = Color(0.95, 0.88, 0.7, 1)
+outline_modulate = Color(0.02, 0.02, 0.02, 1)
+font_size = 34
+outline_size = 6
+autowrap_mode = 3
+width = 210.0
 text = "ITEM"
 
-[node name="M1" type="MeshInstance3D" parent="." unique_id=1214953133]
+[node name="M2" type="MeshInstance3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(-0.99999994, -8.742277e-08, 3.821371e-15, 0, -4.3711385e-08, -1, 8.742277e-08, -0.99999994, 4.371139e-08, 0, 0, -0.6683551)
-mesh = SubResource("PlaneMesh_7qi08")
-surface_material_override/0 = SubResource("StandardMaterial3D_hy4jy")
+transform = Transform3D(0, 1, 0, 0, 0, -1, -1, 0, 0, 0.478, -0.06, 0)
+mesh = SubResource("icon_plane")
 
-[node name="L2" type="Label3D" parent="." unique_id=429317239]
+[node name="L2" type="Label3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.6120807, 0.34276175, 0.021873176)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.478, 0.33, 0)
+pixel_size = 0.0035
+modulate = Color(0.95, 0.88, 0.7, 1)
+outline_modulate = Color(0.02, 0.02, 0.02, 1)
+font_size = 34
+outline_size = 6
+autowrap_mode = 3
+width = 210.0
 text = "ITEM"
 
-[node name="M2" type="MeshInstance3D" parent="." unique_id=2072726494]
+[node name="M3" type="MeshInstance3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(-4.3711385e-08, 0.9999999, -4.371139e-08, 0, -4.3711385e-08, -1, -0.9999999, -4.3711385e-08, 1.9106855e-15, 0.6390193, -0.010214448, 0.0218732)
-mesh = SubResource("PlaneMesh_7qi08")
-surface_material_override/0 = SubResource("StandardMaterial3D_hy4jy")
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.06, 0.478)
+mesh = SubResource("icon_plane")
 
-[node name="L3" type="Label3D" parent="." unique_id=1740256798]
+[node name="L3" type="Label3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, -3.5527137e-15, -3.5527137e-15, 3.5527137e-15, 1, 0, 3.5527137e-15, 2.1175824e-22, 1, -5.9604645e-08, 0.35794753, 0.6936471)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.33, 0.478)
+pixel_size = 0.0035
+modulate = Color(0.95, 0.88, 0.7, 1)
+outline_modulate = Color(0.02, 0.02, 0.02, 1)
+font_size = 34
+outline_size = 6
+autowrap_mode = 3
+width = 210.0
 text = "ITEM"
 
-[node name="M3" type="MeshInstance3D" parent="." unique_id=778475094]
+[node name="M4" type="MeshInstance3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.9999999, 0, 0, 0, -4.3711385e-08, -1, 0, 0.9999999, -4.371139e-08, -7.814169e-05, -0.010214448, 0.5933235)
-mesh = SubResource("PlaneMesh_7qi08")
-surface_material_override/0 = SubResource("StandardMaterial3D_hy4jy")
+transform = Transform3D(0, -1, 0, 0, 0, -1, 1, 0, 0, -0.478, -0.06, 0)
+mesh = SubResource("icon_plane")
 
-[node name="L4" type="Label3D" parent="." unique_id=1926071767]
+[node name="L4" type="Label3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -0.6647527, 0.3312751, 0.00093501806)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.478, 0.33, 0)
+pixel_size = 0.0035
+modulate = Color(0.95, 0.88, 0.7, 1)
+outline_modulate = Color(0.02, 0.02, 0.02, 1)
+font_size = 34
+outline_size = 6
+autowrap_mode = 3
+width = 210.0
 text = "ITEM"
-
-[node name="M4" type="MeshInstance3D" parent="." unique_id=1859637518]
-unique_name_in_owner = true
-transform = Transform3D(-4.3711385e-08, -0.9999999, 4.371139e-08, 0, -4.3711385e-08, -1, 0.9999999, -4.3711385e-08, 1.9106855e-15, -0.6701382, -0.010214448, 0.056844056)
-mesh = SubResource("PlaneMesh_7qi08")
-surface_material_override/0 = SubResource("StandardMaterial3D_hy4jy")

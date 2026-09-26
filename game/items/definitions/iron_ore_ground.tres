@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="ItemInfo" format=3]
 
 [ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/items/ItemInfo.cs" id="1_fi"]
-[ext_resource type="Texture2D" uid="uid://b646400pws0lh" path="res://icon.svg" id="2_icon"]
+[ext_resource type="Texture2D" path="res://game/assets/icons/items/iron_ore_ground.png" id="2_icon"]
 [ext_resource type="PackedScene" path="res://game/items/world/resources/iron_ore_ground.tscn" id="3_scene"]
 
 [resource]

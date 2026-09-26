@@ -9,6 +9,7 @@ box_size = Vector3(0, 0, 0)
 script = ExtResource("1_r")
 blueprintItemID = "blueprint_conveyor"
 flowArrow = 1
+tags = Array[int]([5])
 
 [node name="Model" parent="." instance=ExtResource("2_model")]
 
@@ -27,19 +28,23 @@ position = Vector3(0, -0.92, 0)
 [node name="WallL" type="Box3DCollisionShape" parent="."]
 box_size = Vector3(0.11, 0.4, 2)
 friction = 0.1
+user_material_id = 3
 position = Vector3(-0.895, -0.8, 0)
 
 [node name="LipL" type="Box3DCollisionShape" parent="."]
 box_size = Vector3(0.03, 0.055, 2)
 friction = 0.1
+user_material_id = 3
 position = Vector3(-0.827, -0.9725, 0)
 
 [node name="WallR" type="Box3DCollisionShape" parent="."]
 box_size = Vector3(0.11, 0.4, 2)
 friction = 0.1
+user_material_id = 3
 position = Vector3(0.895, -0.8, 0)
 
 [node name="LipR" type="Box3DCollisionShape" parent="."]
 box_size = Vector3(0.03, 0.055, 2)
 friction = 0.1
+user_material_id = 3
 position = Vector3(0.827, -0.9725, 0)

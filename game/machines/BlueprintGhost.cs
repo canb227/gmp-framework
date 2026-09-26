@@ -74,9 +74,10 @@ public partial class BlueprintGhost : HeldItem
         }
         foreach (Node n in probe.structure.FindChildren("*", nameof(MeshInstance3D), true, false))
         {
-            var mesh = (MeshInstance3D)n;
-            mesh.MaterialOverride = material;
-            mesh.CastShadow = GeometryInstance3D.ShadowCastingSetting.Off;
+            // Set through the engine rather than casting: a mesh can carry its own script (e.g. a Spinner),
+            // which makes its managed type something other than MeshInstance3D.
+            n.Set(GeometryInstance3D.PropertyName.MaterialOverride, material);
+            n.Set(GeometryInstance3D.PropertyName.CastShadow, (int)GeometryInstance3D.ShadowCastingSetting.Off);
         }
         // Conveyors show which way they'll carry items; the arrow belongs to the preview only.
         if (FlowArrowMesh.Create(probe.structure, new StandardMaterial3D

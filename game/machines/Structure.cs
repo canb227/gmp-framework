@@ -28,6 +28,9 @@ public partial class Structure : GMPOBox3DBody
     /// <summary>Direction arrow drawn above this structure's placement preview (not the built structure); see <see cref="FlowArrowMesh"/>.</summary>
     [Export]
     public FlowArrow flowArrow = FlowArrow.None;
+    /// <summary>Tags of the structure itself; its first material tag is how it sounds when struck (<see cref="ImpactSounds"/>).</summary>
+    [Export]
+    public Godot.Collections.Array<ItemTags> tags;
 
     public string displayName => ItemInfo.Fetch(blueprintItemID)?.displayName ?? Name;
 

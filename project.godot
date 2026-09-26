@@ -25,6 +25,7 @@ Lobby="*uid://dfuapltpe6pga"
 RpcManager="*uid://cisvc3rton0m"
 Console="*uid://dle03qiwu8337"
 BuildGrid="*res://game/core/BuildGrid.cs"
+AudioManager="*uid://bqyfqwjdjhwfa"
 
 [display]
 

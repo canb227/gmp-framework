@@ -1,45 +1,27 @@
 [gd_scene format=3 uid="uid://v3645dcjw5ni"]
 
 [ext_resource type="Script" uid="uid://xbybti81ybvs" path="res://game/items/held/MagnetRod.cs" id="1_mr"]
-
-[sub_resource type="CylinderMesh" id="rod"]
-top_radius = 0.03
-bottom_radius = 0.03
-height = 0.5
-
-[sub_resource type="StandardMaterial3D" id="rodmat"]
-albedo_color = Color(0.55, 0.55, 0.6, 1)
-metallic = 0.8
-roughness = 0.35
-
-[sub_resource type="SphereMesh" id="tip"]
-radius = 0.05
-height = 0.1
-
-[sub_resource type="StandardMaterial3D" id="tipmat"]
-albedo_color = Color(0.85, 0.12, 0.1, 1)
+[ext_resource type="PackedScene" uid="uid://bsfjyw4ai1rr8" path="res://game/assets/models/props/magnet_tool.glb" id="model"]
+[ext_resource type="Shader" uid="uid://dt1utntk18esd" path="res://game/assets/shaders/MagnetField.gdshader" id="field"]
 
 [sub_resource type="SphereMesh" id="ball"]
 radius = 0.35
 height = 0.7
+radial_segments = 48
+rings = 24
 
-[sub_resource type="StandardMaterial3D" id="ballmat"]
-transparency = 1
-shading_mode = 0
-albedo_color = Color(0.4, 0.6, 1, 0.2)
+[sub_resource type="ShaderMaterial" id="ballmat"]
+render_priority = 0
+shader = ExtResource("field")
 
-[node name="MagnetRod" type="Node3D" unique_id=394440562]
+[node name="MagnetRod" type="Node3D" unique_id=394440562 node_paths=PackedStringArray("activeIndicator")]
 script = ExtResource("1_mr")
+activeIndicator = NodePath("Model/CoilGlow")
 
-[node name="Rod" type="MeshInstance3D" parent="." unique_id=1219167639]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, -0.2)
-mesh = SubResource("rod")
-surface_material_override/0 = SubResource("rodmat")
+[node name="Model" parent="." instance=ExtResource("model")]
 
-[node name="Tip" type="MeshInstance3D" parent="." unique_id=1819739328]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.47)
-mesh = SubResource("tip")
-surface_material_override/0 = SubResource("tipmat")
+[node name="CoilGlow" parent="Model"]
+visible = false
 
 [node name="BallMarker" type="MeshInstance3D" parent="." unique_id=536387176]
 visible = false

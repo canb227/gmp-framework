@@ -547,5 +547,5 @@ def build_all(do_export=True):
             for ob in coll.objects: ob.name = f"{tag}_{ob.name}"
     return pieces
 
-if __name__ == "__main__" or True:
+if __name__ != "conveyor_lib":   # other build scripts exec this file as a library
     build_all(do_export=False)

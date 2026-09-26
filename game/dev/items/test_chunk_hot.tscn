@@ -61,7 +61,7 @@ itemID = "test_chunk_hot"
 canBePickTarget = true
 canBeGrabbed = true
 canBePickedUp = false
-tags = Array[int]([1])
+tags = Array[int]([1, 4])
 
 [node name="Lobe0" type="MeshInstance3D" parent="."]
 mesh = SubResource("lobe0")
