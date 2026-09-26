@@ -1,43 +1,41 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://bywvnipt62y5r"]
 
-[ext_resource type="Script" path="res://game/machines/ItemVoid.cs" id="1_r"]
-
+[ext_resource type="Script" uid="uid://bd8inue1e36ll" path="res://game/machines/ItemVoid.cs" id="1_r"]
 [ext_resource type="PackedScene" uid="uid://ciueileresd63" path="res://game/assets/models/props/item_void.glb" id="model"]
 
-[node name="ItemVoid" type="Box3DBody" node_paths=PackedStringArray("trigger")]
+[node name="ItemVoid" type="Box3DBody" unique_id=1650974929 node_paths=PackedStringArray("trigger")]
 body_type = 0
 script = ExtResource("1_r")
-tags = Array[int]([3])
+trigger = NodePath("Trigger")
 cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, -1), Vector3i(1, 0, -1)])
 blueprintItemID = "blueprint_item_void"
-trigger = NodePath("Trigger")
+tags = Array[int]([3])
 
-[node name="Model" parent="." instance=ExtResource("model")]
+[node name="Model" parent="." unique_id=13990206 instance=ExtResource("model")]
 
-[node name="FloorShape" type="Box3DCollisionShape" parent="."]
+[node name="FloorShape" type="Box3DCollisionShape" parent="." unique_id=63614341]
 box_size = Vector3(4, 0.05, 4)
-position = Vector3(1, -0.975, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.975, -1)
 
-[node name="WallWShape" type="Box3DCollisionShape" parent="."]
+[node name="WallWShape" type="Box3DCollisionShape" parent="." unique_id=1896546427]
 box_size = Vector3(0.15, 1, 4)
-position = Vector3(-0.925, -0.5, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.925, -0.5, -1)
 
-[node name="WallEShape" type="Box3DCollisionShape" parent="."]
+[node name="WallEShape" type="Box3DCollisionShape" parent="." unique_id=880506886]
 box_size = Vector3(0.15, 1, 4)
-position = Vector3(2.925, -0.5, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.925, -0.5, -1)
 
-[node name="WallBShape" type="Box3DCollisionShape" parent="."]
+[node name="WallBShape" type="Box3DCollisionShape" parent="." unique_id=1634230605]
 box_size = Vector3(4, 0.12, 0.15)
-position = Vector3(1, -0.94, 0.925)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.94, 0.925)
 
-[node name="WallFShape" type="Box3DCollisionShape" parent="."]
+[node name="WallFShape" type="Box3DCollisionShape" parent="." unique_id=5252107]
 box_size = Vector3(4, 1, 0.15)
-position = Vector3(1, -0.5, -2.925)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.5, -2.925)
 
-[node name="Trigger" type="Box3DBody" parent="."]
+[node name="Trigger" type="Box3DBody" parent="." unique_id=398635074]
 body_type = 0
 box_size = Vector3(3.6, 0.75, 3.6)
 is_sensor = true
-sensor_events = true
 collision_layer = 1073741824
-position = Vector3(1, -0.4, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.4, -1)

@@ -13,7 +13,8 @@ using PolyType;
 public partial class FactoryPlayer : GMPOBox3DCharacter
 {
     public static bool displayPlayerDebugInfo = false;
-
+    public double distanceSinceStepSound = 0;
+    public double distancePerStepSound = 2;
     public int team;
     public bool isHuman;
     public ulong controllingPeerID;
@@ -168,6 +169,11 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         ApplyGrabForce(delta);
         UpdatePickTarget();
         ApplyMovement(delta);
+        if (distanceSinceStepSound > distancePerStepSound)
+        {
+            AudioManager.playRandomSound(this.GetPath(), ["res://game/assets/audio/impacts/footstep_concrete_000.ogg", "res://game/assets/audio/impacts/footstep_concrete_001.ogg", "res://game/assets/audio/impacts/footstep_concrete_002.ogg", "res://game/assets/audio/impacts/footstep_concrete_003.ogg", "res://game/assets/audio/impacts/footstep_concrete_004.ogg"]);
+            distanceSinceStepSound = 0;
+        }
     }
 
     void ApplyMovement(double delta)
@@ -196,6 +202,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         }
         cachedVel = Velocity;
         Velocity = Call("move_and_slide", [Velocity, delta]).AsVector3();
+        distanceSinceStepSound += (Velocity.Length() * delta);
     }
 
     // ---- state sync -------------------------------------------------------
