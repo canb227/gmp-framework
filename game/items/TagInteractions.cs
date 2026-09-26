@@ -23,6 +23,19 @@ public static class TagInteractions
 
     static readonly Dictionary<(ulong, ulong), ulong> lastReaction = new();
 
+    /// <summary>Whether any rule involves one of <paramref name="tags"/> (such items need touch reports).</summary>
+    public static bool HasRulesFor(IEnumerable<ItemTags> tags)
+    {
+        foreach (ItemTags tag in tags)
+        {
+            foreach ((ItemTags self, ItemTags other) key in rules.Keys)
+            {
+                if (key.self == tag || key.other == tag) return true;
+            }
+        }
+        return false;
+    }
+
     /// <summary>HOT/COLD contacts reported on this peer (used by the headless multiplayer test).</summary>
     public static int temperatureContacts { get; private set; }
 

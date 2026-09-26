@@ -8,6 +8,7 @@ size = Vector2(0.5, 0.5)
 
 [node name="DefaultDroppedBox" type="Box3DBody" unique_id=294901450]
 script = ExtResource("1_b7xlw")
+tags = Array[int]([7])
 canBePickTarget = true
 canBeGrabbed = true
 canBePickedUp = true

@@ -29,6 +29,9 @@ SLOPE_SPEED = 3.0              # along the incline (the placeholder's 3.5 horizo
 BELT_FRICTION = 0.8
 SLOPE_FRICTION = 1.2           # grippier incline belt: a 30 deg climb needs more than the flats' 0.8 (cubes default to 0.6)
 WALL_FRICTION = 0.1
+# Impact-sound surfaces (ItemTags values): the belt is the structure's RUBBER tag; frame shapes are tagged METAL.
+TAG_METAL = 3
+TAG_RUBBER = 5
 
 SLOPE_R, SLOPE_TH = 1.0, math.radians(30.0)
 SLOPE_LS = (4.0 - 2 * SLOPE_R * math.sin(SLOPE_TH)) / math.cos(SLOPE_TH)
@@ -53,10 +56,11 @@ class Scene:
         self.nodes = []
     def node(self, header, *props):
         self.nodes += [header] + [p for p in props if p] + [""]
-    def box(self, name, parent, size, pos, rot_x=0.0, rot_y=0.0, tangent=None, friction=None):
+    def box(self, name, parent, size, pos, rot_x=0.0, rot_y=0.0, tangent=None, friction=None, material=None):
         self.node(f'[node name="{name}" type="Box3DCollisionShape" parent="{parent}"]',
                   f"box_size = {v3(size)}",
                   f"friction = {f(friction)}" if friction is not None else None,
+                  f"user_material_id = {material}" if material else None,
                   f"tangent_velocity = {v3(tangent)}" if tangent else None,
                   f"position = {v3(pos)}",
                   f"rotation = {v3((rot_x, rot_y, 0))}" if (rot_x or rot_y) else None)
@@ -65,7 +69,7 @@ class Scene:
 
 def root(sc, name, blueprint, arrow, extra=()):
     sc.node(f'[node name="{name}" type="Box3DBody"]', "body_type = 0", *extra, 'script = ExtResource("1_r")',
-            f'blueprintItemID = "{blueprint}"', f"flowArrow = {arrow}")
+            f'blueprintItemID = "{blueprint}"', f"flowArrow = {arrow}", f"tags = Array[int]([{TAG_RUBBER}])")
 
 # ---------- straight ----------
 def straight():
@@ -76,9 +80,9 @@ def straight():
     sc.box("BeltReturn", ".", (2 * LIP_X[0], RET_T, 2), (0, RET_Y + RET_T / 2, 0), tangent=(0, 0, SPEED), friction=BELT_FRICTION)
     for side, tag in ((-1, "L"), (1, "R")):
         sc.box(f"Wall{tag}", ".", (WALL_X[1] - WALL_X[0], WALL_O[1] - WALL_O[0], 2),
-               (side * sum(WALL_X) / 2, BELT_TOP + sum(WALL_O) / 2, 0), friction=WALL_FRICTION)
+               (side * sum(WALL_X) / 2, BELT_TOP + sum(WALL_O) / 2, 0), friction=WALL_FRICTION, material=TAG_METAL)
         sc.box(f"Lip{tag}", ".", (LIP_X[1] - LIP_X[0], LIP_O[1] - LIP_O[0], 2),
-               (side * sum(LIP_X) / 2, BELT_TOP + sum(LIP_O) / 2, 0), friction=WALL_FRICTION)
+               (side * sum(LIP_X) / 2, BELT_TOP + sum(LIP_O) / 2, 0), friction=WALL_FRICTION, material=TAG_METAL)
     sc.write("Conveyor")
 
 # ---------- slope ----------
@@ -104,7 +108,7 @@ def offset(pt, ph, o):
     (z, y) = pt                   # normal (up the belt) in Godot (z, y): flow is (-cos, sin) -> normal (sin, cos)
     return (z + o * math.sin(ph), y + o * math.cos(ph))
 
-def seg_box(sc, name, parent, p0, p1, x, width, o0, o1, ph0, ph1, tangent=None, friction=None, xf=None, ref_top=True):
+def seg_box(sc, name, parent, p0, p1, x, width, o0, o1, ph0, ph1, tangent=None, friction=None, xf=None, ref_top=True, material=None):
     """Box spanning offsets o0..o1 (along the normal) between stations p0 -> p1, across x +- width/2. Its ref_top
     (else bottom) face runs exactly through the offset profile points, so consecutive segments' working faces meet."""
     a0, a1_ = offset(p0, ph0, o0), offset(p1, ph1, o0)
@@ -120,7 +124,7 @@ def seg_box(sc, name, parent, p0, p1, x, width, o0, o1, ph0, ph1, tangent=None, 
     pos, ry = (x, cy, cz), 0.0
     if xf:                        # down slope: turned half round about the footprint centre (z = -1)
         pos, ry = (-x, cy, -2 - cz), math.pi
-    sc.box(name, parent, (width, thick, ln), pos, rx, ry, tangent, friction)
+    sc.box(name, parent, (width, thick, ln), pos, rx, ry, tangent, friction, material)
 
 def slope(down):
     name = "ConveyorSlopeDown" if down else "ConveyorSlope"
@@ -155,9 +159,9 @@ def slope(down):
         (p0, ph0), (p1, ph1) = wpts[i], wpts[i + 1]
         for side, tag in ((-1, "L"), (1, "R")):
             seg_box(sc, f"Wall{tag}{i}", ".", p0, p1, side * sum(WALL_X) / 2, WALL_X[1] - WALL_X[0], WALL_O[0], WALL_O[1], ph0, ph1,
-                    friction=WALL_FRICTION, xf=down)
+                    friction=WALL_FRICTION, xf=down, material=TAG_METAL)
             seg_box(sc, f"Lip{tag}{i}", ".", p0, p1, side * sum(LIP_X) / 2, LIP_X[1] - LIP_X[0], LIP_O[0], LIP_O[1], ph0, ph1,
-                    friction=WALL_FRICTION, xf=down)
+                    friction=WALL_FRICTION, xf=down, material=TAG_METAL)
     # scaffold legs outside the stringers (as build_conveyors.py places them)
     for side in (-1, 1):
         for k, s in enumerate((2.15, SLOPE_L - 0.35)):
@@ -166,7 +170,7 @@ def slope(down):
             h = y + 1.0
             pos = (side * 0.972, -1.0 + h / 2, z)
             if down: pos = (-pos[0], pos[1], -2 - pos[2])
-            sc.box(f"Leg{'LR'[side > 0]}{k}", ".", (0.05, h, 0.05), pos)
+            sc.box(f"Leg{'LR'[side > 0]}{k}", ".", (0.05, h, 0.05), pos, material=TAG_METAL)
     sc.write(name)
 
 # ---------- turns ----------
@@ -216,11 +220,11 @@ def turn(left):
             ln = 2 * r1 * math.sin(math.pi / 4 / n) + 0.02
             x, y, z = P(rc, tc, (y0 + y1) / 2)
             sc.box(f"{prefix}{i}", "Rails", (r1 - r0, y1 - y0, ln), (x, y, z), 0, mx * (math.pi - tc) if mx > 0 else -(math.pi - tc),
-                   friction=WALL_FRICTION)
+                   friction=WALL_FRICTION, material=TAG_METAL)
     arc("WallOuter", 1 + WALL_X[0], 1 + WALL_X[1], BELT_TOP + WALL_O[0], BELT_TOP + WALL_O[1], 8)
     arc("LipOuter", 1 + LIP_X[0], 1 + LIP_X[1], BELT_TOP + LIP_O[0], BELT_TOP + LIP_O[1], 8)
     arc("LipInner", 1 - LIP_X[1], 1 - LIP_X[0], BELT_TOP + LIP_O[0], BELT_TOP + LIP_O[1], 3)
-    sc.box("PivotPost", "Rails", (0.12, WALL_O[1] - WALL_O[0], 0.12), (mx * 0.94, BELT_TOP + sum(WALL_O) / 2, 0.94), friction=WALL_FRICTION)
+    sc.box("PivotPost", "Rails", (0.12, WALL_O[1] - WALL_O[0], 0.12), (mx * 0.94, BELT_TOP + sum(WALL_O) / 2, 0.94), friction=WALL_FRICTION, material=TAG_METAL)
     sc.write(name)
 
 if __name__ == "__main__":

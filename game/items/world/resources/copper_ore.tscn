@@ -112,7 +112,7 @@ script = ExtResource("1_s")
 itemID = "copper_ore"
 canBePickTarget = true
 canBeGrabbed = true
-tags = Array[int]([])
+tags = Array[int]([4])
 
 [node name="Ore" type="MeshInstance3D" parent="." unique_id=446566106]
 mesh = SubResource("ArrayMesh_ijs6e")

@@ -9,6 +9,7 @@
 [node name="Grinder" type="Box3DBody" node_paths=PackedStringArray("hopperTrigger")]
 body_type = 0
 script = ExtResource("1_r")
+tags = Array[int]([3])
 cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(0, 1, 0)])
 blueprintItemID = "blueprint_grinder"
 hopperTrigger = NodePath("Trigger")

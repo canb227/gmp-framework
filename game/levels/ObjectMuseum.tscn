@@ -15,7 +15,6 @@
 [ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="14_aqpx8"]
 [ext_resource type="Texture2D" uid="uid://c8knlhvemp8jf" path="res://game/assets/textures/grass_1/grass_ao.png" id="15_2usgl"]
 [ext_resource type="Script" uid="uid://cthpe3o2ur5ir" path="res://game/props/BasicButton.cs" id="15_aqpx8"]
-[ext_resource type="PackedScene" uid="uid://bsdttlf7ektg" path="res://game/dev/items/test_1x1x1cube.tscn" id="cd_cube"]
 [ext_resource type="PackedScene" path="res://game/machines/structures/Grinder.tscn" id="cd_grinder"]
 [ext_resource type="PackedScene" path="res://game/machines/structures/ItemSpawner.tscn" id="cd_spawner"]
 [ext_resource type="PackedScene" path="res://game/machines/structures/ItemVoid.tscn" id="cd_void"]
@@ -572,7 +571,7 @@ processTime = 0.8
 [node name="CatchVoid" parent="ConveyorDemo" unique_id=318190228 instance=ExtResource("cd_void")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, 1, 27)
 
-[node name="ConveyorDemoCube" parent="ConveyorDemo" unique_id=1444105037 instance=ExtResource("cd_cube")]
+[node name="ConveyorDemoOre" parent="ConveyorDemo" unique_id=1444105037 instance=ExtResource("rd_iron_ore")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 0.7, 41.4)
 
 [node name="ResourceDisplay" type="Node3D" parent="." unique_id=750627150]

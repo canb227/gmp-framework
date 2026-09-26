@@ -30,6 +30,7 @@ public static class GameBootstrap
     /// <summary>Each peer spawns its own player and seeds its starting inventory.</summary>
     public static void Init()
     {
+        ImpactAudio.Ensure();
         PlayerSync init = new PlayerSync();
         init.controllingPeerID = Lobby.selfPeerID;
         init.isHuman = true;

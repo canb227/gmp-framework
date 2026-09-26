@@ -12,7 +12,7 @@ itemID = "test_1x1x1cube"
 canBePickTarget = true
 canBeGrabbed = true
 canBePickedUp = true
-tags = Array[int]([0])
+tags = Array[int]([0, 3])
 
 [node name="inWorldMesh" type="MeshInstance3D" parent="." unique_id=1145061474]
 mesh = SubResource("BoxMesh_7qi08")

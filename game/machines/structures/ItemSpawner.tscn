@@ -9,6 +9,7 @@
 [node name="ItemSpawner" type="Box3DBody"]
 body_type = 0
 script = ExtResource("1_r")
+tags = Array[int]([3])
 blueprintItemID = "blueprint_item_spawner"
 itemWeights = Dictionary[String, float]({"test_1x1x1cube": 1.0})
 interval = 1.0

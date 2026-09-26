@@ -13,6 +13,6 @@ script = ExtResource("1_s")
 itemID = "iron_ore_ground"
 canBePickTarget = true
 canBeGrabbed = true
-tags = Array[int]([])
+tags = Array[int]([4])
 
 [node name="Model" parent="." unique_id=1451603002 instance=ExtResource("model")]

@@ -15,4 +15,12 @@ public enum ItemTags
     INERT = 0,
     HOT = 1,
     COLD = 2,
-}
+    // Surface materials: what an item or structure sounds like when struck (see ImpactSounds). An object's first
+    // material tag is its surface; a collision shape's user_material_id may hold one of these values instead.
+    METAL = 3,
+    ROCK = 4,
+    RUBBER = 5,
+    CONCRETE = 6,
+    PLASTIC = 7,
+    GLASS = 8,
+}

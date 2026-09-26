@@ -59,8 +59,9 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody
     public override void _Ready()
     {
         base._Ready();
-        // Tagged items report touches so TagInteractions can react (Box3D then signals both bodies of a contact).
-        if (tags != null && tags.Count > 0)
+        // Items with interaction tags report touches so TagInteractions can react (Box3D then signals both bodies
+        // of a contact). Material-only tags don't need it: impact sounds come from the world's hit events.
+        if (tags != null && TagInteractions.HasRulesFor(tags))
         {
             Set("contact_monitor", true);
             Connect("body_entered", Callable.From<Node>(OnBodyEntered));
