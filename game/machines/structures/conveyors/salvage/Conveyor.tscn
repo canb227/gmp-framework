@@ -1,0 +1,45 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/machines/Structure.cs" id="1_r"]
+[ext_resource type="PackedScene" uid="uid://btl173g422b6k" path="res://game/assets/models/conveyors/conveyor_straight.glb" id="2_model"]
+
+[node name="Conveyor" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("1_r")
+blueprintItemID = "blueprint_conveyor"
+flowArrow = 1
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+
+[node name="BeltTop" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 2)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+position = Vector3(0, -0.87, 0)
+
+[node name="BeltReturn" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 2)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, 2)
+position = Vector3(0, -0.92, 0)
+
+[node name="WallL" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 2)
+friction = 0.1
+position = Vector3(-0.895, -0.8, 0)
+
+[node name="LipL" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 2)
+friction = 0.1
+position = Vector3(-0.827, -0.9725, 0)
+
+[node name="WallR" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 2)
+friction = 0.1
+position = Vector3(0.895, -0.8, 0)
+
+[node name="LipR" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 2)
+friction = 0.1
+position = Vector3(0.827, -0.9725, 0)
