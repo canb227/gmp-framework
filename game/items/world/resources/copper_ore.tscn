@@ -2,57 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/items/world/PhysicalFactoryItem.cs" id="1_s"]
 
-[sub_resource type="SphereMesh" id="lobe0"]
-radius = 0.41
-height = 0.82
-radial_segments = 12
-rings = 6
-
-[sub_resource type="StandardMaterial3D" id="mat0"]
-albedo_color = Color(0.74, 0.43, 0.22, 1)
-metallic = 0.5
-roughness = 0.7
-
-[sub_resource type="SphereMesh" id="lobe1"]
-radius = 0.1913
-height = 0.3826
-radial_segments = 12
-rings = 6
-
-[sub_resource type="SphereMesh" id="lobe2"]
-radius = 0.1969
-height = 0.3937
-radial_segments = 12
-rings = 6
-
-[sub_resource type="SphereMesh" id="lobe3"]
-radius = 0.2565
-height = 0.513
-radial_segments = 12
-rings = 6
-
-[sub_resource type="StandardMaterial3D" id="mat1"]
-albedo_color = Color(0.35, 0.58, 0.46, 1)
-metallic = 0.5
-roughness = 0.7
-
-[sub_resource type="SphereMesh" id="lobe4"]
-radius = 0.2348
-height = 0.4695
-radial_segments = 12
-rings = 6
-
-[sub_resource type="SphereMesh" id="lobe5"]
-radius = 0.2191
-height = 0.4382
-radial_segments = 12
-rings = 6
-
-[sub_resource type="SphereMesh" id="lobe6"]
-radius = 0.2409
-height = 0.4818
-radial_segments = 12
-rings = 6
+[ext_resource type="PackedScene" uid="uid://bb0kdvq7kften" path="res://game/assets/models/props/copper_ore.glb" id="model"]
 
 [node name="copper_ore" type="Box3DBody" unique_id=126599523]
 shape_type = 1
@@ -65,36 +15,4 @@ canBePickTarget = true
 canBeGrabbed = true
 tags = Array[int]([])
 
-[node name="Lobe0" type="MeshInstance3D" parent="." unique_id=978169708]
-mesh = SubResource("lobe0")
-surface_material_override/0 = SubResource("mat0")
-
-[node name="Lobe1" type="MeshInstance3D" parent="." unique_id=522517122]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1613, 0.261, -0.06281)
-mesh = SubResource("lobe1")
-surface_material_override/0 = SubResource("mat0")
-
-[node name="Lobe2" type="MeshInstance3D" parent="." unique_id=1974195504]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1606, 0.1642, 0.2347)
-mesh = SubResource("lobe2")
-surface_material_override/0 = SubResource("mat0")
-
-[node name="Lobe3" type="MeshInstance3D" parent="." unique_id=665293296]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05019, 0.04512, -0.2622)
-mesh = SubResource("lobe3")
-surface_material_override/0 = SubResource("mat1")
-
-[node name="Lobe4" type="MeshInstance3D" parent="." unique_id=406347888]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0923, -0.04592, 0.2555)
-mesh = SubResource("lobe4")
-surface_material_override/0 = SubResource("mat0")
-
-[node name="Lobe5" type="MeshInstance3D" parent="." unique_id=1931522460]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2088, -0.1397, -0.1224)
-mesh = SubResource("lobe5")
-surface_material_override/0 = SubResource("mat0")
-
-[node name="Lobe6" type="MeshInstance3D" parent="." unique_id=1765735833]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1105, -0.2093, -0.084)
-mesh = SubResource("lobe6")
-surface_material_override/0 = SubResource("mat0")
+[node name="Model" parent="." instance=ExtResource("model")]

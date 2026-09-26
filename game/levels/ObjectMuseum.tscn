@@ -15,11 +15,8 @@
 [ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="14_aqpx8"]
 [ext_resource type="Texture2D" uid="uid://c8knlhvemp8jf" path="res://game/assets/textures/grass_1/grass_ao.png" id="15_2usgl"]
 [ext_resource type="Script" uid="uid://cthpe3o2ur5ir" path="res://game/props/BasicButton.cs" id="15_aqpx8"]
-[ext_resource type="PackedScene" uid="uid://cl0nqhivv3sw4" path="res://game/machines/structures/conveyors/ConveyorTurnRight_fix.tscn" id="21_0wuwa"]
-[ext_resource type="PackedScene" uid="uid://ddnbcmgebhnoe" path="res://game/machines/structures/conveyors/Conveyor.tscn" id="cd_conveyor"]
 [ext_resource type="PackedScene" uid="uid://bsdttlf7ektg" path="res://game/dev/items/test_1x1x1cube.tscn" id="cd_cube"]
 [ext_resource type="PackedScene" path="res://game/machines/structures/Grinder.tscn" id="cd_grinder"]
-[ext_resource type="PackedScene" path="res://game/machines/structures/conveyors/ConveyorSlope.tscn" id="cd_slope"]
 [ext_resource type="PackedScene" path="res://game/machines/structures/ItemSpawner.tscn" id="cd_spawner"]
 [ext_resource type="PackedScene" path="res://game/machines/structures/ItemVoid.tscn" id="cd_void"]
 [ext_resource type="PackedScene" uid="uid://dlnyuu4mrmp1r" path="res://game/items/world/resources/copper_ore.tscn" id="rd_copper_ore"]
@@ -37,6 +34,11 @@
 [ext_resource type="PackedScene" path="res://game/machines/structures/conveyors/salvage/ConveyorTurnLeft.tscn" id="sc_turn_l"]
 [ext_resource type="PackedScene" path="res://game/machines/structures/conveyors/salvage/ConveyorTurnRight.tscn" id="sc_turn_r"]
 [ext_resource type="PackedScene" path="res://game/props/Lever.tscn" id="sp_lever"]
+[ext_resource type="PackedScene" uid="uid://bu7yxskeusnvj" path="res://game/assets/models/props/display_plinth.glb" id="sh_plinth"]
+[ext_resource type="PackedScene" uid="uid://bsfjyw4ai1rr8" path="res://game/assets/models/props/magnet_tool.glb" id="sh_magnet"]
+[ext_resource type="PackedScene" uid="uid://bc80frwd8i8um" path="res://game/items/world/DefaultDroppedBox.tscn" id="sh_crate"]
+[ext_resource type="Script" uid="uid://de6ss1gh7mjqf" path="res://game/props/Spinner.cs" id="sh_spinner"]
+[ext_resource type="Shader" uid="uid://dt1utntk18esd" path="res://game/assets/shaders/MagnetField.gdshader" id="sh_field"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
 material = ExtResource("1_2usgl")
@@ -222,6 +224,16 @@ roughness = 0.0
 material = SubResource("StandardMaterial3D_tt1o4")
 size = Vector3(0.5, 1.5, 0.5)
 
+[sub_resource type="SphereMesh" id="sh_field_ball"]
+radius = 0.35
+height = 0.7
+radial_segments = 48
+rings = 24
+
+[sub_resource type="ShaderMaterial" id="sh_field_mat"]
+render_priority = 0
+shader = ExtResource("sh_field")
+
 [node name="FactoryGameTest" type="Node3D" unique_id=653852535]
 
 [node name="Box3DBody" type="Box3DBody" parent="." unique_id=29392313]
@@ -374,16 +386,16 @@ targetObjectSpawner = [NodePath("../ObjectSpawner")]
 
 [node name="SpawnerConveyorLine" type="Node3D" parent="." unique_id=1564043353]
 
-[node name="Start" parent="SpawnerConveyorLine" unique_id=183790409 instance=ExtResource("cd_conveyor")]
+[node name="Start" parent="SpawnerConveyorLine" unique_id=183790409 instance=ExtResource("sc_straight")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13, 1, 1)
 
-[node name="Slope" parent="SpawnerConveyorLine" unique_id=1346301794 instance=ExtResource("cd_slope")]
+[node name="Slope" parent="SpawnerConveyorLine" unique_id=1346301794 instance=ExtResource("sc_slope")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15, 1, 1)
 
-[node name="Run1" parent="SpawnerConveyorLine" unique_id=507056064 instance=ExtResource("cd_conveyor")]
+[node name="Run1" parent="SpawnerConveyorLine" unique_id=507056064 instance=ExtResource("sc_straight")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 19, 3, 1)
 
-[node name="Run2" parent="SpawnerConveyorLine" unique_id=1748191575 instance=ExtResource("cd_conveyor")]
+[node name="Run2" parent="SpawnerConveyorLine" unique_id=1748191575 instance=ExtResource("sc_straight")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 21, 3, 1)
 
 [node name="SpawnerVoid" parent="SpawnerConveyorLine" unique_id=287666115 instance=ExtResource("cd_void")]
@@ -532,25 +544,25 @@ itemWeights = Dictionary[String, float]({
 "iron_ore": 1.0
 })
 
-[node name="Start" parent="ConveyorDemo" unique_id=1092054176 instance=ExtResource("cd_conveyor")]
+[node name="Start" parent="ConveyorDemo" unique_id=1092054176 instance=ExtResource("sc_straight")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 1, 41)
 
-[node name="Slope1" parent="ConveyorDemo" unique_id=381543440 instance=ExtResource("cd_slope")]
+[node name="Slope1" parent="ConveyorDemo" unique_id=381543440 instance=ExtResource("sc_slope")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 1, 39)
 
-[node name="Slope2" parent="ConveyorDemo" unique_id=218395275 instance=ExtResource("cd_slope")]
+[node name="Slope2" parent="ConveyorDemo" unique_id=218395275 instance=ExtResource("sc_slope")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 3, 35)
 
-[node name="Slope3" parent="ConveyorDemo" unique_id=1554726262 instance=ExtResource("cd_slope")]
+[node name="Slope3" parent="ConveyorDemo" unique_id=1554726262 instance=ExtResource("sc_slope")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 5, 31)
 
-[node name="ConveyorTurnRight" parent="ConveyorDemo" unique_id=2020778206 instance=ExtResource("21_0wuwa")]
+[node name="ConveyorTurnRight" parent="ConveyorDemo" unique_id=2020778206 instance=ExtResource("sc_turn_r")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 7, 27)
 
-[node name="Run1" parent="ConveyorDemo" unique_id=2146980209 instance=ExtResource("cd_conveyor")]
+[node name="Run1" parent="ConveyorDemo" unique_id=2146980209 instance=ExtResource("sc_straight")]
 transform = Transform3D(7.54979e-08, 0, -1, 0, 1, 0, 1, 0, 7.54979e-08, -33, 7, 27)
 
-[node name="Run2" parent="ConveyorDemo" unique_id=1964725704 instance=ExtResource("cd_conveyor")]
+[node name="Run2" parent="ConveyorDemo" unique_id=1964725704 instance=ExtResource("sc_straight")]
 transform = Transform3D(7.54979e-08, 0, -1, 0, 1, 0, 1, 0, 7.54979e-08, -31, 7, 27)
 
 [node name="LineGrinder" parent="ConveyorDemo" unique_id=1633029336 instance=ExtResource("cd_grinder")]
@@ -647,3 +659,120 @@ transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -21, 3, 5)
 
 [node name="Void" parent="SalvageConveyorTest" unique_id=437974951 instance=ExtResource("cd_void")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23, 1, 5)
+
+[node name="SalvageShowcase" type="Node3D" parent="." unique_id=1816087198]
+
+[node name="ShowSpawner" parent="SalvageShowcase" unique_id=642730241 instance=ExtResource("cd_spawner")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -23, 1, 13)
+itemWeights = Dictionary[String, float]({
+"copper_ore": 1.0,
+"iron_ore": 1.0
+})
+interval = 2.5
+
+[node name="Straight1" parent="SalvageShowcase" unique_id=799878127 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -21, 1, 13)
+
+[node name="SlopeUp" parent="SalvageShowcase" unique_id=523729283 instance=ExtResource("sc_slope")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -19, 1, 13)
+
+[node name="Straight2" parent="SalvageShowcase" unique_id=616455894 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -15, 3, 13)
+
+[node name="ShowGrinder" parent="SalvageShowcase" unique_id=514743897 instance=ExtResource("cd_grinder")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -13, 1, 13)
+
+[node name="Straight3" parent="SalvageShowcase" unique_id=1866425269 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -11, 1, 13)
+
+[node name="TurnRight" parent="SalvageShowcase" unique_id=347094926 instance=ExtResource("sc_turn_r")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -9, 1, 13)
+
+[node name="Straight4" parent="SalvageShowcase" unique_id=727763166 instance=ExtResource("sc_straight")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -9, 1, 15)
+
+[node name="ShowVoid" parent="SalvageShowcase" unique_id=1122710673 instance=ExtResource("cd_void")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -9, 1, 17)
+
+[node name="PlinthMagnet" type="Box3DBody" parent="SalvageShowcase" unique_id=1298069806]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 1, 19)
+body_type = 0
+box_size = Vector3(1.42, 0.8, 1.42)
+
+[node name="Model" parent="SalvageShowcase/PlinthMagnet" unique_id=1412827761 instance=ExtResource("sh_plinth")]
+
+[node name="Shape" type="Box3DCollisionShape" parent="SalvageShowcase/PlinthMagnet" unique_id=610694214]
+box_size = Vector3(1.42, 0.8, 1.42)
+position = Vector3(0, -0.6, 0)
+
+[node name="PlinthCrates" type="Box3DBody" parent="SalvageShowcase" unique_id=412397592]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 1, 19)
+body_type = 0
+box_size = Vector3(1.42, 0.8, 1.42)
+
+[node name="Model" parent="SalvageShowcase/PlinthCrates" unique_id=1293766472 instance=ExtResource("sh_plinth")]
+
+[node name="Shape" type="Box3DCollisionShape" parent="SalvageShowcase/PlinthCrates" unique_id=1454311809]
+box_size = Vector3(1.42, 0.8, 1.42)
+position = Vector3(0, -0.6, 0)
+
+[node name="PlinthIron" type="Box3DBody" parent="SalvageShowcase" unique_id=1519745620]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 1, 22.5)
+body_type = 0
+box_size = Vector3(1.42, 0.8, 1.42)
+
+[node name="Model" parent="SalvageShowcase/PlinthIron" unique_id=1175072793 instance=ExtResource("sh_plinth")]
+
+[node name="Shape" type="Box3DCollisionShape" parent="SalvageShowcase/PlinthIron" unique_id=105210123]
+box_size = Vector3(1.42, 0.8, 1.42)
+position = Vector3(0, -0.6, 0)
+
+[node name="PlinthCopper" type="Box3DBody" parent="SalvageShowcase" unique_id=1927763782]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 1, 22.5)
+body_type = 0
+box_size = Vector3(1.42, 0.8, 1.42)
+
+[node name="Model" parent="SalvageShowcase/PlinthCopper" unique_id=701167581 instance=ExtResource("sh_plinth")]
+
+[node name="Shape" type="Box3DCollisionShape" parent="SalvageShowcase/PlinthCopper" unique_id=160883825]
+box_size = Vector3(1.42, 0.8, 1.42)
+position = Vector3(0, -0.6, 0)
+
+[node name="MagnetDisplay" type="Node3D" parent="SalvageShowcase" unique_id=1894062152]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 1.75, 19)
+script = ExtResource("sh_spinner")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Magnet" parent="SalvageShowcase/MagnetDisplay" unique_id=1167621639 instance=ExtResource("sh_magnet")]
+transform = Transform3D(2.2, 0, 0, 0, 2.13, -0.55, 0, 0.55, 2.13, 0, -0.05, 0.45)
+
+[node name="Field" type="MeshInstance3D" parent="SalvageShowcase/MagnetDisplay" unique_id=470827150]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 0, 0.25, -0.75)
+cast_shadow = 0
+mesh = SubResource("sh_field_ball")
+surface_material_override/0 = SubResource("sh_field_mat")
+
+[node name="CrateGrinder" parent="SalvageShowcase" unique_id=1801748852 instance=ExtResource("sh_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 1.31, 19)
+itemID = "blueprint_grinder"
+
+[node name="CrateSpawner" parent="SalvageShowcase" unique_id=1846667133 instance=ExtResource("sh_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 2.33, 19)
+itemID = "blueprint_item_spawner"
+
+[node name="CrateVoid" parent="SalvageShowcase" unique_id=510664858 instance=ExtResource("sh_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.1, 0.51, 20.3)
+itemID = "blueprint_item_void"
+
+[node name="ShowIronOre" parent="SalvageShowcase" unique_id=1189450433 instance=ExtResource("rd_iron_ore")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.25, 1.31, 22.5)
+
+[node name="ShowIronOreGround" parent="SalvageShowcase" unique_id=1894638472 instance=ExtResource("rd_iron_ore_ground")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.5, 1.06, 22.9)
+
+[node name="ShowCopperOre" parent="SalvageShowcase" unique_id=934411673 instance=ExtResource("rd_copper_ore")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.75, 1.31, 22.5)
+
+[node name="ShowCopperOreGround" parent="SalvageShowcase" unique_id=492718981 instance=ExtResource("rd_copper_ore_ground")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.0, 1.06, 22.9)

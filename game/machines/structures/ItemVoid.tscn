@@ -1,39 +1,8 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://game/machines/ItemVoid.cs" id="1_r"]
-[ext_resource type="Shader" uid="uid://c5upcnlymcpkl" path="res://game/assets/shaders/ConveyorBelt.gdshader" id="2_r"]
-[ext_resource type="Texture2D" uid="uid://dfssoii6t84gn" path="res://game/assets/textures/wall_basic_1/wall_basic_1_diffuseOriginal.png" id="3_r"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_1"]
-render_priority = 0
-shader = ExtResource("2_r")
-shader_parameter/source_tex = ExtResource("3_r")
-shader_parameter/scroll_speed = 1.0
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
-albedo_color = Color(0.27, 0.27, 0.27, 1)
-metallic = 1.0
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
-albedo_color = Color(0.85, 0.65, 0.1, 1)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
-albedo_color = Color(0.05, 0.02, 0.08, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_5"]
-size = Vector3(4, 0.2, 4)
-
-[sub_resource type="BoxMesh" id="BoxMesh_6"]
-size = Vector3(0.15, 1, 4)
-
-[sub_resource type="BoxMesh" id="BoxMesh_7"]
-size = Vector3(0.15, 1, 4)
-
-[sub_resource type="BoxMesh" id="BoxMesh_8"]
-size = Vector3(4, 1, 0.15)
-
-[sub_resource type="BoxMesh" id="BoxMesh_9"]
-size = Vector3(4, 1, 0.15)
+[ext_resource type="PackedScene" uid="uid://ciueileresd63" path="res://game/assets/models/props/item_void.glb" id="model"]
 
 [node name="ItemVoid" type="Box3DBody" node_paths=PackedStringArray("trigger")]
 body_type = 0
@@ -42,49 +11,26 @@ cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0,
 blueprintItemID = "blueprint_item_void"
 trigger = NodePath("Trigger")
 
-[node name="FloorShape" type="Box3DCollisionShape" parent="."]
-box_size = Vector3(4, 0.2, 4)
-position = Vector3(1, -0.9, -1)
+[node name="Model" parent="." instance=ExtResource("model")]
 
-[node name="FloorMesh" type="MeshInstance3D" parent="."]
-mesh = SubResource("BoxMesh_5")
-surface_material_override/0 = SubResource("StandardMaterial3D_4")
-position = Vector3(1, -0.9, -1)
+[node name="FloorShape" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(4, 0.05, 4)
+position = Vector3(1, -0.975, -1)
 
 [node name="WallWShape" type="Box3DCollisionShape" parent="."]
 box_size = Vector3(0.15, 1, 4)
-position = Vector3(-0.925, -0.5, -1)
-
-[node name="WallWMesh" type="MeshInstance3D" parent="."]
-mesh = SubResource("BoxMesh_6")
-surface_material_override/0 = SubResource("StandardMaterial3D_2")
 position = Vector3(-0.925, -0.5, -1)
 
 [node name="WallEShape" type="Box3DCollisionShape" parent="."]
 box_size = Vector3(0.15, 1, 4)
 position = Vector3(2.925, -0.5, -1)
 
-[node name="WallEMesh" type="MeshInstance3D" parent="."]
-mesh = SubResource("BoxMesh_7")
-surface_material_override/0 = SubResource("StandardMaterial3D_2")
-position = Vector3(2.925, -0.5, -1)
-
 [node name="WallBShape" type="Box3DCollisionShape" parent="."]
-box_size = Vector3(4, 1, 0.15)
-position = Vector3(1, -0.5, 0.925)
-
-[node name="WallBMesh" type="MeshInstance3D" parent="."]
-mesh = SubResource("BoxMesh_8")
-surface_material_override/0 = SubResource("StandardMaterial3D_2")
-position = Vector3(1, -0.5, 0.925)
+box_size = Vector3(4, 0.12, 0.15)
+position = Vector3(1, -0.94, 0.925)
 
 [node name="WallFShape" type="Box3DCollisionShape" parent="."]
 box_size = Vector3(4, 1, 0.15)
-position = Vector3(1, -0.5, -2.925)
-
-[node name="WallFMesh" type="MeshInstance3D" parent="."]
-mesh = SubResource("BoxMesh_9")
-surface_material_override/0 = SubResource("StandardMaterial3D_2")
 position = Vector3(1, -0.5, -2.925)
 
 [node name="Trigger" type="Box3DBody" parent="."]

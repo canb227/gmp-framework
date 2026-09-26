@@ -2,45 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/items/world/PhysicalFactoryItem.cs" id="1_s"]
 
-[sub_resource type="SphereMesh" id="lobe0"]
-radius = 0.205
-height = 0.41
-radial_segments = 12
-rings = 6
-
-[sub_resource type="StandardMaterial3D" id="mat0"]
-albedo_color = Color(0.33, 0.24, 0.21, 1)
-metallic = 0.3
-roughness = 0.95
-
-[sub_resource type="SphereMesh" id="lobe1"]
-radius = 0.09572
-height = 0.1914
-radial_segments = 12
-rings = 6
-
-[sub_resource type="SphereMesh" id="lobe2"]
-radius = 0.1022
-height = 0.2044
-radial_segments = 12
-rings = 6
-
-[sub_resource type="SphereMesh" id="lobe3"]
-radius = 0.13
-height = 0.26
-radial_segments = 12
-rings = 6
-
-[sub_resource type="StandardMaterial3D" id="mat1"]
-albedo_color = Color(0.45, 0.28, 0.22, 1)
-metallic = 0.3
-roughness = 0.95
-
-[sub_resource type="SphereMesh" id="lobe4"]
-radius = 0.1089
-height = 0.2177
-radial_segments = 12
-rings = 6
+[ext_resource type="PackedScene" uid="uid://3sc8vascbul8" path="res://game/assets/models/props/iron_ore_ground.glb" id="model"]
 
 [node name="iron_ore_ground" type="Box3DBody" unique_id=1876539666]
 shape_type = 1
@@ -54,26 +16,4 @@ canBePickTarget = true
 canBeGrabbed = true
 tags = Array[int]([])
 
-[node name="Lobe0" type="MeshInstance3D" parent="." unique_id=57688583]
-mesh = SubResource("lobe0")
-surface_material_override/0 = SubResource("mat0")
-
-[node name="Lobe1" type="MeshInstance3D" parent="." unique_id=1582991537]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.104, 0.1244, -0.03494)
-mesh = SubResource("lobe1")
-surface_material_override/0 = SubResource("mat0")
-
-[node name="Lobe2" type="MeshInstance3D" parent="." unique_id=751192703]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1244, 0.03929, 0.08772)
-mesh = SubResource("lobe2")
-surface_material_override/0 = SubResource("mat0")
-
-[node name="Lobe3" type="MeshInstance3D" parent="." unique_id=817299992]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.04428, -0.02872, -0.102)
-mesh = SubResource("lobe3")
-surface_material_override/0 = SubResource("mat1")
-
-[node name="Lobe4" type="MeshInstance3D" parent="." unique_id=264039606]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07651, -0.1159, 0.06778)
-mesh = SubResource("lobe4")
-surface_material_override/0 = SubResource("mat0")
+[node name="Model" parent="." instance=ExtResource("model")]

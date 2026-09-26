@@ -275,7 +275,8 @@ public partial class LobbyDebug : Control
             var salvageSpawner = GameWorld.syncedObjs.Values.OfType<ItemSpawner>().FirstOrDefault(sp => sp.GetParent()?.Name.ToString() == "SalvageConveyorTest");
             var salvageVoid = GameWorld.syncedObjs.Values.OfType<ItemVoid>().FirstOrDefault(v => v.GetParent()?.Name.ToString() == "SalvageConveyorTest");
             string spawnerState = $"spawned:{cubeSpawner?.spawnedCount} ground:{lineGrinder?.consumedCount}->{lineGrinder?.producedCount} voided:{sink?.despawnedCount}"
-                + $" salvage:{salvageSpawner?.spawnedCount}->{salvageVoid?.despawnedCount}";
+                + $" salvage:{salvageSpawner?.spawnedCount}->{salvageVoid?.despawnedCount}"
+                + $" showcase:{Showcase<ItemSpawner>()?.spawnedCount}->{Showcase<Grinder>()?.consumedCount}->{Showcase<Grinder>()?.producedCount}->{Showcase<ItemVoid>()?.despawnedCount}";
             bool spawnerOk = !Lobby.isHost || (cubeSpawner?.spawnedCount >= 10 && sink?.despawnedCount >= 3
                 && lineGrinder?.consumedCount >= 3 && lineGrinder.producedCount >= 2 * lineGrinder.consumedCount - 3);
             bool machinesOk = machineState == "demo:True->True grinder:1" && spawnerOk;
@@ -829,6 +830,10 @@ public partial class LobbyDebug : Control
             if (Lobby.isHost && local != null && leftTurn != null) BuildGrid.RequestDeconstruct(local, leftTurn);
         }
     }
+
+    // The museum's machine showcase (host only, reported but not required): spawner -> grinder -> void.
+    private static T Showcase<T>() where T : Node =>
+        GameWorld.syncedObjs.Values.OfType<T>().FirstOrDefault(n => n.GetParent()?.Name.ToString() == "SalvageShowcase");
 
     // Synced structures other than the museum's salvage conveyor test line (which has both alternate forms preplaced).
     private static System.Collections.Generic.IEnumerable<Structure> BuiltStructures() =>

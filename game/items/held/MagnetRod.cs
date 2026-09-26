@@ -39,6 +39,9 @@ public partial class MagnetRod : HeldItem
     /// <summary>Force cap per item (N), including gravity cancellation.</summary>
     [Export] public float maxForce = 600f;
 
+    /// <summary>Shown only while the magnet is pulling (the coil's glow); hidden otherwise.</summary>
+    [Export] public Node3D activeIndicator;
+
     /// <summary>Holds the magnet on regardless of input (used by the headless multiplayer test).</summary>
     public bool forceActive;
 
@@ -128,6 +131,7 @@ public partial class MagnetRod : HeldItem
         active = on;
         untilRescan = 0;
         if (ballMarker != null) ballMarker.Visible = on;
+        if (activeIndicator != null) activeIndicator.Visible = on;
         if (!on)
         {
             foreach (PhysicalFactoryItem item in capturedItems)
