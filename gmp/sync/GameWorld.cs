@@ -10,7 +10,7 @@ using Godot;
 public partial class GameWorld : Node3D
 {
     public static GameWorld instance;
-    public static Node3D b3droot;
+    public static GMPOBox3DWorld b3droot;
     private static bool started = false;
     public static ulong tickNum = 0;
 
@@ -26,11 +26,15 @@ public partial class GameWorld : Node3D
         if (ClassDB.ClassExists("Box3DWorld"))
         {
 
-            b3droot = ClassDB.Instantiate("Box3DWorld").As<Node3D>();
-            b3droot.Set("debug_draw", false);
+            // Attach the typed wrapper script, then re-fetch the object: the C# instance changes with the script.
+            Node3D world = ClassDB.Instantiate("Box3DWorld").As<Node3D>();
+            ulong worldId = world.GetInstanceId();
+            world.SetScript(GD.Load<Script>("res://gmp/objects/GMPOBox3DWorld.cs"));
+            b3droot = (GMPOBox3DWorld)InstanceFromId(worldId);
+            b3droot.debugDraw = false;
             AddChild(b3droot);
             // Box3D reports sleep per world, not per body; hand it to the body (it has no matching wake signal).
-            b3droot.Connect("body_fell_asleep", Callable.From<Node>(body => (body as GMPOBox3DBody)?.OnFellAsleep()));
+            b3droot.BodyFellAsleep += body => (body as GMPOBox3DBody)?.OnFellAsleep();
         }
     }
 
@@ -41,15 +45,15 @@ public partial class GameWorld : Node3D
     public const long QueryHiddenLayer = 1L << 30;
 
     /// <summary>Raycasts against the Box3D physics world. By default ignores <see cref="QueryHiddenLayer"/>.</summary>
-    public static Godot.Collections.Dictionary<string, Variant> Raycast(Vector3 from, Vector3 to, long collisionMask = ~QueryHiddenLayer)
+    public static Godot.Collections.Dictionary Raycast(Vector3 from, Vector3 to, long collisionMask = ~QueryHiddenLayer)
     {
-        return b3droot.Call("raycast", [from, to, collisionMask, -1]).AsGodotDictionary<string, Variant>();
+        return b3droot.Raycast(from, to, collisionMask);
     }
 
     /// <summary>Queries the Box3D physics world for nodes overlapping a sphere.</summary>
-    public static Godot.Collections.Array<Node> OverlapSphere(Vector3 center, float radius, int collisionMask = -1, int collisionLayer = -1)
+    public static Godot.Collections.Array<Node3D> OverlapSphere(Vector3 center, float radius, int collisionMask = -1, int collisionLayer = -1)
     {
-        return b3droot.Call("overlap_sphere", [center, radius, collisionMask, collisionLayer]).AsGodotArray<Node>();
+        return b3droot.OverlapSphere(center, radius, collisionMask, collisionLayer);
     }
     private static void Instance_LobbyDonePreloadingEvent()
     {
