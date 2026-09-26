@@ -114,9 +114,16 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody
     // Reactions run on this item's authority, which is the peer simulating it.
     void OnBodyEntered(Node other)
     {
-        if (id != 0 && authority == Lobby.selfPeerID && other is PhysicalFactoryItem otherItem && otherItem.id != 0)
+        if (id != 0 && authority == Lobby.selfPeerID)
         {
-            TagInteractions.OnTouch(this, otherItem);
+            if (other is PhysicalFactoryItem otherItem && otherItem.id != 0)
+            {
+                TagInteractions.OnTouch(this, otherItem);
+            }
+            else
+            {
+                AudioManager.playRandomSound(this.GetPath(), ["res://game/assets/audio/impacts/impactWood_heavy_000.ogg", "res://game/assets/audio/impacts/impactWood_heavy_001.ogg", "res://game/assets/audio/impacts/impactWood_heavy_002.ogg", "res://game/assets/audio/impacts/impactWood_heavy_003.ogg"], -35);
+            }
         }
     }
 
