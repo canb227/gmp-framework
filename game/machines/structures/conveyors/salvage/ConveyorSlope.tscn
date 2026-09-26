@@ -1,0 +1,380 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/machines/Structure.cs" id="1_r"]
+[ext_resource type="PackedScene" uid="uid://3xe81bce3q82" path="res://game/assets/models/conveyors/conveyor_slope.glb" id="2_model"]
+
+[node name="ConveyorSlope" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(0, 0, -1), Vector3i(0, 1, 0), Vector3i(0, 1, -1)])
+script = ExtResource("1_r")
+blueprintItemID = "blueprint_conveyor_slope"
+flowArrow = 1
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+
+[node name="BeltTop0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 0.08724)
+friction = 1.2
+tangent_velocity = Vector3(0, 0.09087, -2.08135)
+position = Vector3(0, -0.86808, 0.95555)
+rotation = Vector3(0.04363, 0, 0)
+
+[node name="BeltReturn0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 0.09465)
+friction = 1.2
+tangent_velocity = Vector3(0, -0.09087, 2.08135)
+position = Vector3(0, -0.91795, 0.95337)
+rotation = Vector3(0.04363, 0, 0)
+
+[node name="BeltTop1" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 0.08724)
+friction = 1.2
+tangent_velocity = Vector3(0, 0.29368, -2.23075)
+position = Vector3(0, -0.86033, 0.86699)
+rotation = Vector3(0.1309, 0, 0)
+
+[node name="BeltReturn1" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 0.09465)
+friction = 1.2
+tangent_velocity = Vector3(0, -0.29368, 2.23075)
+position = Vector3(0, -0.90982, 0.86047)
+rotation = Vector3(0.1309, 0, 0)
+
+[node name="BeltTop2" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 0.08724)
+friction = 1.2
+tangent_velocity = Vector3(0, 0.52306, -2.35938)
+position = Vector3(0, -0.84489, 0.77944)
+rotation = Vector3(0.21817, 0, 0)
+
+[node name="BeltReturn2" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 0.09465)
+friction = 1.2
+tangent_velocity = Vector3(0, -0.52306, 2.35938)
+position = Vector3(0, -0.89363, 0.76863)
+rotation = Vector3(0.21817, 0, 0)
+
+[node name="BeltTop3" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 0.08724)
+friction = 1.2
+tangent_velocity = Vector3(0, 0.77682, -2.46377)
+position = Vector3(0, -0.82188, 0.69357)
+rotation = Vector3(0.30543, 0, 0)
+
+[node name="BeltReturn3" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 0.09465)
+friction = 1.2
+tangent_velocity = Vector3(0, -0.77682, 2.46377)
+position = Vector3(0, -0.86949, 0.67856)
+rotation = Vector3(0.30543, 0, 0)
+
+[node name="BeltTop4" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 0.08724)
+friction = 1.2
+tangent_velocity = Vector3(0, 1.05238, -2.54067)
+position = Vector3(0, -0.79148, 0.61003)
+rotation = Vector3(0.3927, 0, 0)
+
+[node name="BeltReturn4" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 0.09465)
+friction = 1.2
+tangent_velocity = Vector3(0, -1.05238, 2.54067)
+position = Vector3(0, -0.8376, 0.59092)
+rotation = Vector3(0.3927, 0, 0)
+
+[node name="BeltTop5" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 0.08724)
+friction = 1.2
+tangent_velocity = Vector3(0, 1.34677, -2.58711)
+position = Vector3(0, -0.75391, 0.52946)
+rotation = Vector3(0.47997, 0, 0)
+
+[node name="BeltReturn5" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 0.09465)
+friction = 1.2
+tangent_velocity = Vector3(0, -1.34677, 2.58711)
+position = Vector3(0, -0.79819, 0.50641)
+rotation = Vector3(0.47997, 0, 0)
+
+[node name="BeltTop6" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 3.4641)
+friction = 1.2
+tangent_velocity = Vector3(0, 1.5, -2.59808)
+position = Vector3(0, 0.13268, -1.01)
+rotation = Vector3(0.5236, 0, 0)
+
+[node name="BeltReturn6" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 3.4641)
+friction = 1.2
+tangent_velocity = Vector3(0, -1.5, 2.59808)
+position = Vector3(0, 0.08938, -1.035)
+rotation = Vector3(0.5236, 0, 0)
+
+[node name="BeltTop7" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 0.08724)
+friction = 1.2
+tangent_velocity = Vector3(0, 1.34677, -2.58711)
+position = Vector3(0, 1.01843, -2.54793)
+rotation = Vector3(0.47997, 0, 0)
+
+[node name="BeltReturn7" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 0.07982)
+friction = 1.2
+tangent_velocity = Vector3(0, -1.34677, 2.58711)
+position = Vector3(0, 0.97415, -2.57098)
+rotation = Vector3(0.47997, 0, 0)
+
+[node name="BeltTop8" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 0.08724)
+friction = 1.2
+tangent_velocity = Vector3(0, 1.05238, -2.54067)
+position = Vector3(0, 1.05452, -2.62533)
+rotation = Vector3(0.3927, 0, 0)
+
+[node name="BeltReturn8" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 0.07982)
+friction = 1.2
+tangent_velocity = Vector3(0, -1.05238, 2.54067)
+position = Vector3(0, 1.0084, -2.64444)
+rotation = Vector3(0.3927, 0, 0)
+
+[node name="BeltTop9" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 0.08724)
+friction = 1.2
+tangent_velocity = Vector3(0, 0.77682, -2.46377)
+position = Vector3(0, 1.08373, -2.70559)
+rotation = Vector3(0.30543, 0, 0)
+
+[node name="BeltReturn9" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 0.07982)
+friction = 1.2
+tangent_velocity = Vector3(0, -0.77682, 2.46377)
+position = Vector3(0, 1.03613, -2.72061)
+rotation = Vector3(0.30543, 0, 0)
+
+[node name="BeltTop10" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 0.08724)
+friction = 1.2
+tangent_velocity = Vector3(0, 0.52306, -2.35938)
+position = Vector3(0, 1.10584, -2.7881)
+rotation = Vector3(0.21817, 0, 0)
+
+[node name="BeltReturn10" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 0.07982)
+friction = 1.2
+tangent_velocity = Vector3(0, -0.52306, 2.35938)
+position = Vector3(0, 1.05711, -2.7989)
+rotation = Vector3(0.21817, 0, 0)
+
+[node name="BeltTop11" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 0.08724)
+friction = 1.2
+tangent_velocity = Vector3(0, 0.29368, -2.23075)
+position = Vector3(0, 1.12067, -2.87221)
+rotation = Vector3(0.1309, 0, 0)
+
+[node name="BeltReturn11" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 0.07982)
+friction = 1.2
+tangent_velocity = Vector3(0, -0.29368, 2.23075)
+position = Vector3(0, 1.07118, -2.87872)
+rotation = Vector3(0.1309, 0, 0)
+
+[node name="BeltTop12" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 0.08724)
+friction = 1.2
+tangent_velocity = Vector3(0, 0.09087, -2.08135)
+position = Vector3(0, 1.12812, -2.95729)
+rotation = Vector3(0.04363, 0, 0)
+
+[node name="BeltReturn12" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 0.07982)
+friction = 1.2
+tangent_velocity = Vector3(0, -0.09087, 2.08135)
+position = Vector3(0, 1.07824, -2.95947)
+rotation = Vector3(0.04363, 0, 0)
+
+[node name="WallL0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 0.13073)
+friction = 0.1
+position = Vector3(-0.895, -0.79354, 0.91745)
+rotation = Vector3(0.08727, 0, 0)
+
+[node name="LipL0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 0.19087)
+friction = 0.1
+position = Vector3(-0.827, -0.96408, 0.90253)
+rotation = Vector3(0.08727, 0, 0)
+
+[node name="WallR0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 0.13073)
+friction = 0.1
+position = Vector3(0.895, -0.79354, 0.91745)
+rotation = Vector3(0.08727, 0, 0)
+
+[node name="LipR0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 0.19087)
+friction = 0.1
+position = Vector3(0.827, -0.96408, 0.90253)
+rotation = Vector3(0.08727, 0, 0)
+
+[node name="WallL1" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 0.13073)
+friction = 0.1
+position = Vector3(-0.895, -0.76487, 0.75486)
+rotation = Vector3(0.2618, 0, 0)
+
+[node name="LipL1" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 0.19087)
+friction = 0.1
+position = Vector3(-0.827, -0.93023, 0.71055)
+rotation = Vector3(0.2618, 0, 0)
+
+[node name="WallR1" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 0.13073)
+friction = 0.1
+position = Vector3(0.895, -0.76487, 0.75486)
+rotation = Vector3(0.2618, 0, 0)
+
+[node name="LipR1" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 0.19087)
+friction = 0.1
+position = Vector3(0.827, -0.93023, 0.71055)
+rotation = Vector3(0.2618, 0, 0)
+
+[node name="WallL2" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 0.13073)
+friction = 0.1
+position = Vector3(-0.895, -0.70841, 0.59972)
+rotation = Vector3(0.43633, 0, 0)
+
+[node name="LipL2" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 0.19087)
+friction = 0.1
+position = Vector3(-0.827, -0.86355, 0.52737)
+rotation = Vector3(0.43633, 0, 0)
+
+[node name="WallR2" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 0.13073)
+friction = 0.1
+position = Vector3(0.895, -0.70841, 0.59972)
+rotation = Vector3(0.43633, 0, 0)
+
+[node name="LipR2" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 0.19087)
+friction = 0.1
+position = Vector3(0.827, -0.86355, 0.52737)
+rotation = Vector3(0.43633, 0, 0)
+
+[node name="WallL3" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 3.4641)
+friction = 0.1
+position = Vector3(-0.895, 0.1933, -0.975)
+rotation = Vector3(0.5236, 0, 0)
+
+[node name="LipL3" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 3.4641)
+friction = 0.1
+position = Vector3(-0.827, 0.04391, -1.06125)
+rotation = Vector3(0.5236, 0, 0)
+
+[node name="WallR3" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 3.4641)
+friction = 0.1
+position = Vector3(0.895, 0.1933, -0.975)
+rotation = Vector3(0.5236, 0, 0)
+
+[node name="LipR3" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 3.4641)
+friction = 0.1
+position = Vector3(0.827, 0.04391, -1.06125)
+rotation = Vector3(0.5236, 0, 0)
+
+[node name="WallL4" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 0.21789)
+friction = 0.1
+position = Vector3(-0.895, 1.09731, -2.55826)
+rotation = Vector3(0.43633, 0, 0)
+
+[node name="LipL4" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 0.15775)
+friction = 0.1
+position = Vector3(-0.827, 0.94216, -2.63061)
+rotation = Vector3(0.43633, 0, 0)
+
+[node name="WallR4" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 0.21789)
+friction = 0.1
+position = Vector3(0.895, 1.09731, -2.55826)
+rotation = Vector3(0.43633, 0, 0)
+
+[node name="LipR4" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 0.15775)
+friction = 0.1
+position = Vector3(0.827, 0.94216, -2.63061)
+rotation = Vector3(0.43633, 0, 0)
+
+[node name="WallL5" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 0.21789)
+friction = 0.1
+position = Vector3(-0.895, 1.15963, -2.72947)
+rotation = Vector3(0.2618, 0, 0)
+
+[node name="LipL5" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 0.15775)
+friction = 0.1
+position = Vector3(-0.827, 0.99427, -2.77378)
+rotation = Vector3(0.2618, 0, 0)
+
+[node name="WallR5" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 0.21789)
+friction = 0.1
+position = Vector3(0.895, 1.15963, -2.72947)
+rotation = Vector3(0.2618, 0, 0)
+
+[node name="LipR5" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 0.15775)
+friction = 0.1
+position = Vector3(0.827, 0.99427, -2.77378)
+rotation = Vector3(0.2618, 0, 0)
+
+[node name="WallL6" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 0.21789)
+friction = 0.1
+position = Vector3(-0.895, 1.19127, -2.9089)
+rotation = Vector3(0.08727, 0, 0)
+
+[node name="LipL6" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 0.15775)
+friction = 0.1
+position = Vector3(-0.827, 1.02073, -2.92382)
+rotation = Vector3(0.08727, 0, 0)
+
+[node name="WallR6" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 0.21789)
+friction = 0.1
+position = Vector3(0.895, 1.19127, -2.9089)
+rotation = Vector3(0.08727, 0, 0)
+
+[node name="LipR6" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 0.15775)
+friction = 0.1
+position = Vector3(0.827, 1.02073, -2.92382)
+rotation = Vector3(0.08727, 0, 0)
+
+[node name="LegL0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.05, 0.98459, 0.05)
+position = Vector3(-0.972, -0.5077, -0.9735)
+
+[node name="LegL1" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.05, 1.96725, 0.05)
+position = Vector3(-0.972, -0.01637, -2.70168)
+
+[node name="LegR0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.05, 0.98459, 0.05)
+position = Vector3(0.972, -0.5077, -0.9735)
+
+[node name="LegR1" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.05, 1.96725, 0.05)
+position = Vector3(0.972, -0.01637, -2.70168)

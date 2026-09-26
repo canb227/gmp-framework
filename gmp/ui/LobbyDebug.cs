@@ -267,11 +267,15 @@ public partial class LobbyDebug : Control
             string machineState = $"demo:{_demoCubeSeen}->{demoCubeGone} grinder:{CountGrinderOutputs()}";
             // Host only (the museum machines' authority): the spawner has been feeding the line a cube a second
             // and those cubes are reaching the void (the preplaced cube plus spawned ones).
-            var cubeSpawner = GameWorld.syncedObjs.Values.OfType<ItemSpawner>().FirstOrDefault();
+            var cubeSpawner = GameWorld.syncedObjs.Values.OfType<ItemSpawner>().FirstOrDefault(sp => sp.Name == "OreSpawner");
             var sink = GameWorld.syncedObjs.Values.OfType<ItemVoid>().FirstOrDefault(v => v.Name == "CatchVoid");
             // ...and the line's grinder is turning that ore into two ground chunks each.
             var lineGrinder = GameWorld.syncedObjs.Values.OfType<Grinder>().FirstOrDefault(g => g.Name == "LineGrinder");
-            string spawnerState = $"spawned:{cubeSpawner?.spawnedCount} ground:{lineGrinder?.consumedCount}->{lineGrinder?.producedCount} voided:{sink?.despawnedCount}";
+            // Host only, reported but not required yet (its collision is provisional): the salvage conveyor test line's throughput.
+            var salvageSpawner = GameWorld.syncedObjs.Values.OfType<ItemSpawner>().FirstOrDefault(sp => sp.GetParent()?.Name.ToString() == "SalvageConveyorTest");
+            var salvageVoid = GameWorld.syncedObjs.Values.OfType<ItemVoid>().FirstOrDefault(v => v.GetParent()?.Name.ToString() == "SalvageConveyorTest");
+            string spawnerState = $"spawned:{cubeSpawner?.spawnedCount} ground:{lineGrinder?.consumedCount}->{lineGrinder?.producedCount} voided:{sink?.despawnedCount}"
+                + $" salvage:{salvageSpawner?.spawnedCount}->{salvageVoid?.despawnedCount}";
             bool spawnerOk = !Lobby.isHost || (cubeSpawner?.spawnedCount >= 10 && sink?.despawnedCount >= 3
                 && lineGrinder?.consumedCount >= 3 && lineGrinder.producedCount >= 2 * lineGrinder.consumedCount - 3);
             bool machinesOk = machineState == "demo:True->True grinder:1" && spawnerOk;
@@ -297,16 +301,16 @@ public partial class LobbyDebug : Control
             bool toolsOk = toolState == "ore_kept:True magnet:3/3->released:True" && grabOk && uiOk && sleepOk
                 && (!Lobby.isHost || (_jumperMaxMove > 0.5f && TagInteractions.temperatureContacts >= 2));
             machinesOk &= toolsOk;
-            // Every peer: the museum's hand-placed conveyor lines (the demo line and the spawner room's line) stand
+            // Every peer: the museum's hand-placed conveyor lines (the demo line, the spawner room's line and the salvage test line) stand
             // exactly on the grid, and each of their structures registered every cell of its footprint in BuildGrid.
             var demoStructures = GameWorld.syncedObjs.Values.OfType<Structure>()
-                .Where(st => st.GetParent()?.Name.ToString() is "ConveyorDemo" or "SpawnerConveyorLine").ToList();
+                .Where(st => st.GetParent()?.Name.ToString() is "ConveyorDemo" or "SpawnerConveyorLine" or "SalvageConveyorTest").ToList();
             int demoAligned = demoStructures.Count(st => st.isGridAligned);
             int demoRegistered = demoStructures.Count(st => BuildGrid.FootprintCells(st.anchor, st.cellOffsets, st.quarterTurns).All(c => BuildGrid.GetStructureAt(c) == st));
-            bool demoGridOk = demoStructures.Count == 15 && demoAligned == 15 && demoRegistered == 15;
+            bool demoGridOk = demoStructures.Count == 30 && demoAligned == 30 && demoRegistered == 30;
             machinesOk &= demoGridOk;
             // Every conveyor's placement preview gets a non-empty direction arrow; other structures get none.
-            string arrows = string.Join(",", new[] { "conveyors/Conveyor", "conveyors/ConveyorSlope", "conveyors/ConveyorSlopeDown", "conveyors/ConveyorTurnLeft", "conveyors/ConveyorTurnRight", "Grinder" }.Select(n =>
+            string arrows = string.Join(",", new[] { "conveyors/salvage/Conveyor", "conveyors/salvage/ConveyorSlope", "conveyors/salvage/ConveyorSlopeDown", "conveyors/salvage/ConveyorTurnLeft", "conveyors/salvage/ConveyorTurnRight", "Grinder" }.Select(n =>
             {
                 var st = GD.Load<PackedScene>($"res://game/machines/structures/{n}.tscn").Instantiate<Structure>();
                 MeshInstance3D arrow = FlowArrowMesh.Create(st, null);
@@ -821,10 +825,14 @@ public partial class LobbyDebug : Control
         else if (_altSubStep == 4 && t >= 9.2)
         {
             _altSubStep++;
-            Structure leftTurn = GameWorld.syncedObjs.Values.OfType<Structure>().FirstOrDefault(st => st.SceneFilePath.EndsWith("/ConveyorTurnLeft.tscn"));
+            Structure leftTurn = BuiltStructures().FirstOrDefault(st => st.SceneFilePath.EndsWith("/ConveyorTurnLeft.tscn"));
             if (Lobby.isHost && local != null && leftTurn != null) BuildGrid.RequestDeconstruct(local, leftTurn);
         }
     }
+
+    // Synced structures other than the museum's salvage conveyor test line (which has both alternate forms preplaced).
+    private static System.Collections.Generic.IEnumerable<Structure> BuiltStructures() =>
+        GameWorld.syncedObjs.Values.OfType<Structure>().Where(st => st.GetParent()?.Name.ToString() != "SalvageConveyorTest");
 
     // Holds a blueprint and builds its alternate form on free floor.
     private static void BuildAlternate(FactoryPlayer local, string blueprintID)
@@ -837,10 +845,10 @@ public partial class LobbyDebug : Control
             BuildGrid.RequestPlace(local, blueprint, cell, 0, true);
     }
 
-    // "left turns:downhill slopes" among the synced structures (the museum has neither).
+    // "left turns:downhill slopes" among the structures built during the test.
     private static string AlternateFormCounts()
     {
-        var structures = GameWorld.syncedObjs.Values.OfType<Structure>().ToList();
+        var structures = BuiltStructures().ToList();
         return $"{structures.Count(st => st.SceneFilePath.EndsWith("/ConveyorTurnLeft.tscn"))}:{structures.Count(st => st.SceneFilePath.EndsWith("/ConveyorSlopeDown.tscn"))}";
     }
 

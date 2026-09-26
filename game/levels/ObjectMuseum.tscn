@@ -31,6 +31,11 @@
 [ext_resource type="PackedScene" path="res://game/dev/items/test_chunk_hot.tscn" id="rd_test_chunk_hot"]
 [ext_resource type="PackedScene" path="res://game/dev/items/test_chunk_jumping.tscn" id="rd_test_chunk_jumping"]
 [ext_resource type="PackedScene" path="res://game/dev/items/test_chunk_light.tscn" id="rd_test_chunk_light"]
+[ext_resource type="PackedScene" path="res://game/machines/structures/conveyors/salvage/ConveyorSlope.tscn" id="sc_slope"]
+[ext_resource type="PackedScene" path="res://game/machines/structures/conveyors/salvage/ConveyorSlopeDown.tscn" id="sc_slope_down"]
+[ext_resource type="PackedScene" path="res://game/machines/structures/conveyors/salvage/Conveyor.tscn" id="sc_straight"]
+[ext_resource type="PackedScene" path="res://game/machines/structures/conveyors/salvage/ConveyorTurnLeft.tscn" id="sc_turn_l"]
+[ext_resource type="PackedScene" path="res://game/machines/structures/conveyors/salvage/ConveyorTurnRight.tscn" id="sc_turn_r"]
 [ext_resource type="PackedScene" path="res://game/props/Lever.tscn" id="sp_lever"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
@@ -587,3 +592,58 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.37, -4)
 
 [node name="ColdChunk" parent="ResourceDisplay" unique_id=534617209 instance=ExtResource("rd_test_chunk_cold")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, 1.8, -4)
+
+[node name="SalvageConveyorTest" type="Node3D" parent="." unique_id=1952099019]
+
+[node name="Spawner" parent="SalvageConveyorTest" unique_id=992695476 instance=ExtResource("cd_spawner")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -23, 1, -5)
+itemWeights = Dictionary[String, float]({
+"copper_ore": 1.0,
+"iron_ore": 1.0
+})
+interval = 1.5
+
+[node name="Straight1" parent="SalvageConveyorTest" unique_id=382947329 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -21, 1, -5)
+
+[node name="SlopeUp1" parent="SalvageConveyorTest" unique_id=161098808 instance=ExtResource("sc_slope")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -19, 1, -5)
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0)])
+
+[node name="Straight2" parent="SalvageConveyorTest" unique_id=1424107815 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -15, 3, -5)
+
+[node name="Straight3" parent="SalvageConveyorTest" unique_id=938085127 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -13, 3, -5)
+
+[node name="TurnRight1" parent="SalvageConveyorTest" unique_id=913788856 instance=ExtResource("sc_turn_r")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -11, 3, -5)
+
+[node name="Straight4" parent="SalvageConveyorTest" unique_id=789317830 instance=ExtResource("sc_straight")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -11, 3, -3)
+
+[node name="TurnRight2" parent="SalvageConveyorTest" unique_id=690803523 instance=ExtResource("sc_turn_r")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -11, 3, -1)
+
+[node name="SlopeDown" parent="SalvageConveyorTest" unique_id=497091625 instance=ExtResource("sc_slope_down")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13, 1, -1)
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0)])
+
+[node name="Straight5" parent="SalvageConveyorTest" unique_id=1207121707 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -17, 1, -1)
+
+[node name="TurnLeft" parent="SalvageConveyorTest" unique_id=1160106688 instance=ExtResource("sc_turn_l")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -19, 1, -1)
+
+[node name="SlopeUp2" parent="SalvageConveyorTest" unique_id=151411011 instance=ExtResource("sc_slope")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -19, 1, 1)
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0)])
+
+[node name="TurnRight3" parent="SalvageConveyorTest" unique_id=1847350149 instance=ExtResource("sc_turn_r")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -19, 3, 5)
+
+[node name="Straight6" parent="SalvageConveyorTest" unique_id=1107537441 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -21, 3, 5)
+
+[node name="Void" parent="SalvageConveyorTest" unique_id=437974951 instance=ExtResource("cd_void")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23, 1, 5)

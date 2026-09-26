@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://game/assets/shaders/ConveyorBeltLoop.gdshader" id="1_belt"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_belt")
