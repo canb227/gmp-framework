@@ -23,34 +23,33 @@ public partial class AudioManager : Node
         for (int i = 0; i < numStreams; i++)
         {
             AudioStreamPlayer3D newStream = new();
-            newStream.VolumeDb = -50;
             instance.AddChild(newStream);
             streamPool.Add( (false, newStream));
         }
     }
 
-    public static bool playRandomSound(string target, List<string> soundPaths)
+    public static bool playRandomSound(string target, List<string> soundPaths, float volumeAdjust = 0)
     {
 
         string soundPath = soundPaths[Random.Shared.Next(soundPaths.Count)];
 
         if (soundPath == null || soundPath == "") { return false; }
         if (instance.GetNodeOrNull(target) == null) { return false; }
-        GD.Print("dong44: " + target);
-        RPCManager.RPC(instance, nameof(_playSound), [target, soundPath]);
+
+        RPCManager.RPC(instance, nameof(_playSound), [target, soundPath, volumeAdjust]);
         return true;
     }
 
-    public static bool playSound(string target, string soundPath)
+    public static bool playSound(string target, string soundPath, float volumeAdjust = 0)
     {
         if (soundPath == null || soundPath == "") { return false; }
         if (instance.GetNodeOrNull(target) == null) { return false; }
-        RPCManager.RPC(instance, nameof(_playSound), [target, soundPath]);
+        RPCManager.RPC(instance, nameof(_playSound), [target, soundPath,volumeAdjust]);
         return true;
     }
 
     [RPC]
-    private bool _playSound(string target, string soundPath)
+    private bool _playSound(string target, string soundPath, float volumeAdjust = 0)
     {
 
         AudioStream sound = ResourceLoader.Load<AudioStream>(soundPath);
@@ -70,6 +69,7 @@ public partial class AudioManager : Node
                 stream.Reparent(GetNodeOrNull(target), false);
                 stream.ResetPhysicsInterpolation();
                 stream.Stream = sound;
+                stream.VolumeDb = volumeAdjust;
                 stream.Play();
                 stream.Finished += () =>
                 {
