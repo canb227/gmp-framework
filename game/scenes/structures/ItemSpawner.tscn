@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://dxbidpuifub02"]
+
+[ext_resource type="Script" uid="uid://cjnb1fn7lniwe" path="res://game/scripts/items/placed/ItemSpawner.cs" id="1_via20"]
+[ext_resource type="PackedScene" uid="uid://cjxadvw16m7qe" path="res://game/assets/models/props/spawner.glb" id="2_wlxtr"]
+
+[node name="ItemSpawner" type="Box3DBody" unique_id=1113125691]
+body_type = 0
+script = ExtResource("1_via20")
+blueprintItemID = "blueprint_item_spawner"
+
+[node name="Model" parent="." unique_id=110515688 instance=ExtResource("2_wlxtr")]
+
+[node name="BodyShape" type="Box3DCollisionShape" parent="." unique_id=20816507]
+box_size = Vector3(1.8, 1.96, 1.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)

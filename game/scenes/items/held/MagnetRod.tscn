@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://v3645dcjw5ni"]
+
+[ext_resource type="Script" uid="uid://xbybti81ybvs" path="res://game/scripts/items/held/MagnetRod.cs" id="1_mr"]
+[ext_resource type="Shader" uid="uid://dt1utntk18esd" path="res://game/assets/shaders/MagnetField.gdshader" id="field"]
+[ext_resource type="PackedScene" uid="uid://bsfjyw4ai1rr8" path="res://game/assets/models/props/magnet_tool.glb" id="model"]
+
+[sub_resource type="SphereMesh" id="ball"]
+radius = 0.35
+height = 0.7
+radial_segments = 48
+rings = 24
+
+[sub_resource type="ShaderMaterial" id="ballmat"]
+render_priority = 0
+shader = ExtResource("field")
+shader_parameter/tint = Color(0.3, 0.9, 1, 1)
+shader_parameter/rim_power = 2.4
+shader_parameter/line_count = 18.0
+shader_parameter/line_speed = 5.0
+
+[node name="MagnetRod" type="Node3D" unique_id=394440562]
+script = ExtResource("1_mr")
+
+[node name="Model" parent="." unique_id=720670214 instance=ExtResource("model")]
+
+[node name="BallMarker" type="MeshInstance3D" parent="." unique_id=536387176]
+visible = false
+cast_shadow = 0
+mesh = SubResource("ball")
+surface_material_override/0 = SubResource("ballmat")

@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://sx6hcwl6g3s8"]
+
+[ext_resource type="Script" uid="uid://bbkovbjsnajma" path="res://game/scripts/items/placed/Grinder.cs" id="1_gj7u5"]
+[ext_resource type="PackedScene" uid="uid://coour0o346ltw" path="res://game/assets/models/props/grinder.glb" id="2_f7gka"]
+
+[node name="Grinder" type="Box3DBody" unique_id=490650604 node_paths=PackedStringArray("hopperTrigger")]
+body_type = 0
+script = ExtResource("1_gj7u5")
+hopperTrigger = NodePath("Trigger")
+recipes = Dictionary[String, String]({
+"copper_ore": "copper_ore_ground",
+"iron_ore": "iron_ore_ground",
+"test_1x1x1cube": "test_inert_sphere"
+})
+outputCounts = Dictionary[String, int]({
+"copper_ore": 2,
+"iron_ore": 2
+})
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(0, 1, 0)])
+blueprintItemID = "blueprint_grinder"
+
+[node name="Model" parent="." unique_id=1165476378 instance=ExtResource("2_f7gka")]
+
+[node name="BodyShape" type="Box3DCollisionShape" parent="." unique_id=2567038]
+box_size = Vector3(2, 2, 2)
+
+[node name="HopperLShape" type="Box3DCollisionShape" parent="." unique_id=149258880]
+box_size = Vector3(0.15, 1.2, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.925, 1.6, 0)
+
+[node name="HopperRShape" type="Box3DCollisionShape" parent="." unique_id=1573452349]
+box_size = Vector3(0.15, 1.2, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.925, 1.6, 0)
+
+[node name="HopperBShape" type="Box3DCollisionShape" parent="." unique_id=1898352588]
+box_size = Vector3(2, 0.12, 0.15)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.06, 0.925)
+
+[node name="HopperFShape" type="Box3DCollisionShape" parent="." unique_id=126707522]
+box_size = Vector3(2, 1.2, 0.15)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, -0.925)
+
+[node name="Trigger" type="Box3DBody" parent="." unique_id=2143110812]
+body_type = 0
+box_size = Vector3(1.6, 1, 1.6)
+is_sensor = true
+collision_layer = 1073741824
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55, 0)

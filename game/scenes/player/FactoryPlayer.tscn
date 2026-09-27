@@ -1,0 +1,66 @@
+[gd_scene format=3 uid="uid://gmc3far8rekf"]
+
+[ext_resource type="Script" uid="uid://bprlsaqxj4fot" path="res://game/scripts/player/FactoryPlayer.cs" id="1_tuubh"]
+[ext_resource type="Texture2D" uid="uid://b646400pws0lh" path="res://icon.svg" id="2_6tv66"]
+[ext_resource type="PackedScene" uid="uid://crjakyoau28wj" path="res://game/scenes/ui/PlayerHUD.tscn" id="3_ctqvv"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_7qi08"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ctqvv"]
+albedo_texture = ExtResource("2_6tv66")
+
+[sub_resource type="SphereMesh" id="SphereMesh_ug8er"]
+radius = 0.05
+height = 0.1
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_7qi08"]
+radius = 0.4
+
+[node name="FactoryPlayer" type="Box3DCharacterBody" unique_id=274687070 node_paths=PackedStringArray("camera", "head", "body", "itemHolder")]
+script = ExtResource("1_tuubh")
+priority = 1000
+camera = NodePath("Camera3D")
+head = NodePath("Camera3D/head")
+body = NodePath("body")
+itemHolder = NodePath("Camera3D/ItemHolder")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=962695158]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2790344, 0)
+current = true
+
+[node name="head" type="MeshInstance3D" parent="Camera3D" unique_id=1992194214]
+mesh = SubResource("SphereMesh_7qi08")
+surface_material_override/0 = SubResource("StandardMaterial3D_ctqvv")
+
+[node name="Box3DCollisionShape" type="Box3DCollisionShape" parent="Camera3D" unique_id=445148656]
+shape_type = 1
+sphere_radius = 0.6
+
+[node name="ItemHolder" type="Node3D" parent="Camera3D" unique_id=861703223]
+transform = Transform3D(0.999883, 0, -0.015296704, 0, 1, 0, 0.015296704, 0, 0.999883, 0.3, -0.3, -1.3042746)
+
+[node name="grabNode" type="Node3D" parent="Camera3D" unique_id=1745422499]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.0268967)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Camera3D/grabNode" unique_id=663658023]
+visible = false
+mesh = SubResource("SphereMesh_ug8er")
+
+[node name="label" type="Label3D" parent="." unique_id=1956124679]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0728626, 0)
+billboard = 2
+no_depth_test = true
+alpha_antialiasing_mode = 1
+alpha_antialiasing_edge = 0.57
+text = "Player"
+
+[node name="body" type="Node3D" parent="." unique_id=31742650]
+
+[node name="Box3DCollisionShape" type="Box3DCollisionShape" parent="body" unique_id=750957324]
+shape_type = 2
+
+[node name="m" type="MeshInstance3D" parent="body" unique_id=1634638597]
+mesh = SubResource("CapsuleMesh_7qi08")
+
+[node name="PlayerHUD" parent="." unique_id=1816686983 instance=ExtResource("3_ctqvv")]

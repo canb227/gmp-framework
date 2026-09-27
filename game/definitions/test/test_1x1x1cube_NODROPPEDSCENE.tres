@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3 uid="uid://biyaq3rjqayx7"]
+
+[ext_resource type="Texture2D" uid="uid://b646400pws0lh" path="res://icon.svg" id="2_vt6gb"]
+[ext_resource type="PackedScene" uid="uid://xchsd45xtfxm" path="res://dev/items/test_inert_cube_hand.tscn" id="3_8gbtt"]
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="4_hyplf"]
+
+[resource]
+script = ExtResource("4_hyplf")
+itemID = "test_1x1x1cube_NODROPPEDSCENE"
+displayName = "Test Cube"
+description = "Test Cube"
+icon = ExtResource("2_vt6gb")
+inHandScene = ExtResource("3_8gbtt")
+maxStackSize = 10
+metadata/_custom_type_script = "uid://cw384fqykeue7"

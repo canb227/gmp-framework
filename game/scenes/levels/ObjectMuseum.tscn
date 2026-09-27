@@ -1,0 +1,777 @@
+[gd_scene format=3 uid="uid://b3ruqi3gub8yo"]
+
+[ext_resource type="Material" uid="uid://cm6q2knenjk4x" path="res://game/assets/materials/grass_1.tres" id="1_2usgl"]
+[ext_resource type="Shader" uid="uid://cvd0x7lon1ur6" path="res://addons/sky_3d/shaders/SkyMaterial.gdshader" id="1_5rkb6"]
+[ext_resource type="Texture2D" uid="uid://cfqk60lpl5ljv" path="res://addons/sky_3d/assets/resources/SNoise.tres" id="2_2usgl"]
+[ext_resource type="Texture2D" uid="uid://cecwdqjol0ckd" path="res://addons/sky_3d/assets/textures/noiseClouds.png" id="3_aqpx8"]
+[ext_resource type="Texture2D" uid="uid://2r8ylu6rg5dp" path="res://addons/sky_3d/assets/thirdparty/textures/moon/MoonMap.png" id="4_3rl5m"]
+[ext_resource type="Texture2D" uid="uid://djpfuyxkryegn" path="res://addons/sky_3d/assets/textures/noise.jpg" id="5_dudsn"]
+[ext_resource type="Texture2D" uid="uid://bm7dot7t7u1q4" path="res://addons/sky_3d/assets/thirdparty/textures/milkyway/StarField.jpg" id="6_ju7n5"]
+[ext_resource type="Texture2D" uid="uid://c1vwcdcdvb74a" path="res://addons/sky_3d/assets/thirdparty/textures/milkyway/Milkyway.jpg" id="7_jjpvi"]
+[ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="8_5negq"]
+[ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/SkyDome.gd" id="9_vmujb"]
+[ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="10_8o1nu"]
+[ext_resource type="Script" uid="uid://buq3xkquc7nsd" path="res://game/scripts/entities/ObjectSpawner.cs" id="14_75n5a"]
+[ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="14_aqpx8"]
+[ext_resource type="Texture2D" uid="uid://c8knlhvemp8jf" path="res://game/assets/textures/grass_1/grass_ao.png" id="15_2usgl"]
+[ext_resource type="Script" uid="uid://cthpe3o2ur5ir" path="res://game/scripts/entities/BasicButton.cs" id="15_aqpx8"]
+[ext_resource type="PackedScene" uid="uid://sx6hcwl6g3s8" path="res://game/scenes/structures/Grinder.tscn" id="cd_grinder"]
+[ext_resource type="PackedScene" uid="uid://dxbidpuifub02" path="res://game/scenes/structures/ItemSpawner.tscn" id="cd_spawner"]
+[ext_resource type="PackedScene" uid="uid://bywvnipt62y5r" path="res://game/scenes/structures/ItemVoid.tscn" id="cd_void"]
+[ext_resource type="PackedScene" uid="uid://dlnyuu4mrmp1r" path="res://game/scenes/items/world/resources/copper_ore.tscn" id="rd_copper_ore"]
+[ext_resource type="PackedScene" uid="uid://b4in0pqckrbvy" path="res://game/scenes/items/world/resources/copper_ore_ground.tscn" id="rd_copper_ore_ground"]
+[ext_resource type="PackedScene" uid="uid://bvun7kiv1cftb" path="res://game/scenes/items/world/resources/iron_ore.tscn" id="rd_iron_ore"]
+[ext_resource type="PackedScene" uid="uid://crsto0401xd6i" path="res://game/scenes/items/world/resources/iron_ore_ground.tscn" id="rd_iron_ore_ground"]
+[ext_resource type="PackedScene" path="res://dev/items/test_chunk_cold.tscn" id="rd_test_chunk_cold"]
+[ext_resource type="PackedScene" path="res://dev/items/test_chunk_heavy.tscn" id="rd_test_chunk_heavy"]
+[ext_resource type="PackedScene" path="res://dev/items/test_chunk_hot.tscn" id="rd_test_chunk_hot"]
+[ext_resource type="PackedScene" path="res://dev/items/test_chunk_jumping.tscn" id="rd_test_chunk_jumping"]
+[ext_resource type="PackedScene" path="res://dev/items/test_chunk_light.tscn" id="rd_test_chunk_light"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorSlope.tscn" id="sc_slope"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorSlopeDown.tscn" id="sc_slope_down"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/Conveyor.tscn" id="sc_straight"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorTurnLeft.tscn" id="sc_turn_l"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorTurnRight.tscn" id="sc_turn_r"]
+[ext_resource type="PackedScene" path="res://game/scenes/entities/Lever.tscn" id="sp_lever"]
+[ext_resource type="PackedScene" uid="uid://bu7yxskeusnvj" path="res://game/assets/models/props/display_plinth.glb" id="sh_plinth"]
+[ext_resource type="PackedScene" uid="uid://bsfjyw4ai1rr8" path="res://game/assets/models/props/magnet_tool.glb" id="sh_magnet"]
+[ext_resource type="PackedScene" uid="uid://bc80frwd8i8um" path="res://game/scenes/items/world/DefaultDroppedBox.tscn" id="sh_crate"]
+[ext_resource type="Script" uid="uid://de6ss1gh7mjqf" path="res://game/scripts/entities/Spinner.cs" id="sh_spinner"]
+[ext_resource type="Shader" uid="uid://dt1utntk18esd" path="res://game/assets/shaders/MagnetField.gdshader" id="sh_field"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
+material = ExtResource("1_2usgl")
+size = Vector3(80, 1, 120)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_iuiei"]
+shader = ExtResource("1_5rkb6")
+shader_parameter/sky_visible = true
+shader_parameter/color_correction = Vector2(0, 1)
+shader_parameter/ground_color = Color(0.3, 0.3, 0.3, 1)
+shader_parameter/horizon_offset = 0.0
+shader_parameter/atm_darkness = 0.5
+shader_parameter/atm_sun_intensity = 18.0
+shader_parameter/atm_day_tint = Color(0.807843, 0.909804, 1, 1)
+shader_parameter/atm_horizon_light_tint = Color(0.980392, 0.635294, 0.462745, 1)
+shader_parameter/atm_night_tint = Color(0, 0, 0, 0)
+shader_parameter/atm_level_params = Vector3(1, 0, 0)
+shader_parameter/atm_thickness = 0.7
+shader_parameter/atm_beta_ray = Vector3(5.804544e-06, 1.3562913e-05, 3.311258e-05)
+shader_parameter/atm_beta_mie = Vector3(3.038e-08, 3.038e-08, 3.038e-08)
+shader_parameter/sun_light_color = Color(1, 1, 1, 1)
+shader_parameter/sun_disk_color = Color(0.996094, 0.541334, 0.140076, 1)
+shader_parameter/sun_disk_intensity = 30.0
+shader_parameter/sun_disk_size = 0.02
+shader_parameter/atm_sun_mie_tint = Color(1, 1, 1, 1)
+shader_parameter/atm_sun_mie_intensity = 1.0
+shader_parameter/atm_sun_partial_mie_phase = Vector3(0.36, 1.64, 1.6)
+shader_parameter/moon_color = Color(1, 1, 1, 1)
+shader_parameter/moon_texture = ExtResource("4_3rl5m")
+shader_parameter/moon_texture_alignment = Vector3(7, 1.4, 4.8)
+shader_parameter/moon_texture_flip_u = false
+shader_parameter/moon_texture_flip_v = false
+shader_parameter/moon_size = 0.07
+shader_parameter/atm_moon_mie_tint = Color(0.137255, 0.184314, 0.292196, 1)
+shader_parameter/atm_moon_mie_intensity = 0.0
+shader_parameter/atm_moon_partial_mie_phase = Vector3(0.36, 1.64, 1.6)
+shader_parameter/starmap_color = Color(0.709804, 0.709804, 0.709804, 0.854902)
+shader_parameter/starmap_texture = ExtResource("7_jjpvi")
+shader_parameter/starmap_flip_u = false
+shader_parameter/starmap_flip_v = false
+shader_parameter/starmap_alignment = Vector3(2.68288, -0.25891, 0.40101)
+shader_parameter/star_rotation_offset = 9.38899
+shader_parameter/star_rotation = -10.982551993463867
+shader_parameter/star_tilt = -1.2915436464758039
+shader_parameter/star_field_color = Color(1, 1, 1, 1)
+shader_parameter/star_field_texture = ExtResource("6_ju7n5")
+shader_parameter/star_scintillation = 0.75
+shader_parameter/star_scintillation_speed = 0.01
+shader_parameter/noise_tex = ExtResource("5_dudsn")
+shader_parameter/clouds_night_color = Color(0.090196, 0.094118, 0.129412, 1)
+shader_parameter/cirrus_visible = true
+shader_parameter/cirrus_intensity = 2.0
+shader_parameter/cirrus_coverage = 0.5
+shader_parameter/cirrus_thickness = 1.7
+shader_parameter/cirrus_absorption = 2.0
+shader_parameter/cirrus_sky_tint_fade = 0.5
+shader_parameter/cirrus_size = 1.0
+shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
+shader_parameter/cirrus_position1 = Vector2(0.29513216, 0.29513216)
+shader_parameter/cirrus_position2 = Vector2(0.29513216, 0.29513216)
+shader_parameter/cirrus_texture = ExtResource("2_2usgl")
+shader_parameter/cumulus_visible = true
+shader_parameter/cumulus_intensity = 0.6
+shader_parameter/cumulus_coverage = 0.55
+shader_parameter/cumulus_thickness = 0.0243
+shader_parameter/cumulus_absorption = 2.0
+shader_parameter/cumulus_noise_freq = 2.7
+shader_parameter/cumulus_sky_tint_fade = 0.0
+shader_parameter/cumulus_size = 0.5
+shader_parameter/cumulus_position = Vector2(1.4756072, 1.4756072)
+shader_parameter/cumulus_texture = ExtResource("3_aqpx8")
+shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
+shader_parameter/cumulus_mie_intensity = 1.0
+shader_parameter/show_azimuthal_grid = false
+shader_parameter/azimuthal_grid_color = Color(0.87058824, 0.72156864, 0.5294118, 1)
+shader_parameter/azimuthal_grid_rotation_offset = 0.03
+shader_parameter/show_equatorial_grid = false
+shader_parameter/equatorial_grid_color = Color(0, 0.75, 1, 1)
+shader_parameter/equatorial_grid_rotation_offset = 0.03
+shader_parameter/moon_matrix = Basis(-0.37252405, -0.89207244, -0.25579762, -0.17711107, 0.3389123, -0.9239968, 0.9109651, -0.29890645, -0.28424892)
+
+[sub_resource type="Sky" id="Sky_7t3qb"]
+sky_material = SubResource("ShaderMaterial_iuiei")
+
+[sub_resource type="Environment" id="Environment_66yvx"]
+background_mode = 2
+sky = SubResource("Sky_7t3qb")
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+reflected_light_source = 2
+tonemap_mode = 3
+tonemap_white = 6.0
+sdfgi_enabled = true
+glow_enabled = true
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_ca3y6"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_pet1e"]
+lightmap_size_hint = Vector2i(88, 114)
+material = ExtResource("14_aqpx8")
+size = Vector3(15.959473, 2.8047333, 1)
+
+[sub_resource type="PrismMesh" id="PrismMesh_c5vbb"]
+
+[sub_resource type="Animation" id="Animation_3rl5m"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:enabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_dudsn"]
+resource_name = "button_press"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.76666665, 1),
+"transitions": PackedFloat32Array(0.08537787, 0.96593666, 0.96593666, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, -0.2354753, 0), Vector3(0, -0.2354753, 0), Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:enabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ju7n5"]
+_data = {
+&"RESET": SubResource("Animation_3rl5m"),
+&"button_press": SubResource("Animation_dudsn")
+}
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vchc8"]
+albedo_color = Color(1.4954206, 0, 0.26787823, 1)
+metallic = 1.0
+metallic_texture = ExtResource("15_2usgl")
+roughness = 0.7
+uv1_scale = Vector3(2, 2, 2)
+
+[sub_resource type="SphereMesh" id="SphereMesh_c5vbb"]
+material = SubResource("StandardMaterial3D_vchc8")
+radius = 0.1
+height = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tt1o4"]
+albedo_color = Color(0.4392157, 0.3372549, 0.3764706, 1)
+metallic_specular = 1.0
+roughness = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_c5vbb"]
+material = SubResource("StandardMaterial3D_tt1o4")
+size = Vector3(0.5, 1.5, 0.5)
+
+[sub_resource type="SphereMesh" id="sh_field_ball"]
+radius = 0.35
+height = 0.7
+radial_segments = 48
+rings = 24
+
+[sub_resource type="ShaderMaterial" id="sh_field_mat"]
+render_priority = 0
+shader = ExtResource("sh_field")
+
+[node name="FactoryGameTest" type="Node3D" unique_id=653852535]
+
+[node name="Box3DBody" type="Box3DBody" parent="." unique_id=29392313]
+body_type = 0
+shape_type = 6
+
+[node name="m" type="MeshInstance3D" parent="Box3DBody" unique_id=1287053028]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+mesh = SubResource("BoxMesh_7qi08")
+
+[node name="Sky3D" type="WorldEnvironment" parent="." unique_id=1329869569]
+environment = SubResource("Environment_66yvx")
+camera_attributes = SubResource("CameraAttributesPractical_ca3y6")
+script = ExtResource("8_5negq")
+editor_time_enabled = false
+game_time_enabled = false
+current_time = 10.6
+wind_direction = 2.35619451204804
+metadata/_custom_type_script = "uid://deo0gxkmk2ahd"
+
+[node name="SunLight" type="DirectionalLight3D" parent="Sky3D" unique_id=1306436359]
+transform = Transform3D(0.8898899, -0.33448434, 0.3101874, 0, 0.67997396, 0.7332363, -0.45617536, -0.65249956, 0.605102, 0.31018737, 0.73323625, 0.60510194)
+shadow_enabled = true
+
+[node name="MoonLight" type="DirectionalLight3D" parent="Sky3D" unique_id=1682223413]
+transform = Transform3D(0, -0.41248336, 0.9109652, -0.6891161, -0.6601318, -0.29890645, 0.724651, -0.6277608, -0.28424892, 0.91096514, -0.29890642, -0.2842489)
+light_color = Color(0.572549, 0.776471, 0.956863, 1)
+light_energy = 0.0
+
+[node name="SkyDome" type="Node" parent="Sky3D" unique_id=1213933153]
+script = ExtResource("9_vmujb")
+sun_azimuth = -2.6679
+sun_altitude = -0.7477271
+moon_azimuth = -1.2683393
+moon_altitude = -1.8743428
+wind_direction = 2.35619451204804
+process_method = 2
+
+[node name="TimeOfDay" type="Node" parent="Sky3D" unique_id=1721121076]
+script = ExtResource("10_8o1nu")
+editor_time_enabled = false
+game_time_enabled = false
+dome_path = NodePath("../SkyDome")
+current_time = 10.6
+day = 7
+
+[node name="ObjectDisplay1" type="Node3D" parent="." unique_id=549363124]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, -34.296867)
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplay1" unique_id=1586941774]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay1/Wall" unique_id=481222416]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplay1" unique_id=1398680385]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay1/Wall2" unique_id=1774329645]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ObjectDisplayShapes" type="Node3D" parent="." unique_id=1563058551]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, -17.115532)
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplayShapes" unique_id=1255271046]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplayShapes/Wall" unique_id=935209143]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplayShapes" unique_id=240423440]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplayShapes/Wall2" unique_id=204894582]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ObjectSpawnerDisplay" type="Node3D" parent="." unique_id=963253489]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, 0)
+
+[node name="ObjectSpawner" type="Node3D" parent="ObjectSpawnerDisplay" unique_id=1494285893]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.90613, 3.5, 1)
+script = ExtResource("14_75n5a")
+itemWeights = Dictionary[String, float]({
+"copper_ore": 1.0,
+"copper_ore_ground": 1.0,
+"iron_ore": 1.0,
+"iron_ore_ground": 1.0
+})
+spawnJitter = 0.25
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/ObjectSpawner" unique_id=2023083225]
+transform = Transform3D(4.3711385e-08, -3.8213705e-15, 1, -8.742277e-08, -0.99999994, 0, 0.99999994, -8.742277e-08, -4.371139e-08, 0, 0.6839838, 0)
+mesh = SubResource("PrismMesh_c5vbb")
+
+[node name="Wall" type="Box3DBody" parent="ObjectSpawnerDisplay" unique_id=185160226]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/Wall" unique_id=1259603657]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectSpawnerDisplay" unique_id=209286287]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/Wall2" unique_id=1328351154]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0107803345, 0)
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Node3D" type="Node3D" parent="ObjectSpawnerDisplay" unique_id=2106932011]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8255463, 1.6260744, 5.36835)
+
+[node name="Button" type="Box3DBody" parent="ObjectSpawnerDisplay/Node3D" unique_id=158277334 node_paths=PackedStringArray("animator", "targetObjectSpawner")]
+body_type = 0
+shape_type = 1
+sphere_radius = 0.1
+script = ExtResource("15_aqpx8")
+displayName = "Button"
+animator = NodePath("AnimationPlayer")
+targetObjectSpawner = [NodePath("../../ObjectSpawner")]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="ObjectSpawnerDisplay/Node3D/Button" unique_id=1650227249]
+libraries/ = SubResource("AnimationLibrary_ju7n5")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/Node3D/Button" unique_id=1624424765]
+mesh = SubResource("SphereMesh_c5vbb")
+
+[node name="ButtonBody" type="Box3DBody" parent="ObjectSpawnerDisplay/Node3D" unique_id=235472092]
+body_type = 0
+box_size = Vector3(0.5, 1.5, 0.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8763647, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/Node3D/ButtonBody" unique_id=979029047]
+mesh = SubResource("BoxMesh_c5vbb")
+
+[node name="SpawnLever" parent="ObjectSpawnerDisplay" unique_id=1709115799 node_paths=PackedStringArray("targetObjectSpawner") instance=ExtResource("sp_lever")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -6.8255463, 0.8, 3.4)
+displayName = "Spawn Lever"
+targetObjectSpawner = [NodePath("../ObjectSpawner")]
+
+[node name="SpawnerConveyorLine" type="Node3D" parent="." unique_id=1564043353]
+
+[node name="Start" parent="SpawnerConveyorLine" unique_id=183790409 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13, 1, 1)
+
+[node name="Slope" parent="SpawnerConveyorLine" unique_id=1346301794 instance=ExtResource("sc_slope")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15, 1, 1)
+
+[node name="Run1" parent="SpawnerConveyorLine" unique_id=507056064 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 19, 3, 1)
+
+[node name="Run2" parent="SpawnerConveyorLine" unique_id=1748191575 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 21, 3, 1)
+
+[node name="SpawnerVoid" parent="SpawnerConveyorLine" unique_id=287666115 instance=ExtResource("cd_void")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 1, 3)
+
+[node name="ObjectSpawnerDisplay2" type="Node3D" parent="." unique_id=1474543159]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, 16.947058)
+
+[node name="Wall" type="Box3DBody" parent="ObjectSpawnerDisplay2" unique_id=1566143283]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay2/Wall" unique_id=1592151004]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectSpawnerDisplay2" unique_id=1249897793]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay2/Wall2" unique_id=700968893]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ObjectDisplay5" type="Node3D" parent="." unique_id=124099508]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.90613, 0, 34.917873)
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplay5" unique_id=984385558]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay5/Wall" unique_id=149992542]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplay5" unique_id=199425876]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay5/Wall2" unique_id=73178599]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ObjectDisplay6" type="Node3D" parent="." unique_id=297265058]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.934782, 0, -34.296867)
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplay6" unique_id=332176555]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay6/Wall" unique_id=1170687309]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplay6" unique_id=1378750579]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay6/Wall2" unique_id=856255905]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ObjectDisplay7" type="Node3D" parent="." unique_id=2140411636]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.934782, 0, -17.115532)
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplay7" unique_id=1965352175]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay7/Wall" unique_id=1955151021]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplay7" unique_id=1715924757]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay7/Wall2" unique_id=1288050781]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ObjectDisplay8" type="Node3D" parent="." unique_id=1740254756]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.934782, 0, 0)
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplay8" unique_id=1848674405]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay8/Wall" unique_id=589991857]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplay8" unique_id=573167530]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay8/Wall2" unique_id=338036443]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ObjectDisplay9" type="Node3D" parent="." unique_id=488803433]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.934782, 0, 17.736538)
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplay9" unique_id=1228873405]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay9/Wall" unique_id=1097718565]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplay9" unique_id=53397491]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay9/Wall2" unique_id=1087239844]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ObjectDisplay10" type="Node3D" parent="." unique_id=765878901]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.934782, 0, 34.917873)
+
+[node name="Wall" type="Box3DBody" parent="ObjectDisplay10" unique_id=2069463248]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, -7.828518)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay10/Wall" unique_id=1523725795]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="Wall2" type="Box3DBody" parent="ObjectDisplay10" unique_id=157026091]
+body_type = 0
+box_size = Vector3(15.935, 2.845, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.9903545)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay10/Wall2" unique_id=1253900611]
+mesh = SubResource("BoxMesh_pet1e")
+
+[node name="ConveyorDemo" type="Node3D" parent="." unique_id=1736194013]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 18, 0, 16)
+
+[node name="OreSpawner" parent="ConveyorDemo" unique_id=852456153 instance=ExtResource("cd_spawner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 1, 43)
+itemWeights = Dictionary[String, float]({
+"copper_ore": 1.0,
+"iron_ore": 1.0
+})
+
+[node name="Start" parent="ConveyorDemo" unique_id=1092054176 instance=ExtResource("sc_straight")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 1, 41)
+
+[node name="Slope1" parent="ConveyorDemo" unique_id=381543440 instance=ExtResource("sc_slope")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 1, 39)
+
+[node name="Slope2" parent="ConveyorDemo" unique_id=218395275 instance=ExtResource("sc_slope")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 3, 35)
+
+[node name="Slope3" parent="ConveyorDemo" unique_id=1554726262 instance=ExtResource("sc_slope")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 5, 31)
+
+[node name="ConveyorTurnRight" parent="ConveyorDemo" unique_id=2020778206 instance=ExtResource("sc_turn_r")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 7, 27)
+
+[node name="Run1" parent="ConveyorDemo" unique_id=2146980209 instance=ExtResource("sc_straight")]
+transform = Transform3D(7.54979e-08, 0, -1, 0, 1, 0, 1, 0, 7.54979e-08, -33, 7, 27)
+
+[node name="Run2" parent="ConveyorDemo" unique_id=1964725704 instance=ExtResource("sc_straight")]
+transform = Transform3D(7.54979e-08, 0, -1, 0, 1, 0, 1, 0, 7.54979e-08, -31, 7, 27)
+
+[node name="LineGrinder" parent="ConveyorDemo" unique_id=1633029336 instance=ExtResource("cd_grinder")]
+transform = Transform3D(7.54979e-08, 0, -1, 0, 1, 0, 1, 0, 7.54979e-08, -29, 3, 27)
+processTime = 0.8
+
+[node name="CatchVoid" parent="ConveyorDemo" unique_id=318190228 instance=ExtResource("cd_void")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, 1, 27)
+
+[node name="ConveyorDemoOre" parent="ConveyorDemo" unique_id=1444105037 instance=ExtResource("rd_iron_ore")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 0.7, 41.4)
+
+[node name="ResourceDisplay" type="Node3D" parent="." unique_id=750627150]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -30)
+
+[node name="IronOre" parent="ResourceDisplay" unique_id=854920789 instance=ExtResource("rd_iron_ore")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.52, 0)
+
+[node name="GroundIronOre" parent="ResourceDisplay" unique_id=1790655661 instance=ExtResource("rd_iron_ore_ground")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.27, 0)
+
+[node name="CopperOre" parent="ResourceDisplay" unique_id=1794625597 instance=ExtResource("rd_copper_ore")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.52, 0)
+
+[node name="GroundCopperOre" parent="ResourceDisplay" unique_id=2133995814 instance=ExtResource("rd_copper_ore_ground")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.27, 0)
+
+[node name="LightChunk" parent="ResourceDisplay" unique_id=1232343280 instance=ExtResource("rd_test_chunk_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.42, 0)
+
+[node name="HeavyChunk" parent="ResourceDisplay" unique_id=1326292406 instance=ExtResource("rd_test_chunk_heavy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.42, 0)
+
+[node name="JumpingChunk" parent="ResourceDisplay" unique_id=1353991675 instance=ExtResource("rd_test_chunk_jumping")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.37, 0)
+
+[node name="HotChunk" parent="ResourceDisplay" unique_id=969742087 instance=ExtResource("rd_test_chunk_hot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.37, -4)
+
+[node name="ColdChunk" parent="ResourceDisplay" unique_id=534617209 instance=ExtResource("rd_test_chunk_cold")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, 1.8, -4)
+
+[node name="SalvageConveyorTest" type="Node3D" parent="." unique_id=1952099019]
+
+[node name="Spawner" parent="SalvageConveyorTest" unique_id=992695476 instance=ExtResource("cd_spawner")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -23, 1, -5)
+itemWeights = Dictionary[String, float]({
+"copper_ore": 1.0,
+"iron_ore": 1.0
+})
+interval = 1.5
+
+[node name="Straight1" parent="SalvageConveyorTest" unique_id=382947329 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -21, 1, -5)
+
+[node name="SlopeUp1" parent="SalvageConveyorTest" unique_id=161098808 instance=ExtResource("sc_slope")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -19, 1, -5)
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0)])
+
+[node name="Straight2" parent="SalvageConveyorTest" unique_id=1424107815 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -15, 3, -5)
+
+[node name="Straight3" parent="SalvageConveyorTest" unique_id=938085127 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -13, 3, -5)
+
+[node name="TurnRight1" parent="SalvageConveyorTest" unique_id=913788856 instance=ExtResource("sc_turn_r")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -11, 3, -5)
+
+[node name="Straight4" parent="SalvageConveyorTest" unique_id=789317830 instance=ExtResource("sc_straight")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -11, 3, -3)
+
+[node name="TurnRight2" parent="SalvageConveyorTest" unique_id=690803523 instance=ExtResource("sc_turn_r")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -11, 3, -1)
+
+[node name="SlopeDown" parent="SalvageConveyorTest" unique_id=497091625 instance=ExtResource("sc_slope_down")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13, 1, -1)
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0)])
+
+[node name="Straight5" parent="SalvageConveyorTest" unique_id=1207121707 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -17, 1, -1)
+
+[node name="TurnLeft" parent="SalvageConveyorTest" unique_id=1160106688 instance=ExtResource("sc_turn_l")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -19, 1, -1)
+
+[node name="SlopeUp2" parent="SalvageConveyorTest" unique_id=151411011 instance=ExtResource("sc_slope")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -19, 1, 1)
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0)])
+
+[node name="TurnRight3" parent="SalvageConveyorTest" unique_id=1847350149 instance=ExtResource("sc_turn_r")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -19, 3, 5)
+
+[node name="Straight6" parent="SalvageConveyorTest" unique_id=1107537441 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -21, 3, 5)
+
+[node name="Void" parent="SalvageConveyorTest" unique_id=437974951 instance=ExtResource("cd_void")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23, 1, 5)
+
+[node name="SalvageShowcase" type="Node3D" parent="." unique_id=1816087198]
+
+[node name="ShowSpawner" parent="SalvageShowcase" unique_id=642730241 instance=ExtResource("cd_spawner")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -23, 1, 13)
+itemWeights = Dictionary[String, float]({
+"copper_ore": 1.0,
+"iron_ore": 1.0
+})
+interval = 2.5
+
+[node name="Straight1" parent="SalvageShowcase" unique_id=799878127 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -21, 1, 13)
+
+[node name="SlopeUp" parent="SalvageShowcase" unique_id=523729283 instance=ExtResource("sc_slope")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -19, 1, 13)
+
+[node name="Straight2" parent="SalvageShowcase" unique_id=616455894 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -15, 3, 13)
+
+[node name="ShowGrinder" parent="SalvageShowcase" unique_id=514743897 instance=ExtResource("cd_grinder")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -13, 1, 13)
+
+[node name="Straight3" parent="SalvageShowcase" unique_id=1866425269 instance=ExtResource("sc_straight")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -11, 1, 13)
+
+[node name="TurnRight" parent="SalvageShowcase" unique_id=347094926 instance=ExtResource("sc_turn_r")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -9, 1, 13)
+
+[node name="Straight4" parent="SalvageShowcase" unique_id=727763166 instance=ExtResource("sc_straight")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -9, 1, 15)
+
+[node name="ShowVoid" parent="SalvageShowcase" unique_id=1122710673 instance=ExtResource("cd_void")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -9, 1, 17)
+
+[node name="PlinthMagnet" type="Box3DBody" parent="SalvageShowcase" unique_id=1298069806]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 1, 19)
+body_type = 0
+box_size = Vector3(1.42, 0.8, 1.42)
+
+[node name="Model" parent="SalvageShowcase/PlinthMagnet" unique_id=1412827761 instance=ExtResource("sh_plinth")]
+
+[node name="Shape" type="Box3DCollisionShape" parent="SalvageShowcase/PlinthMagnet" unique_id=610694214]
+box_size = Vector3(1.42, 0.8, 1.42)
+position = Vector3(0, -0.6, 0)
+
+[node name="PlinthCrates" type="Box3DBody" parent="SalvageShowcase" unique_id=412397592]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 1, 19)
+body_type = 0
+box_size = Vector3(1.42, 0.8, 1.42)
+
+[node name="Model" parent="SalvageShowcase/PlinthCrates" unique_id=1293766472 instance=ExtResource("sh_plinth")]
+
+[node name="Shape" type="Box3DCollisionShape" parent="SalvageShowcase/PlinthCrates" unique_id=1454311809]
+box_size = Vector3(1.42, 0.8, 1.42)
+position = Vector3(0, -0.6, 0)
+
+[node name="PlinthIron" type="Box3DBody" parent="SalvageShowcase" unique_id=1519745620]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 1, 22.5)
+body_type = 0
+box_size = Vector3(1.42, 0.8, 1.42)
+
+[node name="Model" parent="SalvageShowcase/PlinthIron" unique_id=1175072793 instance=ExtResource("sh_plinth")]
+
+[node name="Shape" type="Box3DCollisionShape" parent="SalvageShowcase/PlinthIron" unique_id=105210123]
+box_size = Vector3(1.42, 0.8, 1.42)
+position = Vector3(0, -0.6, 0)
+
+[node name="PlinthCopper" type="Box3DBody" parent="SalvageShowcase" unique_id=1927763782]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 1, 22.5)
+body_type = 0
+box_size = Vector3(1.42, 0.8, 1.42)
+
+[node name="Model" parent="SalvageShowcase/PlinthCopper" unique_id=701167581 instance=ExtResource("sh_plinth")]
+
+[node name="Shape" type="Box3DCollisionShape" parent="SalvageShowcase/PlinthCopper" unique_id=160883825]
+box_size = Vector3(1.42, 0.8, 1.42)
+position = Vector3(0, -0.6, 0)
+
+[node name="MagnetDisplay" type="Node3D" parent="SalvageShowcase" unique_id=1894062152]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 1.75, 19)
+script = ExtResource("sh_spinner")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Magnet" parent="SalvageShowcase/MagnetDisplay" unique_id=1167621639 instance=ExtResource("sh_magnet")]
+transform = Transform3D(2.2, 0, 0, 0, 2.13, -0.55, 0, 0.55, 2.13, 0, -0.05, 0.45)
+
+[node name="Field" type="MeshInstance3D" parent="SalvageShowcase/MagnetDisplay" unique_id=470827150]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 0, 0.25, -0.75)
+cast_shadow = 0
+mesh = SubResource("sh_field_ball")
+surface_material_override/0 = SubResource("sh_field_mat")
+
+[node name="CrateGrinder" parent="SalvageShowcase" unique_id=1801748852 instance=ExtResource("sh_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 1.31, 19)
+itemID = "blueprint_grinder"
+
+[node name="CrateSpawner" parent="SalvageShowcase" unique_id=1846667133 instance=ExtResource("sh_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 2.33, 19)
+itemID = "blueprint_item_spawner"
+
+[node name="CrateVoid" parent="SalvageShowcase" unique_id=510664858 instance=ExtResource("sh_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.1, 0.51, 20.3)
+itemID = "blueprint_item_void"
+
+[node name="ShowIronOre" parent="SalvageShowcase" unique_id=1189450433 instance=ExtResource("rd_iron_ore")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.25, 1.31, 22.5)
+
+[node name="ShowIronOreGround" parent="SalvageShowcase" unique_id=1894638472 instance=ExtResource("rd_iron_ore_ground")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.5, 1.06, 22.9)
+
+[node name="ShowCopperOre" parent="SalvageShowcase" unique_id=934411673 instance=ExtResource("rd_copper_ore")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.75, 1.31, 22.5)
+
+[node name="ShowCopperOreGround" parent="SalvageShowcase" unique_id=492718981 instance=ExtResource("rd_copper_ore_ground")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.0, 1.06, 22.9)

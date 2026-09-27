@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://e450hsdm0ju3"]
+
+[ext_resource type="Script" uid="uid://onxfe4obds4n" path="res://game/scripts/items/placed/BlueprintGhost.cs" id="1_eudoa"]
+
+[node name="BlueprintGhost" type="Node3D" unique_id=699688378]
+script = ExtResource("1_eudoa")

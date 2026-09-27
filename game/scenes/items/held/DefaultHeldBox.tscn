@@ -1,0 +1,81 @@
+[gd_scene format=3 uid="uid://drrxsfrr8qoft"]
+
+[ext_resource type="Script" uid="uid://6cyj0uv1he5k" path="res://game/scripts/items/held/DefaultHeldBox.cs" id="1_j0c02"]
+[ext_resource type="PackedScene" uid="uid://c71hpn107i28i" path="res://game/assets/models/props/item_crate.glb" id="model"]
+
+[sub_resource type="PlaneMesh" id="icon_plane"]
+size = Vector2(0.5, 0.5)
+
+[node name="DefaultHeldBox" type="Node3D" unique_id=1602477073]
+transform = Transform3D(0.37, 0, 0, 0, 0.37, 0, 0, 0, 0.37, 0, 0, 0)
+script = ExtResource("1_j0c02")
+
+[node name="Model" parent="." instance=ExtResource("model")]
+
+[node name="M1" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, 0, -0.06, -0.478)
+mesh = SubResource("icon_plane")
+
+[node name="L1" type="Label3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.33, -0.478)
+pixel_size = 0.0035
+modulate = Color(0.95, 0.88, 0.7, 1)
+outline_modulate = Color(0.02, 0.02, 0.02, 1)
+font_size = 34
+outline_size = 6
+autowrap_mode = 3
+width = 210.0
+text = "ITEM"
+
+[node name="M2" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(0, 1, 0, 0, 0, -1, -1, 0, 0, 0.478, -0.06, 0)
+mesh = SubResource("icon_plane")
+
+[node name="L2" type="Label3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.478, 0.33, 0)
+pixel_size = 0.0035
+modulate = Color(0.95, 0.88, 0.7, 1)
+outline_modulate = Color(0.02, 0.02, 0.02, 1)
+font_size = 34
+outline_size = 6
+autowrap_mode = 3
+width = 210.0
+text = "ITEM"
+
+[node name="M3" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.06, 0.478)
+mesh = SubResource("icon_plane")
+
+[node name="L3" type="Label3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.33, 0.478)
+pixel_size = 0.0035
+modulate = Color(0.95, 0.88, 0.7, 1)
+outline_modulate = Color(0.02, 0.02, 0.02, 1)
+font_size = 34
+outline_size = 6
+autowrap_mode = 3
+width = 210.0
+text = "ITEM"
+
+[node name="M4" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(0, -1, 0, 0, 0, -1, 1, 0, 0, -0.478, -0.06, 0)
+mesh = SubResource("icon_plane")
+
+[node name="L4" type="Label3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.478, 0.33, 0)
+pixel_size = 0.0035
+modulate = Color(0.95, 0.88, 0.7, 1)
+outline_modulate = Color(0.02, 0.02, 0.02, 1)
+font_size = 34
+outline_size = 6
+autowrap_mode = 3
+width = 210.0
+text = "ITEM"
