@@ -71,7 +71,7 @@ public partial class LobbyDebug : Control
     //  15.5  (host) the HUD shows "Magnet Rod" as the held item's name
     //  19.6  host walks forward holding sprint until 20.3 -> reaches sprint speed
     private const ulong TestCubeId = 0x7E57C0BE;
-    private const string TestCubeScene = "res://game/dev/items/test_1x1x1cube.tscn";
+    private const string TestCubeScene = "res://dev/items/test_1x1x1cube.tscn";
     private const string SeedItemId = "blueprint_test_block";
     private static readonly Vector3I TestBuildCell = new(40, 10, 40); // in the air, clear of the level
     private string _buildSnapshot = "none";
@@ -311,9 +311,9 @@ public partial class LobbyDebug : Control
             bool demoGridOk = demoStructures.Count == 30 && demoAligned == 30 && demoRegistered == 30;
             machinesOk &= demoGridOk;
             // Every conveyor's placement preview gets a non-empty direction arrow; other structures get none.
-            string arrows = string.Join(",", new[] { "conveyors/salvage/Conveyor", "conveyors/salvage/ConveyorSlope", "conveyors/salvage/ConveyorSlopeDown", "conveyors/salvage/ConveyorTurnLeft", "conveyors/salvage/ConveyorTurnRight", "Grinder" }.Select(n =>
+            string arrows = string.Join(",", new[] { "conveyors/Conveyor", "conveyors/ConveyorSlope", "conveyors/ConveyorSlopeDown", "conveyors/ConveyorTurnLeft", "conveyors/ConveyorTurnRight", "Grinder" }.Select(n =>
             {
-                var st = GD.Load<PackedScene>($"res://game/machines/structures/{n}.tscn").Instantiate<Structure>();
+                var st = GD.Load<PackedScene>($"res://game/scenes/structures/{n}.tscn").Instantiate<Structure>();
                 MeshInstance3D arrow = FlowArrowMesh.Create(st, null);
                 int tris = arrow?.Mesh is ArrayMesh m && m.GetSurfaceCount() > 0 ? m.SurfaceGetArrayLen(0) / 3 : 0;
                 arrow?.Free();
@@ -749,7 +749,7 @@ public partial class LobbyDebug : Control
         {
             _grinderSubStep++;
             var state = new StructureState { anchor = TestGrinderCell, quarterTurns = 0 };
-            GameWorld.SpawnScene("res://game/machines/structures/Grinder.tscn", BuildGrid.CellToWorld(TestGrinderCell), default,
+            GameWorld.SpawnScene("res://game/scenes/structures/Grinder.tscn", BuildGrid.CellToWorld(TestGrinderCell), default,
                 default, GMPObject.serializer.Serialize(state));
         }
         else if (_grinderSubStep == 1 && t >= 3.0)
@@ -891,7 +891,7 @@ public partial class LobbyDebug : Control
                 for (int i = 0; i < MagnetTestIds.Length; i++)
                 {
                     Vector3 offset = new((i - 1) * 1.0f, 0.5f, 0.5f);
-                    GameWorld.SpawnScene("res://game/items/world/resources/copper_ore_ground.tscn", ball + offset, default,
+                    GameWorld.SpawnScene("res://game/scenes/items/world/resources/copper_ore_ground.tscn", ball + offset, default,
                         new GMPOInitData(MagnetTestIds[i], 0, 0, 0, false));
                 }
             }
@@ -938,7 +938,7 @@ public partial class LobbyDebug : Control
                 // Empty hand, then a featherweight chunk right at the grab point.
                 local.inventory.ActiveHotbarSlot = -1;
                 local.UpdateEquippedItem();
-                GameWorld.SpawnScene("res://game/dev/items/test_chunk_light.tscn", local.grabPoint, default, new GMPOInitData(GrabTestId, 0, 0, 0, false));
+                GameWorld.SpawnScene("res://dev/items/test_chunk_light.tscn", local.grabPoint, default, new GMPOInitData(GrabTestId, 0, 0, 0, false));
             }
         }
         else if (_resourceSubStep == 6 && t >= 16.5)

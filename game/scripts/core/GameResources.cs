@@ -10,10 +10,9 @@ public static class GameResources
 
     public static List<LevelInfo> LevelsList = new List<LevelInfo>
     {
-        new LevelInfo ("ObjectMuseum","res://game/levels/ObjectMuseum.tscn"),
-        new LevelInfo ("FactoryMap","res://game/levels/FactoryMap.tscn"),
-        new LevelInfo ("MineCavern","res://game/levels/MineCavern.tscn"),
-        new LevelInfo ("TestFacility","res://game/levels/test_facility.scn"),
+        new LevelInfo ("ObjectMuseum","res://game/scenes/levels/ObjectMuseum.tscn"),
+        new LevelInfo ("FactoryMap","res://game/scenes/levels/FactoryMap.tscn"),
+        new LevelInfo ("TestFacility","res://game/scenes/levels/test_facility.scn"),
     };
 
 }

@@ -54,7 +54,7 @@ public partial class FluidSim : GMPOSingleton
         sw.Reset();
         sw.Start();
         //setup compute shader
-        var shaderFile = GD.Load<RDShaderFile>("res://game/dev/fluid_sim.glsl");
+        var shaderFile = GD.Load<RDShaderFile>("res://dev/fluid_sim.glsl");
         RDShaderSpirV blendShaderBytecode = shaderFile.GetSpirV();
         Rid blendShader = rd.ShaderCreateFromSpirV(blendShaderBytecode);
 

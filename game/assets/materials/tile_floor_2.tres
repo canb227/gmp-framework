@@ -1,9 +1,9 @@
 [gd_resource type="StandardMaterial3D" format=3 uid="uid://csjhk6s016ofm"]
 
-[ext_resource type="Texture2D" uid="uid://chg1lghd8mqsx" path="res://assets/textures/floor_tile_2/floor_tile_2_diffuseOriginal.png" id="1_ri05u"]
-[ext_resource type="Texture2D" uid="uid://bjk8bs8la5aww" path="res://assets/textures/floor_tile_2/floor_tile_2_height.png" id="2_sylc2"]
-[ext_resource type="Texture2D" uid="uid://yrpjxpnh8nid" path="res://assets/textures/floor_tile_2/floor_tile_2_normal.png" id="3_r8d4g"]
-[ext_resource type="Texture2D" uid="uid://dvteenfqu67wd" path="res://assets/textures/floor_tile_2/floor_tile_2_smoothness.png" id="4_buvkh"]
+[ext_resource type="Texture2D" uid="uid://chg1lghd8mqsx" path="res://game/assets/textures/floor_tile_2/floor_tile_2_diffuseOriginal.png" id="1_ri05u"]
+[ext_resource type="Texture2D" uid="uid://bjk8bs8la5aww" path="res://game/assets/textures/floor_tile_2/floor_tile_2_height.png" id="2_sylc2"]
+[ext_resource type="Texture2D" uid="uid://yrpjxpnh8nid" path="res://game/assets/textures/floor_tile_2/floor_tile_2_normal.png" id="3_r8d4g"]
+[ext_resource type="Texture2D" uid="uid://dvteenfqu67wd" path="res://game/assets/textures/floor_tile_2/floor_tile_2_smoothness.png" id="4_buvkh"]
 
 [resource]
 albedo_texture = ExtResource("1_ri05u")

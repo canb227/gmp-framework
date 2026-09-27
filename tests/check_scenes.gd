@@ -6,7 +6,7 @@ var failures := 0
 var checked := 0
 
 func _init() -> void:
-	for root in ["res://game", "res://gmp"]:
+	for root in ["res://game", "res://gmp", "res://dev"]:
 		_walk(root)
 	print("CHECK_SCENES checked=%d failures=%d" % [checked, failures])
 	print("CHECK_SCENES_RESULT:%s" % ("PASS" if failures == 0 else "FAIL"))

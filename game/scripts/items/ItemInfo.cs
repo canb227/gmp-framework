@@ -39,7 +39,7 @@ public partial class ItemInfo : Resource
     }
 
 
-    const string DefaultDroppedScene = "res://game/items/world/DefaultDroppedBox.tscn";
+    const string DefaultDroppedScene = "res://game/scenes/items/world/DefaultDroppedBox.tscn";
 
     /// <summary>
     /// Spawns <paramref name="itemID"/> in the world for every peer: its <see cref="droppedScene"/>, or a labelled
@@ -72,7 +72,7 @@ public partial class ItemInfo : Resource
         if (!definitions.TryGetValue(itemID, out ItemInfo item))
         {
             string path = FindItemDefinition(
-                "res://game/items/definitions",
+                "res://game/definitions",
                 itemID + ".tres"
             );
 
