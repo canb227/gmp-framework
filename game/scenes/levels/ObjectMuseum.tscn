@@ -15,6 +15,8 @@
 [ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="14_aqpx8"]
 [ext_resource type="Texture2D" uid="uid://c8knlhvemp8jf" path="res://game/assets/textures/grass_1/grass_ao.png" id="15_2usgl"]
 [ext_resource type="Script" uid="uid://cthpe3o2ur5ir" path="res://game/scripts/entities/BasicButton.cs" id="15_aqpx8"]
+[ext_resource type="Shader" uid="uid://dcvutuidshmuk" path="res://game/assets/shaders/glass.gdshader" id="20_kd4ny"]
+[ext_resource type="Texture2D" uid="uid://cp6f5gycyxpp3" path="res://game/assets/icons/items/iron_ore.png" id="21_kd4ny"]
 [ext_resource type="PackedScene" uid="uid://sx6hcwl6g3s8" path="res://game/scenes/structures/Grinder.tscn" id="cd_grinder"]
 [ext_resource type="PackedScene" uid="uid://dxbidpuifub02" path="res://game/scenes/structures/ItemSpawner.tscn" id="cd_spawner"]
 [ext_resource type="PackedScene" uid="uid://bywvnipt62y5r" path="res://game/scenes/structures/ItemVoid.tscn" id="cd_void"]
@@ -25,19 +27,18 @@
 [ext_resource type="PackedScene" path="res://dev/items/test_chunk_cold.tscn" id="rd_test_chunk_cold"]
 [ext_resource type="PackedScene" path="res://dev/items/test_chunk_heavy.tscn" id="rd_test_chunk_heavy"]
 [ext_resource type="PackedScene" path="res://dev/items/test_chunk_hot.tscn" id="rd_test_chunk_hot"]
-[ext_resource type="PackedScene" path="res://dev/items/test_chunk_jumping.tscn" id="rd_test_chunk_jumping"]
+[ext_resource type="PackedScene" uid="uid://dur2rr1yg176g" path="res://dev/items/test_chunk_jumping.tscn" id="rd_test_chunk_jumping"]
 [ext_resource type="PackedScene" path="res://dev/items/test_chunk_light.tscn" id="rd_test_chunk_light"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorSlope.tscn" id="sc_slope"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorSlopeDown.tscn" id="sc_slope_down"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/Conveyor.tscn" id="sc_straight"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorTurnLeft.tscn" id="sc_turn_l"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorTurnRight.tscn" id="sc_turn_r"]
-[ext_resource type="PackedScene" path="res://game/scenes/entities/Lever.tscn" id="sp_lever"]
-[ext_resource type="PackedScene" uid="uid://bu7yxskeusnvj" path="res://game/assets/models/props/display_plinth.glb" id="sh_plinth"]
-[ext_resource type="PackedScene" uid="uid://bsfjyw4ai1rr8" path="res://game/assets/models/props/magnet_tool.glb" id="sh_magnet"]
 [ext_resource type="PackedScene" uid="uid://bc80frwd8i8um" path="res://game/scenes/items/world/DefaultDroppedBox.tscn" id="sh_crate"]
+[ext_resource type="PackedScene" uid="uid://bsfjyw4ai1rr8" path="res://game/assets/models/props/magnet_tool.glb" id="sh_magnet"]
+[ext_resource type="PackedScene" uid="uid://bu7yxskeusnvj" path="res://game/assets/models/props/display_plinth.glb" id="sh_plinth"]
 [ext_resource type="Script" uid="uid://de6ss1gh7mjqf" path="res://game/scripts/entities/Spinner.cs" id="sh_spinner"]
-[ext_resource type="Shader" uid="uid://dt1utntk18esd" path="res://game/assets/shaders/MagnetField.gdshader" id="sh_field"]
+[ext_resource type="PackedScene" path="res://game/scenes/entities/Lever.tscn" id="sp_lever"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
 material = ExtResource("1_2usgl")
@@ -223,15 +224,47 @@ roughness = 0.0
 material = SubResource("StandardMaterial3D_tt1o4")
 size = Vector3(0.5, 1.5, 0.5)
 
-[sub_resource type="SphereMesh" id="sh_field_ball"]
-radius = 0.35
-height = 0.7
-radial_segments = 48
-rings = 24
-
-[sub_resource type="ShaderMaterial" id="sh_field_mat"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4x2dv"]
 render_priority = 0
-shader = ExtResource("sh_field")
+shader = ExtResource("20_kd4ny")
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/color_coat = 0.0
+shader_parameter/oilyness = 0.1
+shader_parameter/rim_amount = 0.4
+shader_parameter/rim_shape = 4.0
+shader_parameter/rim_color = Color(1, 1, 1, 1)
+shader_parameter/refraction_strength = -0.1
+shader_parameter/blur_amount = 0.40000001574012
+shader_parameter/roughness_affect = 0.0
+shader_parameter/roughness = 0.2
+
+[sub_resource type="BoxMesh" id="BoxMesh_vchc8"]
+material = SubResource("ShaderMaterial_4x2dv")
+size = Vector3(0.24853516, 2.380371, 6.369629)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4x2dv"]
+size = Vector3(1, 3.626709, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_kd4ny"]
+size = Vector3(1, 0.76538086, 8.400909)
+
+[sub_resource type="BoxMesh" id="BoxMesh_febo4"]
+size = Vector3(0.7591553, 1.5145264, 8.365295)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kd4ny"]
+albedo_texture = ExtResource("21_kd4ny")
+billboard_mode = 1
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_4x2dv"]
+material = SubResource("StandardMaterial3D_kd4ny")
+size = Vector2(1, 1)
+orientation = 2
+
+[sub_resource type="MultiMesh" id="MultiMesh_pet1e"]
+transform_format = 1
+instance_count = 40
+mesh = SubResource("PlaneMesh_4x2dv")
+buffer = PackedFloat32Array(0.5, 3.9999998, 0.12236, 0.12236, 0.12236, 1, 0.0009334163, 0.026455026, 0.7664218, 2.660608, 0.12236, 0.12236, 0.12236, 1, 0.0010992046, 0.019368296, 1.525126, 1.5251265, 0.12236, 0.12236, 0.12236, 1, 0.0015713292, 0.0133604575, 2.6606073, 0.7664218, 0.12236, 0.12236, 0.12236, 1, 0.0022779137, 0.009346147, 4, 0.5, 0.12236, 0.12236, 0.12236, 1, 0.0031113876, 0.007936508, 1601, 0.5, 0.12236, 0.12236, 0.12236, 1, 0.99688864, 0.007936508, 1602.3394, 0.76642203, 0.12236, 0.12236, 0.12236, 1, 0.9977221, 0.009346148, 1603.4749, 1.525126, 0.12236, 0.12236, 0.12236, 1, 0.99842864, 0.013360455, 1604.2335, 2.660608, 0.12236, 0.12236, 0.12236, 1, 0.9989008, 0.019368296, 1604.5, 4.0000005, 0.12236, 0.12236, 0.12236, 1, 0.9990666, 0.02645503, 1604.5, 183, 0.12236, 0.12236, 0.12236, 1, 0.9990666, 0.97354496, 1604.2335, 184.33939, 0.12236, 0.12236, 0.12236, 1, 0.9989008, 0.98063165, 1603.4749, 185.47487, 0.12236, 0.12236, 0.12236, 1, 0.99842864, 0.9866395, 1602.3394, 186.23358, 0.12236, 0.12236, 0.12236, 1, 0.9977221, 0.9906539, 1601, 186.5, 0.12236, 0.12236, 0.12236, 1, 0.99688864, 0.99206346, 3.9999988, 186.5, 0.12236, 0.12236, 0.12236, 1, 0.0031113871, 0.99206346, 2.6606064, 186.23358, 0.12236, 0.12236, 0.12236, 1, 0.002277913, 0.9906539, 1.5251269, 185.47487, 0.12236, 0.12236, 0.12236, 1, 0.0015713298, 0.9866395, 0.7664218, 184.33939, 0.12236, 0.12236, 0.12236, 1, 0.0010992046, 0.98063165, 0.5, 183, 0.12236, 0.12236, 0.12236, 1, 0.0009334163, 0.97354496, 0.5, 3.9999998, 0.12236, 0.12236, 0.12236, 1, 0.0009334163, 0.026455026, -0.5, 3.9999995, 0.12236, 0.12236, 0.12236, 0, 0.00031113878, 0.026455024, 0.7664218, 2.660608, 0.12236, 0.12236, 0.12236, 1, 0.0010992046, 0.019368296, -0.15745783, 2.2779245, 0.12236, 0.12236, 0.12236, 0, 0.0005242951, 0.017343516, 1.525126, 1.5251265, 0.12236, 0.12236, 0.12236, 1, 0.0015713292, 0.0133604575, 0.8180194, 0.81801987, 0.12236, 0.12236, 0.12236, 0, 0.0011313126, 0.009619153, 2.6606073, 0.7664218, 0.12236, 0.12236, 0.12236, 1, 0.0022779137, 0.009346147, 2.277924, -0.15745783, 0.12236, 0.12236, 0.12236, 0, 0.0020397785, 0.004457895, 4, 0.5, 0.12236, 0.12236, 0.12236, 1, 0.0031113876, 0.007936508, 4, -0.5, 0.12236, 0.12236, 0.12236, 0, 0.0031113876, 0.0026455026, 1601, 0.5, 0.12236, 0.12236, 0.12236, 1, 0.99688864, 0.007936508, 1601, -0.5, 0.12236, 0.12236, 0.12236, 0, 0.99688864, 0.0026455026, 1602.3394, 0.76642203, 0.12236, 0.12236, 0.12236, 1, 0.9977221, 0.009346148, 1602.722, -0.15745735, 0.12236, 0.12236, 0.12236, 0, 0.9979602, 0.0044578975, 1603.4749, 1.525126, 0.12236, 0.12236, 0.12236, 1, 0.99842864, 0.013360455, 1604.182, 0.8180189, 0.12236, 0.12236, 0.12236, 0, 0.9988687, 0.0096191475, 1604.2335, 2.660608, 0.12236, 0.12236, 0.12236, 1, 0.9989008, 0.019368296, 1605.1575, 2.2779245, 0.12236, 0.12236, 0.12236, 0, 0.9994757, 0.017343516, 1604.5, 4.0000005, 0.12236, 0.12236, 0.12236, 1, 0.9990666, 0.02645503, 1605.5, 4.000001, 0.12236, 0.12236, 0.12236, 0, 0.99968886, 0.026455032, 1604.5, 183, 0.12236, 0.12236, 0.12236, 1, 0.9990666, 0.97354496, 1605.5, 183, 0.12236, 0.12236, 0.12236, 0, 0.99968886, 0.97354496, 1604.2335, 184.33939, 0.12236, 0.12236, 0.12236, 1, 0.9989008, 0.98063165, 1605.1575, 184.72208, 0.12236, 0.12236, 0.12236, 0, 0.9994757, 0.9826565, 1603.4749, 185.47487, 0.12236, 0.12236, 0.12236, 1, 0.99842864, 0.9866395, 1604.182, 186.18198, 0.12236, 0.12236, 0.12236, 0, 0.9988687, 0.9903808, 1602.3394, 186.23358, 0.12236, 0.12236, 0.12236, 1, 0.9977221, 0.9906539, 1602.722, 187.15746, 0.12236, 0.12236, 0.12236, 0, 0.9979602, 0.9955421, 1601, 186.5, 0.12236, 0.12236, 0.12236, 1, 0.99688864, 0.99206346, 1601, 187.5, 0.12236, 0.12236, 0.12236, 0, 0.99688864, 0.9973545, 3.9999988, 186.5, 0.12236, 0.12236, 0.12236, 1, 0.0031113871, 0.99206346, 3.9999986, 187.5, 0.12236, 0.12236, 0.12236, 0, 0.003111387, 0.9973545, 2.6606064, 186.23358, 0.12236, 0.12236, 0.12236, 1, 0.002277913, 0.9906539, 2.2779224, 187.15746, 0.12236, 0.12236, 0.12236, 0, 0.0020397776, 0.9955421, 1.5251269, 185.47487, 0.12236, 0.12236, 0.12236, 1, 0.0015713298, 0.9866395, 0.81802034, 186.18198, 0.12236, 0.12236, 0.12236, 0, 0.0011313133, 0.9903808, 0.7664218, 184.33939, 0.12236, 0.12236, 0.12236, 1, 0.0010992046, 0.98063165, -0.15745783, 184.72208, 0.12236, 0.12236, 0.12236, 0, 0.0005242951, 0.9826565, 0.5, 183, 0.12236, 0.12236, 0.12236, 1, 0.0009334163, 0.97354496, -0.5, 183, 0.12236, 0.12236, 0.12236, 0, 0.00031113878, 0.97354496)
 
 [node name="FactoryGameTest" type="Node3D" unique_id=653852535]
 
@@ -390,6 +423,7 @@ transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13, 1, 1)
 
 [node name="Slope" parent="SpawnerConveyorLine" unique_id=1346301794 instance=ExtResource("sc_slope")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15, 1, 1)
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0)])
 
 [node name="Run1" parent="SpawnerConveyorLine" unique_id=507056064 instance=ExtResource("sc_straight")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 19, 3, 1)
@@ -437,6 +471,30 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09736061, 1.413147, 7.99035
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay5/Wall2" unique_id=73178599]
 mesh = SubResource("BoxMesh_pet1e")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay5" unique_id=590997704]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.3004017, 2.4350128, -0.2619629)
+mesh = SubResource("BoxMesh_vchc8")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectDisplay5/MeshInstance3D" unique_id=97487901]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.64489746, -3.6786404)
+mesh = SubResource("BoxMesh_4x2dv")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="ObjectDisplay5/MeshInstance3D" unique_id=680504772]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.64489746, 3.7192802)
+mesh = SubResource("BoxMesh_4x2dv")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="ObjectDisplay5/MeshInstance3D" unique_id=2112378830]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4834359, 0.019844055)
+mesh = SubResource("BoxMesh_kd4ny")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="ObjectDisplay5/MeshInstance3D" unique_id=415607985]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0053100586, -1.8582232, 0.037651062)
+mesh = SubResource("BoxMesh_febo4")
+
+[node name="MultiMeshInstance3D" type="MultiMeshInstance3D" parent="ObjectDisplay5/MeshInstance3D" unique_id=1766524549]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.560708, 1.3234196, 0)
+multimesh = SubResource("MultiMesh_pet1e")
 
 [node name="ObjectDisplay6" type="Node3D" parent="." unique_id=297265058]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.934782, 0, -34.296867)
@@ -548,12 +606,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 1, 41)
 
 [node name="Slope1" parent="ConveyorDemo" unique_id=381543440 instance=ExtResource("sc_slope")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 1, 39)
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0)])
 
 [node name="Slope2" parent="ConveyorDemo" unique_id=218395275 instance=ExtResource("sc_slope")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 3, 35)
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0)])
 
 [node name="Slope3" parent="ConveyorDemo" unique_id=1554726262 instance=ExtResource("sc_slope")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 5, 31)
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0)])
 
 [node name="ConveyorTurnRight" parent="ConveyorDemo" unique_id=2020778206 instance=ExtResource("sc_turn_r")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 7, 27)
@@ -674,6 +735,7 @@ transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -21, 1, 13)
 
 [node name="SlopeUp" parent="SalvageShowcase" unique_id=523729283 instance=ExtResource("sc_slope")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -19, 1, 13)
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0)])
 
 [node name="Straight2" parent="SalvageShowcase" unique_id=616455894 instance=ExtResource("sc_straight")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -15, 3, 13)
@@ -694,48 +756,48 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -9, 1, 15)
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -9, 1, 17)
 
 [node name="PlinthMagnet" type="Box3DBody" parent="SalvageShowcase" unique_id=1298069806]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 1, 19)
 body_type = 0
 box_size = Vector3(1.42, 0.8, 1.42)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 1, 19)
 
 [node name="Model" parent="SalvageShowcase/PlinthMagnet" unique_id=1412827761 instance=ExtResource("sh_plinth")]
 
 [node name="Shape" type="Box3DCollisionShape" parent="SalvageShowcase/PlinthMagnet" unique_id=610694214]
 box_size = Vector3(1.42, 0.8, 1.42)
-position = Vector3(0, -0.6, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
 
 [node name="PlinthCrates" type="Box3DBody" parent="SalvageShowcase" unique_id=412397592]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 1, 19)
 body_type = 0
 box_size = Vector3(1.42, 0.8, 1.42)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 1, 19)
 
 [node name="Model" parent="SalvageShowcase/PlinthCrates" unique_id=1293766472 instance=ExtResource("sh_plinth")]
 
 [node name="Shape" type="Box3DCollisionShape" parent="SalvageShowcase/PlinthCrates" unique_id=1454311809]
 box_size = Vector3(1.42, 0.8, 1.42)
-position = Vector3(0, -0.6, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
 
 [node name="PlinthIron" type="Box3DBody" parent="SalvageShowcase" unique_id=1519745620]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 1, 22.5)
 body_type = 0
 box_size = Vector3(1.42, 0.8, 1.42)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 1, 22.5)
 
 [node name="Model" parent="SalvageShowcase/PlinthIron" unique_id=1175072793 instance=ExtResource("sh_plinth")]
 
 [node name="Shape" type="Box3DCollisionShape" parent="SalvageShowcase/PlinthIron" unique_id=105210123]
 box_size = Vector3(1.42, 0.8, 1.42)
-position = Vector3(0, -0.6, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
 
 [node name="PlinthCopper" type="Box3DBody" parent="SalvageShowcase" unique_id=1927763782]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 1, 22.5)
 body_type = 0
 box_size = Vector3(1.42, 0.8, 1.42)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 1, 22.5)
 
 [node name="Model" parent="SalvageShowcase/PlinthCopper" unique_id=701167581 instance=ExtResource("sh_plinth")]
 
 [node name="Shape" type="Box3DCollisionShape" parent="SalvageShowcase/PlinthCopper" unique_id=160883825]
 box_size = Vector3(1.42, 0.8, 1.42)
-position = Vector3(0, -0.6, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
 
 [node name="MagnetDisplay" type="Node3D" parent="SalvageShowcase" unique_id=1894062152]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 1.75, 19)
@@ -745,12 +807,6 @@ speed = 0.5
 
 [node name="Magnet" parent="SalvageShowcase/MagnetDisplay" unique_id=1167621639 instance=ExtResource("sh_magnet")]
 transform = Transform3D(2.2, 0, 0, 0, 2.13, -0.55, 0, 0.55, 2.13, 0, -0.05, 0.45)
-
-[node name="Field" type="MeshInstance3D" parent="SalvageShowcase/MagnetDisplay" unique_id=470827150]
-transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 0, 0.25, -0.75)
-cast_shadow = 0
-mesh = SubResource("sh_field_ball")
-surface_material_override/0 = SubResource("sh_field_mat")
 
 [node name="CrateGrinder" parent="SalvageShowcase" unique_id=1801748852 instance=ExtResource("sh_crate")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 1.31, 19)
@@ -774,4 +830,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.5, 1.06, 22.9)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.75, 1.31, 22.5)
 
 [node name="ShowCopperOreGround" parent="SalvageShowcase" unique_id=492718981 instance=ExtResource("rd_copper_ore_ground")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.0, 1.06, 22.9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 1.06, 22.9)
