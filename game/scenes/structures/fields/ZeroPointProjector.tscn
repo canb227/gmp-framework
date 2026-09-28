@@ -1,0 +1,34 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://v0amhgzm1ufo" path="res://game/assets/models/machines/fields/zeropoint_projector.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+[ext_resource type="Script" uid="uid://de6ss1gh7mjqf" path="res://game/scripts/entities/Spinner.cs" id="3_r"]
+
+[node name="ZeroPointProjector" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+blueprintItemID = "blueprint_zeropoint_projector"
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="Field" parent="Model" index="2"]
+scale = Vector3(1, 1, 8)
+
+[node name="Rings" parent="Model" index="1"]
+script = ExtResource("3_r")
+axis = Vector3(0, 0, 1)
+speed = -0.8
+
+[node name="Housing" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.96, 1.96, 1.96)
+user_material_id = 3
+position = Vector3(0, 0, 0)
+
+[node name="FieldTrigger" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(1.6, 1.6, 16)
+is_sensor = true
+collision_layer = 1073741824
+position = Vector3(0, 0, -9)

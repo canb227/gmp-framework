@@ -1,0 +1,118 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://p5ylsz5sxvbj" path="res://game/assets/models/machines/processing/plate_press.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://bbkovbjsnajma" path="res://game/scripts/items/placed/Grinder.cs" id="2_r"]
+[ext_resource type="Script" path="res://game/scripts/entities/Oscillator.cs" id="3_r"]
+
+[node name="PlatePress" type="Box3DBody" node_paths=PackedStringArray("hopperTrigger")]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+hopperTrigger = NodePath("Trigger")
+recipes = Dictionary[String, String]({})
+outputPoint = Vector3(0, -0.55, -2.6)
+processTime = 1.5
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(0, 0, -1)])
+blueprintItemID = "blueprint_plate_press"
+flowArrow = 1
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="Ram" parent="Model" index="2"]
+script = ExtResource("3_r")
+offset = Vector3(0, -0.5, 0)
+period = 2.5
+motion = 1
+
+[node name="BeltTop0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 4)
+friction = 0.8
+user_material_id = 5
+tangent_velocity = Vector3(0, 0, -2)
+position = Vector3(0, -0.87, -1)
+
+[node name="BeltReturn0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 4)
+friction = 0.8
+user_material_id = 5
+tangent_velocity = Vector3(0, 0, 2)
+position = Vector3(0, -0.92, -1)
+
+[node name="LipL0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 4)
+friction = 0.1
+user_material_id = 3
+position = Vector3(-0.827, -0.9725, -1)
+
+[node name="LipR0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 4)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0.827, -0.9725, -1)
+
+[node name="InWallL0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 1.3)
+friction = 0.1
+user_material_id = 3
+position = Vector3(-0.895, -0.8, 0.35)
+
+[node name="OutWallL0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 1.3)
+friction = 0.1
+user_material_id = 3
+position = Vector3(-0.895, -0.8, -2.35)
+
+[node name="InWallR0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 1.3)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0.895, -0.8, 0.35)
+
+[node name="OutWallR0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 1.3)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0.895, -0.8, -2.35)
+
+[node name="ColumnL" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.12, 1.96, 1.2)
+user_material_id = 3
+position = Vector3(-0.93, 0, -1)
+
+[node name="BedL" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.05, 0.2, 1.2)
+user_material_id = 3
+position = Vector3(-0.87, -0.9, -1)
+
+[node name="ColumnR" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.12, 1.96, 1.2)
+user_material_id = 3
+position = Vector3(0.93, 0, -1)
+
+[node name="BedR" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.05, 0.2, 1.2)
+user_material_id = 3
+position = Vector3(0.87, -0.9, -1)
+
+[node name="Crown" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.98, 0.46, 1.25)
+user_material_id = 3
+position = Vector3(0, 0.72, -1)
+
+[node name="RamBody" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+position = Vector3(0, -0.15, -1)
+
+[node name="Platen" type="Box3DCollisionShape" parent="RamBody"]
+box_size = Vector3(1.6, 0.16, 1)
+user_material_id = 3
+position = Vector3(0, 0.12, 0)
+
+[node name="Trigger" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(1.5, 0.5, 1)
+is_sensor = true
+collision_layer = 1073741824
+position = Vector3(0, -0.55, -1)

@@ -1,0 +1,133 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://iwtiiq1kan13" path="res://game/assets/models/machines/processing/polisher.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://bbkovbjsnajma" path="res://game/scripts/items/placed/Grinder.cs" id="2_r"]
+[ext_resource type="Script" uid="uid://de6ss1gh7mjqf" path="res://game/scripts/entities/Spinner.cs" id="3_r"]
+
+[node name="Polisher" type="Box3DBody" node_paths=PackedStringArray("hopperTrigger")]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+hopperTrigger = NodePath("Trigger")
+recipes = Dictionary[String, String]({})
+outputPoint = Vector3(0, -0.55, -2.6)
+processTime = 2.5
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, -1), Vector3i(1, 0, -1)])
+blueprintItemID = "blueprint_polisher"
+flowArrow = 1
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="BrushA" parent="Model" index="2"]
+script = ExtResource("3_r")
+axis = Vector3(1, 0, 0)
+speed = 9
+
+[node name="BrushB" parent="Model" index="3"]
+script = ExtResource("3_r")
+axis = Vector3(1, 0, 0)
+speed = -9
+
+[node name="Buffer" parent="Model" index="4"]
+script = ExtResource("3_r")
+axis = Vector3(0, 1, 0)
+speed = 7
+
+[node name="Fan" parent="Model" index="5"]
+script = ExtResource("3_r")
+axis = Vector3(0, 1, 0)
+speed = 12
+
+[node name="BeltTop0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 4)
+friction = 0.8
+user_material_id = 5
+tangent_velocity = Vector3(0, 0, -2)
+position = Vector3(0, -0.87, -1)
+
+[node name="BeltReturn0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 4)
+friction = 0.8
+user_material_id = 5
+tangent_velocity = Vector3(0, 0, 2)
+position = Vector3(0, -0.92, -1)
+
+[node name="LipL0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 4)
+friction = 0.1
+user_material_id = 3
+position = Vector3(-0.827, -0.9725, -1)
+
+[node name="LipR0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 4)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0.827, -0.9725, -1)
+
+[node name="InWallL0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 0.9)
+friction = 0.1
+user_material_id = 3
+position = Vector3(-0.895, -0.8, 0.55)
+
+[node name="OutWallL0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 0.9)
+friction = 0.1
+user_material_id = 3
+position = Vector3(-0.895, -0.8, -2.55)
+
+[node name="InWallR0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 0.9)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0.895, -0.8, 0.55)
+
+[node name="OutWallR0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 0.9)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0.895, -0.8, -2.55)
+
+[node name="TunnelWallR0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 2.2)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0.895, -0.8, -1)
+
+[node name="Window" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.06, 1.6, 2.2)
+user_material_id = 3
+position = Vector3(-0.95, -0.2, -1)
+
+[node name="Roof" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.96, 0.08, 2.2)
+user_material_id = 3
+position = Vector3(0, 0.64, -1)
+
+[node name="Machinery" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.8, 0.9, 3.6)
+user_material_id = 3
+position = Vector3(2, -0.5, -1)
+
+[node name="Motor" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.6, 0.5, 0.9)
+user_material_id = 3
+position = Vector3(1.5, 0.2, -1)
+
+[node name="Extractor" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.8, 0.8, 0.8)
+user_material_id = 3
+position = Vector3(2.4, 0.35, -2.4)
+
+[node name="Tank" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.6, 0.8, 0.6)
+user_material_id = 3
+position = Vector3(2.45, 0.35, -0.1)
+
+[node name="Trigger" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(1.6, 0.5, 2)
+is_sensor = true
+collision_layer = 1073741824
+position = Vector3(0, -0.55, -1)

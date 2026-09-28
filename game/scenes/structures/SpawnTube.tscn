@@ -1,0 +1,97 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://mqu87he7jij6" path="res://game/assets/models/props/spawn_tube.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://cjnb1fn7lniwe" path="res://game/scripts/items/placed/ItemSpawner.cs" id="2_r"]
+[ext_resource type="Script" uid="uid://de6ss1gh7mjqf" path="res://game/scripts/entities/Spinner.cs" id="3_r"]
+
+[node name="SpawnTube" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+itemWeights = Dictionary[String, float]({"test_1x1x1cube": 1.0})
+interval = 2.0
+outputPoint = Vector3(0, 1.8, 0)
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(0, 1, 0)])
+blueprintItemID = ""
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="Rings" parent="Model" index="2"]
+script = ExtResource("3_r")
+axis = Vector3(0, 1, 0)
+speed = 1.5
+
+[node name="Pad" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.3, 1.8, 0.04)
+friction = 0.3
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.10453, 0.99452, 0, -0.99452, -0.10453, 0, -0.74, -0.05)
+
+[node name="CollarBack" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.3, 1.24, 0.1)
+user_material_id = 3
+position = Vector3(0, -0.34, 0.84)
+
+[node name="CollarL" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.1, 1.24, 1.1)
+user_material_id = 3
+position = Vector3(-0.84, -0.34, 0.2)
+
+[node name="CollarR" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.1, 1.24, 1.1)
+user_material_id = 3
+position = Vector3(0.84, -0.34, 0.2)
+
+[node name="Tube0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.66, 0.04, 1.92)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0, 1, 0, 0, 0, -1, -1, 0, 0, 0.8, 1.3, 0)
+
+[node name="Tube1" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.66, 0.04, 1.92)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(-0.70711, 0.70711, 0, 0, 0, -1, -0.70711, -0.70711, 0, 0.56569, 1.3, -0.56569)
+
+[node name="Tube2" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.66, 0.04, 1.92)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, 0, 1.3, -0.8)
+
+[node name="Tube3" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.66, 0.04, 1.92)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(-0.70711, -0.70711, 0, 0, 0, -1, 0.70711, -0.70711, 0, -0.56569, 1.3, -0.56569)
+
+[node name="Tube4" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.66, 0.04, 1.92)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0, -1, 0, 0, 0, -1, 1, 0, 0, -0.8, 1.3, 0)
+
+[node name="Tube5" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.66, 0.04, 1.92)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0.70711, -0.70711, 0, 0, 0, -1, 0.70711, 0.70711, 0, -0.56569, 1.3, 0.56569)
+
+[node name="Tube6" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.66, 0.04, 1.92)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 1.3, 0.8)
+
+[node name="Tube7" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.66, 0.04, 1.92)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0.70711, 0.70711, 0, 0, 0, -1, -0.70711, 0.70711, 0, 0.56569, 1.3, 0.56569)
+
+[node name="Hood" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.8, 0.56, 1.8)
+user_material_id = 3
+position = Vector3(0, 2.64, 0)

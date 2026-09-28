@@ -1,0 +1,145 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://xxver47b1msn" path="res://game/assets/models/chutes/chute_adv_v_turn.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+
+[node name="ChuteAdvVTurn" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+blueprintItemID = "blueprint_chute_adv_v_turn"
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="Outer0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.2)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.9, 0.79)
+
+[node name="Inner0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.2)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.9, -0.79)
+
+[node name="Outer1" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.32346)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.09802, 0.99518, 0, -0.99518, 0.09802, 0, 0.63513, 0.77396)
+
+[node name="Inner1" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.02941)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.09802, 0.99518, 0, -0.99518, 0.09802, 0, 0.78929, -0.79125)
+
+[node name="Outer2" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.32346)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.29028, 0.95694, 0, -0.95694, 0.29028, 0, 0.31173, 0.70963)
+
+[node name="Inner2" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.02941)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.29028, 0.95694, 0, -0.95694, 0.29028, 0, 0.76828, -0.79543)
+
+[node name="Outer3" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.32346)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.4714, 0.88192, 0, -0.88192, 0.4714, 0, 0.00708, 0.58344)
+
+[node name="Inner3" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.02941)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.4714, 0.88192, 0, -0.88192, 0.4714, 0, 0.74849, -0.80363)
+
+[node name="Outer4" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.32346)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.63439, 0.77301, 0, -0.77301, 0.63439, 0, -0.26708, 0.40025)
+
+[node name="Inner4" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.02941)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.63439, 0.77301, 0, -0.77301, 0.63439, 0, 0.73067, -0.81553)
+
+[node name="Outer5" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.32346)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.77301, 0.63439, 0, -0.63439, 0.77301, 0, -0.50025, 0.16708)
+
+[node name="Inner5" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.02941)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.77301, 0.63439, 0, -0.63439, 0.77301, 0, 0.71553, -0.83067)
+
+[node name="Outer6" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.32346)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.88192, 0.4714, 0, -0.4714, 0.88192, 0, -0.68344, -0.10709)
+
+[node name="Inner6" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.02941)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.88192, 0.4714, 0, -0.4714, 0.88192, 0, 0.70363, -0.84849)
+
+[node name="Outer7" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.32346)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.95694, 0.29028, 0, -0.29028, 0.95694, 0, -0.80963, -0.41173)
+
+[node name="Inner7" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.02941)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.95694, 0.29028, 0, -0.29028, 0.95694, 0, 0.69543, -0.86828)
+
+[node name="Outer8" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.32346)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.99518, 0.09802, 0, -0.09802, 0.99518, 0, -0.87396, -0.73513)
+
+[node name="Inner8" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.02941)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.99518, 0.09802, 0, -0.09802, 0.99518, 0, 0.69125, -0.88929)
+
+[node name="Outer9" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.1)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0, -0.89, -0.95)
+
+[node name="Inner9" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.66, 0.08, 0.1)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0, 0.69, -0.95)
+
+[node name="SideL" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 1.98, 1.98)
+friction = 0.1
+user_material_id = 3
+position = Vector3(-0.79, 0, 0)
+
+[node name="SideR" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 1.98, 1.98)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0.79, 0, 0)
