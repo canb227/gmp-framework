@@ -22,6 +22,9 @@ public partial class RotatingRoom : Node3D
     [Export] public float turnSeconds = 4f;
     [Export] public float holdSeconds = 5f;
     [Export] public bool running = true;
+    /// <summary>Spin steadily at <see cref="degreesPerSecond"/> instead of stepping (turntables).</summary>
+    [Export] public bool continuous;
+    [Export] public float degreesPerSecond = 30f;
     /// <summary>Rotate the node's transform directly rather than through the body's angular velocity.</summary>
     [Export] public bool driveTransform;
 
@@ -43,6 +46,12 @@ public partial class RotatingRoom : Node3D
     public override void _PhysicsProcess(double delta)
     {
         if (running) time += delta;
+        if (continuous)
+        {
+            float spinTarget = (float)(time * Mathf.DegToRad(degreesPerSecond) % Mathf.Tau);
+            Drive(spinTarget, running ? Mathf.DegToRad(degreesPerSecond) : 0f);
+            return;
+        }
         double cycle = turnSeconds + holdSeconds;
         long n = (long)(time / cycle);
         float u = (float)(time - n * cycle);
@@ -51,12 +60,17 @@ public partial class RotatingRoom : Node3D
         float t = turning ? u / turnSeconds : 1f;
         float target = (n + t * t * (3f - 2f * t)) * step;               // smoothstep between stops
 
+        Drive(target, turning && running ? step * 6f * t * (1f - t) / turnSeconds : 0f);   // rate: d(smoothstep)/dt
+    }
+
+    /// <summary>Moves the room toward <paramref name="target"/> (radians) turning at <paramref name="rate"/> (rad/s).</summary>
+    void Drive(float target, float rate)
+    {
         if (driveTransform)
         {
             Basis = restBasis * new Basis(localAxis, target);
             return;
         }
-        float rate = turning && running ? step * 6f * t * (1f - t) / turnSeconds : 0f;   // d(smoothstep)/dt
         float error = Mathf.Wrap(target - CurrentAngle(), -Mathf.Pi, Mathf.Pi);
         Vector3 worldAxis = (GlobalBasis * localAxis).Normalized();
         Call("set_angular_velocity", worldAxis * (rate + error * Correction));

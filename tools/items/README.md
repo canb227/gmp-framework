@@ -29,7 +29,7 @@ Fragile shattering (an impact-speed rule), the processing recipes and scrap-ingo
 | Scrap Ball (`scrap_ball`) | 2/5 | sphere r 0.36 | density 3.0, friction 0.9, rolling 0.5, restitution 0.15 | METAL, FERROUS | salvage / Grinder waste | A crushed bale of mixed metal. Lumpy, so it rolls in lurches and bounces off in odd directions. Weakly ferrous. | Unpredictable. It tumbles out of turns and ricochets in hoppers, so give it wide, walled routes. |
 | Scrap Ingot (`scrap_ingot`) | 3/5 | box 0.8×0.3×0.4 | density 6.0, friction 0.55 | METAL, FERROUS | Scrap Ball → Smelter | A cheap mixed-metal ingot. Every one comes out a different weight, depending on what went into the bale. | Recipes want a quality ingot: weigh them on a tipping bucket or counterweight and send the light ones back round. |
 
-## Base resources
+## Base resources (the first ten are the core set; the last five belong to the Puzzle Rooms)
 
 | Item | Difficulty | Shape | Physics | Tags | From | Behaviour | Challenge |
 |---|---|---|---|---|---|---|---|
@@ -43,8 +43,13 @@ Fragile shattering (an impact-speed rule), the processing recipes and scrap-ingo
 | Sulfur (`sulfur`) | 4/5 | sphere r 0.35 | density 2.0, friction 0.6, rolling 0.6 | ROCK, VOLATILE | mined | Brittle yellow crystal. Volatile: a hot item or a voltaic spark sets it off, blasting its neighbours away and destroying it. | One stray hot item can chain-react a whole belt. Route it clear of heaters and charged crystals, and space it out. |
 | Quicksilver (`quicksilver`) | 5/5 | sphere r 0.28 | density 13.0, friction 0.05, rolling 0.0, restitution 0.0 | METAL, LIQUID | tapped | A bead of liquid metal: very heavy, frictionless and it never stops rolling. Two beads that touch merge into one bigger bead, and a hard knock splits it again. | It escapes through every gap and runs down belt slopes. It has to be enclosed end to end, metered by weight and kept apart so beads don't merge. |
 | Voltaic Crystal (`voltaic_crystal`) | 5/5 | box 0.5×0.7×0.5 | density 2.4, friction 0.5 | GLASS, CHARGED | mined | A crystal that holds charge. Two crystals repel, so they won't sit together. It arcs into conductive metal and sparks off volatile items. | It spreads itself out on belts and won't pile into a hopper. Ground it on copper before bulk handling, and never let it near sulfur. |
+| Scree Pebbles (`scree_pebbles`) | 2/5 | sphere r 0.25 | density 2.5, friction 0.5, rolling 0.03, restitution 0.2 | ROCK | mined (Scree Slope) | A clump of water-worn pebbles, half a metre across. It rolls on the gentlest slope and fits through a 0.54 m slot. | Size is its handle: a slot sieve drops it out of a mixed stream. Left alone, it rolls to the lowest point and fills it. |
+| Shale Slab (`shale_slab`) | 2/5 | box 0.9×0.14×0.8 | density 2.7, friction 0.35 | ROCK | mined (Scree Slope) | A flat slab that never rolls. It slides down slopes steeper than about 19 degrees and stops dead on anything shallower. | The slope angle is the sorter: steep chutes keep it moving, gentle terraces park it. Too wide to fall through a sieve. |
+| Slickstone Puck (`slickstone_puck`) | 3/5 | box 0.7×0.16×0.7 | density 3.0, friction 0.03, rolling 0.0 | ROCK, SLIPPERY | mined (Carousel) | A polished stone disc with almost no grip. On a spinning floor it can't hold its place and spirals outward in seconds. | Anything that moves slides out from under it. Ideal for flinging and a pain to stop: it needs walls, not belts. |
+| Burr Seed (`burr_seed`) | 3/5 | sphere r 0.3 | density 0.8, friction 1.6, rolling 1.5 | PLASTIC, STICKY | harvested (Carousel) | A hooked seed pod that grips whatever it lands on. It rides a turntable round and round and never flies off. | The friction twin of the puck: spin separates them, but burrs stay aboard until something scrapes them off. |
+| Ballast Shot (`ballast_shot`) | 4/5 | sphere r 0.35 | density 20.0, friction 0.4, rolling 0.02 | METAL, FERROUS | cast (Scales) | A cast-iron ball of enormous weight. It rolls downhill on the slightest tilt, and its weight is what tips the floor. | Every shot that lands moves the balance point, and the tilt then sends it rolling. Loads must be placed, and pay out, symmetrically. |
 
-## Products (not counted among the 10)
+## Products (not counted among the base resources)
 
 | Item | Difficulty | Shape | Physics | Tags | From | Behaviour | Challenge |
 |---|---|---|---|---|---|---|---|

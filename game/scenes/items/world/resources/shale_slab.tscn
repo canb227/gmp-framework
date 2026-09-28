@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bivv6i5h8p3si"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://ba8hlirck2eho" path="res://game/assets/models/items/shale_slab.glb" id="2_model"]
+
+[node name="shale_slab" type="Box3DBody"]
+shape_type = 0
+box_size = Vector3(0.9, 0.14, 0.8)
+density = 2.7
+friction = 0.35
+script = ExtResource("1_item")
+itemID = "shale_slab"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([4])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

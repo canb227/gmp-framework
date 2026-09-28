@@ -591,11 +591,10 @@ def puzzle_rooms():
     h.stripe(arch, "Threshold", (-40.4, -60), (-40, 60))
     h.label(arch, "WingTitle", (-40.6, 11.2, 0), "PUZZLE ROOMS", size=128, pixel=0.03, billboard=False, yaw=1)
     h.label(arch, "WingSubtitle", (-40.6, 9.9, 0), "whole-room puzzle concepts  -  walk-in proofs of concept", size=64, pixel=0.02, billboard=False, yaw=1)
-    for name, (x, z) in (("Room2", (-80, 30)), ("Room3", (-125, 0))):                # reserved plots
-        g = h.group(name + "Plot", "PuzzleRooms")
-        h.outline(g, name + "Edge", int(x / 2) - 7, int(x / 2) + 6, int(z / 2) - 7, int(z / 2) + 6)
-        h.label(g, name + "Label", (x, 2.0, z), f"{name[:4].upper()} {name[4:]}  -  reserved", size=96, pixel=0.015)
     tumbler(h)
+    carousel(h)
+    scales(h)
+    scree_slope(h)
 
 def tumbler(h):
     RX, RY, RZ = ROOM
@@ -710,6 +709,207 @@ def tumbler(h):
     for name, p, text in (("StartLabel", sp, "SPAWNER"), ("EndLabel", dp, "DEPOSIT")):
         h.node(f'[node name="{name}" type="Label3D" parent="{rb}"]', f"position = Vector3({f(p[0])}, {f(p[1] + 1.4)}, {f(p[2])})",
                "billboard = 1", "pixel_size = 0.01", "font_size = 48", "outline_size = 12", f'text = "{text}"')
+
+# ---------------------------------------------------------------------------- rooms 2-4: shared helpers
+def rblock(h, parent, name, c, size, cols, mat="panel", solid=True, props=()):
+    """Static box with an arbitrary basis (cols = its X, Y, Z axes), centre c, edge lengths size."""
+    name = h.uname(name)
+    if solid:
+        h.node(f'[node name="{name}" type="Box3DBody" parent="{parent}"]', "body_type = 0",
+               f"box_size = Vector3({f(size[0])}, {f(size[1])}, {f(size[2])})", f"transform = {xf(cols, c)}", *props)
+        h.node(f'[node name="Mesh" type="MeshInstance3D" parent="{parent}/{name}"]', f"transform = {xf(IDB, (0, 0, 0), size)}",
+               f'mesh = SubResource("hall_box_{mat}")')
+    else:
+        h.node(f'[node name="{name}" type="MeshInstance3D" parent="{parent}"]', f"transform = {xf(cols, c, size)}", f'mesh = SubResource("hall_box_{mat}")')
+
+def inst(h, parent, name, res, cols, pos, *props):
+    name = h.uname(name)
+    h.node(f'[node name="{name}" parent="{parent}" instance=ExtResource("{h.ext_id(res if res.startswith("res://") else "res://" + res + ".tscn", "PackedScene")}")]',
+           f"transform = {xf(cols, pos)}", *props)
+    return f"{parent}/{name}"
+
+def yaw_cols(deg):
+    a = math.radians(deg)
+    return ((math.cos(a), 0, -math.sin(a)), (0, 1, 0), (math.sin(a), 0, math.cos(a)))
+YAWC = {k: yaw_cols(90 * k) for k in range(4)}
+
+def spawner(h, parent, pos, k, items, interval, out):
+    weights = ", ".join(f'"{i}": 1.0' for i in items)
+    return inst(h, parent, "ItemSpawner", S + "ItemSpawner", YAWC[k], pos, f"itemWeights = Dictionary[String, float]({{{weights}}})",
+                f"interval = {f(interval)}", f"outputPoint = Vector3({f(out[0])}, {f(out[1])}, {f(out[2])})")
+
+def enclosure(h, parent, x0, x1, z0, z1, gap):
+    """Low walls round a room plot with an entry gap (z0..z1 of the gap) in the east wall."""
+    h.wall(parent, "EncN", (x0, z1), (x1, z1), 2.5, t=0.3)
+    h.wall(parent, "EncS", (x0, z0), (x1, z0), 2.5, t=0.3)
+    h.wall(parent, "EncW", (x0, z0), (x0, z1), 2.5, t=0.3)
+    h.wall(parent, "EncE", (x1, z0), (x1, gap[0]), 2.5, t=0.3)
+    h.wall(parent, "EncE", (x1, gap[1]), (x1, z1), 2.5, t=0.3)
+    h.stripe(parent, "Entry", (x1 - 0.3, gap[0]), (x1 + 0.3, gap[1]))
+
+def room_signs(h, parent, x, z, title, story, callouts=()):
+    h.label(parent, "Title", (x + 1.2, 5.2, z), title, size=96, pixel=0.016, billboard=False, yaw=1)
+    h.label(parent, "Story", (x + 1.2, 3.4, z), story, size=28, pixel=0.006, billboard=False, yaw=1, width=11.0, outline=4)
+    for pos, text in callouts:
+        h.label(parent, "Callout", pos, text, size=40, pixel=0.01, color="Color(1, 0.85, 0.35, 1)")
+
+# ---------------------------------------------------------------------------- room 2: the carousel
+CAR = (-80.0, 30.0)
+CAR_R, CAR_WALL, CAR_SPIN = 9.0, 11.2, 40.0
+CAR_EXITS = (90.0, 270.0)
+
+def ring_pos(a, r, y=0.0):
+    t = math.radians(a)
+    return (CAR[0] + r * math.cos(t), y, CAR[1] - r * math.sin(t))
+
+def ring_cols(a):
+    """Basis whose X points outward at angle a (degrees, counter-clockwise from +X seen from above)."""
+    t = math.radians(a)
+    X = (math.cos(t), 0, -math.sin(t))
+    return (X, (0, 1, 0), (math.sin(t), 0, math.cos(t)))
+
+def carousel(h):
+    cx, cz = CAR
+    g = h.group("Carousel", "PuzzleRooms")
+    enclosure(h, g, cx - 16, cx + 16, cz - 16, cz + 16, (cz - 3, cz + 3))
+    # the turntable: a kinematic disc spun by RotatingRoom (continuous), 16 radial planks as its collider
+    body = h.uname("Turntable")
+    h.node(f'[node name="{body}" type="Box3DBody" parent="{g}"]', "body_type = 1", "shape_type = 1", "sphere_radius = 0.05",
+           f"position = Vector3({f(cx)}, 0.6, {f(cz)})", f'script = ExtResource("{h.ext_id("res://game/scripts/entities/RotatingRoom.cs", "Script")}")',
+           "axis = Vector3(0, 1, 0)", "continuous = true", f"degreesPerSecond = {f(CAR_SPIN)}")
+    tb = f"{g}/{body}"
+    h.node(f'[node name="Disc" parent="{tb}" instance=ExtResource("{h.ext_id("res://game/assets/models/machines/rooms/turntable.glb", "PackedScene")}")]')
+    for k in range(16):
+        a = k / 16 * 360
+        c = ring_pos(a, CAR_R / 2, 0.2)
+        h.node(f'[node name="{h.uname("Plank")}" type="Box3DCollisionShape" parent="{tb}"]',
+               f"box_size = Vector3({f(CAR_R)}, 0.4, {f(2 * CAR_R * math.tan(math.pi / 16))})", "friction = 0.9",
+               f"transform = {xf(ring_cols(a), (c[0] - cx, 0.2, c[2] - cz))}")
+    h.block(g, "Pedestal", (cx - 0.8, 0, cz - 0.8), (cx + 0.8, 0.55, cz + 0.8), "frame")
+    # the rim catcher: skirt, conveyor trough running counter-clockwise, outer wall with two exits and dividers
+    rim = h.group("RimCatcher", g)
+    n = 24
+    for k in range(n):
+        a = (k + 0.5) * 360 / n
+        t = math.radians(a)
+        rblock(h, rim, "Skirt", ring_pos(a, 9.25, 0.33), (0.15, 0.45, 2 * math.pi * 9.25 / n + 0.05), ring_cols(a), "frame")
+        tan = (-math.sin(t), 0, -math.cos(t)); out = (math.cos(t), 0, -math.sin(t))
+        tv = tuple(1.5 * tan[i] + 0.3 * out[i] for i in range(3))
+        rblock(h, rim, "Trough", ring_pos(a, 10.2, 0.05), (1.8, 0.1, 2 * math.pi * 10.2 / n + 0.05), ring_cols(a), "hazard" if k % 2 else "frame",
+               props=(f"tangent_velocity = Vector3({f(tv[0])}, {f(tv[1])}, {f(tv[2])})", "friction = 0.8"))
+        if all(abs((a - e + 180) % 360 - 180) > 9 for e in CAR_EXITS):
+            rblock(h, rim, "RimWall", ring_pos(a, CAR_WALL, 0.6), (0.2, 1.2, 2 * math.pi * CAR_WALL / n + 0.1), ring_cols(a), "panel")
+    for e in CAR_EXITS:                                     # dividers just past each exit, so each section drains to its own void
+        rblock(h, rim, "Divider", ring_pos(e + 11, 10.25, 0.5), (1.9, 0.8, 0.15), ring_cols(e + 11), "hazard")
+    inst(h, rim, "ItemVoid", S + "ItemVoid", YAWC[0], (cx - 1, 1, cz - 12.2))                 # exit at 90 degrees
+    inst(h, rim, "ItemVoid", S + "ItemVoid", YAWC[2], (cx + 1, 1, cz + 12.2))                 # exit at 270 degrees
+    # the sweep arm, pylon outside the rim at 200 degrees, blade trailing across the disc
+    a = 200.0
+    t = math.radians(a)
+    phi = math.atan2(math.cos(t), -math.sin(t))
+    p = ring_pos(a, 12.5, 1.0)
+    inst(h, g, "SweepArm", S + "rooms/SweepArm", yaw_cols(math.degrees(phi)), p)
+    # spawner on a gantry, dropping pucks and burrs 3 m off the axis
+    h.block(g, "GantryBeam", (cx - 13.9, 5.8, cz - 0.5), (cx - 2.1, 6.0, cz + 0.5), "frame")
+    h.block(g, "GantryLeg", (cx - 14.4, 0, cz - 0.5), (cx - 13.4, 6.0, cz + 0.5), "frame")
+    spawner(h, g, (cx - 3, 7.0, cz), 0, ["slickstone_puck", "burr_seed"], 2.5, (0, -1.6, 0))
+    room_signs(h, g, cx + 16, cz + 8, "ROOM 2: THE CAROUSEL",
+               "The floor is a 9 m turntable that never stops. Pucks and burrs rain onto it 3 m off the axis. "
+               "Slickstone pucks have almost no grip, so they spiral straight off the edge; hooked burrs cling and ride round and round. "
+               "Spin alone sorts by friction, but only the burrs can be steered: the sweep arm scrapes them off at one point, while pucks fly off anywhere.\n\n"
+               "PUZZLE: the rim catcher conveys everything to two exits. Get pure pucks at one and pure burrs at the other. "
+               "Tools of the trade: spin speed, where things land, arm angle and catcher dividers.\n"
+               "NEW: slickstone puck, burr seed, sweep arm, rim catcher.",
+               callouts=[((cx - 3, 8.8, cz), "Slickstone Puck + Burr Seed"), (ring_pos(200, 12.5, 4.6), "Sweep Arm"),
+                         (ring_pos(90, 13.0, 2.4), "Rim Catcher exit A"), (ring_pos(270, 13.0, 2.4), "Rim Catcher exit B")])
+
+# ---------------------------------------------------------------------------- room 3: the scales
+SCL = (-125.0, 0.0)
+
+def scales(h):
+    cx, cz = SCL
+    g = h.group("Scales", "PuzzleRooms")
+    enclosure(h, g, cx - 17, cx + 17, cz - 12, cz + 12, (cz - 3, cz + 3))
+    # the deck: a dynamic body on a hinge at its centre (Box3DHingeJoint: axis = the joint's local Z = world Z)
+    y = 2.0
+    body = h.uname("BalanceDeck")
+    h.node(f'[node name="{body}" type="Box3DBody" parent="{g}"]', "body_type = 2", "shape_type = 0", "box_size = Vector3(20, 0.4, 8)",
+           "density = 0.3", "friction = 0.6", "angular_damping = 1.5", f"position = Vector3({f(cx)}, {f(y)}, {f(cz)})")
+    db = f"{g}/{body}"
+    h.node(f'[node name="Deck" parent="{db}" instance=ExtResource("{h.ext_id("res://game/assets/models/machines/rooms/balance_floor.glb", "PackedScene")}")]')
+    for sz in (-1, 1):
+        h.node(f'[node name="{h.uname("Rail")}" type="Box3DCollisionShape" parent="{db}"]', "box_size = Vector3(20, 0.3, 0.2)",
+               f"position = Vector3(0, 0.35, {f(sz * 3.9)})")
+    h.node(f'[node name="Sled" parent="{db}" instance=ExtResource("{h.ext_id("res://game/assets/models/machines/rooms/counterweight_sled.glb", "PackedScene")}")]',
+           "position = Vector3(6, 1.2, 0)")
+    h.node(f'[node name="SledShape" type="Box3DCollisionShape" parent="{db}"]', "box_size = Vector3(2, 0.8, 2.6)", "position = Vector3(6, 0.7, 0)")
+    lim = math.radians(10)
+    h.node(f'[node name="Hinge" type="Box3DHingeJoint" parent="{g}"]', f"position = Vector3({f(cx)}, {f(y)}, {f(cz)})",
+           f'body_a = NodePath("../{body}")', "limit_enabled = true", f"lower_limit = {f(-lim)}", f"upper_limit = {f(lim)}")
+    h.block(g, "Fulcrum", (cx - 0.6, 0, cz - 3.0), (cx + 0.6, 1.35, cz + 3.0), "frame")
+    h.stripe(g, "FulcrumMark", (cx - 0.1, cz - 4.5), (cx + 0.1, cz + 4.5))
+    inst(h, g, "TiltGauge", "res://game/assets/models/machines/rooms/tilt_gauge.glb", YAWC[1], (cx, 1.0, cz - 5.6))
+    # voids under each open end
+    for az in (-1, 3):
+        inst(h, g, "ItemVoid", S + "ItemVoid", YAWC[1], (cx - 11.3, 1, az))
+    for az in (-3, 1):
+        inst(h, g, "ItemVoid", S + "ItemVoid", YAWC[3], (cx + 11.3, 1, az))
+    # gantry and spawner over the left third
+    for sz in (-1, 1):
+        h.block(g, "GantryLeg", (cx - 6.5, 0, cz + sz * 4.6 - 0.3), (cx - 5.5, 6.0, cz + sz * 4.6 + 0.3), "frame")
+    h.block(g, "GantryBeam", (cx - 6.5, 5.8, cz - 4.9), (cx - 5.5, 6.0, cz + 4.9), "frame")
+    spawner(h, g, (cx - 6, 7.0, cz), 0, ["ballast_shot"], 6.0, (0, -1.6, 0))
+    room_signs(h, g, cx + 17, cz + 7, "ROOM 3: THE SCALES",
+               "The floor is a 20 m deck balanced on a hinge (it tips up to 10 degrees either way). "
+               "The counterweight sled holds it down on the right; every ballast shot that lands on the left tips it back, "
+               "and a tipped deck sends the shot rolling off whichever end is low, which tips it again.\n\n"
+               "PUZZLE: keep the deck level enough to run a line across it. Your own machines, items in transit and even you weigh on it. "
+               "Load both sides together, shift the sled, or build the rolling on purpose into a timer.\n"
+               "NEW: ballast shot, counterweight sled, tilt gauge. The deck, sled and hinge really move; the sled isn't motorised yet.",
+               callouts=[((cx - 6, 8.8, cz), "Ballast Shot"), ((cx + 6, 3.6, cz), "Counterweight Sled"), ((cx, 3.9, cz - 5.6), "Tilt Gauge")])
+
+# ---------------------------------------------------------------------------- room 4: the scree slope
+SCR = (-125.0, -35.0)
+SLOPE = math.radians(25)
+
+def scree_slope(h):
+    cx, cz = SCR
+    g = h.group("ScreeSlope", "PuzzleRooms")
+    enclosure(h, g, -143, -112, -46, -27, (-36, -30))
+    d = (math.cos(SLOPE), -math.sin(SLOPE), 0); nrm = (math.sin(SLOPE), math.cos(SLOPE), 0)
+    cols = (d, nrm, (0, 0, 1))
+    top = (-137.0, 8.0)
+    L, sieve_len = 13.1, 4.0
+    at = lambda s_, off=0.0, z=-35.0: (top[0] + d[0] * s_ + nrm[0] * off, top[1] + d[1] * s_ + nrm[1] * off, z)
+    la = L - sieve_len
+    rblock(h, g, "Slope", at(la / 2, -0.15), (la, 0.3, 6.0), cols, "floor", props=("friction = 0.5",))
+    for side, zc in (("Low", -38.1), ("High", -31.9)):
+        span = la if side == "Low" else L
+        rblock(h, g, "SlopeWall" + side, at(span / 2, 0.3, zc), (span, 0.9, 0.2), cols, "panel")
+    for s_ in (2.0, 6.0, 10.5):                                # supports
+        px, py, _ = at(s_, -0.3)
+        h.block(g, "Support", (px - 0.3, 0, -37.5), (px + 0.3, py, -36.9), "frame")
+        h.block(g, "Support", (px - 0.3, 0, -33.1), (px + 0.3, py, -32.5), "frame")
+    h.block(g, "TopDeck", (-140.0, 0, -38.0), (-137.0, 8.0, -32.0), "frame")
+    spawner(h, g, (-138.9, 9.0, -35.0), 3, ["scree_pebbles", "shale_slab"], 3.0, (0, -0.3, -2.2))
+    # the slot sieve fills the last 4 m of the slope; its hopper empties out of the low (-z) side onto voids
+    inst(h, g, "SlotSieve", S + "rooms/SlotSieve", on_surface(nrm, d), at(la + 1.0, 0.2, -37.0))
+    inst(h, g, "ItemVoid", S + "ItemVoid", YAWC[0], (-128.0, 1, -39.0))
+    # landing at the foot with the terrace catcher (open end toward -z, over a void)
+    h.block(g, "Landing", (-125.1, 0, -38.0), (-117.0, 1.6, -31.0), "panel")
+    for k in range(5):
+        h.block(g, "Step", (-117.0 + 0.6 * k, 0, -35.0), (-117.0 + 0.6 * (k + 1), 1.6 - 0.3 * (k + 1), -32.0), "panel")
+    inst(h, g, "TerraceCatcher", S + "rooms/TerraceCatcher", YAWC[1], (-124.1, 2.6, -33.0))
+    inst(h, g, "ItemVoid", S + "ItemVoid", YAWC[0], (-124.0, 1, -39.0))
+    room_signs(h, g, -112, -40.5, "ROOM 4: THE SCREE SLOPE",
+               "A 25 degree scree slope fed with a mix of pebble clumps and flat shale slabs. Pebbles roll and slabs slide, both fast. "
+               "At the foot, a slot sieve lets anything under 0.54 m drop through its bars into a side-draining hopper, while slabs skate "
+               "over the top into the padded terrace catcher.\n\n"
+               "PUZZLE: sort the two, and slow them down without jamming. Shale stops on anything shallower than about 19 degrees, "
+               "pebbles never stop, so terraces and slope angles are sorting tools. Every flat step you build collects pebbles until it overflows.\n"
+               "NEW: scree pebbles, shale slab, slot sieve, terrace catcher.",
+               callouts=[((-138.9, 10.8, -35.0), "Scree Pebbles + Shale Slabs"), ((-126.5, 4.8, -35.0), "Slot Sieve"),
+                         ((-124.1, 3.9, -35.0), "Terrace Catcher")])
 
 SUBS = """[sub_resource type="StandardMaterial3D" id="hall_mat_panel"]
 albedo_color = Color(0.78, 0.78, 0.76, 1)

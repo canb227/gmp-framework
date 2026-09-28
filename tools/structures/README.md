@@ -148,3 +148,16 @@ long (world X) axis every 10 s (a 4 s turn, then a 6 s hold). It is driven by `g
   - **Way out:** that end wall has a doorway at the middle of each edge, so whenever the room stops, one of them
     sits at floor level over the static exit landing.
 - Rendering: `ROOM_ANGLE=<degrees> view_hall.py <out.png> <camera>` renders the room turned.
+
+**Rooms 2-4:** built by `place_museum.py`, with the machines from `run.py build rooms`
+(`machines/rooms/source/build_rooms.py`) and their scenes from `scenes_rooms.py`. The resources are in
+`tools/items/gen_items.py`. Every room is fed by a real ItemSpawner and drains into real ItemVoids.
+
+| Room | Feature (real physics) | New resources | New machines |
+|---|---|---|---|
+| 2 The Carousel (-80, 30) | A 9 m kinematic turntable spun continuously by `RotatingRoom` (`continuous`, 40°/s). Items dropped 3 m off the axis separate by friction. | slickstone puck (friction 0.03: spirals off), burr seed (friction 1.6: rides round) | SweepArm (a blade hung 4 cm over the disc scrapes riders off at one point), rim catcher (a trough conveying round to two exits, with dividers) |
+| 3 The Scales (-125, 0) | A 20×8 m dynamic deck on a `Box3DHingeJoint` (±10°). A counterweight sled holds it one way, and ballast dropped on the other end tips it, rolls off and tips it back. | ballast shot (density 20, rolls) | counterweight sled (part of the deck's mass), tilt gauge (visual) |
+| 4 The Scree Slope (-125, -35) | A 25° static slope. Pebbles roll and slabs slide; shale stops below about 19°. | scree pebbles (0.5 m, rolls), shale slab (flat, friction 0.35) | SlotSieve (0.54 m bar slots over a side-draining hopper), TerraceCatcher (a padded trough with a drag floor) |
+
+The hinge joint assumes Box3D hinges about the joint's local Z (here, world Z). If the deck tips the wrong way
+in Godot, rotate the `Hinge` node.

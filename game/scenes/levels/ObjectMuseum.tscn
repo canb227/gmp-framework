@@ -162,6 +162,13 @@
 [ext_resource type="PackedScene" uid="uid://qdoh516uv8xb" path="res://game/assets/models/conveyors_magnetic/conveyor_mag_straight.glb" id="hall_137"]
 [ext_resource type="PackedScene" uid="uid://cjxadvw16m7qe" path="res://game/assets/models/props/spawner.glb" id="hall_138"]
 [ext_resource type="PackedScene" uid="uid://ciueileresd63" path="res://game/assets/models/props/item_void.glb" id="hall_139"]
+[ext_resource type="PackedScene" path="res://game/assets/models/machines/rooms/turntable.glb" id="hall_140"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/rooms/SweepArm.tscn" id="hall_141"]
+[ext_resource type="PackedScene" path="res://game/assets/models/machines/rooms/balance_floor.glb" id="hall_142"]
+[ext_resource type="PackedScene" path="res://game/assets/models/machines/rooms/counterweight_sled.glb" id="hall_143"]
+[ext_resource type="PackedScene" path="res://game/assets/models/machines/rooms/tilt_gauge.glb" id="hall_144"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/rooms/SlotSieve.tscn" id="hall_145"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/rooms/TerraceCatcher.tscn" id="hall_146"]
 [ext_resource type="Texture2D" uid="uid://c1etlsqa07tlx" path="res://game/assets/textures/floor_1/floor_1_diffuseOriginal.png" id="hall_52"]
 [ext_resource type="PackedScene" uid="uid://dlnyuu4mrmp1r" path="res://game/scenes/items/world/resources/copper_ore.tscn" id="rd_copper_ore"]
 [ext_resource type="PackedScene" uid="uid://b4in0pqckrbvy" path="res://game/scenes/items/world/resources/copper_ore_ground.tscn" id="rd_copper_ore_ground"]
@@ -8107,58 +8114,6 @@ font_size = 64
 outline_size = 12
 text = "whole-room puzzle concepts  -  walk-in proofs of concept"
 
-[node name="Room2Plot" type="Node3D" parent="PuzzleRooms"]
-
-[node name="Room2EdgeN" type="MeshInstance3D" parent="PuzzleRooms/Room2Plot"]
-transform = Transform3D(29, 0, 0, 0, 0.01, 0, 0, 0, 0.25, -80, 0.007, 44.375)
-mesh = SubResource("hall_box_hazard")
-
-[node name="Room2EdgeS" type="MeshInstance3D" parent="PuzzleRooms/Room2Plot"]
-transform = Transform3D(29, 0, 0, 0, 0.01, 0, 0, 0, 0.25, -80, 0.007, 15.625)
-mesh = SubResource("hall_box_hazard")
-
-[node name="Room2EdgeW" type="MeshInstance3D" parent="PuzzleRooms/Room2Plot"]
-transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 29, -94.375, 0.007, 30)
-mesh = SubResource("hall_box_hazard")
-
-[node name="Room2EdgeE" type="MeshInstance3D" parent="PuzzleRooms/Room2Plot"]
-transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 29, -65.625, 0.007, 30)
-mesh = SubResource("hall_box_hazard")
-
-[node name="Room2Label" type="Label3D" parent="PuzzleRooms/Room2Plot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80, 2, 30)
-billboard = 1
-pixel_size = 0.015
-font_size = 96
-outline_size = 12
-text = "ROOM 2  -  reserved"
-
-[node name="Room3Plot" type="Node3D" parent="PuzzleRooms"]
-
-[node name="Room3EdgeN" type="MeshInstance3D" parent="PuzzleRooms/Room3Plot"]
-transform = Transform3D(29, 0, 0, 0, 0.01, 0, 0, 0, 0.25, -124, 0.007, 14.375)
-mesh = SubResource("hall_box_hazard")
-
-[node name="Room3EdgeS" type="MeshInstance3D" parent="PuzzleRooms/Room3Plot"]
-transform = Transform3D(29, 0, 0, 0, 0.01, 0, 0, 0, 0.25, -124, 0.007, -14.375)
-mesh = SubResource("hall_box_hazard")
-
-[node name="Room3EdgeW" type="MeshInstance3D" parent="PuzzleRooms/Room3Plot"]
-transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 29, -138.375, 0.007, 0)
-mesh = SubResource("hall_box_hazard")
-
-[node name="Room3EdgeE" type="MeshInstance3D" parent="PuzzleRooms/Room3Plot"]
-transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 29, -109.625, 0.007, 0)
-mesh = SubResource("hall_box_hazard")
-
-[node name="Room3Label" type="Label3D" parent="PuzzleRooms/Room3Plot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -125, 2, 0)
-billboard = 1
-pixel_size = 0.015
-font_size = 96
-outline_size = 12
-text = "ROOM 3  -  reserved"
-
 [node name="Tumbler" type="Node3D" parent="PuzzleRooms"]
 
 [node name="PylonWest" type="Box3DBody" parent="PuzzleRooms/Tumbler"]
@@ -9273,3 +9228,1874 @@ pixel_size = 0.01
 font_size = 48
 outline_size = 12
 text = "DEPOSIT"
+
+[node name="Carousel" type="Node3D" parent="PuzzleRooms"]
+
+[node name="EncN" type="Box3DBody" parent="PuzzleRooms/Carousel"]
+body_type = 0
+box_size = Vector3(32, 2.5, 0.3)
+position = Vector3(-80, 1.25, 46)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/EncN"]
+transform = Transform3D(32, 0, 0, 0, 2.5, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncNCap" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(32.1, 0, 0, 0, 0.15, 0, 0, 0, 0.4, -80, 2.575, 46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNSkirt" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(32.1, 0, 0, 0, 0.3, 0, 0, 0, 0.4, -80, 0.15, 46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -96, 1.25, 46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost2" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -92, 1.25, 46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost3" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -88, 1.25, 46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost4" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -84, 1.25, 46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost5" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -80, 1.25, 46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost6" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -76, 1.25, 46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost7" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -72, 1.25, 46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost8" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -68, 1.25, 46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost9" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -64, 1.25, 46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncS" type="Box3DBody" parent="PuzzleRooms/Carousel"]
+body_type = 0
+box_size = Vector3(32, 2.5, 0.3)
+position = Vector3(-80, 1.25, 14)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/EncS"]
+transform = Transform3D(32, 0, 0, 0, 2.5, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncSCap" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(32.1, 0, 0, 0, 0.15, 0, 0, 0, 0.4, -80, 2.575, 14)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSSkirt" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(32.1, 0, 0, 0, 0.3, 0, 0, 0, 0.4, -80, 0.15, 14)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -96, 1.25, 14)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost2" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -92, 1.25, 14)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost3" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -88, 1.25, 14)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost4" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -84, 1.25, 14)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost5" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -80, 1.25, 14)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost6" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -76, 1.25, 14)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost7" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -72, 1.25, 14)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost8" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -68, 1.25, 14)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost9" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -64, 1.25, 14)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncW" type="Box3DBody" parent="PuzzleRooms/Carousel"]
+body_type = 0
+box_size = Vector3(0.3, 2.5, 32)
+position = Vector3(-96, 1.25, 30)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/EncW"]
+transform = Transform3D(0.3, 0, 0, 0, 2.5, 0, 0, 0, 32, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncWCap" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 32.1, -96, 2.575, 30)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWSkirt" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 32.1, -96, 0.15, 30)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -96, 1.25, 14)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost2" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -96, 1.25, 18)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost3" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -96, 1.25, 22)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost4" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -96, 1.25, 26)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost5" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -96, 1.25, 30)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost6" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -96, 1.25, 34)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost7" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -96, 1.25, 38)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost8" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -96, 1.25, 42)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost9" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -96, 1.25, 46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncE" type="Box3DBody" parent="PuzzleRooms/Carousel"]
+body_type = 0
+box_size = Vector3(0.3, 2.5, 13)
+position = Vector3(-64, 1.25, 20.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/EncE"]
+transform = Transform3D(0.3, 0, 0, 0, 2.5, 0, 0, 0, 13, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncECap" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 13.1, -64, 2.575, 20.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncESkirt" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 13.1, -64, 0.15, 20.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -64, 1.25, 14)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost2" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -64, 1.25, 18.33333)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost3" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -64, 1.25, 22.66667)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost4" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -64, 1.25, 27)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncE2" type="Box3DBody" parent="PuzzleRooms/Carousel"]
+body_type = 0
+box_size = Vector3(0.3, 2.5, 13)
+position = Vector3(-64, 1.25, 39.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/EncE2"]
+transform = Transform3D(0.3, 0, 0, 0, 2.5, 0, 0, 0, 13, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncECap2" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 13.1, -64, 2.575, 39.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncESkirt2" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 13.1, -64, 0.15, 39.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost5" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -64, 1.25, 33)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost6" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -64, 1.25, 37.33333)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost7" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -64, 1.25, 41.66667)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost8" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -64, 1.25, 46)
+mesh = SubResource("hall_box_frame")
+
+[node name="Entry" type="MeshInstance3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0.6, 0, 0, 0, 0.01, 0, 0, 0, 6, -64, 0.007, 30)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Turntable" type="Box3DBody" parent="PuzzleRooms/Carousel"]
+body_type = 1
+shape_type = 1
+sphere_radius = 0.05
+position = Vector3(-80, 0.6, 30)
+script = ExtResource("hall_136")
+axis = Vector3(0, 1, 0)
+continuous = true
+degreesPerSecond = 40
+
+[node name="Disc" parent="PuzzleRooms/Carousel/Turntable" instance=ExtResource("hall_140")]
+
+[node name="Plank" type="Box3DCollisionShape" parent="PuzzleRooms/Carousel/Turntable"]
+box_size = Vector3(9, 0.4, 3.58042)
+friction = 0.9
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0.2, 0)
+
+[node name="Plank2" type="Box3DCollisionShape" parent="PuzzleRooms/Carousel/Turntable"]
+box_size = Vector3(9, 0.4, 3.58042)
+friction = 0.9
+transform = Transform3D(0.92388, 0, 0.38268, 0, 1, 0, -0.38268, 0, 0.92388, 4.15746, 0.2, -1.72208)
+
+[node name="Plank3" type="Box3DCollisionShape" parent="PuzzleRooms/Carousel/Turntable"]
+box_size = Vector3(9, 0.4, 3.58042)
+friction = 0.9
+transform = Transform3D(0.70711, 0, 0.70711, 0, 1, 0, -0.70711, 0, 0.70711, 3.18198, 0.2, -3.18198)
+
+[node name="Plank4" type="Box3DCollisionShape" parent="PuzzleRooms/Carousel/Turntable"]
+box_size = Vector3(9, 0.4, 3.58042)
+friction = 0.9
+transform = Transform3D(0.38268, 0, 0.92388, 0, 1, 0, -0.92388, 0, 0.38268, 1.72208, 0.2, -4.15746)
+
+[node name="Plank5" type="Box3DCollisionShape" parent="PuzzleRooms/Carousel/Turntable"]
+box_size = Vector3(9, 0.4, 3.58042)
+friction = 0.9
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0.2, -4.5)
+
+[node name="Plank6" type="Box3DCollisionShape" parent="PuzzleRooms/Carousel/Turntable"]
+box_size = Vector3(9, 0.4, 3.58042)
+friction = 0.9
+transform = Transform3D(-0.38268, 0, 0.92388, 0, 1, 0, -0.92388, 0, -0.38268, -1.72208, 0.2, -4.15746)
+
+[node name="Plank7" type="Box3DCollisionShape" parent="PuzzleRooms/Carousel/Turntable"]
+box_size = Vector3(9, 0.4, 3.58042)
+friction = 0.9
+transform = Transform3D(-0.70711, 0, 0.70711, 0, 1, 0, -0.70711, 0, -0.70711, -3.18198, 0.2, -3.18198)
+
+[node name="Plank8" type="Box3DCollisionShape" parent="PuzzleRooms/Carousel/Turntable"]
+box_size = Vector3(9, 0.4, 3.58042)
+friction = 0.9
+transform = Transform3D(-0.92388, 0, 0.38268, 0, 1, 0, -0.38268, 0, -0.92388, -4.15746, 0.2, -1.72208)
+
+[node name="Plank9" type="Box3DCollisionShape" parent="PuzzleRooms/Carousel/Turntable"]
+box_size = Vector3(9, 0.4, 3.58042)
+friction = 0.9
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -4.5, 0.2, 0)
+
+[node name="Plank10" type="Box3DCollisionShape" parent="PuzzleRooms/Carousel/Turntable"]
+box_size = Vector3(9, 0.4, 3.58042)
+friction = 0.9
+transform = Transform3D(-0.92388, 0, -0.38268, 0, 1, 0, 0.38268, 0, -0.92388, -4.15746, 0.2, 1.72208)
+
+[node name="Plank11" type="Box3DCollisionShape" parent="PuzzleRooms/Carousel/Turntable"]
+box_size = Vector3(9, 0.4, 3.58042)
+friction = 0.9
+transform = Transform3D(-0.70711, 0, -0.70711, 0, 1, 0, 0.70711, 0, -0.70711, -3.18198, 0.2, 3.18198)
+
+[node name="Plank12" type="Box3DCollisionShape" parent="PuzzleRooms/Carousel/Turntable"]
+box_size = Vector3(9, 0.4, 3.58042)
+friction = 0.9
+transform = Transform3D(-0.38268, 0, -0.92388, 0, 1, 0, 0.92388, 0, -0.38268, -1.72208, 0.2, 4.15746)
+
+[node name="Plank13" type="Box3DCollisionShape" parent="PuzzleRooms/Carousel/Turntable"]
+box_size = Vector3(9, 0.4, 3.58042)
+friction = 0.9
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.2, 4.5)
+
+[node name="Plank14" type="Box3DCollisionShape" parent="PuzzleRooms/Carousel/Turntable"]
+box_size = Vector3(9, 0.4, 3.58042)
+friction = 0.9
+transform = Transform3D(0.38268, 0, -0.92388, 0, 1, 0, 0.92388, 0, 0.38268, 1.72208, 0.2, 4.15746)
+
+[node name="Plank15" type="Box3DCollisionShape" parent="PuzzleRooms/Carousel/Turntable"]
+box_size = Vector3(9, 0.4, 3.58042)
+friction = 0.9
+transform = Transform3D(0.70711, 0, -0.70711, 0, 1, 0, 0.70711, 0, 0.70711, 3.18198, 0.2, 3.18198)
+
+[node name="Plank16" type="Box3DCollisionShape" parent="PuzzleRooms/Carousel/Turntable"]
+box_size = Vector3(9, 0.4, 3.58042)
+friction = 0.9
+transform = Transform3D(0.92388, 0, -0.38268, 0, 1, 0, 0.38268, 0, 0.92388, 4.15746, 0.2, 1.72208)
+
+[node name="Pedestal" type="Box3DBody" parent="PuzzleRooms/Carousel"]
+body_type = 0
+box_size = Vector3(1.6, 0.55, 1.6)
+position = Vector3(-80, 0.275, 30)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/Pedestal"]
+transform = Transform3D(1.6, 0, 0, 0, 0.55, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="RimCatcher" type="Node3D" parent="PuzzleRooms/Carousel"]
+
+[node name="Skirt" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(0.99144, 0, 0.13053, 0, 1, 0, -0.13053, 0, 0.99144, -70.82914, 0.33, 28.79263)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(0.99144, 0, 0.13053, 0, 1, 0, -0.13053, 0, 0.99144, -69.88726, 0.05, 28.66863)
+tangent_velocity = Vector3(0.10164, 0, -1.52633)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="RimWall" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(0.99144, 0, 0.13053, 0, 1, 0, -0.13053, 0, 0.99144, -68.89582, 0.6, 28.53811)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt2" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(0.92388, 0, 0.38268, 0, 1, 0, -0.38268, 0, 0.92388, -71.45411, 0.33, 26.46018)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt2"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough2" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(0.92388, 0, 0.38268, 0, 1, 0, -0.38268, 0, 0.92388, -70.57643, 0.05, 26.09663)
+tangent_velocity = Vector3(-0.29686, 0, -1.50062)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough2"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="RimWall2" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(0.92388, 0, 0.38268, 0, 1, 0, -0.38268, 0, 0.92388, -69.65255, 0.6, 25.71395)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall2"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt3" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(0.79335, 0, 0.60876, 0, 1, 0, -0.60876, 0, 0.79335, -72.66148, 0.33, 24.36896)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt3"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough3" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(0.79335, 0, 0.60876, 0, 1, 0, -0.60876, 0, 0.79335, -71.9078, 0.05, 23.79063)
+tangent_velocity = Vector3(-0.67514, 0, -1.37266)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough3"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="RimWall3" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(0.79335, 0, 0.60876, 0, 1, 0, -0.60876, 0, 0.79335, -71.11444, 0.6, 23.18187)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall3"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt4" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(0.60876, 0, 0.79335, 0, 1, 0, -0.79335, 0, 0.60876, -74.36896, 0.33, 22.66148)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt4"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough4" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(0.60876, 0, 0.79335, 0, 1, 0, -0.79335, 0, 0.60876, -73.79063, 0.05, 21.9078)
+tangent_velocity = Vector3(-1.0074, 0, -1.15115)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough4"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="RimWall4" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(0.60876, 0, 0.79335, 0, 1, 0, -0.79335, 0, 0.60876, -73.18187, 0.6, 21.11444)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall4"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt5" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(0.38268, 0, 0.92388, 0, 1, 0, -0.92388, 0, 0.38268, -76.46018, 0.33, 21.45411)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt5"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough5" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(0.38268, 0, 0.92388, 0, 1, 0, -0.92388, 0, 0.38268, -76.09663, 0.05, 20.57643)
+tangent_velocity = Vector3(-1.27101, 0, -0.85119)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough5"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="RimWall5" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(0.38268, 0, 0.92388, 0, 1, 0, -0.92388, 0, 0.38268, -75.71395, 0.6, 19.65255)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall5"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt6" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(0.13053, 0, 0.99144, 0, 1, 0, -0.99144, 0, 0.13053, -78.79263, 0.33, 20.82914)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt6"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough6" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(0.13053, 0, 0.99144, 0, 1, 0, -0.99144, 0, 0.13053, -78.66863, 0.05, 19.88726)
+tangent_velocity = Vector3(-1.44801, 0, -0.49322)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough6"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Skirt7" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(-0.13053, 0, 0.99144, 0, 1, 0, -0.99144, 0, -0.13053, -81.20737, 0.33, 20.82914)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt7"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough7" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(-0.13053, 0, 0.99144, 0, 1, 0, -0.99144, 0, -0.13053, -81.33137, 0.05, 19.88726)
+tangent_velocity = Vector3(-1.52633, 0, -0.10164)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough7"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Skirt8" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(-0.38268, 0, 0.92388, 0, 1, 0, -0.92388, 0, -0.38268, -83.53982, 0.33, 21.45411)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt8"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough8" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(-0.38268, 0, 0.92388, 0, 1, 0, -0.92388, 0, -0.38268, -83.90337, 0.05, 20.57643)
+tangent_velocity = Vector3(-1.50062, 0, 0.29686)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough8"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="RimWall6" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(-0.38268, 0, 0.92388, 0, 1, 0, -0.92388, 0, -0.38268, -84.28605, 0.6, 19.65255)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall6"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt9" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(-0.60876, 0, 0.79335, 0, 1, 0, -0.79335, 0, -0.60876, -85.63104, 0.33, 22.66148)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt9"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough9" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(-0.60876, 0, 0.79335, 0, 1, 0, -0.79335, 0, -0.60876, -86.20937, 0.05, 21.9078)
+tangent_velocity = Vector3(-1.37266, 0, 0.67514)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough9"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="RimWall7" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(-0.60876, 0, 0.79335, 0, 1, 0, -0.79335, 0, -0.60876, -86.81813, 0.6, 21.11444)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall7"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt10" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(-0.79335, 0, 0.60876, 0, 1, 0, -0.60876, 0, -0.79335, -87.33852, 0.33, 24.36896)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt10"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough10" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(-0.79335, 0, 0.60876, 0, 1, 0, -0.60876, 0, -0.79335, -88.0922, 0.05, 23.79063)
+tangent_velocity = Vector3(-1.15115, 0, 1.0074)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough10"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="RimWall8" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(-0.79335, 0, 0.60876, 0, 1, 0, -0.60876, 0, -0.79335, -88.88556, 0.6, 23.18187)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall8"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt11" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(-0.92388, 0, 0.38268, 0, 1, 0, -0.38268, 0, -0.92388, -88.54589, 0.33, 26.46018)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt11"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough11" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(-0.92388, 0, 0.38268, 0, 1, 0, -0.38268, 0, -0.92388, -89.42357, 0.05, 26.09663)
+tangent_velocity = Vector3(-0.85119, 0, 1.27101)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough11"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="RimWall9" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(-0.92388, 0, 0.38268, 0, 1, 0, -0.38268, 0, -0.92388, -90.34745, 0.6, 25.71395)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall9"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt12" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(-0.99144, 0, 0.13053, 0, 1, 0, -0.13053, 0, -0.99144, -89.17086, 0.33, 28.79263)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt12"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough12" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(-0.99144, 0, 0.13053, 0, 1, 0, -0.13053, 0, -0.99144, -90.11274, 0.05, 28.66863)
+tangent_velocity = Vector3(-0.49322, 0, 1.44801)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough12"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="RimWall10" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(-0.99144, 0, 0.13053, 0, 1, 0, -0.13053, 0, -0.99144, -91.10418, 0.6, 28.53811)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall10"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt13" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(-0.99144, 0, -0.13053, 0, 1, 0, 0.13053, 0, -0.99144, -89.17086, 0.33, 31.20737)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt13"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough13" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(-0.99144, 0, -0.13053, 0, 1, 0, 0.13053, 0, -0.99144, -90.11274, 0.05, 31.33137)
+tangent_velocity = Vector3(-0.10164, 0, 1.52633)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough13"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="RimWall11" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(-0.99144, 0, -0.13053, 0, 1, 0, 0.13053, 0, -0.99144, -91.10418, 0.6, 31.46189)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall11"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt14" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(-0.92388, 0, -0.38268, 0, 1, 0, 0.38268, 0, -0.92388, -88.54589, 0.33, 33.53982)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt14"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough14" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(-0.92388, 0, -0.38268, 0, 1, 0, 0.38268, 0, -0.92388, -89.42357, 0.05, 33.90337)
+tangent_velocity = Vector3(0.29686, 0, 1.50062)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough14"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="RimWall12" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(-0.92388, 0, -0.38268, 0, 1, 0, 0.38268, 0, -0.92388, -90.34745, 0.6, 34.28605)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall12"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt15" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(-0.79335, 0, -0.60876, 0, 1, 0, 0.60876, 0, -0.79335, -87.33852, 0.33, 35.63104)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt15"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough15" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(-0.79335, 0, -0.60876, 0, 1, 0, 0.60876, 0, -0.79335, -88.0922, 0.05, 36.20937)
+tangent_velocity = Vector3(0.67514, 0, 1.37266)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough15"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="RimWall13" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(-0.79335, 0, -0.60876, 0, 1, 0, 0.60876, 0, -0.79335, -88.88556, 0.6, 36.81813)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall13"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt16" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(-0.60876, 0, -0.79335, 0, 1, 0, 0.79335, 0, -0.60876, -85.63104, 0.33, 37.33852)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt16"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough16" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(-0.60876, 0, -0.79335, 0, 1, 0, 0.79335, 0, -0.60876, -86.20937, 0.05, 38.0922)
+tangent_velocity = Vector3(1.0074, 0, 1.15115)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough16"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="RimWall14" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(-0.60876, 0, -0.79335, 0, 1, 0, 0.79335, 0, -0.60876, -86.81813, 0.6, 38.88556)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall14"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt17" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(-0.38268, 0, -0.92388, 0, 1, 0, 0.92388, 0, -0.38268, -83.53982, 0.33, 38.54589)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt17"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough17" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(-0.38268, 0, -0.92388, 0, 1, 0, 0.92388, 0, -0.38268, -83.90337, 0.05, 39.42357)
+tangent_velocity = Vector3(1.27101, 0, 0.85119)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough17"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="RimWall15" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(-0.38268, 0, -0.92388, 0, 1, 0, 0.92388, 0, -0.38268, -84.28605, 0.6, 40.34745)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall15"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt18" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(-0.13053, 0, -0.99144, 0, 1, 0, 0.99144, 0, -0.13053, -81.20737, 0.33, 39.17086)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt18"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough18" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(-0.13053, 0, -0.99144, 0, 1, 0, 0.99144, 0, -0.13053, -81.33137, 0.05, 40.11274)
+tangent_velocity = Vector3(1.44801, 0, 0.49322)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough18"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Skirt19" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(0.13053, 0, -0.99144, 0, 1, 0, 0.99144, 0, 0.13053, -78.79263, 0.33, 39.17086)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt19"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough19" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(0.13053, 0, -0.99144, 0, 1, 0, 0.99144, 0, 0.13053, -78.66863, 0.05, 40.11274)
+tangent_velocity = Vector3(1.52633, 0, 0.10164)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough19"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Skirt20" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(0.38268, 0, -0.92388, 0, 1, 0, 0.92388, 0, 0.38268, -76.46018, 0.33, 38.54589)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt20"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough20" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(0.38268, 0, -0.92388, 0, 1, 0, 0.92388, 0, 0.38268, -76.09663, 0.05, 39.42357)
+tangent_velocity = Vector3(1.50062, 0, -0.29686)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough20"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="RimWall16" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(0.38268, 0, -0.92388, 0, 1, 0, 0.92388, 0, 0.38268, -75.71395, 0.6, 40.34745)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall16"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt21" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(0.60876, 0, -0.79335, 0, 1, 0, 0.79335, 0, 0.60876, -74.36896, 0.33, 37.33852)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt21"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough21" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(0.60876, 0, -0.79335, 0, 1, 0, 0.79335, 0, 0.60876, -73.79063, 0.05, 38.0922)
+tangent_velocity = Vector3(1.37266, 0, -0.67514)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough21"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="RimWall17" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(0.60876, 0, -0.79335, 0, 1, 0, 0.79335, 0, 0.60876, -73.18187, 0.6, 38.88556)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall17"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt22" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(0.79335, 0, -0.60876, 0, 1, 0, 0.60876, 0, 0.79335, -72.66148, 0.33, 35.63104)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt22"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough22" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(0.79335, 0, -0.60876, 0, 1, 0, 0.60876, 0, 0.79335, -71.9078, 0.05, 36.20937)
+tangent_velocity = Vector3(1.15115, 0, -1.0074)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough22"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="RimWall18" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(0.79335, 0, -0.60876, 0, 1, 0, 0.60876, 0, 0.79335, -71.11444, 0.6, 36.81813)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall18"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt23" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(0.92388, 0, -0.38268, 0, 1, 0, 0.38268, 0, 0.92388, -71.45411, 0.33, 33.53982)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt23"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough23" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(0.92388, 0, -0.38268, 0, 1, 0, 0.38268, 0, 0.92388, -70.57643, 0.05, 33.90337)
+tangent_velocity = Vector3(0.85119, 0, -1.27101)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough23"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="RimWall19" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(0.92388, 0, -0.38268, 0, 1, 0, 0.38268, 0, 0.92388, -69.65255, 0.6, 34.28605)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall19"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Skirt24" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.15, 0.45, 2.47164)
+transform = Transform3D(0.99144, 0, -0.13053, 0, 1, 0, 0.13053, 0, 0.99144, -70.82914, 0.33, 31.20737)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Skirt24"]
+transform = Transform3D(0.15, 0, 0, 0, 0.45, 0, 0, 0, 2.47164, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Trough24" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.8, 0.1, 2.72035)
+transform = Transform3D(0.99144, 0, -0.13053, 0, 1, 0, 0.13053, 0, 0.99144, -69.88726, 0.05, 31.33137)
+tangent_velocity = Vector3(0.49322, 0, -1.44801)
+friction = 0.8
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Trough24"]
+transform = Transform3D(1.8, 0, 0, 0, 0.1, 0, 0, 0, 2.72035, 0, 0, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="RimWall20" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(0.2, 1.2, 3.03215)
+transform = Transform3D(0.99144, 0, -0.13053, 0, 1, 0, 0.13053, 0, 0.99144, -68.89582, 0.6, 31.46189)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/RimWall20"]
+transform = Transform3D(0.2, 0, 0, 0, 1.2, 0, 0, 0, 3.03215, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Divider" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.9, 0.8, 0.15)
+transform = Transform3D(-0.19081, 0, 0.98163, 0, 1, 0, -0.98163, 0, -0.19081, -81.95579, 0.5, 19.93832)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Divider"]
+transform = Transform3D(1.9, 0, 0, 0, 0.8, 0, 0, 0, 0.15, 0, 0, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Divider2" type="Box3DBody" parent="PuzzleRooms/Carousel/RimCatcher"]
+body_type = 0
+box_size = Vector3(1.9, 0.8, 0.15)
+transform = Transform3D(0.19081, 0, -0.98163, 0, 1, 0, 0.98163, 0, 0.19081, -78.04421, 0.5, 40.06168)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/RimCatcher/Divider2"]
+transform = Transform3D(1.9, 0, 0, 0, 0.8, 0, 0, 0, 0.15, 0, 0, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="ItemVoid11" parent="PuzzleRooms/Carousel/RimCatcher" instance=ExtResource("hall_47")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -81, 1, 17.8)
+
+[node name="ItemVoid12" parent="PuzzleRooms/Carousel/RimCatcher" instance=ExtResource("hall_47")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -79, 1, 42.2)
+
+[node name="SweepArm" parent="PuzzleRooms/Carousel" instance=ExtResource("hall_141")]
+transform = Transform3D(0.34202, 0, -0.93969, 0, 1, 0, 0.93969, 0, 0.34202, -91.74616, 1, 34.27525)
+
+[node name="GantryBeam" type="Box3DBody" parent="PuzzleRooms/Carousel"]
+body_type = 0
+box_size = Vector3(11.8, 0.2, 1)
+position = Vector3(-88, 5.9, 30)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/GantryBeam"]
+transform = Transform3D(11.8, 0, 0, 0, 0.2, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="GantryLeg" type="Box3DBody" parent="PuzzleRooms/Carousel"]
+body_type = 0
+box_size = Vector3(1, 6, 1)
+position = Vector3(-93.9, 3, 30)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Carousel/GantryLeg"]
+transform = Transform3D(1, 0, 0, 0, 6, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="ItemSpawner5" parent="PuzzleRooms/Carousel" instance=ExtResource("hall_49")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -83, 7, 30)
+itemWeights = Dictionary[String, float]({"slickstone_puck": 1.0, "burr_seed": 1.0})
+interval = 2.5
+outputPoint = Vector3(0, -1.6, 0)
+
+[node name="Title2" type="Label3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -62.8, 5.2, 38)
+double_sided = false
+pixel_size = 0.016
+font_size = 96
+outline_size = 12
+text = "ROOM 2: THE CAROUSEL"
+
+[node name="Story30" type="Label3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -62.8, 3.4, 38)
+double_sided = false
+pixel_size = 0.006
+font_size = 28
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1833.33333
+text = "The floor is a 9 m turntable that never stops. Pucks and burrs rain onto it 3 m off the axis. Slickstone pucks have almost no grip, so they spiral straight off the edge; hooked burrs cling and ride round and round. Spin alone sorts by friction, but only the burrs can be steered: the sweep arm scrapes them off at one point, while pucks fly off anywhere.\n\nPUZZLE: the rim catcher conveys everything to two exits. Get pure pucks at one and pure burrs at the other. Tools of the trade: spin speed, where things land, arm angle and catcher dividers.\nNEW: slickstone puck, burr seed, sweep arm, rim catcher."
+
+[node name="Callout" type="Label3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -83, 8.8, 30)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Slickstone Puck + Burr Seed"
+
+[node name="Callout2" type="Label3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -91.74616, 4.6, 34.27525)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Sweep Arm"
+
+[node name="Callout3" type="Label3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80, 2.4, 17)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Rim Catcher exit A"
+
+[node name="Callout4" type="Label3D" parent="PuzzleRooms/Carousel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80, 2.4, 43)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Rim Catcher exit B"
+
+[node name="Scales" type="Node3D" parent="PuzzleRooms"]
+
+[node name="EncN2" type="Box3DBody" parent="PuzzleRooms/Scales"]
+body_type = 0
+box_size = Vector3(34, 2.5, 0.3)
+position = Vector3(-125, 1.25, 12)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Scales/EncN2"]
+transform = Transform3D(34, 0, 0, 0, 2.5, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncNCap2" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(34.1, 0, 0, 0, 0.15, 0, 0, 0, 0.4, -125, 2.575, 12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNSkirt2" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(34.1, 0, 0, 0, 0.3, 0, 0, 0, 0.4, -125, 0.15, 12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost10" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -142, 1.25, 12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost11" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -137.75, 1.25, 12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost12" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -133.5, 1.25, 12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost13" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -129.25, 1.25, 12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost14" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -125, 1.25, 12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost15" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -120.75, 1.25, 12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost16" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -116.5, 1.25, 12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost17" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -112.25, 1.25, 12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost18" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -108, 1.25, 12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncS2" type="Box3DBody" parent="PuzzleRooms/Scales"]
+body_type = 0
+box_size = Vector3(34, 2.5, 0.3)
+position = Vector3(-125, 1.25, -12)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Scales/EncS2"]
+transform = Transform3D(34, 0, 0, 0, 2.5, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncSCap2" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(34.1, 0, 0, 0, 0.15, 0, 0, 0, 0.4, -125, 2.575, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSSkirt2" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(34.1, 0, 0, 0, 0.3, 0, 0, 0, 0.4, -125, 0.15, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost10" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -142, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost11" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -137.75, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost12" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -133.5, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost13" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -129.25, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost14" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -125, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost15" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -120.75, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost16" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -116.5, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost17" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -112.25, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost18" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -108, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncW2" type="Box3DBody" parent="PuzzleRooms/Scales"]
+body_type = 0
+box_size = Vector3(0.3, 2.5, 24)
+position = Vector3(-142, 1.25, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Scales/EncW2"]
+transform = Transform3D(0.3, 0, 0, 0, 2.5, 0, 0, 0, 24, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncWCap2" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 24.1, -142, 2.575, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWSkirt2" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 24.1, -142, 0.15, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost10" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -142, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost11" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -142, 1.25, -8)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost12" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -142, 1.25, -4)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost13" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -142, 1.25, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost14" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -142, 1.25, 4)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost15" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -142, 1.25, 8)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost16" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -142, 1.25, 12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncE3" type="Box3DBody" parent="PuzzleRooms/Scales"]
+body_type = 0
+box_size = Vector3(0.3, 2.5, 9)
+position = Vector3(-108, 1.25, -7.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Scales/EncE3"]
+transform = Transform3D(0.3, 0, 0, 0, 2.5, 0, 0, 0, 9, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncECap3" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 9.1, -108, 2.575, -7.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncESkirt3" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 9.1, -108, 0.15, -7.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost9" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -108, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost10" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -108, 1.25, -7.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost11" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -108, 1.25, -3)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncE4" type="Box3DBody" parent="PuzzleRooms/Scales"]
+body_type = 0
+box_size = Vector3(0.3, 2.5, 9)
+position = Vector3(-108, 1.25, 7.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Scales/EncE4"]
+transform = Transform3D(0.3, 0, 0, 0, 2.5, 0, 0, 0, 9, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncECap4" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 9.1, -108, 2.575, 7.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncESkirt4" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 9.1, -108, 0.15, 7.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost12" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -108, 1.25, 3)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost13" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -108, 1.25, 7.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost14" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -108, 1.25, 12)
+mesh = SubResource("hall_box_frame")
+
+[node name="Entry2" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.6, 0, 0, 0, 0.01, 0, 0, 0, 6, -108, 0.007, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="BalanceDeck" type="Box3DBody" parent="PuzzleRooms/Scales"]
+body_type = 2
+shape_type = 0
+box_size = Vector3(20, 0.4, 8)
+density = 0.3
+friction = 0.6
+angular_damping = 1.5
+position = Vector3(-125, 2, 0)
+
+[node name="Deck" parent="PuzzleRooms/Scales/BalanceDeck" instance=ExtResource("hall_142")]
+
+[node name="Rail3" type="Box3DCollisionShape" parent="PuzzleRooms/Scales/BalanceDeck"]
+box_size = Vector3(20, 0.3, 0.2)
+position = Vector3(0, 0.35, -3.9)
+
+[node name="Rail4" type="Box3DCollisionShape" parent="PuzzleRooms/Scales/BalanceDeck"]
+box_size = Vector3(20, 0.3, 0.2)
+position = Vector3(0, 0.35, 3.9)
+
+[node name="Sled" parent="PuzzleRooms/Scales/BalanceDeck" instance=ExtResource("hall_143")]
+position = Vector3(6, 1.2, 0)
+
+[node name="SledShape" type="Box3DCollisionShape" parent="PuzzleRooms/Scales/BalanceDeck"]
+box_size = Vector3(2, 0.8, 2.6)
+position = Vector3(6, 0.7, 0)
+
+[node name="Hinge" type="Box3DHingeJoint" parent="PuzzleRooms/Scales"]
+position = Vector3(-125, 2, 0)
+body_a = NodePath("../BalanceDeck")
+limit_enabled = true
+lower_limit = -0.17453
+upper_limit = 0.17453
+
+[node name="Fulcrum" type="Box3DBody" parent="PuzzleRooms/Scales"]
+body_type = 0
+box_size = Vector3(1.2, 1.35, 6)
+position = Vector3(-125, 0.675, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Scales/Fulcrum"]
+transform = Transform3D(1.2, 0, 0, 0, 1.35, 0, 0, 0, 6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="FulcrumMark" type="MeshInstance3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0.2, 0, 0, 0, 0.01, 0, 0, 0, 9, -125, 0.007, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="TiltGauge" parent="PuzzleRooms/Scales" instance=ExtResource("hall_144")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -125, 1, -5.6)
+
+[node name="ItemVoid13" parent="PuzzleRooms/Scales" instance=ExtResource("hall_47")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -136.3, 1, -1)
+
+[node name="ItemVoid14" parent="PuzzleRooms/Scales" instance=ExtResource("hall_47")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -136.3, 1, 3)
+
+[node name="ItemVoid15" parent="PuzzleRooms/Scales" instance=ExtResource("hall_47")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -113.7, 1, -3)
+
+[node name="ItemVoid16" parent="PuzzleRooms/Scales" instance=ExtResource("hall_47")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -113.7, 1, 1)
+
+[node name="GantryLeg2" type="Box3DBody" parent="PuzzleRooms/Scales"]
+body_type = 0
+box_size = Vector3(1, 6, 0.6)
+position = Vector3(-131, 3, -4.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Scales/GantryLeg2"]
+transform = Transform3D(1, 0, 0, 0, 6, 0, 0, 0, 0.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="GantryLeg3" type="Box3DBody" parent="PuzzleRooms/Scales"]
+body_type = 0
+box_size = Vector3(1, 6, 0.6)
+position = Vector3(-131, 3, 4.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Scales/GantryLeg3"]
+transform = Transform3D(1, 0, 0, 0, 6, 0, 0, 0, 0.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="GantryBeam2" type="Box3DBody" parent="PuzzleRooms/Scales"]
+body_type = 0
+box_size = Vector3(1, 0.2, 9.8)
+position = Vector3(-131, 5.9, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/Scales/GantryBeam2"]
+transform = Transform3D(1, 0, 0, 0, 0.2, 0, 0, 0, 9.8, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="ItemSpawner6" parent="PuzzleRooms/Scales" instance=ExtResource("hall_49")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -131, 7, 0)
+itemWeights = Dictionary[String, float]({"ballast_shot": 1.0})
+interval = 6
+outputPoint = Vector3(0, -1.6, 0)
+
+[node name="Title3" type="Label3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -106.8, 5.2, 7)
+double_sided = false
+pixel_size = 0.016
+font_size = 96
+outline_size = 12
+text = "ROOM 3: THE SCALES"
+
+[node name="Story31" type="Label3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -106.8, 3.4, 7)
+double_sided = false
+pixel_size = 0.006
+font_size = 28
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1833.33333
+text = "The floor is a 20 m deck balanced on a hinge (it tips up to 10 degrees either way). The counterweight sled holds it down on the right; every ballast shot that lands on the left tips it back, and a tipped deck sends the shot rolling off whichever end is low, which tips it again.\n\nPUZZLE: keep the deck level enough to run a line across it. Your own machines, items in transit and even you weigh on it. Load both sides together, shift the sled, or build the rolling on purpose into a timer.\nNEW: ballast shot, counterweight sled, tilt gauge. The deck, sled and hinge really move; the sled isn't motorised yet."
+
+[node name="Callout5" type="Label3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -131, 8.8, 0)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Ballast Shot"
+
+[node name="Callout6" type="Label3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -119, 3.6, 0)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Counterweight Sled"
+
+[node name="Callout7" type="Label3D" parent="PuzzleRooms/Scales"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -125, 3.9, -5.6)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Tilt Gauge"
+
+[node name="ScreeSlope" type="Node3D" parent="PuzzleRooms"]
+
+[node name="EncN3" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(31, 2.5, 0.3)
+position = Vector3(-127.5, 1.25, -27)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/EncN3"]
+transform = Transform3D(31, 0, 0, 0, 2.5, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncNCap3" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(31.1, 0, 0, 0, 0.15, 0, 0, 0, 0.4, -127.5, 2.575, -27)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNSkirt3" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(31.1, 0, 0, 0, 0.3, 0, 0, 0, 0.4, -127.5, 0.15, -27)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost19" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -143, 1.25, -27)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost20" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -139.125, 1.25, -27)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost21" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -135.25, 1.25, -27)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost22" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -131.375, 1.25, -27)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost23" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -127.5, 1.25, -27)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost24" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -123.625, 1.25, -27)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost25" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -119.75, 1.25, -27)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost26" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -115.875, 1.25, -27)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost27" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -112, 1.25, -27)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncS3" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(31, 2.5, 0.3)
+position = Vector3(-127.5, 1.25, -46)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/EncS3"]
+transform = Transform3D(31, 0, 0, 0, 2.5, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncSCap3" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(31.1, 0, 0, 0, 0.15, 0, 0, 0, 0.4, -127.5, 2.575, -46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSSkirt3" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(31.1, 0, 0, 0, 0.3, 0, 0, 0, 0.4, -127.5, 0.15, -46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost19" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -143, 1.25, -46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost20" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -139.125, 1.25, -46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost21" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -135.25, 1.25, -46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost22" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -131.375, 1.25, -46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost23" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -127.5, 1.25, -46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost24" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -123.625, 1.25, -46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost25" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -119.75, 1.25, -46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost26" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -115.875, 1.25, -46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost27" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -112, 1.25, -46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncW3" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(0.3, 2.5, 19)
+position = Vector3(-143, 1.25, -36.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/EncW3"]
+transform = Transform3D(0.3, 0, 0, 0, 2.5, 0, 0, 0, 19, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncWCap3" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 19.1, -143, 2.575, -36.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWSkirt3" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 19.1, -143, 0.15, -36.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost17" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -143, 1.25, -46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost18" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -143, 1.25, -42.2)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost19" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -143, 1.25, -38.4)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost20" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -143, 1.25, -34.6)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost21" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -143, 1.25, -30.8)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost22" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -143, 1.25, -27)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncE5" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(0.3, 2.5, 10)
+position = Vector3(-112, 1.25, -41)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/EncE5"]
+transform = Transform3D(0.3, 0, 0, 0, 2.5, 0, 0, 0, 10, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncECap5" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 10.1, -112, 2.575, -41)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncESkirt5" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 10.1, -112, 0.15, -41)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost15" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -112, 1.25, -46)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost16" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -112, 1.25, -41)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost17" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -112, 1.25, -36)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncE6" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(0.3, 2.5, 3)
+position = Vector3(-112, 1.25, -28.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/EncE6"]
+transform = Transform3D(0.3, 0, 0, 0, 2.5, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncECap6" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 3.1, -112, 2.575, -28.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncESkirt6" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 3.1, -112, 0.15, -28.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost18" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -112, 1.25, -30)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost19" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -112, 1.25, -27)
+mesh = SubResource("hall_box_frame")
+
+[node name="Entry3" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0.6, 0, 0, 0, 0.01, 0, 0, 0, 6, -112, 0.007, -33)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Slope" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(9.1, 0.3, 6)
+transform = Transform3D(0.90631, 0.42262, 0, -0.42262, 0.90631, 0, 0, 0, 1, -132.93969, 5.94114, -35)
+friction = 0.5
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/Slope"]
+transform = Transform3D(9.1, 0, 0, 0, 0.3, 0, 0, 0, 6, 0, 0, 0)
+mesh = SubResource("hall_box_floor")
+
+[node name="SlopeWallLow" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(9.1, 0.9, 0.2)
+transform = Transform3D(0.90631, 0.42262, 0, -0.42262, 0.90631, 0, 0, 0, 1, -132.74951, 6.34898, -38.1)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/SlopeWallLow"]
+transform = Transform3D(9.1, 0, 0, 0, 0.9, 0, 0, 0, 0.2, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="SlopeWallHigh" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(13.1, 0.9, 0.2)
+transform = Transform3D(0.90631, 0.42262, 0, -0.42262, 0.90631, 0, 0, 0, 1, -130.9369, 5.50374, -31.9)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/SlopeWallHigh"]
+transform = Transform3D(13.1, 0, 0, 0, 0.9, 0, 0, 0, 0.2, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Support" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(0.6, 6.88287, 0.6)
+position = Vector3(-135.31417, 3.44144, -37.2)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/Support"]
+transform = Transform3D(0.6, 0, 0, 0, 6.88287, 0, 0, 0, 0.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Support2" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(0.6, 6.88287, 0.6)
+position = Vector3(-135.31417, 3.44144, -32.8)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/Support2"]
+transform = Transform3D(0.6, 0, 0, 0, 6.88287, 0, 0, 0, 0.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Support3" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(0.6, 5.1924, 0.6)
+position = Vector3(-131.68894, 2.5962, -37.2)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/Support3"]
+transform = Transform3D(0.6, 0, 0, 0, 5.1924, 0, 0, 0, 0.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Support4" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(0.6, 5.1924, 0.6)
+position = Vector3(-131.68894, 2.5962, -32.8)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/Support4"]
+transform = Transform3D(0.6, 0, 0, 0, 5.1924, 0, 0, 0, 0.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Support5" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(0.6, 3.29062, 0.6)
+position = Vector3(-127.61055, 1.64531, -37.2)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/Support5"]
+transform = Transform3D(0.6, 0, 0, 0, 3.29062, 0, 0, 0, 0.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Support6" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(0.6, 3.29062, 0.6)
+position = Vector3(-127.61055, 1.64531, -32.8)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/Support6"]
+transform = Transform3D(0.6, 0, 0, 0, 3.29062, 0, 0, 0, 0.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TopDeck" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(3, 8, 6)
+position = Vector3(-138.5, 4, -35)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/TopDeck"]
+transform = Transform3D(3, 0, 0, 0, 8, 0, 0, 0, 6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="ItemSpawner7" parent="PuzzleRooms/ScreeSlope" instance=ExtResource("hall_49")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -138.9, 9, -35)
+itemWeights = Dictionary[String, float]({"scree_pebbles": 1.0, "shale_slab": 1.0})
+interval = 3
+outputPoint = Vector3(0, -0.3, -2.2)
+
+[node name="SlotSieve" parent="PuzzleRooms/ScreeSlope" instance=ExtResource("hall_145")]
+transform = Transform3D(0, 0.42262, -0.90631, 0, 0.90631, 0.42262, 1, 0, 0, -127.76177, 3.91282, -37)
+
+[node name="ItemVoid17" parent="PuzzleRooms/ScreeSlope" instance=ExtResource("hall_47")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -128, 1, -39)
+
+[node name="Landing2" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(8.1, 1.6, 7)
+position = Vector3(-121.05, 0.8, -34.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/Landing2"]
+transform = Transform3D(8.1, 0, 0, 0, 1.6, 0, 0, 0, 7, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Step" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(0.6, 1.3, 3)
+position = Vector3(-116.7, 0.65, -33.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/Step"]
+transform = Transform3D(0.6, 0, 0, 0, 1.3, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Step2" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(0.6, 1, 3)
+position = Vector3(-116.1, 0.5, -33.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/Step2"]
+transform = Transform3D(0.6, 0, 0, 0, 1, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Step3" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(0.6, 0.7, 3)
+position = Vector3(-115.5, 0.35, -33.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/Step3"]
+transform = Transform3D(0.6, 0, 0, 0, 0.7, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Step4" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(0.6, 0.4, 3)
+position = Vector3(-114.9, 0.2, -33.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/Step4"]
+transform = Transform3D(0.6, 0, 0, 0, 0.4, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Step5" type="Box3DBody" parent="PuzzleRooms/ScreeSlope"]
+body_type = 0
+box_size = Vector3(0.6, 0.1, 3)
+position = Vector3(-114.3, 0.05, -33.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/ScreeSlope/Step5"]
+transform = Transform3D(0.6, 0, 0, 0, 0.1, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TerraceCatcher" parent="PuzzleRooms/ScreeSlope" instance=ExtResource("hall_146")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -124.1, 2.6, -33)
+
+[node name="ItemVoid18" parent="PuzzleRooms/ScreeSlope" instance=ExtResource("hall_47")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -124, 1, -39)
+
+[node name="Title4" type="Label3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -110.8, 5.2, -40.5)
+double_sided = false
+pixel_size = 0.016
+font_size = 96
+outline_size = 12
+text = "ROOM 4: THE SCREE SLOPE"
+
+[node name="Story32" type="Label3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -110.8, 3.4, -40.5)
+double_sided = false
+pixel_size = 0.006
+font_size = 28
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1833.33333
+text = "A 25 degree scree slope fed with a mix of pebble clumps and flat shale slabs. Pebbles roll and slabs slide, both fast. At the foot, a slot sieve lets anything under 0.54 m drop through its bars into a side-draining hopper, while slabs skate over the top into the padded terrace catcher.\n\nPUZZLE: sort the two, and slow them down without jamming. Shale stops on anything shallower than about 19 degrees, pebbles never stop, so terraces and slope angles are sorting tools. Every flat step you build collects pebbles until it overflows.\nNEW: scree pebbles, shale slab, slot sieve, terrace catcher."
+
+[node name="Callout8" type="Label3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -138.9, 10.8, -35)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Scree Pebbles + Shale Slabs"
+
+[node name="Callout9" type="Label3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -126.5, 4.8, -35)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Slot Sieve"
+
+[node name="Callout10" type="Label3D" parent="PuzzleRooms/ScreeSlope"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -124.1, 3.9, -35)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Terrace Catcher"

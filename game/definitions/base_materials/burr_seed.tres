@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://4kt276j54d6r" path="res://game/assets/icons/items/burr_seed.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://4bppkv6wq8xg" path="res://game/scenes/items/world/resources/burr_seed.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "burr_seed"
+droppedScene = ExtResource("3_scene")
+displayName = "Burr Seed"
+description = "A hooked seed pod that grips whatever it lands on. It rides a turntable round and round and never flies off."
+icon = ExtResource("2_icon")
+maxStackSize = 1

@@ -136,6 +136,27 @@ ITEMS = [
      "Floatstone -> Plate Press",
      "Frozen smoke: the lightest solid in the game. Insulating: nothing hot, cold or charged passes through it.",
      "It flutters off belts like floatstone. Laid under or between items, it's the shield that lets volatile and charged loads travel."),
+    # ------------------------------------------------------------------ puzzle-room resources (Puzzle Rooms wing)
+    ("scree_pebbles", "Scree Pebbles", "base", sphere(0.25), dict(density=2.5, friction=0.5, rolling=0.03, restitution=0.2), [ROCK], 2,
+     "mined (Scree Slope)",
+     "A clump of water-worn pebbles, half a metre across. It rolls on the gentlest slope and fits through a 0.54 m slot.",
+     "Size is its handle: a slot sieve drops it out of a mixed stream. Left alone, it rolls to the lowest point and fills it."),
+    ("shale_slab", "Shale Slab", "base", box(0.9, 0.14, 0.8), dict(density=2.7, friction=0.35), [ROCK], 2,
+     "mined (Scree Slope)",
+     "A flat slab that never rolls. It slides down slopes steeper than about 19 degrees and stops dead on anything shallower.",
+     "The slope angle is the sorter: steep chutes keep it moving, gentle terraces park it. Too wide to fall through a sieve."),
+    ("slickstone_puck", "Slickstone Puck", "base", box(0.7, 0.16, 0.7), dict(density=3.0, friction=0.03, rolling=0.0), [ROCK, SLIPPERY], 3,
+     "mined (Carousel)",
+     "A polished stone disc with almost no grip. On a spinning floor it can't hold its place and spirals outward in seconds.",
+     "Anything that moves slides out from under it. Ideal for flinging and a pain to stop: it needs walls, not belts."),
+    ("burr_seed", "Burr Seed", "base", sphere(0.3), dict(density=0.8, friction=1.6, rolling=1.5), [PLASTIC, STICKY], 3,
+     "harvested (Carousel)",
+     "A hooked seed pod that grips whatever it lands on. It rides a turntable round and round and never flies off.",
+     "The friction twin of the puck: spin separates them, but burrs stay aboard until something scrapes them off."),
+    ("ballast_shot", "Ballast Shot", "base", sphere(0.35), dict(density=20.0, friction=0.4, rolling=0.02), [METAL, FERROUS], 4,
+     "cast (Scales)",
+     "A cast-iron ball of enormous weight. It rolls downhill on the slightest tilt, and its weight is what tips the floor.",
+     "Every shot that lands moves the balance point, and the tilt then sends it rolling. Loads must be placed, and pay out, symmetrically."),
 ]
 
 GROUP_DIRS = {"metals": "metals", "base": "base_materials", "products": "products"}
@@ -198,6 +219,43 @@ def existing_uid(path):
             return head.split('uid="', 1)[1].split('"', 1)[0]
     return None
 
+DOC_HEAD = """# Resources and products
+
+`python3 tools/items/gen_items.py` writes the world scenes, item definitions and imports for these items from the
+`ITEMS` table in `gen_items.py`, which is the source of truth for their physics, tags and museum text. The models
+come from `run.py build items` and the icons from `run.py icons items`. The museum's Materials Wing is built by
+`tools/structures/place_museum.py`.
+
+**Tags:** the new tags (FUEL through FERROUS) are appended to `ItemTags.cs`. `TagInteractions.cs` lists the pair rules they
+are designed for: fuel ignites on HOT, volatile items detonate on HOT or CHARGED, magnets pull FERROUS items,
+sticky items glue and harden when COLD, soluble items dissolve when WET and melt COLD ones, liquid beads merge
+and amalgamate with CONDUCTIVE metal, and charged items repel each other and discharge into conductors. For now
+those rules only log the intended effect (`TAG REACTION`).
+
+**Implemented today:** the physical side is live. That covers shape, density, friction, rolling resistance, restitution, damping and
+gravity scale (e.g. frost's 0.02 friction, quicksilver's density of 13 with zero rolling resistance, floatstone's 0.6 gravity).
+
+Fragile shattering (an impact-speed rule), the processing recipes and scrap-ingot weight variance are designed but not implemented yet.
+
+"""
+
+def write_docs():
+    """tools/items/README.md: the design table, from ITEMS."""
+    tag_names = {v: k for k, v in globals().items() if k.isupper() and isinstance(v, int) and len(k) > 2 and k not in ("ITEMS",)}
+    def shape(sh):
+        k, v = sh
+        return {"box": lambda: "box %s×%s×%s" % v, "sphere": lambda: "sphere r %s" % v, "capsule": lambda: "capsule r %s h %s" % v}[k]()
+    out = [DOC_HEAD.rstrip("\n"), ""]
+    for grp, title in (("metals", "Metals"), ("base", "Base resources (the first ten are the core set; the last five belong to the Puzzle Rooms)"),
+                       ("products", "Products (not counted among the base resources)")):
+        out += [f"## {title}", "", "| Item | Difficulty | Shape | Physics | Tags | From | Behaviour | Challenge |", "|---|---|---|---|---|---|---|---|"]
+        for (iid, name, group, sh, ph, tags, d, src, beh, ch) in ITEMS:
+            if group == grp:
+                phys = ", ".join(f"{k} {v}" for k, v in ph.items())
+                out.append(f"| {name} (`{iid}`) | {d}/5 | {shape(sh)} | {phys} | {', '.join(tag_names[t] for t in tags)} | {src.replace('->', '→')} | {beh} | {ch} |")
+        out.append("")
+    open(os.path.join(REPO, "tools", "items", "README.md"), "w", newline="\n").write("\n".join(out))
+
 def main():
     item_uid, info_uid = script_uid(ITEM_SCRIPT), script_uid(INFO_SCRIPT)
     for (iid, name, group, shape, phys, tags, diff, source, behaviour, challenge) in ITEMS:
@@ -218,6 +276,7 @@ def main():
         desc = behaviour.replace('"', "'")
         open(tpath, "w", newline="\n").write(TRES.format(info_uid=info_uid, info=INFO_SCRIPT, icon_uid=icon_uid(icon), icon=icon,
                                                          scene_uid=suid, scene=sres, id=iid, name=name, desc=desc))
+    write_docs()
     print(f"{len(ITEMS)} items written")
 
 if __name__ == "__main__":

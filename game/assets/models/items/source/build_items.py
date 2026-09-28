@@ -241,6 +241,47 @@ def aerogel(B, coll):
     B.box(Vector((0, 0, 0)), (0.8, 0.8, 0.1), I3, "glass", (0.6, 0.75, 1.0), 0.02)
     B.box(Vector((0, 0, 0)), (0.7, 0.7, 0.06), I3, "cyan", (0.35, 0.5, 0.9), 0.02)
 
+# ---------------------------------------------------------------------------- puzzle-room resources
+def scree(B, coll):
+    """A clump of five water-worn pebbles (Godot sphere r 0.25): rolls freely."""
+    rock(B, Vector((0, 0, 0)), 0.17, 41.0, 2, 0.12, "rock", lambda p, n: jitter((0.48, 0.44, 0.38), 0.15), (1, 1, 0.95))
+    for k in range(4):
+        a = k / 4 * math.tau + 0.4
+        d = Vector((math.cos(a), math.sin(a), random.uniform(-0.3, 0.3))).normalized()
+        rock(B, d * 0.13, random.uniform(0.08, 0.11), 42 + k, 2, 0.12, "rock",
+             lambda p, n: jitter(random.choice([(0.55, 0.5, 0.42), (0.35, 0.33, 0.3), (0.6, 0.45, 0.32)]), 0.1), (1, 1, 1))
+
+def shale(B, coll):
+    """Stacked flat shale leaves (Godot box 0.9, 0.14, 0.8): slides only on steep slopes."""
+    for k, (dz, s) in enumerate(((-0.045, 1.0), (0.0, 0.94), (0.045, 0.86))):
+        rings_ = [quad_ring(random.uniform(-0.02, 0.02), random.uniform(-0.02, 0.02), dz + h, 0.45 * s + random.uniform(-0.02, 0.02),
+                            0.4 * s + random.uniform(-0.02, 0.02)) for h in (-0.022, 0.022)]
+        B.tube_rings(rings_, "rock", jitter((0.22, 0.25, 0.3), 0.12), 0.15, 0.0, cap=True, smooth=False)
+
+def puck(B, coll):
+    """Polished slickstone disc (Godot box 0.7, 0.16, 0.7): almost no friction."""
+    B.cyl(Vector((0, 0, -0.08)), Vector((0, 0, 0.08)), 0.35, 32, "gem", (0.08, 0.1, 0.14), 0.05)
+    ring(B, Vector((0, 0, 0)), (0, 0, 1), 0.35, 0.355, 0.1, 32, "cyan", C_CYAN, 0.02)
+    B.cyl(Vector((0, 0, 0.08)), Vector((0, 0, 0.085)), 0.12, 20, "cyan", C_CYAN, 0.02)
+
+def burr(B, coll):
+    """Hooked seed burr (Godot sphere r 0.3): clings, rides, never rolls."""
+    rock(B, Vector((0, 0, 0)), 0.17, 51.0, 2, 0.1, "rock", lambda p, n: jitter((0.35, 0.28, 0.12), 0.15), (1, 1, 1))
+    for k in range(34):
+        z = 1 - 2 * (k + 0.5) / 34; r = math.sqrt(1 - z * z); a = k * 2.4
+        d = Vector((math.cos(a) * r, math.sin(a) * r, z))
+        prism(B, d * 0.15, d * 0.3, 0.022, 4, 0.6, "rock", jitter((0.5, 0.42, 0.18), 0.1), 0.05)
+
+def ballast(B, coll):
+    """Cast ballast shot (Godot sphere r 0.35): very heavy, rolls on the slightest tilt."""
+    bm = B.bm
+    res = bmesh.ops.create_uvsphere(bm, u_segments=24, v_segments=14, radius=0.35)
+    fs = list({f for v in res["verts"] for f in v.link_faces})
+    for f in fs:
+        f.material_index = MI["metal"]; f.smooth = True
+    B.paint(fs, (0.2, 0.2, 0.22), 0.1, rust=0.3)
+    ring(B, Vector((0, 0, 0)), (0, 0, 1), 0.345, 0.355, 0.05, 24, "panel", C_YELLOW, 0.05)
+
 PIECES_SPEC = [
     ("IronIngot", "iron_ingot", lambda B, c: ingot(B, "steel", C_IRON)),
     ("IronRod", "iron_rod", lambda B, c: rod(B, "steel", C_IRON)),
@@ -268,6 +309,11 @@ PIECES_SPEC = [
     ("Battery", "battery_cell", battery),
     ("MagnetCore", "magnet_core", magnet_core),
     ("Aerogel", "aerogel_tile", aerogel),
+    ("Scree", "scree_pebbles", scree),
+    ("Shale", "shale_slab", shale),
+    ("Puck", "slickstone_puck", puck),
+    ("Burr", "burr_seed", burr),
+    ("Ballast", "ballast_shot", ballast),
 ]
 PIECES = [((lambda n=n, fn=fn: item(n, fn)), f"{file}.glb") for n, file, fn in PIECES_SPEC]
 ICONS = [(f"Item_{n}", f"items/{file}.png", "item", (1.2, 1.3, 0.9)) for n, file, fn in PIECES_SPEC]

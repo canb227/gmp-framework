@@ -18,7 +18,7 @@ FAMILIES = [
     ("magnetic conveyors", scenes_conveyors.magnetic),
 ]
 for _mod, _fams in (("scenes_chutes", ["basic", "advanced"]), ("scenes_machines", ["launchers", "sorting", "fields", "processing", "props"]),
-                    ("scenes_concepts", ["concepts"])):
+                    ("scenes_concepts", ["concepts"]), ("scenes_rooms", ["rooms"])):
     try:
         _m = __import__(_mod)
         FAMILIES += [(f"{_mod.split('_')[1]} {name}", getattr(_m, name)) for name in _fams]
