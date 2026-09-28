@@ -14,11 +14,12 @@ structure's front (-Z) counter-clockwise: 0 faces -Z, 1 faces -X, 2 faces +Z, 3 
 """
 import os, re, sys, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from scenegen import REPO, f, glb_children
+from scenegen import REPO, f, glb_children, ensure_import, script_uid
 
 MUSEUM = os.path.join(REPO, "game", "scenes", "levels", "ObjectMuseum.tscn")
 S = "game/scenes/structures/"
 HALL_I, HALL_K = (20, 67), (-30, 29)            # hall cells (x 40..136, z -60..60)
+LAB_I, LAB_K = (-20, 19), (-46, -31)            # concept lab cells (x -40..40, z -92..-60), south of the museum floor
 FIELD_CELLS = 2                                  # exhibit projectors' fields, kept short inside their bays
 
 YAW = {0: (1, 0, 0, 0, 1, 0, 0, 0, 1), 1: (0, 0, 1, 0, 1, 0, -1, 0, 0),
@@ -50,12 +51,19 @@ def display_name(rel):
                 if name:
                     extra = {"TurnLeft": " (left)", "SlopeDown": " (down)"}
                     return name.group(1) + next((v for k, v in extra.items() if rel.endswith(k)), "")
-    return {"SpawnTube": "Spawn Tube (developer only)", "ItemVoid": "Item Void", "ItemSpawner": "Item Spawner"}.get(
-        os.path.basename(rel), os.path.basename(rel))
+    base = os.path.basename(rel)
+    if base.startswith("Concept"):
+        return re.sub(r"(?<=[a-z])(?=[A-Z])", " ", base[len("Concept"):])
+    return {"SpawnTube": "Spawn Tube (developer only)", "ItemVoid": "Item Void", "ItemSpawner": "Item Spawner"}.get(base, base)
 
 # ---------------------------------------------------------------------------- scene text
 class Hall:
-    def __init__(self):
+    def __init__(self, keep=None):
+        """keep: {res path: (id, ext line)} of hall_ resources already in the museum. They keep their ids, since
+        hand-placed nodes outside the hall may use them."""
+        self.keep = keep or {}
+        self.next_id = max([int(i[5:]) for i, _ in self.keep.values() if i[5:].isdigit()] + [-1]) + 1
+        self.bounds = [(HALL_I, HALL_K), (LAB_I, LAB_K)]
         self.ext, self.ext_ids = [], {}
         self.nodes = []
         self.occupied = {}
@@ -63,11 +71,20 @@ class Hall:
         self.count = 0
 
     def ext_id(self, res, kind="PackedScene"):
+        if res not in self.ext_ids and res in self.keep:
+            self.ext_ids[res], line = self.keep[res]
+            self.ext.append(line)
         if res not in self.ext_ids:
-            i = f"hall_{len(self.ext_ids)}"
+            i = f"hall_{self.next_id}"
+            self.next_id += 1
             uid = None
             if res.endswith(".tscn"):
                 m = re.match(r'\[gd_scene[^\]]*uid="([^"]+)"', open(os.path.join(REPO, res[6:])).read())
+                uid = m.group(1) if m else None
+            elif res.endswith(".cs"):
+                uid = script_uid(res)
+            elif os.path.exists(os.path.join(REPO, res[6:] + ".import")):
+                m = re.search(r'uid="([^"]+)"', open(os.path.join(REPO, res[6:] + ".import")).read())
                 uid = m.group(1) if m else None
             self.ext.append(f'[ext_resource type="{kind}"' + (f' uid="{uid}"' if uid else "") + f' path="{res}" id="{i}"]')
             self.ext_ids[res] = i
@@ -94,7 +111,7 @@ class Hall:
         for c in cells:
             if c in self.occupied:
                 raise ValueError(f"{rel} at {cell}: cell {c} already holds {self.occupied[c]}")
-            if not (HALL_I[0] <= c[0] <= HALL_I[1] and HALL_K[0] <= c[2] <= HALL_K[1] and c[1] >= 0):
+            if not (c[1] >= 0 and any(bi[0] <= c[0] <= bi[1] and bk[0] <= c[2] <= bk[1] for bi, bk in self.bounds)):
                 raise ValueError(f"{rel} at {cell}: cell {c} is outside the hall")
             self.occupied[c] = rel
         name = self.uname(name or os.path.basename(rel))
@@ -170,10 +187,10 @@ class Hall:
         self.stripe(parent, name + "E", (x1 - w, z0), (x1, z1))
 
 # ---------------------------------------------------------------------------- category bays
-def bay(h, name, title, items, yaw, i0, i1, k0, k1, back_wall=None):
+def bay(h, name, title, items, yaw, i0, i1, k0, k1, back_wall=None, root="StructureHall/Bays"):
     """Packs exhibits in rows inside cells i0..i1 x k0..k1, fronts facing out of the bay (yaw), one empty cell
     between neighbours and between rows; signs it and outlines it."""
-    parent = h.group(name, "StructureHall/Bays")
+    parent = h.group(name, root)
     fwd = FWD[yaw]
     front_axis = 0 if fwd[0] else 2
     front_sign = fwd[front_axis]
@@ -338,8 +355,8 @@ def demos(h):
     h.label(p, "TunnelLabel", (94, 7.2, -1), "Floor / Wall / Ceiling magnetic belts")
 
 # ---------------------------------------------------------------------------- the hall
-def hall():
-    h = Hall()
+def hall(keep=None):
+    h = Hall(keep)
     h.node('[node name="StructureHall" type="Node3D" parent="."]')
     h.block("StructureHall", "HallFloor", (40, -1, -60), (136, 0, 60), "floor")
     arch = h.group("Architecture")
@@ -382,6 +399,54 @@ def hall():
     demos(h)
     return h
 
+# ---------------------------------------------------------------------------- the concept lab
+CO = S + "concepts/Concept"
+TOOLS = (("tool_tether", "Tether Gun"), ("tool_tag_painter", "Tag Painter"), ("tool_blueprint_stamp", "Blueprint Stamp"))
+
+def lab():
+    """Proof-of-concept structures and handheld tools, south of the original museum floor, open to it on the north."""
+    h = LAB
+    h.node('[node name="ConceptLab" type="Node3D" parent="."]')
+    h.block("ConceptLab", "LabFloor", (-40, -1, -92), (40, 0, -60), "floor")
+    arch = h.group("Architecture", "ConceptLab")
+    h.wall(arch, "WallSouth", (-40, -92), (40, -92), 8.0)
+    h.wall(arch, "WallWest", (-40, -92), (-40, -60), 8.0)
+    h.wall(arch, "WallEast", (40, -92), (40, -60), 8.0)
+    h.stripe(arch, "Threshold", (-40, -60.4), (40, -60))
+    for x in (-5, 13):                                    # bays: i -19..-4 | -2..5 | 7..18
+        h.wall(arch, "Partition", (x, -92), (x, -78), 4.0, t=0.3)
+    h.label(arch, "LabTitle", (0, 10.2, -91.6), "CONCEPT LAB", size=128, pixel=0.03, billboard=False, yaw=0)
+    h.label(arch, "LabSubtitle", (0, 8.8, -91.6), "proof-of-concept machines and tools  -  visual reference, rough behaviour only",
+            size=64, pixel=0.02, billboard=False, yaw=0)
+    h.group("Bays", "ConceptLab")
+    root = "ConceptLab/Bays"
+    bay(h, "Routing", "TUBES & ROUTING", [CO + n for n in ("TubeStraight", "TubeBend", "TubeJunction", "TubeReceiver",
+        "TippingBucket", "TagGate", "BouncePad", "GravityInverter")], 2, -19, -4, -45, -35, root=root)
+    bay(h, "Elevators", "ELEVATORS", [CO + n for n in ("CounterweightElevator", "ScrewElevator", "PlatformElevator")],
+        2, -2, 5, -45, -35, root=root)
+    bay(h, "Thermal", "THERMAL, LAUNCH & ASSEMBLY", [CO + n for n in ("HeatLamp", "CryoVent", "RailGun", "VortexFunnel", "AssemblyChamber")],
+        2, 7, 18, -45, -35, root=root)
+    # handheld tools: turning slowly on plinths by the entrance
+    tools = h.group("Tools", "ConceptLab")
+    plinth = h.ext_id("res://game/assets/models/props/display_plinth.glb", "PackedScene")
+    spinner = h.ext_id("res://game/scripts/entities/Spinner.cs", "Script")
+    for n, (glb, title) in enumerate(TOOLS):
+        x, z = -6 + 6 * n, -65.5
+        res = f"res://game/assets/models/tools/{glb}.glb"
+        ensure_import(res, "res://game/assets/models/shared/salvage_import.gd")
+        h.node(f'[node name="{h.uname(title.replace(" ", "") + "Plinth")}" parent="{tools}" instance=ExtResource("{plinth}")]',
+               f"transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, {f(x)}, 1, {f(z)})")
+        turn = h.uname(title.replace(" ", ""))
+        h.node(f'[node name="{turn}" type="Node3D" parent="{tools}"]',
+               f"transform = Transform3D(2.2, 0, 0, 0, 2.2, 0, 0, 0, 2.2, {f(x)}, 1.35, {f(z)})",
+               f'script = ExtResource("{spinner}")', "axis = Vector3(0, 1, 0)", "speed = 0.6")
+        h.node(f'[node name="Model" parent="{tools}/{turn}" instance=ExtResource("{h.ext_id(res, "PackedScene")}")]')
+        h.node(f'[node name="AnimationPlayer" parent="{tools}/{turn}/Model"]', 'autoplay = "idle-loop"')
+        h.label(tools, turn + "Label", (x, 2.6, z), title)
+    h.label(tools, "ToolsTitle", (0, 3.6, -65.5), "Handheld tool concepts", size=64, pixel=0.012)
+
+LAB = None
+
 SUBS = """[sub_resource type="StandardMaterial3D" id="hall_mat_panel"]
 albedo_color = Color(0.78, 0.78, 0.76, 1)
 roughness = 0.45
@@ -416,25 +481,38 @@ material = SubResource("hall_mat_floor")
 """
 
 def main():
-    h = hall()
-    floor_tex = h.ext_id("res://game/assets/textures/floor_1/floor_1_diffuseOriginal.png", "Texture2D")
+    global LAB
     txt = open(MUSEUM, encoding="utf-8").read()
-    # remove earlier galleries / halls
+    keep = {m.group(1): (m.group(2), m.group(0)) for m in re.finditer(r'\[ext_resource [^\n]*path="([^"]*)" id="(hall_[^"]*)"\]', txt)}
+    h = hall(keep)
+    LAB = h
+    lab()
+    floor_tex = h.ext_id("res://game/assets/textures/floor_1/floor_1_diffuseOriginal.png", "Texture2D")
+    # remove earlier galleries / halls (new resources go where the old ones were)
+    old = re.search(r'\[ext_resource [^\n]*id="(sg|hall)_[^"]*"\]\n', txt)
+    txt = txt if not old else txt[:old.start()] + "\0HALL_EXT\n" + txt[old.start():]
     txt = re.sub(r'\[ext_resource [^\n]*id="(sg|hall)_[^"]*"\]\n', "", txt)
     txt = re.sub(r'\[sub_resource [^\n]*id="hall_[^"]*"\]\n(?:[^\[\n][^\n]*\n)*\n?', "", txt)
-    for marker in ('\n[node name="StructureGallery"', '\n[node name="StructureHall"'):
+    for marker in ('\n[node name="StructureGallery"', '\n[node name="StructureHall"', '\n[node name="ConceptLab"'):
         cut = txt.find(marker)
         if cut >= 0:
             txt = txt[:cut].rstrip("\n") + "\n"
-    last = [m.end() for m in re.finditer(r"\[ext_resource [^\n]*\]\n", txt)][-1]
-    txt = txt[:last] + "\n".join(h.ext) + "\n" + txt[last:]
+    # hand-placed nodes may still use a hall_ resource the hall no longer needs
+    for res, (i, line) in keep.items():
+        if res not in h.ext_ids and f'ExtResource("{i}")' in txt:
+            h.ext.append(line); h.ext_ids[res] = i
+    if "\0HALL_EXT\n" in txt:
+        txt = txt.replace("\0HALL_EXT\n", "\n".join(h.ext) + "\n")
+    else:
+        last = [m.end() for m in re.finditer(r"\[ext_resource [^\n]*\]\n", txt)][-1]
+        txt = txt[:last] + "\n".join(h.ext) + "\n" + txt[last:]
     first_node = txt.find("\n[node ")
     first_sub = txt.find("\n[sub_resource ")
     at = first_sub if 0 <= first_sub < first_node else first_node
     txt = txt[:at + 1] + SUBS.format(floor_tex=floor_tex) + "\n" + txt[at + 1:]
     txt = txt.rstrip("\n") + "\n\n" + "\n".join(h.nodes).rstrip("\n") + "\n"
     open(MUSEUM, "w", newline="\n").write(txt)
-    print(f"structure hall: {h.count} structures placed, {len(h.occupied)} cells occupied, {len(h.nodes)} lines")
+    print(f"structure hall + concept lab: {h.count} structures placed, {len(h.occupied)} cells occupied, {len(h.nodes)} lines")
 
 if __name__ == "__main__":
     main()

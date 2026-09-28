@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="BlueprintItem" format=3]
 
 [ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_bp"]
-[ext_resource type="Texture2D" uid="uid://yll1uiz9ougp" path="res://game/assets/icons/blueprints/blueprint_conveyor_adv_loader.png" id="2_icon"]
+[ext_resource type="Texture2D" uid="uid://yll1ui1aougp" path="res://game/assets/icons/blueprints/blueprint_conveyor_adv_loader.png" id="2_icon"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/BlueprintGhost.tscn" id="3_ghost"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedLoader.tscn" id="4_struct"]
 

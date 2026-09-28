@@ -1,8 +1,8 @@
 """
-Renders the Structure Hall from ObjectMuseum.tscn (structures, walls, decor and signs) for review without Godot.
+Renders the Structure Hall and Concept Lab from ObjectMuseum.tscn (structures, walls, decor and signs) for review without Godot.
 Needs Blender's Python module (pip install bpy==4.5.14).
 
-    python3 tools/structures/view_hall.py <out.png> [top | cam_x,cam_y,cam_z:target_x,target_y,target_z] (Godot coordinates)
+    python3 tools/structures/view_hall.py <out.png> [top | lab | cam_x,cam_y,cam_z:target_x,target_y,target_z] (Godot coordinates)
 """
 import os, sys, re, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -36,7 +36,7 @@ def main(out, view):
     ext = dict((m.group(2), m.group(1)) for m in re.finditer(r'path="(res://[^"]+)" id="(hall_\d+)"', txt))
     body = txt[txt.find('[node name="StructureHall"'):]
     blocks = re.split(r"\n(?=\[node )", body)
-    frames = {"StructureHall": (Matrix.Identity(3), Vector())}
+    frames = {}
     glb_cache = {}
     for blk in blocks:
         head = blk.split("\n", 1)[0]
@@ -58,14 +58,18 @@ def main(out, view):
         frames[key] = (Mw, ow)
         inst = re.search(r'instance=ExtResource\("(hall_\d+)"\)', head)
         if inst:
-            scene = open(res_to_abs(ext[inst.group(1)])).read()
-            glb = re.search(r'path="(res://[^"]+\.glb)"', scene).group(1)
+            if ext[inst.group(1)].endswith(".glb"):
+                scene, glb = "", ext[inst.group(1)]
+            else:
+                scene = open(res_to_abs(ext[inst.group(1)])).read()
+                glb = re.search(r'path="(res://[^"]+\.glb)"', scene).group(1)
             mt = re.search(r'\[node name="Model"[^\n]*\]\ntransform = (Transform3D\([^)]+\))', scene)
             MM, mo = xf(mt.group(1)) if mt else (Matrix.Identity(3), Vector())
             before = set(sc.objects)
             bpy.ops.import_scene.gltf(filepath=res_to_abs(glb))
             T = to_blender(Mw @ MM, Mw @ mo + ow)
             for ob in [x for x in sc.objects if x not in before]:
+                ob.animation_data_clear()                     # keyframes would pull the parts back to the model origin
                 if ob.parent is None:
                     ob.matrix_world = T @ ob.matrix_world
                 if ob.name.startswith("Field"):
@@ -84,7 +88,11 @@ def main(out, view):
             ob.data.materials.append(mat("LabelMat", (1, 1, 1), 2.0))
             ob.matrix_world = to_blender(Mw, ow) @ Matrix.Rotation(math.pi / 2, 4, 'X')
     cam = bpy.data.objects.new("Cam", bpy.data.cameras.new("Cam")); sc.collection.objects.link(cam); sc.camera = cam
-    if view == "top":
+    if view == "lab":
+        cam.data.type = 'ORTHO'; cam.data.ortho_scale = 84
+        cam.location = G2B @ Vector((0, 120, -76)); cam.rotation_euler = (0, 0, 0)
+        sc.render.resolution_x, sc.render.resolution_y = 1400, 700
+    elif view == "top":
         cam.data.type = 'ORTHO'; cam.data.ortho_scale = 124
         cam.location = G2B @ Vector((88, 120, 0)); cam.rotation_euler = (0, 0, 0)
         sc.render.resolution_x, sc.render.resolution_y = 1000, 1260

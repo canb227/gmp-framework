@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://lm7coe1vyl58" path="res://game/assets/models/machines/sorting/filter_arm.glb" id="1_r"]
 [ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
-[ext_resource type="Script" path="res://game/scripts/entities/Oscillator.cs" id="3_r"]
+[ext_resource type="Script" uid="uid://dtjxqahb6emj7" path="res://game/scripts/entities/Oscillator.cs" id="3_r"]
 
 [node name="FilterArm" type="Box3DBody"]
 body_type = 0

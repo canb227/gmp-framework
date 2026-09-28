@@ -69,3 +69,34 @@ chute tower, catapult, field projectors and a magnetic tunnel. Lines that can ru
 spawn tube in the utilities bay sits on an item void and drops into it.
 
 `python3 tools/structures/view_hall.py <out.png> [top | camera:target]` renders the hall for review.
+
+## Concept Lab
+
+Proof-of-concept pieces for visual reference; their behaviour is at most a rough approximation.
+
+- **Models:** `python3 tools/blender/run.py build concepts` (machines/concepts) and `build tools` (models/tools).
+  Moving parts are keyframed in Blender and exported as one looping clip, `idle-loop`, which the scenes autoplay.
+- **Scenes:** `game/scenes/structures/concepts/Concept*.tscn` come from `scenes_concepts.py`, run by `gen_scenes.py`.
+  They have no blueprints yet.
+
+| Scene | Cells | Animation | Rough behaviour |
+|---|---|---|---|
+| GravityInverter | 1×1×1 | orbiting emitters, field | trigger sensor only |
+| TagGate | 1×1×1 | belt, doors | working belt, scan sensor |
+| BouncePad | 1×1×1 | pad, springs, dial | pad restitution 1.25 |
+| VortexFunnel | 2×2×1 | swirling bowl | bowl pushes items tangentially, so they spiral to the hole |
+| TubeStraight / Bend / Junction / Receiver | 1×1×1 | pulse rings, flap, bellows | tube walls push along the tube at 6 m/s |
+| HeatLamp / CryoVent | 1×1×1 | belt, lamp coil / fan | working belt, zone sensor |
+| CounterweightElevator | 1×1×3 | cages trading places, pulley | static cage floors |
+| ScrewElevator | 1×1×3 | rotating helix | walls lift at 1.5 m/s |
+| PlatformElevator | 1×2×3 | six platforms on a chain loop | none |
+| RailGun | 1×4×1 | sled, charge rings | loader sensor |
+| TippingBucket | 1×1×2 | bucket tipping side to side | static tilted bucket, slides |
+| AssemblyChamber | 3×3×3, centred | floating parts, emitters | chamber sensor |
+
+- **Tools:** tether gun (spinning reel), tag painter (carousel that steps 60°) and blueprint stamp (hologram).
+  Each is a `.glb` only.
+- **In the museum:** `place_museum.py` adds the Concept Lab south of the original museum floor
+  (x -40..40, z -92..-60), open to the museum on the north side. It has three bays (tubes & routing, elevators,
+  thermal/launch/assembly), and the tools turn on plinths by the entrance. `view_hall.py <out.png> lab` renders it.
+- **Resource ids:** existing `hall_` ext resource ids are kept on re-runs, because hand-placed museum nodes use them.

@@ -5,7 +5,9 @@ extends EditorScenePostImport
 ## - Albedo lives in the vertex colours, as in the conveyor, prop and level exports.
 ## - "M_ConvBelt" becomes the shared scrolling belt material (set the "belt_speed" instance shader parameter).
 ## - "M_PropGlass" becomes see-through cyan-tinted glass.
-## - "M_FieldAntigrav" / "M_FieldZeroPoint" become additive ForceField shells (violet / cyan), no shadows.
+## - "M_FieldAntigrav" / "M_FieldZeroPoint" / "M_FieldHeat" / "M_FieldCold" become additive ForceField shells
+##   (violet / cyan / orange / ice blue), no shadows.
+## - Models with keyframed motion carry one looping clip, "idle-loop" (the scenes autoplay it).
 
 const BELT_MATERIAL := preload("res://game/assets/materials/conveyor_belt.tres")
 const FIELD_SHADER := preload("res://game/assets/shaders/ForceField.gdshader")
@@ -33,6 +35,12 @@ func _walk(n: Node) -> void:
 					mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 				"M_FieldZeroPoint":
 					mesh.surface_set_material(s, _field(Color(0.3, 0.9, 1.0), 0.8))
+					mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				"M_FieldHeat":
+					mesh.surface_set_material(s, _field(Color(1.0, 0.45, 0.1), -0.6))
+					mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				"M_FieldCold":
+					mesh.surface_set_material(s, _field(Color(0.6, 0.85, 1.0), 0.4))
 					mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 				_:
 					if mat is StandardMaterial3D:

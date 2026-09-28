@@ -1,0 +1,54 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://18b1zb5u50bc" path="res://game/assets/models/machines/concepts/concept_assembly_chamber.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+
+[node name="ConceptAssemblyChamber" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+cellOffsets = Array[Vector3i]([Vector3i(-1, 0, -1), Vector3i(0, 0, -1), Vector3i(1, 0, -1), Vector3i(-1, 0, 0), Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(-1, 0, 1), Vector3i(0, 0, 1), Vector3i(1, 0, 1), Vector3i(-1, 1, -1), Vector3i(0, 1, -1), Vector3i(1, 1, -1), Vector3i(-1, 1, 0), Vector3i(0, 1, 0), Vector3i(1, 1, 0), Vector3i(-1, 1, 1), Vector3i(0, 1, 1), Vector3i(1, 1, 1), Vector3i(-1, 2, -1), Vector3i(0, 2, -1), Vector3i(1, 2, -1), Vector3i(-1, 2, 0), Vector3i(0, 2, 0), Vector3i(1, 2, 0), Vector3i(-1, 2, 1), Vector3i(0, 2, 1), Vector3i(1, 2, 1)])
+blueprintItemID = ""
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="AnimationPlayer" parent="Model"]
+autoplay = "idle-loop"
+
+[node name="Floor" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(5.9, 0.06, 5.9)
+user_material_id = 3
+position = Vector3(0, -0.97, 0)
+
+[node name="Roof" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(5.9, 0.1, 5.9)
+user_material_id = 3
+position = Vector3(0, 4.9, 0)
+
+[node name="WallXL" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.14, 5.8, 5.9)
+user_material_id = 3
+position = Vector3(-2.9, 1.95, 0)
+
+[node name="WallYB" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(5.62, 5.8, 0.14)
+user_material_id = 3
+position = Vector3(0, 1.95, 2.9)
+
+[node name="WallXR" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.14, 5.8, 5.9)
+user_material_id = 3
+position = Vector3(2.9, 1.95, 0)
+
+[node name="WallYF" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(5.62, 5.8, 0.14)
+user_material_id = 3
+position = Vector3(0, 1.95, -2.9)
+
+[node name="Chamber" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(5.4, 5.6, 5.4)
+is_sensor = true
+collision_layer = 1073741824
+position = Vector3(0, 1.95, 0)

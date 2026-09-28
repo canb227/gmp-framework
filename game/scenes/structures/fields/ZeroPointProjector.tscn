@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" uid="uid://v0amhgzm1ufo" path="res://game/assets/models/machines/fields/zeropoint_projector.glb" id="1_r"]
+[ext_resource type="PackedScene" uid="uid://v0amhg0m1ufo" path="res://game/assets/models/machines/fields/zeropoint_projector.glb" id="1_r"]
 [ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
 [ext_resource type="Script" uid="uid://de6ss1gh7mjqf" path="res://game/scripts/entities/Spinner.cs" id="3_r"]
 

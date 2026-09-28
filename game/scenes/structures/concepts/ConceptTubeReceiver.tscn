@@ -1,0 +1,99 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://bjebjg2xrkvsb" path="res://game/assets/models/machines/concepts/concept_tube_receiver.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+
+[node name="ConceptTubeReceiver" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+blueprintItemID = ""
+flowArrow = 1
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="AnimationPlayer" parent="Model"]
+autoplay = "idle-loop"
+
+[node name="Wall0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.7, 0.61647, 0.05)
+friction = 0.05
+user_material_id = 3
+tangent_velocity = Vector3(0, 0, -6)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.75, 0, 0.6)
+
+[node name="Wall1" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.7, 0.61647, 0.05)
+friction = 0.05
+user_material_id = 3
+tangent_velocity = Vector3(0, 0, -6)
+transform = Transform3D(0, -0.70711, 0.70711, 0, 0.70711, 0.70711, -1, 0, 0, 0.53033, 0.53033, 0.6)
+
+[node name="Wall2" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.7, 0.61647, 0.05)
+friction = 0.05
+user_material_id = 3
+tangent_velocity = Vector3(0, 0, -6)
+transform = Transform3D(0, -1, 0, 0, 0, 1, -1, 0, 0, 0, 0.75, 0.6)
+
+[node name="Wall3" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.7, 0.61647, 0.05)
+friction = 0.05
+user_material_id = 3
+tangent_velocity = Vector3(0, 0, -6)
+transform = Transform3D(0, -0.70711, -0.70711, 0, -0.70711, 0.70711, -1, 0, 0, -0.53033, 0.53033, 0.6)
+
+[node name="Wall4" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.7, 0.61647, 0.05)
+friction = 0.05
+user_material_id = 3
+tangent_velocity = Vector3(0, 0, -6)
+transform = Transform3D(0, 0, -1, 0, -1, 0, -1, 0, 0, -0.75, 0, 0.6)
+
+[node name="Wall5" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.7, 0.61647, 0.05)
+friction = 0.05
+user_material_id = 3
+tangent_velocity = Vector3(0, 0, -6)
+transform = Transform3D(0, 0.70711, -0.70711, 0, -0.70711, -0.70711, -1, 0, 0, -0.53033, -0.53033, 0.6)
+
+[node name="Wall6" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.7, 0.61647, 0.05)
+friction = 0.05
+user_material_id = 3
+tangent_velocity = Vector3(0, 0, -6)
+transform = Transform3D(0, 1, 0, 0, 0, -1, -1, 0, 0, 0, -0.75, 0.6)
+
+[node name="Wall7" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.7, 0.61647, 0.05)
+friction = 0.05
+user_material_id = 3
+tangent_velocity = Vector3(0, 0, -6)
+transform = Transform3D(0, 0.70711, 0.70711, 0, 0.70711, -0.70711, -1, 0, 0, 0.53033, -0.53033, 0.6)
+
+[node name="SideL" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.05, 1.9, 0.7)
+user_material_id = 3
+position = Vector3(-0.88, -0.025, -0.1)
+
+[node name="SideR" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.05, 1.9, 0.7)
+user_material_id = 3
+position = Vector3(0.88, -0.025, -0.1)
+
+[node name="Roof" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.8, 0.05, 0.7)
+user_material_id = 3
+position = Vector3(0, 0.9, -0.1)
+
+[node name="Back" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.8, 0.7, 0.05)
+user_material_id = 3
+position = Vector3(0, 0.55, 0.23)
+
+[node name="Slide" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.4, 1.3, 0.04)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.20791, 0.97815, 0, -0.97815, -0.20791, 0, -0.74, -0.32)

@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" uid="uid://uod1s5ehvpz7" path="res://game/assets/models/machines/launchers/catapult.glb" id="1_r"]
+[ext_resource type="PackedScene" uid="uid://uod1s5ehvp07" path="res://game/assets/models/machines/launchers/catapult.glb" id="1_r"]
 [ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
 
 [node name="Catapult" type="Box3DBody"]

@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" uid="uid://uszwwyzbdj7j" path="res://game/assets/models/chutes/chute_v_turn.glb" id="1_r"]
+[ext_resource type="PackedScene" uid="uid://us0wwy0bdj7j" path="res://game/assets/models/chutes/chute_v_turn.glb" id="1_r"]
 [ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
 
 [node name="ChuteVTurn" type="Box3DBody"]

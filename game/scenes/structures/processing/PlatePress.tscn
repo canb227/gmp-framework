@@ -1,8 +1,8 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" uid="uid://p5ylsz5sxvbj" path="res://game/assets/models/machines/processing/plate_press.glb" id="1_r"]
+[ext_resource type="PackedScene" uid="uid://p5yls05sxvbj" path="res://game/assets/models/machines/processing/plate_press.glb" id="1_r"]
 [ext_resource type="Script" uid="uid://bbkovbjsnajma" path="res://game/scripts/items/placed/Grinder.cs" id="2_r"]
-[ext_resource type="Script" path="res://game/scripts/entities/Oscillator.cs" id="3_r"]
+[ext_resource type="Script" uid="uid://dtjxqahb6emj7" path="res://game/scripts/entities/Oscillator.cs" id="3_r"]
 
 [node name="PlatePress" type="Box3DBody" node_paths=PackedStringArray("hopperTrigger")]
 body_type = 0

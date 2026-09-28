@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" uid="uid://or3tn89n8h52" path="res://game/assets/models/machines/sorting/filter_basic.glb" id="1_r"]
+[ext_resource type="PackedScene" uid="uid://or3toaan8h52" path="res://game/assets/models/machines/sorting/filter_basic.glb" id="1_r"]
 [ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
 
 [node name="FilterBasic" type="Box3DBody"]
