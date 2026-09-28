@@ -57,10 +57,15 @@ Behaviour still to write: the switch, dropper doors, filter, arm, launchers, fie
 magnetic hold have their trigger sensors, sub-bodies and nodes in place but no scripts yet; the processing
 machines and smelter work through Grinder.cs with empty recipe tables until ingot / plate / rod items exist.
 
-## Object Museum gallery
+## Object Museum: Structure Hall
 
-`python3 tools/structures/place_museum.py` (re-runnable) places one of every new structure in
-`ObjectMuseum.tscn` under `StructureGallery`, each with a floating name tag, grid-aligned and facing the middle
-of the museum: the conveyor family along the north end, chutes along the south end, machines down the east
-side. The spawn tube feeds an item void so its test cubes don't pile up; the gallery's field projectors are
-shortened to 2-cell fields so they stay clear of the display alcoves.
+`python3 tools/structures/place_museum.py` (re-runnable) builds the Structure Hall onto `ObjectMuseum.tscn`: a
+new walled floor east of the original museum (x 40..136, z -60..60) entered through a wide gap in its west
+wall. One of every new structure stands in signed category bays (north: conveyors, magnetic conveyors,
+launchers; south: chutes, powered chutes; east: sorting, fields, processing, utilities), each exhibit with a
+name tag. The middle holds demo production lines: smelting & plates, sorted rods, launch & catch, cannon &
+chute tower, catapult, field projectors and a magnetic tunnel. Lines that can run with today's behaviour
+(conveyors, Grinder-based machines, the ramp) have slow item spawners; the rest are static displays. The
+spawn tube in the utilities bay sits on an item void and drops into it.
+
+`python3 tools/structures/view_hall.py <out.png> [top | camera:target]` renders the hall for review.

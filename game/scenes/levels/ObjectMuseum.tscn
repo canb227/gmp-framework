@@ -44,55 +44,91 @@
 [ext_resource type="PackedScene" uid="uid://bu7yxskeusnvj" path="res://game/assets/models/props/display_plinth.glb" id="sh_plinth"]
 [ext_resource type="Script" uid="uid://de6ss1gh7mjqf" path="res://game/scripts/entities/Spinner.cs" id="sh_spinner"]
 [ext_resource type="PackedScene" path="res://game/scenes/entities/Lever.tscn" id="sp_lever"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorSplitter.tscn" id="sg_0"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorSplitterSwitch.tscn" id="sg_1"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorLoader.tscn" id="sg_2"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvanced.tscn" id="sg_3"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedTurnRight.tscn" id="sg_4"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedTurnLeft.tscn" id="sg_5"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedSlope.tscn" id="sg_6"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedSlopeDown.tscn" id="sg_7"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedLoader.tscn" id="sg_8"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagnetic.tscn" id="sg_9"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticTurnRight.tscn" id="sg_10"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticTurnLeft.tscn" id="sg_11"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticWall.tscn" id="sg_12"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticWallTurnRight.tscn" id="sg_13"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticWallTurnLeft.tscn" id="sg_14"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticCeiling.tscn" id="sg_15"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticCeilingTurnRight.tscn" id="sg_16"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticCeilingTurnLeft.tscn" id="sg_17"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHStraight.tscn" id="sg_18"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHTurnRight.tscn" id="sg_19"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHTurnLeft.tscn" id="sg_20"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteVStraight.tscn" id="sg_21"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteVTurn.tscn" id="sg_22"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHopperUp.tscn" id="sg_23"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteDropperDown.tscn" id="sg_24"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHopper2x2.tscn" id="sg_25"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHStraight.tscn" id="sg_26"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHTurnRight.tscn" id="sg_27"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHTurnLeft.tscn" id="sg_28"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvVStraight.tscn" id="sg_29"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvVTurn.tscn" id="sg_30"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHopperUp.tscn" id="sg_31"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvDropperDown.tscn" id="sg_32"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHopper2x2.tscn" id="sg_33"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/launchers/LaunchRamp.tscn" id="sg_34"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/launchers/Cannon.tscn" id="sg_35"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/launchers/Catapult.tscn" id="sg_36"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/sorting/FilterBasic.tscn" id="sg_37"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/sorting/FilterArm.tscn" id="sg_38"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/fields/AntigravProjector.tscn" id="sg_39"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/fields/ZeroPointProjector.tscn" id="sg_40"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/processing/PlatePress.tscn" id="sg_41"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/processing/RodExtruder.tscn" id="sg_42"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/processing/Polisher.tscn" id="sg_43"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/Smelter.tscn" id="sg_44"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/SpawnTube.tscn" id="sg_45"]
-[ext_resource type="PackedScene" uid="uid://bywvnipt62y5r" path="res://game/scenes/structures/ItemVoid.tscn" id="sg_46"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHopper3x3.tscn" id="sg_47"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHopper3x3.tscn" id="sg_48"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorSplitter.tscn" id="hall_0"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorSplitterSwitch.tscn" id="hall_1"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorLoader.tscn" id="hall_2"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvanced.tscn" id="hall_3"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedTurnRight.tscn" id="hall_4"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedTurnLeft.tscn" id="hall_5"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedSlope.tscn" id="hall_6"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedSlopeDown.tscn" id="hall_7"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedLoader.tscn" id="hall_8"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagnetic.tscn" id="hall_9"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticTurnRight.tscn" id="hall_10"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticTurnLeft.tscn" id="hall_11"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticWall.tscn" id="hall_12"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticWallTurnRight.tscn" id="hall_13"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticWallTurnLeft.tscn" id="hall_14"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticCeiling.tscn" id="hall_15"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticCeilingTurnRight.tscn" id="hall_16"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticCeilingTurnLeft.tscn" id="hall_17"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/launchers/LaunchRamp.tscn" id="hall_18"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/launchers/Cannon.tscn" id="hall_19"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/launchers/Catapult.tscn" id="hall_20"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHStraight.tscn" id="hall_21"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHTurnRight.tscn" id="hall_22"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHTurnLeft.tscn" id="hall_23"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteVStraight.tscn" id="hall_24"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteVTurn.tscn" id="hall_25"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHopperUp.tscn" id="hall_26"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteDropperDown.tscn" id="hall_27"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHopper2x2.tscn" id="hall_28"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHopper3x3.tscn" id="hall_29"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHStraight.tscn" id="hall_30"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHTurnRight.tscn" id="hall_31"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHTurnLeft.tscn" id="hall_32"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvVStraight.tscn" id="hall_33"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvVTurn.tscn" id="hall_34"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHopperUp.tscn" id="hall_35"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvDropperDown.tscn" id="hall_36"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHopper2x2.tscn" id="hall_37"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHopper3x3.tscn" id="hall_38"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/sorting/FilterBasic.tscn" id="hall_39"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/sorting/FilterArm.tscn" id="hall_40"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/fields/AntigravProjector.tscn" id="hall_41"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/fields/ZeroPointProjector.tscn" id="hall_42"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/processing/PlatePress.tscn" id="hall_43"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/processing/RodExtruder.tscn" id="hall_44"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/processing/Polisher.tscn" id="hall_45"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/Smelter.tscn" id="hall_46"]
+[ext_resource type="PackedScene" uid="uid://bywvnipt62y5r" path="res://game/scenes/structures/ItemVoid.tscn" id="hall_47"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/SpawnTube.tscn" id="hall_48"]
+[ext_resource type="PackedScene" uid="uid://dxbidpuifub02" path="res://game/scenes/structures/ItemSpawner.tscn" id="hall_49"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/Conveyor.tscn" id="hall_50"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorSlope.tscn" id="hall_51"]
+[ext_resource type="Texture2D" path="res://game/assets/textures/floor_1/floor_1_diffuseOriginal.png" id="hall_52"]
+
+[sub_resource type="StandardMaterial3D" id="hall_mat_panel"]
+albedo_color = Color(0.78, 0.78, 0.76, 1)
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="hall_mat_frame"]
+albedo_color = Color(0.07, 0.075, 0.08, 1)
+metallic = 0.6
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="hall_mat_hazard"]
+albedo_color = Color(0.85, 0.62, 0.06, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="hall_mat_floor"]
+albedo_color = Color(0.42, 0.43, 0.45, 1)
+albedo_texture = ExtResource("hall_52")
+uv1_scale = Vector3(0.25, 0.25, 0.25)
+uv1_triplanar = true
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="hall_box_panel"]
+material = SubResource("hall_mat_panel")
+
+[sub_resource type="BoxMesh" id="hall_box_frame"]
+material = SubResource("hall_mat_frame")
+
+[sub_resource type="BoxMesh" id="hall_box_hazard"]
+material = SubResource("hall_mat_hazard")
+
+[sub_resource type="BoxMesh" id="hall_box_floor"]
+material = SubResource("hall_mat_floor")
 
 [sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
 material = ExtResource("1_2usgl")
@@ -976,555 +1012,2253 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.75, 1.31, 22.5)
 [node name="ShowCopperOreGround" parent="SalvageShowcase" unique_id=492718981 instance=ExtResource("rd_copper_ore_ground")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 1.06, 22.9)
 
-[node name="StructureGallery" type="Node3D" parent="."]
+[node name="StructureHall" type="Node3D" parent="."]
 
-[node name="North" type="Node3D" parent="StructureGallery"]
+[node name="HallFloor" type="Box3DBody" parent="StructureHall"]
+body_type = 0
+box_size = Vector3(96, 1, 120)
+position = Vector3(88, -0.5, 0)
 
-[node name="South" type="Node3D" parent="StructureGallery"]
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/HallFloor"]
+transform = Transform3D(96, 0, 0, 0, 1, 0, 0, 0, 120, 0, 0, 0)
+mesh = SubResource("hall_box_floor")
 
-[node name="East" type="Node3D" parent="StructureGallery"]
+[node name="Architecture" type="Node3D" parent="StructureHall"]
 
-[node name="ConveyorSplitter" parent="StructureGallery/North" instance=ExtResource("sg_0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37, 1, 45)
+[node name="WallNorth" type="Box3DBody" parent="StructureHall/Architecture"]
+body_type = 0
+box_size = Vector3(96, 8, 0.4)
+position = Vector3(88, 4, 60)
 
-[node name="ConveyorSplitterLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37, 2.6, 43.8)
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Architecture/WallNorth"]
+transform = Transform3D(96, 0, 0, 0, 8, 0, 0, 0, 0.4, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="WallNorthCap" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(96.1, 0, 0, 0, 0.15, 0, 0, 0, 0.5, 88, 8.075, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthSkirt" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(96.1, 0, 0, 0, 0.3, 0, 0, 0, 0.5, 88, 0.15, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 40, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost2" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 44, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost3" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 48, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost4" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 52, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost5" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 56, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost6" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 60, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost7" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 64, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost8" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 68, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost9" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 72, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost10" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 76, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost11" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 80, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost12" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 84, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost13" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 88, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost14" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 92, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost15" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 96, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost16" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 100, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost17" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 104, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost18" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 108, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost19" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 112, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost20" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 116, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost21" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 120, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost22" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 124, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost23" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 128, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost24" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 132, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallNorthPost25" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 136, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouth" type="Box3DBody" parent="StructureHall/Architecture"]
+body_type = 0
+box_size = Vector3(96, 8, 0.4)
+position = Vector3(88, 4, -60)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Architecture/WallSouth"]
+transform = Transform3D(96, 0, 0, 0, 8, 0, 0, 0, 0.4, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="WallSouthCap" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(96.1, 0, 0, 0, 0.15, 0, 0, 0, 0.5, 88, 8.075, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthSkirt" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(96.1, 0, 0, 0, 0.3, 0, 0, 0, 0.5, 88, 0.15, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 40, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost2" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 44, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost3" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 48, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost4" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 52, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost5" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 56, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost6" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 60, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost7" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 64, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost8" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 68, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost9" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 72, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost10" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 76, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost11" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 80, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost12" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 84, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost13" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 88, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost14" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 92, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost15" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 96, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost16" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 100, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost17" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 104, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost18" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 108, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost19" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 112, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost20" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 116, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost21" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 120, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost22" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 124, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost23" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 128, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost24" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 132, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallSouthPost25" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 136, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEast" type="Box3DBody" parent="StructureHall/Architecture"]
+body_type = 0
+box_size = Vector3(0.4, 8, 120)
+position = Vector3(136, 4, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Architecture/WallEast"]
+transform = Transform3D(0.4, 0, 0, 0, 8, 0, 0, 0, 120, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="WallEastCap" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 0.15, 0, 0, 0, 120.1, 136, 8.075, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastSkirt" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 0.3, 0, 0, 0, 120.1, 136, 0.15, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost2" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, -56)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost3" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, -52)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost4" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, -48)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost5" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, -44)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost6" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, -40)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost7" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, -36)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost8" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, -32)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost9" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, -28)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost10" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, -24)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost11" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, -20)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost12" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, -16)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost13" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost14" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, -8)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost15" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, -4)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost16" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost17" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, 4)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost18" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, 8)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost19" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, 12)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost20" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, 16)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost21" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, 20)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost22" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, 24)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost23" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, 28)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost24" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, 32)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost25" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, 36)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost26" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, 40)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost27" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, 44)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost28" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, 48)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost29" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, 52)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost30" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, 56)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost31" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 136, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestN" type="Box3DBody" parent="StructureHall/Architecture"]
+body_type = 0
+box_size = Vector3(0.4, 8, 44)
+position = Vector3(40, 4, 38)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Architecture/WallWestN"]
+transform = Transform3D(0.4, 0, 0, 0, 8, 0, 0, 0, 44, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="WallWestNCap" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 0.15, 0, 0, 0, 44.1, 40, 8.075, 38)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestNSkirt" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 0.3, 0, 0, 0, 44.1, 40, 0.15, 38)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestNPost" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 16)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestNPost2" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 20)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestNPost3" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 24)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestNPost4" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 28)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestNPost5" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 32)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestNPost6" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 36)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestNPost7" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 40)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestNPost8" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 44)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestNPost9" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 48)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestNPost10" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 52)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestNPost11" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 56)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestNPost12" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestS" type="Box3DBody" parent="StructureHall/Architecture"]
+body_type = 0
+box_size = Vector3(0.4, 8, 44)
+position = Vector3(40, 4, -38)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Architecture/WallWestS"]
+transform = Transform3D(0.4, 0, 0, 0, 8, 0, 0, 0, 44, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="WallWestSCap" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 0.15, 0, 0, 0, 44.1, 40, 8.075, -38)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestSSkirt" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 0.3, 0, 0, 0, 44.1, 40, 0.15, -38)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestSPost" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestSPost2" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -56)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestSPost3" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -52)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestSPost4" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -48)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestSPost5" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -44)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestSPost6" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -40)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestSPost7" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -36)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestSPost8" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -32)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestSPost9" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -28)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestSPost10" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -24)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestSPost11" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -20)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestSPost12" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -16)
+mesh = SubResource("hall_box_frame")
+
+[node name="EntranceBeam" type="Box3DBody" parent="StructureHall/Architecture"]
+body_type = 0
+box_size = Vector3(0.4, 1, 32)
+position = Vector3(40, 7.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Architecture/EntranceBeam"]
+transform = Transform3D(0.4, 0, 0, 0, 1, 0, 0, 0, 32, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="HallTitle" type="Label3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 40.6, 9.2, 0)
+double_sided = false
+pixel_size = 0.03
+font_size = 128
+outline_size = 12
+text = "STRUCTURE HALL"
+
+[node name="HallSubtitle" type="Label3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 40.6, 7.8, 0)
+double_sided = false
+pixel_size = 0.02
+font_size = 64
+outline_size = 12
+text = "new machines by category  -  demo lines in the middle"
+
+[node name="HallTitleInside" type="Label3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 39.4, 9.2, 0)
+double_sided = false
+pixel_size = 0.03
+font_size = 128
+outline_size = 12
+text = "STRUCTURE HALL"
+
+[node name="PartitionN" type="Box3DBody" parent="StructureHall/Architecture"]
+body_type = 0
+box_size = Vector3(0.3, 4, 18)
+position = Vector3(81, 2, 51)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Architecture/PartitionN"]
+transform = Transform3D(0.3, 0, 0, 0, 4, 0, 0, 0, 18, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="PartitionNCap" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 18.1, 81, 4.075, 51)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionNSkirt" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 18.1, 81, 0.15, 51)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionNPost" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 81, 2, 42)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionNPost2" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 81, 2, 46.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionNPost3" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 81, 2, 51)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionNPost4" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 81, 2, 55.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionNPost5" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 81, 2, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionN2" type="Box3DBody" parent="StructureHall/Architecture"]
+body_type = 0
+box_size = Vector3(0.3, 4, 18)
+position = Vector3(119, 2, 51)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Architecture/PartitionN2"]
+transform = Transform3D(0.3, 0, 0, 0, 4, 0, 0, 0, 18, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="PartitionNCap2" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 18.1, 119, 4.075, 51)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionNSkirt2" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 18.1, 119, 0.15, 51)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionNPost6" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 119, 2, 42)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionNPost7" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 119, 2, 46.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionNPost8" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 119, 2, 51)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionNPost9" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 119, 2, 55.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionNPost10" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 119, 2, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionS" type="Box3DBody" parent="StructureHall/Architecture"]
+body_type = 0
+box_size = Vector3(0.3, 4, 18)
+position = Vector3(87, 2, -51)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Architecture/PartitionS"]
+transform = Transform3D(0.3, 0, 0, 0, 4, 0, 0, 0, 18, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="PartitionSCap" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 18.1, 87, 4.075, -51)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionSSkirt" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 18.1, 87, 0.15, -51)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionSPost" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 87, 2, -60)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionSPost2" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 87, 2, -55.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionSPost3" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 87, 2, -51)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionSPost4" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 87, 2, -46.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionSPost5" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 87, 2, -42)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionE" type="Box3DBody" parent="StructureHall/Architecture"]
+body_type = 0
+box_size = Vector3(18, 4, 0.3)
+position = Vector3(127, 2, 21)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Architecture/PartitionE"]
+transform = Transform3D(18, 0, 0, 0, 4, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="PartitionECap" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(18.1, 0, 0, 0, 0.15, 0, 0, 0, 0.4, 127, 4.075, 21)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionESkirt" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(18.1, 0, 0, 0, 0.3, 0, 0, 0, 0.4, 127, 0.15, 21)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 118, 2, 21)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost2" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 122.5, 2, 21)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost3" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 127, 2, 21)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost4" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 131.5, 2, 21)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost5" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 136, 2, 21)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionE2" type="Box3DBody" parent="StructureHall/Architecture"]
+body_type = 0
+box_size = Vector3(18, 4, 0.3)
+position = Vector3(127, 2, -1)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Architecture/PartitionE2"]
+transform = Transform3D(18, 0, 0, 0, 4, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="PartitionECap2" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(18.1, 0, 0, 0, 0.15, 0, 0, 0, 0.4, 127, 4.075, -1)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionESkirt2" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(18.1, 0, 0, 0, 0.3, 0, 0, 0, 0.4, 127, 0.15, -1)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost6" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 118, 2, -1)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost7" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 122.5, 2, -1)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost8" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 127, 2, -1)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost9" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 131.5, 2, -1)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost10" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 136, 2, -1)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionE3" type="Box3DBody" parent="StructureHall/Architecture"]
+body_type = 0
+box_size = Vector3(18, 4, 0.3)
+position = Vector3(127, 2, -21)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Architecture/PartitionE3"]
+transform = Transform3D(18, 0, 0, 0, 4, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="PartitionECap3" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(18.1, 0, 0, 0, 0.15, 0, 0, 0, 0.4, 127, 4.075, -21)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionESkirt3" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(18.1, 0, 0, 0, 0.3, 0, 0, 0, 0.4, 127, 0.15, -21)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost11" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 118, 2, -21)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost12" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 122.5, 2, -21)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost13" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 127, 2, -21)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost14" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 131.5, 2, -21)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost15" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 136, 2, -21)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionE4" type="Box3DBody" parent="StructureHall/Architecture"]
+body_type = 0
+box_size = Vector3(18, 4, 0.3)
+position = Vector3(127, 2, 41)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Architecture/PartitionE4"]
+transform = Transform3D(18, 0, 0, 0, 4, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="PartitionECap4" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(18.1, 0, 0, 0, 0.15, 0, 0, 0, 0.4, 127, 4.075, 41)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionESkirt4" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(18.1, 0, 0, 0, 0.3, 0, 0, 0, 0.4, 127, 0.15, 41)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost16" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 118, 2, 41)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost17" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 122.5, 2, 41)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost18" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 127, 2, 41)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost19" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 131.5, 2, 41)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost20" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 136, 2, 41)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionE5" type="Box3DBody" parent="StructureHall/Architecture"]
+body_type = 0
+box_size = Vector3(18, 4, 0.3)
+position = Vector3(127, 2, -39)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Architecture/PartitionE5"]
+transform = Transform3D(18, 0, 0, 0, 4, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="PartitionECap5" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(18.1, 0, 0, 0, 0.15, 0, 0, 0, 0.4, 127, 4.075, -39)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionESkirt5" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(18.1, 0, 0, 0, 0.3, 0, 0, 0, 0.4, 127, 0.15, -39)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost21" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 118, 2, -39)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost22" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 122.5, 2, -39)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost23" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 127, 2, -39)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost24" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 131.5, 2, -39)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionEPost25" type="MeshInstance3D" parent="StructureHall/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 4, 0, 0, 0, 0.4, 136, 2, -39)
+mesh = SubResource("hall_box_frame")
+
+[node name="Bays" type="Node3D" parent="StructureHall"]
+
+[node name="Conveyors" type="Node3D" parent="StructureHall/Bays"]
+
+[node name="ConveyorSplitter" parent="StructureHall/Bays/Conveyors" instance=ExtResource("hall_0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 1, 49)
+
+[node name="ConveyorSplitterLabel" type="Label3D" parent="StructureHall/Bays/Conveyors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 2.7, 49)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Splitter Conveyor"
 
-[node name="ConveyorSplitterSwitch" parent="StructureGallery/North" instance=ExtResource("sg_1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 1, 45)
+[node name="ConveyorSplitterSwitch" parent="StructureHall/Bays/Conveyors" instance=ExtResource("hall_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 1, 49)
 
-[node name="ConveyorSplitterSwitchLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 2.6, 43.8)
+[node name="ConveyorSplitterSwitchLabel" type="Label3D" parent="StructureHall/Bays/Conveyors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 2.7, 49)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Switchable Splitter"
 
-[node name="ConveyorLoader" parent="StructureGallery/North" instance=ExtResource("sg_2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, 1, 45)
+[node name="ConveyorLoader" parent="StructureHall/Bays/Conveyors" instance=ExtResource("hall_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, 1, 49)
 
-[node name="ConveyorLoaderLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, 2.6, 43.8)
+[node name="ConveyorLoaderLabel" type="Label3D" parent="StructureHall/Bays/Conveyors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, 2.7, 49)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Loader Conveyor"
 
-[node name="ConveyorAdvanced" parent="StructureGallery/North" instance=ExtResource("sg_3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 1, 45)
+[node name="ConveyorAdvanced" parent="StructureHall/Bays/Conveyors" instance=ExtResource("hall_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55, 1, 49)
 
-[node name="ConveyorAdvancedLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 2.6, 43.8)
+[node name="ConveyorAdvancedLabel" type="Label3D" parent="StructureHall/Bays/Conveyors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55, 2.7, 49)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Advanced Conveyor"
 
-[node name="ConveyorAdvancedTurnRight" parent="StructureGallery/North" instance=ExtResource("sg_4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 1, 45)
+[node name="ConveyorAdvancedTurnRight" parent="StructureHall/Bays/Conveyors" instance=ExtResource("hall_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59, 1, 49)
 
-[node name="ConveyorAdvancedTurnRightLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 2.6, 43.8)
+[node name="ConveyorAdvancedTurnRightLabel" type="Label3D" parent="StructureHall/Bays/Conveyors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59, 2.7, 49)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Advanced Conveyor Turn"
 
-[node name="ConveyorAdvancedTurnLeft" parent="StructureGallery/North" instance=ExtResource("sg_5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 1, 45)
+[node name="ConveyorAdvancedTurnLeft" parent="StructureHall/Bays/Conveyors" instance=ExtResource("hall_5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 63, 1, 49)
 
-[node name="ConveyorAdvancedTurnLeftLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 2.6, 43.8)
+[node name="ConveyorAdvancedTurnLeftLabel" type="Label3D" parent="StructureHall/Bays/Conveyors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 63, 2.7, 49)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Advanced Conveyor Turn (left)"
 
-[node name="ConveyorAdvancedSlope" parent="StructureGallery/North" instance=ExtResource("sg_6")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 1, 47)
+[node name="ConveyorAdvancedSlope" parent="StructureHall/Bays/Conveyors" instance=ExtResource("hall_6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 67, 1, 51)
 
-[node name="ConveyorAdvancedSlopeLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 4.6, 43.8)
+[node name="ConveyorAdvancedSlopeLabel" type="Label3D" parent="StructureHall/Bays/Conveyors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 67, 4.7, 50)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Advanced Slanted Conveyor"
 
-[node name="ConveyorAdvancedSlopeDown" parent="StructureGallery/North" instance=ExtResource("sg_7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 1, 47)
+[node name="ConveyorAdvancedSlopeDown" parent="StructureHall/Bays/Conveyors" instance=ExtResource("hall_7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 71, 1, 51)
 
-[node name="ConveyorAdvancedSlopeDownLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 4.6, 43.8)
+[node name="ConveyorAdvancedSlopeDownLabel" type="Label3D" parent="StructureHall/Bays/Conveyors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 71, 4.7, 50)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Advanced Slanted Conveyor (down)"
 
-[node name="ConveyorAdvancedLoader" parent="StructureGallery/North" instance=ExtResource("sg_8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, 45)
+[node name="ConveyorAdvancedLoader" parent="StructureHall/Bays/Conveyors" instance=ExtResource("hall_8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 75, 1, 49)
 
-[node name="ConveyorAdvancedLoaderLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 2.6, 43.8)
+[node name="ConveyorAdvancedLoaderLabel" type="Label3D" parent="StructureHall/Bays/Conveyors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 75, 2.7, 49)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Advanced Loader Conveyor"
 
-[node name="ConveyorMagnetic" parent="StructureGallery/North" instance=ExtResource("sg_9")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1, 45)
+[node name="ConveyorsEdgeN" type="MeshInstance3D" parent="StructureHall/Bays/Conveyors"]
+transform = Transform3D(39, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 61, 0.007, 60.375)
+mesh = SubResource("hall_box_hazard")
 
-[node name="ConveyorMagneticLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 2.6, 43.8)
+[node name="ConveyorsEdgeS" type="MeshInstance3D" parent="StructureHall/Bays/Conveyors"]
+transform = Transform3D(39, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 61, 0.007, 41.625)
+mesh = SubResource("hall_box_hazard")
+
+[node name="ConveyorsEdgeW" type="MeshInstance3D" parent="StructureHall/Bays/Conveyors"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 19, 41.625, 0.007, 51)
+mesh = SubResource("hall_box_hazard")
+
+[node name="ConveyorsEdgeE" type="MeshInstance3D" parent="StructureHall/Bays/Conveyors"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 19, 80.375, 0.007, 51)
+mesh = SubResource("hall_box_hazard")
+
+[node name="ConveyorsSign" type="Label3D" parent="StructureHall/Bays/Conveyors"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 61, 6.4, 59.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "CONVEYORS"
+
+[node name="Magnetic" type="Node3D" parent="StructureHall/Bays"]
+
+[node name="ConveyorMagnetic" parent="StructureHall/Bays/Magnetic" instance=ExtResource("hall_9")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 83, 1, 51)
+
+[node name="ConveyorMagneticLabel" type="Label3D" parent="StructureHall/Bays/Magnetic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 83, 2.7, 51)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Magnetic Conveyor"
 
-[node name="ConveyorMagneticTurnRight" parent="StructureGallery/North" instance=ExtResource("sg_10")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1, 45)
+[node name="ConveyorMagneticTurnRight" parent="StructureHall/Bays/Magnetic" instance=ExtResource("hall_10")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 87, 1, 51)
 
-[node name="ConveyorMagneticTurnRightLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 2.6, 43.8)
+[node name="ConveyorMagneticTurnRightLabel" type="Label3D" parent="StructureHall/Bays/Magnetic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 87, 2.7, 51)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Magnetic Conveyor Turn"
 
-[node name="ConveyorMagneticTurnLeft" parent="StructureGallery/North" instance=ExtResource("sg_11")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1, 45)
+[node name="ConveyorMagneticTurnLeft" parent="StructureHall/Bays/Magnetic" instance=ExtResource("hall_11")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 91, 1, 51)
 
-[node name="ConveyorMagneticTurnLeftLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 2.6, 43.8)
+[node name="ConveyorMagneticTurnLeftLabel" type="Label3D" parent="StructureHall/Bays/Magnetic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 91, 2.7, 51)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Magnetic Conveyor Turn (left)"
 
-[node name="ConveyorMagneticWall" parent="StructureGallery/North" instance=ExtResource("sg_12")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 1, 45)
+[node name="ConveyorMagneticWall" parent="StructureHall/Bays/Magnetic" instance=ExtResource("hall_12")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 95, 1, 51)
 
-[node name="ConveyorMagneticWallLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 2.6, 43.8)
+[node name="ConveyorMagneticWallLabel" type="Label3D" parent="StructureHall/Bays/Magnetic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 95, 2.7, 51)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Magnetic Wall Conveyor"
 
-[node name="ConveyorMagneticWallTurnRight" parent="StructureGallery/North" instance=ExtResource("sg_13")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 1, 45)
+[node name="ConveyorMagneticWallTurnRight" parent="StructureHall/Bays/Magnetic" instance=ExtResource("hall_13")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 99, 1, 51)
 
-[node name="ConveyorMagneticWallTurnRightLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 2.6, 43.8)
+[node name="ConveyorMagneticWallTurnRightLabel" type="Label3D" parent="StructureHall/Bays/Magnetic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 99, 2.7, 51)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Magnetic Wall Conveyor Turn"
 
-[node name="ConveyorMagneticWallTurnLeft" parent="StructureGallery/North" instance=ExtResource("sg_14")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 1, 45)
+[node name="ConveyorMagneticWallTurnLeft" parent="StructureHall/Bays/Magnetic" instance=ExtResource("hall_14")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 103, 1, 51)
 
-[node name="ConveyorMagneticWallTurnLeftLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 2.6, 43.8)
+[node name="ConveyorMagneticWallTurnLeftLabel" type="Label3D" parent="StructureHall/Bays/Magnetic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 103, 2.7, 51)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Magnetic Wall Conveyor Turn (left)"
 
-[node name="ConveyorMagneticCeiling" parent="StructureGallery/North" instance=ExtResource("sg_15")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 1, 45)
+[node name="ConveyorMagneticCeiling" parent="StructureHall/Bays/Magnetic" instance=ExtResource("hall_15")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 107, 1, 51)
 
-[node name="ConveyorMagneticCeilingLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 2.6, 43.8)
+[node name="ConveyorMagneticCeilingLabel" type="Label3D" parent="StructureHall/Bays/Magnetic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 107, 2.7, 51)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Magnetic Ceiling Conveyor"
 
-[node name="ConveyorMagneticCeilingTurnRight" parent="StructureGallery/North" instance=ExtResource("sg_16")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27, 1, 45)
+[node name="ConveyorMagneticCeilingTurnRight" parent="StructureHall/Bays/Magnetic" instance=ExtResource("hall_16")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 111, 1, 51)
 
-[node name="ConveyorMagneticCeilingTurnRightLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27, 2.6, 43.8)
+[node name="ConveyorMagneticCeilingTurnRightLabel" type="Label3D" parent="StructureHall/Bays/Magnetic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 111, 2.7, 51)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Magnetic Ceiling Conveyor Turn"
 
-[node name="ConveyorMagneticCeilingTurnLeft" parent="StructureGallery/North" instance=ExtResource("sg_17")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 1, 45)
+[node name="ConveyorMagneticCeilingTurnLeft" parent="StructureHall/Bays/Magnetic" instance=ExtResource("hall_17")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 115, 1, 51)
 
-[node name="ConveyorMagneticCeilingTurnLeftLabel" type="Label3D" parent="StructureGallery/North"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 2.6, 43.8)
+[node name="ConveyorMagneticCeilingTurnLeftLabel" type="Label3D" parent="StructureHall/Bays/Magnetic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 115, 2.7, 51)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Magnetic Ceiling Conveyor Turn (left)"
 
-[node name="ChuteHStraight" parent="StructureGallery/South" instance=ExtResource("sg_18")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -37, 1, -45)
+[node name="MagneticEdgeN" type="MeshInstance3D" parent="StructureHall/Bays/Magnetic"]
+transform = Transform3D(37, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 100, 0.007, 60.375)
+mesh = SubResource("hall_box_hazard")
 
-[node name="ChuteHStraightLabel" type="Label3D" parent="StructureGallery/South"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37, 2.6, -43.8)
+[node name="MagneticEdgeS" type="MeshInstance3D" parent="StructureHall/Bays/Magnetic"]
+transform = Transform3D(37, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 100, 0.007, 41.625)
+mesh = SubResource("hall_box_hazard")
+
+[node name="MagneticEdgeW" type="MeshInstance3D" parent="StructureHall/Bays/Magnetic"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 19, 81.625, 0.007, 51)
+mesh = SubResource("hall_box_hazard")
+
+[node name="MagneticEdgeE" type="MeshInstance3D" parent="StructureHall/Bays/Magnetic"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 19, 118.375, 0.007, 51)
+mesh = SubResource("hall_box_hazard")
+
+[node name="MagneticSign" type="Label3D" parent="StructureHall/Bays/Magnetic"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 100, 6.4, 59.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "MAGNETIC CONVEYORS"
+
+[node name="Launchers" type="Node3D" parent="StructureHall/Bays"]
+
+[node name="LaunchRamp" parent="StructureHall/Bays/Launchers" instance=ExtResource("hall_18")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 121, 1, 53)
+
+[node name="LaunchRampLabel" type="Label3D" parent="StructureHall/Bays/Launchers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 121, 4.7, 51)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Chute"
-
-[node name="ChuteHTurnRight" parent="StructureGallery/South" instance=ExtResource("sg_19")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -33, 1, -45)
-
-[node name="ChuteHTurnRightLabel" type="Label3D" parent="StructureGallery/South"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 2.6, -43.8)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Chute Turn"
-
-[node name="ChuteHTurnLeft" parent="StructureGallery/South" instance=ExtResource("sg_20")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -29, 1, -45)
-
-[node name="ChuteHTurnLeftLabel" type="Label3D" parent="StructureGallery/South"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, 2.6, -43.8)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Chute Turn (left)"
-
-[node name="ChuteVStraight" parent="StructureGallery/South" instance=ExtResource("sg_21")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -25, 1, -45)
-
-[node name="ChuteVStraightLabel" type="Label3D" parent="StructureGallery/South"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 2.6, -43.8)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Vertical Chute"
-
-[node name="ChuteVTurn" parent="StructureGallery/South" instance=ExtResource("sg_22")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -21, 1, -45)
-
-[node name="ChuteVTurnLabel" type="Label3D" parent="StructureGallery/South"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 2.6, -43.8)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Chute Elbow"
-
-[node name="ChuteHopperUp" parent="StructureGallery/South" instance=ExtResource("sg_23")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -17, 1, -45)
-
-[node name="ChuteHopperUpLabel" type="Label3D" parent="StructureGallery/South"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 2.6, -43.8)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Chute Hopper"
-
-[node name="ChuteDropperDown" parent="StructureGallery/South" instance=ExtResource("sg_24")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -13, 1, -45)
-
-[node name="ChuteDropperDownLabel" type="Label3D" parent="StructureGallery/South"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 2.6, -43.8)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Chute Dropper"
-
-[node name="ChuteHopper2x2" parent="StructureGallery/South" instance=ExtResource("sg_25")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -7, 1, -47)
-
-[node name="ChuteHopper2x2Label" type="Label3D" parent="StructureGallery/South"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 4.6, -43.8)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Large Chute Hopper"
-
-[node name="ChuteAdvHStraight" parent="StructureGallery/South" instance=ExtResource("sg_26")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3, 1, -45)
-
-[node name="ChuteAdvHStraightLabel" type="Label3D" parent="StructureGallery/South"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 2.6, -43.8)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Powered Chute"
-
-[node name="ChuteAdvHTurnRight" parent="StructureGallery/South" instance=ExtResource("sg_27")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1, 1, -45)
-
-[node name="ChuteAdvHTurnRightLabel" type="Label3D" parent="StructureGallery/South"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2.6, -43.8)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Powered Chute Turn"
-
-[node name="ChuteAdvHTurnLeft" parent="StructureGallery/South" instance=ExtResource("sg_28")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 5, 1, -45)
-
-[node name="ChuteAdvHTurnLeftLabel" type="Label3D" parent="StructureGallery/South"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 2.6, -43.8)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Powered Chute Turn (left)"
-
-[node name="ChuteAdvVStraight" parent="StructureGallery/South" instance=ExtResource("sg_29")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 9, 1, -45)
-
-[node name="ChuteAdvVStraightLabel" type="Label3D" parent="StructureGallery/South"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 2.6, -43.8)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Powered Vertical Chute"
-
-[node name="ChuteAdvVTurn" parent="StructureGallery/South" instance=ExtResource("sg_30")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 13, 1, -45)
-
-[node name="ChuteAdvVTurnLabel" type="Label3D" parent="StructureGallery/South"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 2.6, -43.8)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Powered Chute Elbow"
-
-[node name="ChuteAdvHopperUp" parent="StructureGallery/South" instance=ExtResource("sg_31")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 17, 1, -45)
-
-[node name="ChuteAdvHopperUpLabel" type="Label3D" parent="StructureGallery/South"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 2.6, -43.8)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Powered Chute Hopper"
-
-[node name="ChuteAdvDropperDown" parent="StructureGallery/South" instance=ExtResource("sg_32")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 21, 1, -45)
-
-[node name="ChuteAdvDropperDownLabel" type="Label3D" parent="StructureGallery/South"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 2.6, -43.8)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Powered Chute Dropper"
-
-[node name="ChuteAdvHopper2x2" parent="StructureGallery/South" instance=ExtResource("sg_33")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 27, 1, -47)
-
-[node name="ChuteAdvHopper2x2Label" type="Label3D" parent="StructureGallery/South"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 4.6, -43.8)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Powered Large Chute Hopper"
-
-[node name="LaunchRamp" parent="StructureGallery/East" instance=ExtResource("sg_34")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31, 1, -41)
-
-[node name="LaunchRampLabel" type="Label3D" parent="StructureGallery/East"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, -41)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Launch Ramp"
 
-[node name="Cannon" parent="StructureGallery/East" instance=ExtResource("sg_35")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 1, -37)
+[node name="Cannon" parent="StructureHall/Bays/Launchers" instance=ExtResource("hall_19")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 125, 1, 51)
 
-[node name="CannonLabel" type="Label3D" parent="StructureGallery/East"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, -37)
+[node name="CannonLabel" type="Label3D" parent="StructureHall/Bays/Launchers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 125, 4.7, 50)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Cannon"
 
-[node name="Catapult" parent="StructureGallery/East" instance=ExtResource("sg_36")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31, 1, -33)
+[node name="Catapult" parent="StructureHall/Bays/Launchers" instance=ExtResource("hall_20")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 129, 1, 53)
 
-[node name="CatapultLabel" type="Label3D" parent="StructureGallery/East"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, -33)
+[node name="CatapultLabel" type="Label3D" parent="StructureHall/Bays/Launchers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 129, 4.7, 51)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Catapult"
 
-[node name="FilterBasic" parent="StructureGallery/East" instance=ExtResource("sg_37")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 27, 1, -29)
+[node name="LaunchersEdgeN" type="MeshInstance3D" parent="StructureHall/Bays/Launchers"]
+transform = Transform3D(15, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 127, 0.007, 60.375)
+mesh = SubResource("hall_box_hazard")
 
-[node name="FilterBasicLabel" type="Label3D" parent="StructureGallery/East"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, -29)
+[node name="LaunchersEdgeS" type="MeshInstance3D" parent="StructureHall/Bays/Launchers"]
+transform = Transform3D(15, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 127, 0.007, 41.625)
+mesh = SubResource("hall_box_hazard")
+
+[node name="LaunchersEdgeW" type="MeshInstance3D" parent="StructureHall/Bays/Launchers"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 19, 119.625, 0.007, 51)
+mesh = SubResource("hall_box_hazard")
+
+[node name="LaunchersEdgeE" type="MeshInstance3D" parent="StructureHall/Bays/Launchers"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 19, 134.375, 0.007, 51)
+mesh = SubResource("hall_box_hazard")
+
+[node name="LaunchersSign" type="Label3D" parent="StructureHall/Bays/Launchers"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 127, 6.4, 59.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "LAUNCHERS"
+
+[node name="Chutes" type="Node3D" parent="StructureHall/Bays"]
+
+[node name="ChuteHStraight" parent="StructureHall/Bays/Chutes" instance=ExtResource("hall_21")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 43, 1, -47)
+
+[node name="ChuteHStraightLabel" type="Label3D" parent="StructureHall/Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 2.7, -47)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
+text = "Chute"
+
+[node name="ChuteHTurnRight" parent="StructureHall/Bays/Chutes" instance=ExtResource("hall_22")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 47, 1, -47)
+
+[node name="ChuteHTurnRightLabel" type="Label3D" parent="StructureHall/Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Chute Turn"
+
+[node name="ChuteHTurnLeft" parent="StructureHall/Bays/Chutes" instance=ExtResource("hall_23")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 51, 1, -47)
+
+[node name="ChuteHTurnLeftLabel" type="Label3D" parent="StructureHall/Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Chute Turn (left)"
+
+[node name="ChuteVStraight" parent="StructureHall/Bays/Chutes" instance=ExtResource("hall_24")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 55, 1, -47)
+
+[node name="ChuteVStraightLabel" type="Label3D" parent="StructureHall/Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Vertical Chute"
+
+[node name="ChuteVTurn" parent="StructureHall/Bays/Chutes" instance=ExtResource("hall_25")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 59, 1, -47)
+
+[node name="ChuteVTurnLabel" type="Label3D" parent="StructureHall/Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Chute Elbow"
+
+[node name="ChuteHopperUp" parent="StructureHall/Bays/Chutes" instance=ExtResource("hall_26")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 63, 1, -47)
+
+[node name="ChuteHopperUpLabel" type="Label3D" parent="StructureHall/Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 63, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Chute Hopper"
+
+[node name="ChuteDropperDown" parent="StructureHall/Bays/Chutes" instance=ExtResource("hall_27")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 67, 1, -47)
+
+[node name="ChuteDropperDownLabel" type="Label3D" parent="StructureHall/Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 67, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Chute Dropper"
+
+[node name="ChuteHopper2x2" parent="StructureHall/Bays/Chutes" instance=ExtResource("hall_28")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 73, 1, -49)
+
+[node name="ChuteHopper2x2Label" type="Label3D" parent="StructureHall/Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, 4.7, -48)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Large Chute Hopper"
+
+[node name="ChuteHopper3x3" parent="StructureHall/Bays/Chutes" instance=ExtResource("hall_29")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 79, 1, -49)
+
+[node name="ChuteHopper3x3Label" type="Label3D" parent="StructureHall/Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 79, 4.7, -49)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Huge Chute Hopper"
+
+[node name="ChutesEdgeN" type="MeshInstance3D" parent="StructureHall/Bays/Chutes"]
+transform = Transform3D(45, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 64, 0.007, -39.625)
+mesh = SubResource("hall_box_hazard")
+
+[node name="ChutesEdgeS" type="MeshInstance3D" parent="StructureHall/Bays/Chutes"]
+transform = Transform3D(45, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 64, 0.007, -60.375)
+mesh = SubResource("hall_box_hazard")
+
+[node name="ChutesEdgeW" type="MeshInstance3D" parent="StructureHall/Bays/Chutes"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 21, 41.625, 0.007, -50)
+mesh = SubResource("hall_box_hazard")
+
+[node name="ChutesEdgeE" type="MeshInstance3D" parent="StructureHall/Bays/Chutes"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 21, 86.375, 0.007, -50)
+mesh = SubResource("hall_box_hazard")
+
+[node name="ChutesSign" type="Label3D" parent="StructureHall/Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 64, 6.4, -59.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "CHUTES"
+
+[node name="PoweredChutes" type="Node3D" parent="StructureHall/Bays"]
+
+[node name="ChuteAdvHStraight" parent="StructureHall/Bays/PoweredChutes" instance=ExtResource("hall_30")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 89, 1, -47)
+
+[node name="ChuteAdvHStraightLabel" type="Label3D" parent="StructureHall/Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 89, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Chute"
+
+[node name="ChuteAdvHTurnRight" parent="StructureHall/Bays/PoweredChutes" instance=ExtResource("hall_31")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 93, 1, -47)
+
+[node name="ChuteAdvHTurnRightLabel" type="Label3D" parent="StructureHall/Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 93, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Chute Turn"
+
+[node name="ChuteAdvHTurnLeft" parent="StructureHall/Bays/PoweredChutes" instance=ExtResource("hall_32")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 97, 1, -47)
+
+[node name="ChuteAdvHTurnLeftLabel" type="Label3D" parent="StructureHall/Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 97, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Chute Turn (left)"
+
+[node name="ChuteAdvVStraight" parent="StructureHall/Bays/PoweredChutes" instance=ExtResource("hall_33")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 101, 1, -47)
+
+[node name="ChuteAdvVStraightLabel" type="Label3D" parent="StructureHall/Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 101, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Vertical Chute"
+
+[node name="ChuteAdvVTurn" parent="StructureHall/Bays/PoweredChutes" instance=ExtResource("hall_34")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 105, 1, -47)
+
+[node name="ChuteAdvVTurnLabel" type="Label3D" parent="StructureHall/Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 105, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Chute Elbow"
+
+[node name="ChuteAdvHopperUp" parent="StructureHall/Bays/PoweredChutes" instance=ExtResource("hall_35")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 109, 1, -47)
+
+[node name="ChuteAdvHopperUpLabel" type="Label3D" parent="StructureHall/Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 109, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Chute Hopper"
+
+[node name="ChuteAdvDropperDown" parent="StructureHall/Bays/PoweredChutes" instance=ExtResource("hall_36")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 113, 1, -47)
+
+[node name="ChuteAdvDropperDownLabel" type="Label3D" parent="StructureHall/Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 113, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Chute Dropper"
+
+[node name="ChuteAdvHopper2x2" parent="StructureHall/Bays/PoweredChutes" instance=ExtResource("hall_37")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 119, 1, -49)
+
+[node name="ChuteAdvHopper2x2Label" type="Label3D" parent="StructureHall/Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 118, 4.7, -48)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Large Chute Hopper"
+
+[node name="ChuteAdvHopper3x3" parent="StructureHall/Bays/PoweredChutes" instance=ExtResource("hall_38")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 125, 1, -49)
+
+[node name="ChuteAdvHopper3x3Label" type="Label3D" parent="StructureHall/Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 125, 4.7, -49)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Huge Chute Hopper"
+
+[node name="PoweredChutesEdgeN" type="MeshInstance3D" parent="StructureHall/Bays/PoweredChutes"]
+transform = Transform3D(47, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 111, 0.007, -39.625)
+mesh = SubResource("hall_box_hazard")
+
+[node name="PoweredChutesEdgeS" type="MeshInstance3D" parent="StructureHall/Bays/PoweredChutes"]
+transform = Transform3D(47, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 111, 0.007, -60.375)
+mesh = SubResource("hall_box_hazard")
+
+[node name="PoweredChutesEdgeW" type="MeshInstance3D" parent="StructureHall/Bays/PoweredChutes"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 21, 87.625, 0.007, -50)
+mesh = SubResource("hall_box_hazard")
+
+[node name="PoweredChutesEdgeE" type="MeshInstance3D" parent="StructureHall/Bays/PoweredChutes"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 21, 134.375, 0.007, -50)
+mesh = SubResource("hall_box_hazard")
+
+[node name="PoweredChutesSign" type="Label3D" parent="StructureHall/Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 111, 6.4, -59.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "POWERED CHUTES"
+
+[node name="Sorting" type="Node3D" parent="StructureHall/Bays"]
+
+[node name="FilterBasic" parent="StructureHall/Bays/Sorting" instance=ExtResource("hall_39")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 125, 1, 23)
+
+[node name="FilterBasicLabel" type="Label3D" parent="StructureHall/Bays/Sorting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 125, 4.7, 23)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
 text = "Basic Filter"
 
-[node name="FilterArm" parent="StructureGallery/East" instance=ExtResource("sg_38")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 27, 1, -25)
+[node name="FilterArm" parent="StructureHall/Bays/Sorting" instance=ExtResource("hall_40")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 125, 1, 27)
 
-[node name="FilterArmLabel" type="Label3D" parent="StructureGallery/East"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, -25)
+[node name="FilterArmLabel" type="Label3D" parent="StructureHall/Bays/Sorting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 125, 4.7, 27)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Filter Arm"
 
-[node name="AntigravProjector" parent="StructureGallery/East" instance=ExtResource("sg_39")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 27, 1, -21)
+[node name="SortingEdgeN" type="MeshInstance3D" parent="StructureHall/Bays/Sorting"]
+transform = Transform3D(17, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 126, 0.007, 40.375)
+mesh = SubResource("hall_box_hazard")
 
-[node name="AntigravProjectorLabel" type="Label3D" parent="StructureGallery/East"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 2.6, -21)
-billboard = 1
-pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Antigravity Projector"
+[node name="SortingEdgeS" type="MeshInstance3D" parent="StructureHall/Bays/Sorting"]
+transform = Transform3D(17, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 126, 0.007, 21.625)
+mesh = SubResource("hall_box_hazard")
 
-[node name="Field" parent="StructureGallery/East/AntigravProjector/Model" index="2"]
+[node name="SortingEdgeW" type="MeshInstance3D" parent="StructureHall/Bays/Sorting"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 19, 117.625, 0.007, 31)
+mesh = SubResource("hall_box_hazard")
+
+[node name="SortingEdgeE" type="MeshInstance3D" parent="StructureHall/Bays/Sorting"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 19, 134.375, 0.007, 31)
+mesh = SubResource("hall_box_hazard")
+
+[node name="SortingSign" type="Label3D" parent="StructureHall/Bays/Sorting"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 133.6, 6.4, 31)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "SORTING"
+
+[node name="Fields" type="Node3D" parent="StructureHall/Bays"]
+
+[node name="AntigravProjector" parent="StructureHall/Bays/Fields" instance=ExtResource("hall_41")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 125, 1, 1)
+
+[node name="Field" parent="StructureHall/Bays/Fields/AntigravProjector/Model" index="2"]
 scale = Vector3(1, 1, 2)
 
-[node name="FieldTrigger" parent="StructureGallery/East/AntigravProjector"]
+[node name="FieldTrigger" parent="StructureHall/Bays/Fields/AntigravProjector"]
 box_size = Vector3(1.9, 1.9, 4)
 position = Vector3(0, 0, -3)
 
-[node name="ZeroPointProjector" parent="StructureGallery/East" instance=ExtResource("sg_40")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 27, 1, -17)
-
-[node name="ZeroPointProjectorLabel" type="Label3D" parent="StructureGallery/East"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 2.6, -17)
+[node name="AntigravProjectorLabel" type="Label3D" parent="StructureHall/Bays/Fields"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 125, 2.7, 1)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Zero Point Projector"
+font_size = 40
+outline_size = 12
+text = "Antigravity Projector"
 
-[node name="Field" parent="StructureGallery/East/ZeroPointProjector/Model" index="2"]
+[node name="ZeroPointProjector" parent="StructureHall/Bays/Fields" instance=ExtResource("hall_42")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 125, 1, 5)
+
+[node name="Field" parent="StructureHall/Bays/Fields/ZeroPointProjector/Model" index="2"]
 scale = Vector3(1, 1, 2)
 
-[node name="FieldTrigger" parent="StructureGallery/East/ZeroPointProjector"]
+[node name="FieldTrigger" parent="StructureHall/Bays/Fields/ZeroPointProjector"]
 box_size = Vector3(1.6, 1.6, 4)
 position = Vector3(0, 0, -3)
 
-[node name="PlatePress" parent="StructureGallery/East" instance=ExtResource("sg_41")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 1, -13)
-
-[node name="PlatePressLabel" type="Label3D" parent="StructureGallery/East"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 2.6, -13)
+[node name="ZeroPointProjectorLabel" type="Label3D" parent="StructureHall/Bays/Fields"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 125, 2.7, 5)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
+text = "Zero Point Projector"
+
+[node name="FieldsEdgeN" type="MeshInstance3D" parent="StructureHall/Bays/Fields"]
+transform = Transform3D(17, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 126, 0.007, 20.375)
+mesh = SubResource("hall_box_hazard")
+
+[node name="FieldsEdgeS" type="MeshInstance3D" parent="StructureHall/Bays/Fields"]
+transform = Transform3D(17, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 126, 0.007, -0.375)
+mesh = SubResource("hall_box_hazard")
+
+[node name="FieldsEdgeW" type="MeshInstance3D" parent="StructureHall/Bays/Fields"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 21, 117.625, 0.007, 10)
+mesh = SubResource("hall_box_hazard")
+
+[node name="FieldsEdgeE" type="MeshInstance3D" parent="StructureHall/Bays/Fields"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 21, 134.375, 0.007, 10)
+mesh = SubResource("hall_box_hazard")
+
+[node name="FieldsSign" type="Label3D" parent="StructureHall/Bays/Fields"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 133.6, 6.4, 10)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "FIELDS"
+
+[node name="Processing" type="Node3D" parent="StructureHall/Bays"]
+
+[node name="PlatePress" parent="StructureHall/Bays/Processing" instance=ExtResource("hall_43")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 127, 1, -19)
+
+[node name="PlatePressLabel" type="Label3D" parent="StructureHall/Bays/Processing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 126, 2.7, -19)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
 text = "Plate Press"
 
-[node name="RodExtruder" parent="StructureGallery/East" instance=ExtResource("sg_42")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 1, -9)
+[node name="RodExtruder" parent="StructureHall/Bays/Processing" instance=ExtResource("hall_44")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 127, 1, -15)
 
-[node name="RodExtruderLabel" type="Label3D" parent="StructureGallery/East"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 2.6, -9)
+[node name="RodExtruderLabel" type="Label3D" parent="StructureHall/Bays/Processing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 126, 2.7, -15)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Rod Extruder"
 
-[node name="Polisher" parent="StructureGallery/East" instance=ExtResource("sg_43")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 1, -3)
+[node name="Polisher" parent="StructureHall/Bays/Processing" instance=ExtResource("hall_45")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 127, 1, -9)
 
-[node name="PolisherLabel" type="Label3D" parent="StructureGallery/East"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 2.6, -4)
+[node name="PolisherLabel" type="Label3D" parent="StructureHall/Bays/Processing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 126, 2.7, -10)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Polishing Machine"
 
-[node name="Smelter" parent="StructureGallery/East" instance=ExtResource("sg_44")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 1, 3)
+[node name="ProcessingEdgeN" type="MeshInstance3D" parent="StructureHall/Bays/Processing"]
+transform = Transform3D(17, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 126, 0.007, -1.625)
+mesh = SubResource("hall_box_hazard")
 
-[node name="SmelterLabel" type="Label3D" parent="StructureGallery/East"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, 2)
+[node name="ProcessingEdgeS" type="MeshInstance3D" parent="StructureHall/Bays/Processing"]
+transform = Transform3D(17, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 126, 0.007, -20.375)
+mesh = SubResource("hall_box_hazard")
+
+[node name="ProcessingEdgeW" type="MeshInstance3D" parent="StructureHall/Bays/Processing"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 19, 117.625, 0.007, -11)
+mesh = SubResource("hall_box_hazard")
+
+[node name="ProcessingEdgeE" type="MeshInstance3D" parent="StructureHall/Bays/Processing"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 19, 134.375, 0.007, -11)
+mesh = SubResource("hall_box_hazard")
+
+[node name="ProcessingSign" type="Label3D" parent="StructureHall/Bays/Processing"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 133.6, 6.4, -11)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "PROCESSING"
+
+[node name="Utilities" type="Node3D" parent="StructureHall/Bays"]
+
+[node name="Smelter" parent="StructureHall/Bays/Utilities" instance=ExtResource("hall_46")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 127, 1, -35)
+
+[node name="SmelterLabel" type="Label3D" parent="StructureHall/Bays/Utilities"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 126, 4.7, -36)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Smelter"
 
-[node name="SpawnTube" parent="StructureGallery/East" instance=ExtResource("sg_45")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31, 1, 9)
+[node name="ItemVoid" parent="StructureHall/Bays/Utilities" instance=ExtResource("hall_47")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 127, 1, -29)
 
-[node name="SpawnTubeLabel" type="Label3D" parent="StructureGallery/East"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, 8)
+[node name="SpawnTube" parent="StructureHall/Bays/Utilities" instance=ExtResource("hall_48")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 127, 3, -29)
+
+[node name="SpawnTubeLabel" type="Label3D" parent="StructureHall/Bays/Utilities"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 127, 6.7, -29)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
 text = "Spawn Tube (developer only)"
 
-[node name="ItemVoid" parent="StructureGallery/East" instance=ExtResource("sg_46")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 1, 9)
+[node name="TubeGantryPost" type="Box3DBody" parent="StructureHall/Bays/Utilities"]
+body_type = 0
+box_size = Vector3(0.3, 6.5, 0.3)
+position = Vector3(128.7, 3.25, -29)
 
-[node name="ChuteHopper3x3" parent="StructureGallery/East" instance=ExtResource("sg_47")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 1, 15)
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Bays/Utilities/TubeGantryPost"]
+transform = Transform3D(0.3, 0, 0, 0, 6.5, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
 
-[node name="ChuteHopper3x3Label" type="Label3D" parent="StructureGallery/East"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, 15)
+[node name="TubeGantryArm" type="Box3DBody" parent="StructureHall/Bays/Utilities"]
+body_type = 0
+box_size = Vector3(2, 0.3, 0.3)
+position = Vector3(127.85, 6.15, -29)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Bays/Utilities/TubeGantryArm"]
+transform = Transform3D(2, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TubeGantryBand" type="MeshInstance3D" parent="StructureHall/Bays/Utilities"]
+transform = Transform3D(0.34, 0, 0, 0, 0.15, 0, 0, 0, 0.34, 128.7, 1.075, -29)
+mesh = SubResource("hall_box_hazard")
+
+[node name="UtilitiesEdgeN" type="MeshInstance3D" parent="StructureHall/Bays/Utilities"]
+transform = Transform3D(17, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 126, 0.007, -21.625)
+mesh = SubResource("hall_box_hazard")
+
+[node name="UtilitiesEdgeS" type="MeshInstance3D" parent="StructureHall/Bays/Utilities"]
+transform = Transform3D(17, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 126, 0.007, -38.375)
+mesh = SubResource("hall_box_hazard")
+
+[node name="UtilitiesEdgeW" type="MeshInstance3D" parent="StructureHall/Bays/Utilities"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 17, 117.625, 0.007, -30)
+mesh = SubResource("hall_box_hazard")
+
+[node name="UtilitiesEdgeE" type="MeshInstance3D" parent="StructureHall/Bays/Utilities"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 17, 134.375, 0.007, -30)
+mesh = SubResource("hall_box_hazard")
+
+[node name="UtilitiesSign" type="Label3D" parent="StructureHall/Bays/Utilities"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 133.6, 6.4, -30)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "UTILITIES"
+
+[node name="Demos" type="Node3D" parent="StructureHall"]
+
+[node name="SmeltingLine" type="Node3D" parent="StructureHall/Demos"]
+
+[node name="SmeltingLineTitle" type="Label3D" parent="StructureHall/Demos/SmeltingLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 3.2, 25)
+billboard = 1
+pixel_size = 0.012
+font_size = 64
+outline_size = 12
+text = "Demo: Smelting & Plate Line"
+
+[node name="ItemSpawner" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_49")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 49, 1, 25)
+interval = 4.0
+
+[node name="ItemSpawnerLabel" type="Label3D" parent="StructureHall/Demos/SmeltingLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49, 2.7, 25)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
+font_size = 40
+outline_size = 12
+text = "Item Spawner"
+
+[node name="Conveyor" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 51, 1, 25)
+
+[node name="Conveyor2" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 53, 1, 25)
+
+[node name="ConveyorSlope" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_51")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 55, 1, 25)
+
+[node name="Conveyor3" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 59, 3, 25)
+
+[node name="Smelter2" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_46")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 61, 1, 25)
+
+[node name="Smelter2Label" type="Label3D" parent="StructureHall/Demos/SmeltingLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 62, 4.7, 26)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Smelter"
+
+[node name="Conveyor4" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 65, 1, 25)
+
+[node name="Conveyor5" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 67, 1, 25)
+
+[node name="PlatePress2" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_43")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 69, 1, 25)
+
+[node name="PlatePress2Label" type="Label3D" parent="StructureHall/Demos/SmeltingLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 2.7, 25)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Plate Press"
+
+[node name="Conveyor6" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 73, 1, 25)
+
+[node name="Polisher2" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_45")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 75, 1, 25)
+
+[node name="Polisher2Label" type="Label3D" parent="StructureHall/Demos/SmeltingLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 76, 2.7, 26)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Polishing Machine"
+
+[node name="ConveyorSplitterSwitch2" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 79, 1, 25)
+
+[node name="ConveyorSplitterSwitch2Label" type="Label3D" parent="StructureHall/Demos/SmeltingLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 79, 2.7, 25)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Switchable Splitter"
+
+[node name="Conveyor7" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 79, 1, 27)
+
+[node name="Conveyor8" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 79, 1, 29)
+
+[node name="ItemVoid2" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_47")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 79, 1, 31)
+
+[node name="Conveyor9" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 79, 1, 23)
+
+[node name="Conveyor10" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 79, 1, 21)
+
+[node name="ItemVoid3" parent="StructureHall/Demos/SmeltingLine" instance=ExtResource("hall_47")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 79, 1, 19)
+
+[node name="Walk" type="MeshInstance3D" parent="StructureHall/Demos/SmeltingLine"]
+transform = Transform3D(38, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 63, 0.007, 21.825)
+mesh = SubResource("hall_box_hazard")
+
+[node name="RodLine" type="Node3D" parent="StructureHall/Demos"]
+
+[node name="RodLineTitle" type="Label3D" parent="StructureHall/Demos/RodLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 3.2, 5)
+billboard = 1
+pixel_size = 0.012
+font_size = 64
+outline_size = 12
+text = "Demo: Sorted Rod Line"
+
+[node name="ItemSpawner2" parent="StructureHall/Demos/RodLine" instance=ExtResource("hall_49")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 49, 1, 5)
+interval = 4.0
+
+[node name="ItemSpawner2Label" type="Label3D" parent="StructureHall/Demos/RodLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49, 2.7, 5)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Item Spawner"
+
+[node name="ConveyorAdvanced2" parent="StructureHall/Demos/RodLine" instance=ExtResource("hall_3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 51, 1, 5)
+
+[node name="ConveyorAdvanced3" parent="StructureHall/Demos/RodLine" instance=ExtResource("hall_3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 53, 1, 5)
+
+[node name="FilterBasic2" parent="StructureHall/Demos/RodLine" instance=ExtResource("hall_39")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 55, 1, 5)
+
+[node name="FilterBasic2Label" type="Label3D" parent="StructureHall/Demos/RodLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55, 4.7, 5)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Basic Filter"
+
+[node name="Conveyor11" parent="StructureHall/Demos/RodLine" instance=ExtResource("hall_50")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 55, 1, 7)
+
+[node name="Conveyor12" parent="StructureHall/Demos/RodLine" instance=ExtResource("hall_50")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 55, 1, 9)
+
+[node name="ItemVoid4" parent="StructureHall/Demos/RodLine" instance=ExtResource("hall_47")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 55, 1, 11)
+
+[node name="FilterArm2" parent="StructureHall/Demos/RodLine" instance=ExtResource("hall_40")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 51, 1, 9)
+
+[node name="FilterArm2Label" type="Label3D" parent="StructureHall/Demos/RodLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, 4.7, 9)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Filter Arm"
+
+[node name="ConveyorAdvanced4" parent="StructureHall/Demos/RodLine" instance=ExtResource("hall_3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 57, 1, 5)
+
+[node name="RodExtruder2" parent="StructureHall/Demos/RodLine" instance=ExtResource("hall_44")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 59, 1, 5)
+
+[node name="RodExtruder2Label" type="Label3D" parent="StructureHall/Demos/RodLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 2.7, 5)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Rod Extruder"
+
+[node name="ConveyorAdvanced5" parent="StructureHall/Demos/RodLine" instance=ExtResource("hall_3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 63, 1, 5)
+
+[node name="ConveyorAdvancedLoader2" parent="StructureHall/Demos/RodLine" instance=ExtResource("hall_8")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 65, 1, 5)
+
+[node name="ConveyorAdvancedLoader2Label" type="Label3D" parent="StructureHall/Demos/RodLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65, 2.7, 5)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Advanced Loader Conveyor"
+
+[node name="Conveyor13" parent="StructureHall/Demos/RodLine" instance=ExtResource("hall_50")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 67, 1, 5)
+
+[node name="Conveyor14" parent="StructureHall/Demos/RodLine" instance=ExtResource("hall_50")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 67, 1, 7)
+
+[node name="Conveyor15" parent="StructureHall/Demos/RodLine" instance=ExtResource("hall_50")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 67, 1, 9)
+
+[node name="ItemVoid5" parent="StructureHall/Demos/RodLine" instance=ExtResource("hall_47")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 67, 1, 11)
+
+[node name="LaunchLine" type="Node3D" parent="StructureHall/Demos"]
+
+[node name="LaunchLineTitle" type="Label3D" parent="StructureHall/Demos/LaunchLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 3.2, -11)
+billboard = 1
+pixel_size = 0.012
+font_size = 64
+outline_size = 12
+text = "Demo: Launch & Catch"
+
+[node name="Deck" type="Box3DBody" parent="StructureHall/Demos/LaunchLine"]
+body_type = 0
+box_size = Vector3(10, 2, 2)
+position = Vector3(53, 1, -11)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Demos/LaunchLine/Deck"]
+transform = Transform3D(10, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="DeckEdge" type="MeshInstance3D" parent="StructureHall/Demos/LaunchLine"]
+transform = Transform3D(10, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 53, 0.007, -12.175)
+mesh = SubResource("hall_box_hazard")
+
+[node name="ItemSpawner3" parent="StructureHall/Demos/LaunchLine" instance=ExtResource("hall_49")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 49, 3, -11)
+interval = 4.0
+
+[node name="ItemSpawner3Label" type="Label3D" parent="StructureHall/Demos/LaunchLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49, 4.7, -11)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Item Spawner"
+
+[node name="Conveyor16" parent="StructureHall/Demos/LaunchLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 51, 3, -11)
+
+[node name="LaunchRamp2" parent="StructureHall/Demos/LaunchLine" instance=ExtResource("hall_18")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 53, 3, -11)
+
+[node name="LaunchRamp2Label" type="Label3D" parent="StructureHall/Demos/LaunchLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55, 6.7, -11)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Launch Ramp"
+
+[node name="ChuteHopper3x32" parent="StructureHall/Demos/LaunchLine" instance=ExtResource("hall_29")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 65, 3, -11)
+
+[node name="ChuteHopper3x32Label" type="Label3D" parent="StructureHall/Demos/LaunchLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65, 6.7, -11)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
 text = "Huge Chute Hopper"
 
-[node name="ChuteAdvHopper3x3" parent="StructureGallery/East" instance=ExtResource("sg_48")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 1, 23)
+[node name="Pillar" type="Box3DBody" parent="StructureHall/Demos/LaunchLine"]
+body_type = 0
+box_size = Vector3(0.3, 2, 0.3)
+position = Vector3(62.3, 1, -13.7)
 
-[node name="ChuteAdvHopper3x3Label" type="Label3D" parent="StructureGallery/East"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, 23)
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Demos/LaunchLine/Pillar"]
+transform = Transform3D(0.3, 0, 0, 0, 2, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Pillar2" type="Box3DBody" parent="StructureHall/Demos/LaunchLine"]
+body_type = 0
+box_size = Vector3(0.3, 2, 0.3)
+position = Vector3(67.7, 1, -13.7)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Demos/LaunchLine/Pillar2"]
+transform = Transform3D(0.3, 0, 0, 0, 2, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Pillar3" type="Box3DBody" parent="StructureHall/Demos/LaunchLine"]
+body_type = 0
+box_size = Vector3(0.3, 2, 0.3)
+position = Vector3(62.3, 1, -8.3)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Demos/LaunchLine/Pillar3"]
+transform = Transform3D(0.3, 0, 0, 0, 2, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="Pillar4" type="Box3DBody" parent="StructureHall/Demos/LaunchLine"]
+body_type = 0
+box_size = Vector3(0.3, 2, 0.3)
+position = Vector3(67.7, 1, -8.3)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Demos/LaunchLine/Pillar4"]
+transform = Transform3D(0.3, 0, 0, 0, 2, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="ChuteVTurn2" parent="StructureHall/Demos/LaunchLine" instance=ExtResource("hall_25")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 65, 1, -11)
+
+[node name="ChuteHStraight2" parent="StructureHall/Demos/LaunchLine" instance=ExtResource("hall_21")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 67, 1, -11)
+
+[node name="ChuteHStraight3" parent="StructureHall/Demos/LaunchLine" instance=ExtResource("hall_21")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 69, 1, -11)
+
+[node name="ChuteHTurnLeft2" parent="StructureHall/Demos/LaunchLine" instance=ExtResource("hall_23")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 71, 1, -11)
+
+[node name="ChuteHStraight4" parent="StructureHall/Demos/LaunchLine" instance=ExtResource("hall_21")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 71, 1, -13)
+
+[node name="ItemVoid6" parent="StructureHall/Demos/LaunchLine" instance=ExtResource("hall_47")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 71, 1, -15)
+
+[node name="CannonLine" type="Node3D" parent="StructureHall/Demos"]
+
+[node name="CannonLineTitle" type="Label3D" parent="StructureHall/Demos/CannonLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 3.2, -23)
+billboard = 1
+pixel_size = 0.012
+font_size = 64
+outline_size = 12
+text = "Demo: Cannon & Chute Tower"
+
+[node name="ConveyorAdvanced6" parent="StructureHall/Demos/CannonLine" instance=ExtResource("hall_3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 77, 1, -23)
+
+[node name="ConveyorAdvanced7" parent="StructureHall/Demos/CannonLine" instance=ExtResource("hall_3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 79, 1, -23)
+
+[node name="Cannon2" parent="StructureHall/Demos/CannonLine" instance=ExtResource("hall_19")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 81, 1, -23)
+
+[node name="Cannon2Label" type="Label3D" parent="StructureHall/Demos/CannonLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 82, 4.7, -23)
 billboard = 1
 pixel_size = 0.008
-font_size = 48
-outline_size = 10
-text = "Powered Huge Chute Hopper"
+font_size = 40
+outline_size = 12
+text = "Cannon"
+
+[node name="ChuteAdvHopperUp2" parent="StructureHall/Demos/CannonLine" instance=ExtResource("hall_35")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 91, 5, -23)
+
+[node name="ChuteAdvVStraight2" parent="StructureHall/Demos/CannonLine" instance=ExtResource("hall_33")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 91, 3, -23)
+
+[node name="ChuteAdvVTurn2" parent="StructureHall/Demos/CannonLine" instance=ExtResource("hall_34")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 91, 1, -23)
+
+[node name="ChuteAdvHStraight2" parent="StructureHall/Demos/CannonLine" instance=ExtResource("hall_30")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 93, 1, -23)
+
+[node name="ChuteAdvHStraight3" parent="StructureHall/Demos/CannonLine" instance=ExtResource("hall_30")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 95, 1, -23)
+
+[node name="ItemVoid7" parent="StructureHall/Demos/CannonLine" instance=ExtResource("hall_47")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 97, 1, -23)
+
+[node name="TowerLabel" type="Label3D" parent="StructureHall/Demos/CannonLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 91, 7.2, -23)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Chute Tower"
+
+[node name="CatapultLine" type="Node3D" parent="StructureHall/Demos"]
+
+[node name="CatapultLineTitle" type="Label3D" parent="StructureHall/Demos/CatapultLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 3.2, -33)
+billboard = 1
+pixel_size = 0.012
+font_size = 64
+outline_size = 12
+text = "Demo: Catapult"
+
+[node name="Conveyor17" parent="StructureHall/Demos/CatapultLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 75, 1, -33)
+
+[node name="Conveyor18" parent="StructureHall/Demos/CatapultLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 77, 1, -33)
+
+[node name="Catapult2" parent="StructureHall/Demos/CatapultLine" instance=ExtResource("hall_20")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 79, 1, -33)
+
+[node name="Catapult2Label" type="Label3D" parent="StructureHall/Demos/CatapultLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 81, 4.7, -33)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Catapult"
+
+[node name="ItemVoid8" parent="StructureHall/Demos/CatapultLine" instance=ExtResource("hall_47")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 95, 1, -33)
+
+[node name="FieldLine" type="Node3D" parent="StructureHall/Demos"]
+
+[node name="FieldLineTitle" type="Label3D" parent="StructureHall/Demos/FieldLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 3.2, 15)
+billboard = 1
+pixel_size = 0.012
+font_size = 64
+outline_size = 12
+text = "Demo: Field Projectors"
+
+[node name="AntigravProjector2" parent="StructureHall/Demos/FieldLine" instance=ExtResource("hall_41")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 89, 1, 25)
+
+[node name="Field" parent="StructureHall/Demos/FieldLine/AntigravProjector2/Model" index="2"]
+scale = Vector3(1, 1, 2)
+
+[node name="FieldTrigger" parent="StructureHall/Demos/FieldLine/AntigravProjector2"]
+box_size = Vector3(1.9, 1.9, 4)
+position = Vector3(0, 0, -3)
+
+[node name="AntigravProjector2Label" type="Label3D" parent="StructureHall/Demos/FieldLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 89, 2.7, 25)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Antigravity Projector"
+
+[node name="ItemSpawner4" parent="StructureHall/Demos/FieldLine" instance=ExtResource("hall_49")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 93, 1, 23)
+interval = 4.0
+
+[node name="Conveyor19" parent="StructureHall/Demos/FieldLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 91, 1, 25)
+
+[node name="Conveyor20" parent="StructureHall/Demos/FieldLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 93, 1, 25)
+
+[node name="Conveyor21" parent="StructureHall/Demos/FieldLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 95, 1, 25)
+
+[node name="Conveyor22" parent="StructureHall/Demos/FieldLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 97, 1, 25)
+
+[node name="ItemVoid9" parent="StructureHall/Demos/FieldLine" instance=ExtResource("hall_47")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 99, 1, 25)
+
+[node name="ZeroPointProjector2" parent="StructureHall/Demos/FieldLine" instance=ExtResource("hall_42")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 89, 1, 15)
+
+[node name="Field" parent="StructureHall/Demos/FieldLine/ZeroPointProjector2/Model" index="2"]
+scale = Vector3(1, 1, 2)
+
+[node name="FieldTrigger" parent="StructureHall/Demos/FieldLine/ZeroPointProjector2"]
+box_size = Vector3(1.6, 1.6, 4)
+position = Vector3(0, 0, -3)
+
+[node name="ZeroPointProjector2Label" type="Label3D" parent="StructureHall/Demos/FieldLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 89, 2.7, 15)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Zero Point Projector"
+
+[node name="Conveyor23" parent="StructureHall/Demos/FieldLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 91, 1, 15)
+
+[node name="Conveyor24" parent="StructureHall/Demos/FieldLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 93, 1, 15)
+
+[node name="Conveyor25" parent="StructureHall/Demos/FieldLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 95, 1, 15)
+
+[node name="Conveyor26" parent="StructureHall/Demos/FieldLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 97, 1, 15)
+
+[node name="ItemVoid10" parent="StructureHall/Demos/FieldLine" instance=ExtResource("hall_47")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 99, 1, 15)
+
+[node name="MagneticTunnel" type="Node3D" parent="StructureHall/Demos"]
+
+[node name="MagneticTunnelTitle" type="Label3D" parent="StructureHall/Demos/MagneticTunnel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 3.2, -1)
+billboard = 1
+pixel_size = 0.012
+font_size = 64
+outline_size = 12
+text = "Demo: Magnetic Tunnel"
+
+[node name="ConveyorMagnetic2" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_9")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 89, 1, -1)
+
+[node name="ConveyorMagnetic3" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_9")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 91, 1, -1)
+
+[node name="ConveyorMagnetic4" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_9")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 93, 1, -1)
+
+[node name="ConveyorMagnetic5" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_9")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 95, 1, -1)
+
+[node name="ConveyorMagnetic6" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_9")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 97, 1, -1)
+
+[node name="ConveyorMagnetic7" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_9")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 99, 1, -1)
+
+[node name="ConveyorMagneticWall2" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_12")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 89, 3, -1)
+
+[node name="ConveyorMagneticWall3" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_12")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 91, 3, -1)
+
+[node name="ConveyorMagneticWall4" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_12")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 93, 3, -1)
+
+[node name="ConveyorMagneticWall5" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_12")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 95, 3, -1)
+
+[node name="ConveyorMagneticWall6" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_12")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 97, 3, -1)
+
+[node name="ConveyorMagneticWall7" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_12")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 99, 3, -1)
+
+[node name="ConveyorMagneticCeiling2" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_15")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 89, 5, -1)
+
+[node name="ConveyorMagneticCeiling3" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_15")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 91, 5, -1)
+
+[node name="ConveyorMagneticCeiling4" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_15")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 93, 5, -1)
+
+[node name="ConveyorMagneticCeiling5" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_15")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 95, 5, -1)
+
+[node name="ConveyorMagneticCeiling6" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_15")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 97, 5, -1)
+
+[node name="ConveyorMagneticCeiling7" parent="StructureHall/Demos/MagneticTunnel" instance=ExtResource("hall_15")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 99, 5, -1)
+
+[node name="TunnelWall" type="Box3DBody" parent="StructureHall/Demos/MagneticTunnel"]
+body_type = 0
+box_size = Vector3(12, 6, 0.4)
+position = Vector3(94, 3, -2.2)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Demos/MagneticTunnel/TunnelWall"]
+transform = Transform3D(12, 0, 0, 0, 6, 0, 0, 0, 0.4, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TunnelWallCap" type="MeshInstance3D" parent="StructureHall/Demos/MagneticTunnel"]
+transform = Transform3D(12.1, 0, 0, 0, 0.15, 0, 0, 0, 0.5, 94, 6.075, -2.2)
+mesh = SubResource("hall_box_frame")
+
+[node name="TunnelWallSkirt" type="MeshInstance3D" parent="StructureHall/Demos/MagneticTunnel"]
+transform = Transform3D(12.1, 0, 0, 0, 0.3, 0, 0, 0, 0.5, 94, 0.15, -2.2)
+mesh = SubResource("hall_box_frame")
+
+[node name="TunnelWallPost" type="MeshInstance3D" parent="StructureHall/Demos/MagneticTunnel"]
+transform = Transform3D(0.2, 0, 0, 0, 6, 0, 0, 0, 0.5, 88, 3, -2.2)
+mesh = SubResource("hall_box_frame")
+
+[node name="TunnelWallPost2" type="MeshInstance3D" parent="StructureHall/Demos/MagneticTunnel"]
+transform = Transform3D(0.2, 0, 0, 0, 6, 0, 0, 0, 0.5, 92, 3, -2.2)
+mesh = SubResource("hall_box_frame")
+
+[node name="TunnelWallPost3" type="MeshInstance3D" parent="StructureHall/Demos/MagneticTunnel"]
+transform = Transform3D(0.2, 0, 0, 0, 6, 0, 0, 0, 0.5, 96, 3, -2.2)
+mesh = SubResource("hall_box_frame")
+
+[node name="TunnelWallPost4" type="MeshInstance3D" parent="StructureHall/Demos/MagneticTunnel"]
+transform = Transform3D(0.2, 0, 0, 0, 6, 0, 0, 0, 0.5, 100, 3, -2.2)
+mesh = SubResource("hall_box_frame")
+
+[node name="TunnelRoof" type="Box3DBody" parent="StructureHall/Demos/MagneticTunnel"]
+body_type = 0
+box_size = Vector3(12, 0.3, 2.6)
+position = Vector3(94, 6.15, -1.1)
+
+[node name="Mesh" type="MeshInstance3D" parent="StructureHall/Demos/MagneticTunnel/TunnelRoof"]
+transform = Transform3D(12, 0, 0, 0, 0.3, 0, 0, 0, 2.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TunnelLabel" type="Label3D" parent="StructureHall/Demos/MagneticTunnel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 94, 7.2, -1)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Floor / Wall / Ceiling magnetic belts"
