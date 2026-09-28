@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://7ogqg2078wl4" path="res://game/assets/icons/items/tar_rock.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://1sidhwblr0mi" path="res://game/scenes/items/world/products/tar_rock.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "tar_rock"
+droppedScene = ExtResource("3_scene")
+displayName = "Tar Rock"
+description = "A tar blob that waited too long and cured into a dull, cracked lump."
+icon = ExtResource("2_icon")
+maxStackSize = 1

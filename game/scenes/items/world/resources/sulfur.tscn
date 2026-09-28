@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://31gkr18v7xp2"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://zzgxs5mssl12" path="res://game/assets/models/items/sulfur.glb" id="2_model"]
+
+[node name="sulfur" type="Box3DBody"]
+shape_type = 1
+sphere_radius = 0.35
+density = 2
+friction = 0.6
+rolling_resistance = 0.6
+script = ExtResource("1_item")
+itemID = "sulfur"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([4, 13])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

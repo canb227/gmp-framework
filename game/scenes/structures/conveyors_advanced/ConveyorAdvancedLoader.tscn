@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" uid="uid://vhxzxpgocd5d" path="res://game/assets/models/conveyors_advanced/conveyor_adv_loader.glb" id="1_r"]
+[ext_resource type="PackedScene" uid="uid://vhx0xpgocd5d" path="res://game/assets/models/conveyors_advanced/conveyor_adv_loader.glb" id="1_r"]
 [ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
 
 [node name="ConveyorAdvancedLoader" type="Box3DBody"]

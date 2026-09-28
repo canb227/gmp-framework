@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://bmim4fes8mlbt" path="res://game/assets/icons/items/spent_fulgurite.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://biv5pa2hbl24q" path="res://game/scenes/items/world/products/spent_fulgurite.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "spent_fulgurite"
+droppedScene = ExtResource("3_scene")
+displayName = "Spent Fulgurite"
+description = "Fulgurite whose charge has leaked away or arced into metal: plain glass tube."
+icon = ExtResource("2_icon")
+maxStackSize = 1

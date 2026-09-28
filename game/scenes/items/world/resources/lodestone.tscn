@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://bb3sgjp57vu4i"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://bfiy4kz72fsfz" path="res://game/assets/models/items/lodestone.glb" id="2_model"]
+
+[node name="lodestone" type="Box3DBody"]
+shape_type = 1
+sphere_radius = 0.4
+density = 6
+friction = 0.7
+rolling_resistance = 0.4
+script = ExtResource("1_item")
+itemID = "lodestone"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([4, 12])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

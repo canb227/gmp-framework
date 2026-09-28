@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://23bd1h5yz1p0"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://bja6worxch5fb" path="res://game/assets/models/items/chalk_nodule.glb" id="2_model"]
+
+[node name="chalk_nodule" type="Box3DBody"]
+shape_type = 1
+sphere_radius = 0.22
+density = 1.5
+friction = 0.7
+rolling_resistance = 0.5
+script = ExtResource("1_item")
+itemID = "chalk_nodule"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([4])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

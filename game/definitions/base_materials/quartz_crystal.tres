@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://bccacm1r41sb2" path="res://game/assets/icons/items/quartz_crystal.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://52cmdkot7trb" path="res://game/scenes/items/world/resources/quartz_crystal.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "quartz_crystal"
+droppedScene = ExtResource("3_scene")
+displayName = "Quartz Crystal"
+description = "A long, glassy point that rolls. Fragile: any hard knock shatters it into quartz shards, including a drop of more than one cell, a launcher or a collision."
+icon = ExtResource("2_icon")
+maxStackSize = 1

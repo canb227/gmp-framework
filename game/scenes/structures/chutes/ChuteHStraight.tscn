@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" uid="uid://sz5ecx72q71s" path="res://game/assets/models/chutes/chute_h_straight.glb" id="1_r"]
+[ext_resource type="PackedScene" uid="uid://s05ecx72q71s" path="res://game/assets/models/chutes/chute_h_straight.glb" id="1_r"]
 [ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
 
 [node name="ChuteHStraight" type="Box3DBody"]

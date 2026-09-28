@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://bd5nii1t0i3uw" path="res://game/assets/icons/items/copper_rod.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://bjhn5kjlv2ahu" path="res://game/scenes/items/world/metals/copper_rod.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "copper_rod"
+droppedScene = ExtResource("3_scene")
+displayName = "Copper Rod"
+description = "Rolls like the iron rod. Winds into magnet cores and makes a lightning rod for voltaic crystals."
+icon = ExtResource("2_icon")
+maxStackSize = 1

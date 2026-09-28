@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://bcuuuj3u01vt5" path="res://game/assets/icons/items/coal.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://zzjwqj1hibhy" path="res://game/scenes/items/world/resources/coal.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "coal"
+droppedScene = ExtResource("3_scene")
+displayName = "Coal"
+description = "Light, grippy lumps that never roll. Fuel: touching anything hot makes it burn and turn hot itself."
+icon = ExtResource("2_icon")
+maxStackSize = 1

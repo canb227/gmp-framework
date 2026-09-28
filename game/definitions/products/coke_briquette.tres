@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://bcwzj0x04b0jv" path="res://game/assets/icons/items/coke_briquette.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://bezvnnf7c2kcm" path="res://game/scenes/items/world/products/coke_briquette.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "coke_briquette"
+droppedScene = ExtResource("3_scene")
+displayName = "Coke Briquette"
+description = "Baked coal pillows that stack. Burns much hotter than coal but only in a smelter, so it doesn't spread fire."
+icon = ExtResource("2_icon")
+maxStackSize = 1

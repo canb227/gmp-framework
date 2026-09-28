@@ -44,6 +44,8 @@ def salvage_mats():
         violet=vc_mat("M_PropVioletGlow", 0.3, 0.0, (0.6, 0.38, 1.0), 5.0),
         field_ag=vc_mat("M_FieldAntigrav", 0.2, 0.0, (0.55, 0.35, 1.0), 2.0),
         field_zp=vc_mat("M_FieldZeroPoint", 0.2, 0.0, (0.3, 0.9, 1.0), 2.0),
+        field_heat=vc_mat("M_FieldHeat", 0.2, 0.0, (1.0, 0.45, 0.1), 2.0),
+        field_cold=vc_mat("M_FieldCold", 0.2, 0.0, (0.6, 0.85, 1.0), 2.0),
     )
     for k, m in extra.items():
         MATS[k] = m
@@ -172,15 +174,119 @@ def mirror_collection(src, dst_name, axis=0):
             made[ob.name].parent = made[ob.parent.name]
     return dst
 
+# ---------- animation ----------
+ANIM_FPS = 30
+IDLE = "idle-loop"          # Godot imports clips whose names end in "-loop" as looping
+
+def keys(ob, frames, prop, values, linear=False):
+    """Keyframe ob.<prop> (location / rotation_euler / scale) to values at frames, on ob's idle action. The
+    collection's clip length is the latest frame keyed on any of its objects (see anim_length)."""
+    if ob.animation_data is None or ob.animation_data.action is None:
+        ob.animation_data_create()
+        ob.animation_data.action = bpy.data.actions.new(ob.name + "_idle")
+    for fr, val in zip(frames, values):
+        setattr(ob, prop, val)
+        ob.keyframe_insert(prop, frame=fr)
+    for fc in anim_fcurves(ob.animation_data.action):
+        if linear:
+            for kp in fc.keyframe_points:
+                kp.interpolation = 'LINEAR'
+        if not any(m.type == 'CYCLES' for m in fc.modifiers):
+            fc.modifiers.new('CYCLES')           # short motions repeat through a longer clip when it is sampled
+    setattr(ob, prop, values[0])
+
+def anim_fcurves(act):
+    if hasattr(act, "fcurves") and len(act.fcurves):
+        return list(act.fcurves)
+    out = []                                   # Blender 4.4+ layered actions
+    for layer in getattr(act, "layers", []):
+        for strip in layer.strips:
+            for bag in strip.channelbags:
+                out += list(bag.fcurves)
+    return out
+
+def spin(ob, axis, turns, length, rest=None):
+    """Steady rotation about a local axis (0 x, 1 y, 2 z): `turns` full turns over `length` frames."""
+    r0 = list(rest if rest is not None else ob.rotation_euler)
+    r1 = list(r0); r1[axis] += math.tau * turns
+    keys(ob, (1, length + 1), "rotation_euler", (tuple(r0), tuple(r1)), linear=True)
+
+def cycle(ob, prop, poses, length, linear=False):
+    """Loop through poses evenly over `length` frames, ending back on the first."""
+    n = len(poses)
+    frames = [1 + round(length * i / n) for i in range(n)] + [length + 1]
+    keys(ob, frames, prop, list(poses) + [poses[0]], linear)
+
+def anim_length(coll):
+    end = 0
+    for ob in coll.objects:
+        if ob.animation_data and ob.animation_data.action:
+            for fc in anim_fcurves(ob.animation_data.action):
+                end = max(end, int(fc.range()[1]))
+    return end
+
+def rename_glb_animation(path, name):
+    """The exporter calls a merged clip "Animation"; give it `name` by rewriting the .glb's JSON chunk."""
+    import json, struct
+    b = open(path, "rb").read()
+    ln = struct.unpack("<I", b[12:16])[0]
+    j = json.loads(b[20:20 + ln])
+    for a in j.get("animations", []):
+        a["name"] = name
+    js = json.dumps(j, separators=(",", ":")).encode()
+    js += b" " * ((4 - len(js) % 4) % 4)
+    rest = b[20 + ln:]
+    out = b[:8] + struct.pack("<I", 12 + 8 + len(js) + len(rest)) + struct.pack("<I", len(js)) + b"JSON" + js + rest
+    open(path, "wb").write(out)
+
+def unroll_cycles(coll, length):
+    """The glTF exporter samples each curve over its own key range, so repeat shorter cycles as real keys up to
+    the clip length (every model then loops as one clip with all its parts in step)."""
+    for ob in coll.objects:
+        if not (ob.animation_data and ob.animation_data.action):
+            continue
+        for fc in anim_fcurves(ob.animation_data.action):
+            pts = [(kp.co[0], kp.co[1], kp.interpolation) for kp in fc.keyframe_points]
+            if len(pts) < 2:
+                continue
+            first, last = pts[0][0], pts[-1][0]
+            period = last - first
+            if period <= 0 or last >= length + 1:
+                continue
+            delta = pts[-1][1] - pts[0][1]
+            turns = delta / math.tau
+            # whole-turn spins keep climbing; everything else repeats exactly (a pulse jumps back to its start)
+            base = delta if fc.data_path == "rotation_euler" and abs(turns) > 0.5 and abs(turns - round(turns)) < 1e-3 else 0.0
+            k = 1
+            while first + k * period < length + 1 - 1e-6:
+                for fr, val, interp in pts[1:]:
+                    kp = fc.keyframe_points.insert(fr + k * period, val + base * k, options={'FAST'})
+                    kp.interpolation = interp
+                k += 1
+            fc.update()
+
 # ---------- export ----------
 def export_glb(coll, path):
     bpy.ops.object.select_all(action='DESELECT')
     for ob in coll.objects:
         ob.select_set(True)
+    length = anim_length(coll)
+    sc = bpy.context.scene
+    anim = {}
+    if length:
+        unroll_cycles(coll, length)
+        sc.render.fps = ANIM_FPS
+        sc.frame_start, sc.frame_end = 1, length
+        anim = dict(export_animations=True, export_animation_mode='ACTIVE_ACTIONS', export_force_sampling=True,
+                    export_frame_range=True)
+    else:
+        anim = dict(export_animations=False)
     bpy.ops.export_scene.gltf(filepath=path, export_format='GLB', use_selection=True,
                               export_yup=True, export_apply=True, export_vertex_color='ACTIVE',
                               export_all_vertex_colors=False, export_normals=True, export_texcoords=True,
-                              export_materials='EXPORT', export_extras=False, export_cameras=False, export_lights=False)
+                              export_materials='EXPORT', export_extras=False, export_cameras=False, export_lights=False, **anim)
+    if length:
+        rename_glb_animation(path, IDLE)
 
 def build_family(pieces, out_dir, do_export=True):
     """pieces: [(builder_fn, glb filename)]. A builder returns its collection (named after the piece). Objects are

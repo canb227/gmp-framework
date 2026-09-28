@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" uid="uid://u743hm2d994n" path="res://game/assets/models/machines/processing/rod_extruder.glb" id="1_r"]
+[ext_resource type="PackedScene" uid="uid://u743hm2eba4n" path="res://game/assets/models/machines/processing/rod_extruder.glb" id="1_r"]
 [ext_resource type="Script" uid="uid://bbkovbjsnajma" path="res://game/scripts/items/placed/Grinder.cs" id="2_r"]
 [ext_resource type="Script" uid="uid://de6ss1gh7mjqf" path="res://game/scripts/entities/Spinner.cs" id="3_r"]
 

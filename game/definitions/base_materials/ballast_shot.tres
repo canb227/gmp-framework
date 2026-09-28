@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://bmytw84vmsz3m" path="res://game/assets/icons/items/ballast_shot.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://z5wrqqhx80zz" path="res://game/scenes/items/world/resources/ballast_shot.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "ballast_shot"
+droppedScene = ExtResource("3_scene")
+displayName = "Ballast Shot"
+description = "A cast-iron ball of enormous weight. It rolls downhill on the slightest tilt, and its weight is what tips the floor."
+icon = ExtResource("2_icon")
+maxStackSize = 1

@@ -72,12 +72,12 @@ def xform_text(m, o):
     return "Transform3D(" + ", ".join(f(m[i][j]) for i in range(3) for j in range(3)) + ", " + ", ".join(f(x) for x in o) + ")"
 
 # ---------------------------------------------------------------------------- uids / imports
-_ALPH = "0123456789abcdefghijklmnopqrstuvwxyz"
+_ALPH = "abcdefghijklmnopqrstuvwxyz012345678"         # Godot's ResourceUID text alphabet (base 35)
 
 def uid_text(n):
     s = ""
     while n:
-        s = _ALPH[n % 36] + s; n //= 36
+        s = _ALPH[n % 35] + s; n //= 35
     return "uid://" + s
 
 def new_uid(seed_text):
@@ -221,6 +221,10 @@ class Scene:
         idx = self.model_nodes.get(path)
         self.node(f'[node name="{name}" parent="{parent}"' + (f' index="{idx}"' if idx is not None else "") + "]", *props)
 
+    def autoplay(self, clip="idle-loop"):
+        """Start the model's baked animation clip (the salvage exports carry one looping clip)."""
+        self.node('[node name="AnimationPlayer" parent="Model"]', f'autoplay = "{clip}"')
+
     def spin(self, path, axis_g, speed):
         """Cosmetic Spinner on a model node (axis in the node's local Godot frame, rad/s)."""
         self.model_prop(path, f'script = ExtResource("{self.script("spinner")}")', f"axis = {v3(axis_g)}", f"speed = {f(speed)}")
@@ -230,14 +234,14 @@ class Scene:
         self.model_prop(path, f'script = ExtResource("{self.script("oscillator")}")', *props)
 
     # --- shapes
-    def box(self, name, size, pos, basis=None, parent=".", friction=None, material=TAG_METAL, tangent=None):
+    def box(self, name, size, pos, basis=None, parent=".", friction=None, material=TAG_METAL, tangent=None, extra=()):
         m = mat_mul(self.xf, basis or IDENT) if parent == "." else (basis or IDENT)
         p = add(mat_vec(self.xf, pos), self.xo) if parent == "." else pos
         t = (mat_vec(self.xf, tangent) if parent == "." else tangent) if tangent else None
         props = [f"box_size = {v3(size)}",
                  f"friction = {f(friction)}" if friction is not None else None,
                  f"user_material_id = {material}" if material else None,
-                 f"tangent_velocity = {v3(t)}" if t else None]
+                 f"tangent_velocity = {v3(t)}" if t else None] + list(extra)
         props.append(f"position = {v3(p)}" if is_ident(m) else f"transform = {xform_text(m, p)}")
         self.node(f'[node name="{name}" type="Box3DCollisionShape" parent="{parent}"]', *props)
 

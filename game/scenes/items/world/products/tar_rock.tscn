@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://1sidhwblr0mi"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://10ndqevumirx" path="res://game/assets/models/items/tar_rock.glb" id="2_model"]
+
+[node name="tar_rock" type="Box3DBody"]
+shape_type = 1
+sphere_radius = 0.34
+density = 1.6
+friction = 0.8
+rolling_resistance = 0.8
+script = ExtResource("1_item")
+itemID = "tar_rock"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([4])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://5av17d4nqsw7" path="res://game/assets/icons/items/chalk_nodule.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://23bd1h5yz1p0" path="res://game/scenes/items/world/resources/chalk_nodule.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "chalk_nodule"
+droppedScene = ExtResource("3_scene")
+displayName = "Chalk Nodule"
+description = "A soft white nodule that crumbles to dust when tumbled."
+icon = ExtResource("2_icon")
+maxStackSize = 1

@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://bmwmp2i4wr8qk"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://bbrglzsqve1x5" path="res://game/assets/models/items/slickstone_puck.glb" id="2_model"]
+
+[node name="slickstone_puck" type="Box3DBody"]
+shape_type = 0
+box_size = Vector3(0.7, 0.16, 0.7)
+density = 3
+friction = 0.03
+rolling_resistance = 0
+script = ExtResource("1_item")
+itemID = "slickstone_puck"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([4, 16])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://bcsvqdypnmo3j" path="res://game/assets/icons/items/sulfur.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://31gkr18v7xp2" path="res://game/scenes/items/world/resources/sulfur.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "sulfur"
+droppedScene = ExtResource("3_scene")
+displayName = "Sulfur"
+description = "Brittle yellow crystal. Volatile: a hot item or a voltaic spark sets it off, blasting its neighbours away and destroying it."
+icon = ExtResource("2_icon")
+maxStackSize = 1

@@ -1,0 +1,67 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://2fkcswj5f6px" path="res://game/assets/models/machines/concepts/concept_counterweight_elevator.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+
+[node name="ConceptCounterweightElevator" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(0, 1, 0), Vector3i(0, 2, 0)])
+blueprintItemID = ""
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="AnimationPlayer" parent="Model"]
+autoplay = "idle-loop"
+
+[node name="Post0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.1, 5.96, 0.1)
+user_material_id = 3
+position = Vector3(-0.92, 2, 0.92)
+
+[node name="Post1" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.1, 5.96, 0.1)
+user_material_id = 3
+position = Vector3(0.92, 2, 0.92)
+
+[node name="Post2" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.1, 5.96, 0.1)
+user_material_id = 3
+position = Vector3(0.92, 2, -0.92)
+
+[node name="Post3" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.1, 5.96, 0.1)
+user_material_id = 3
+position = Vector3(-0.92, 2, -0.92)
+
+[node name="Head" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.98, 0.14, 1.98)
+user_material_id = 3
+position = Vector3(0, 4.9, 0)
+
+[node name="Base" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.98, 0.06, 1.98)
+user_material_id = 3
+position = Vector3(0, -0.97, 0)
+
+[node name="CageABody" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+position = Vector3(-0.45, 3.1, 0)
+
+[node name="Floor" type="Box3DCollisionShape" parent="CageABody"]
+box_size = Vector3(0.84, 0.06, 1.7)
+user_material_id = 3
+position = Vector3(0, 0, 0)
+
+[node name="CageBBody" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+position = Vector3(0.45, -0.9, 0)
+
+[node name="Floor" type="Box3DCollisionShape" parent="CageBBody"]
+box_size = Vector3(0.84, 0.06, 1.7)
+user_material_id = 3
+position = Vector3(0, 0, 0)

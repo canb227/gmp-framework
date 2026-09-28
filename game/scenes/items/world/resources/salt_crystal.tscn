@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bl4u86wmz2neg"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://bcfjhzyl1svg3" path="res://game/assets/models/items/salt_crystal.glb" id="2_model"]
+
+[node name="salt_crystal" type="Box3DBody"]
+shape_type = 0
+box_size = Vector3(0.5, 0.5, 0.5)
+density = 2.2
+friction = 0.7
+script = ExtResource("1_item")
+itemID = "salt_crystal"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([4, 14])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://yjwf3sst14nu"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://803s5j5ivbzr" path="res://game/assets/models/items/latex_resin.glb" id="2_model"]
+
+[node name="latex_resin" type="Box3DBody"]
+shape_type = 1
+sphere_radius = 0.33
+density = 1
+friction = 2
+rolling_resistance = 2
+restitution = 0
+linear_damping = 0.5
+script = ExtResource("1_item")
+itemID = "latex_resin"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([5, 11])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://2h3fy1d7ti7b"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://5q85yk8fhfj8" path="res://game/assets/models/items/storm_sand.glb" id="2_model"]
+
+[node name="storm_sand" type="Box3DBody"]
+shape_type = 1
+sphere_radius = 0.3
+density = 1.6
+friction = 0.6
+rolling_resistance = 0.4
+script = ExtResource("1_item")
+itemID = "storm_sand"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([4])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

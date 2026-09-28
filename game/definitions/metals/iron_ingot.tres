@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://6hgafjltdxvr" path="res://game/assets/icons/items/iron_ingot.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://bferlle2ofw34" path="res://game/scenes/items/world/metals/iron_ingot.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "iron_ingot"
+droppedScene = ExtResource("3_scene")
+displayName = "Iron Ingot"
+description = "Dense, flat-sided bar. Sits still on a belt, stacks neatly and never rolls. Ferrous: magnets and lodestone grab it."
+icon = ExtResource("2_icon")
+maxStackSize = 1

@@ -1,0 +1,45 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://0sk7q60xa2pt" path="res://game/assets/models/machines/rooms/terrace_catcher.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+
+[node name="TerraceCatcher" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(2, 0, 0)])
+blueprintItemID = ""
+flowArrow = 2
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="Floor" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(6, 0.1, 2)
+friction = 0.7
+user_material_id = 3
+tangent_velocity = Vector3(1.2, 0, 0)
+position = Vector3(2, -0.95, 0)
+
+[node name="BackWall" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(6, 1.2, 0.1)
+user_material_id = 3
+restitution = 0.0
+position = Vector3(2, -0.3, 0.95)
+
+[node name="FrontLip" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(6, 0.3, 0.1)
+user_material_id = 3
+position = Vector3(2, -0.75, -0.95)
+
+[node name="EndClosed" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.1, 0.8, 2)
+user_material_id = 3
+position = Vector3(-0.95, -0.55, 0)
+
+[node name="Catch" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(5.8, 0.6, 1.7)
+is_sensor = true
+collision_layer = 1073741824
+position = Vector3(2, -0.6, 0)

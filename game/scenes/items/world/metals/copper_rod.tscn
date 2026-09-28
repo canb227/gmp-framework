@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://bjhn5kjlv2ahu"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://3ta0nlpr457i" path="res://game/assets/models/items/copper_rod.glb" id="2_model"]
+
+[node name="copper_rod" type="Box3DBody"]
+shape_type = 2
+capsule_radius = 0.1
+capsule_height = 1.2
+density = 8
+friction = 0.35
+rolling_resistance = 0.02
+script = ExtResource("1_item")
+itemID = "copper_rod"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([3, 20])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

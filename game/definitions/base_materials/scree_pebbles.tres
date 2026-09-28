@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://bj0a2rlvpsu4e" path="res://game/assets/icons/items/scree_pebbles.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://ba853ez6rv5mx" path="res://game/scenes/items/world/resources/scree_pebbles.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "scree_pebbles"
+droppedScene = ExtResource("3_scene")
+displayName = "Scree Pebbles"
+description = "A clump of water-worn pebbles, half a metre across. It rolls on the gentlest slope and fits through a 0.54 m slot."
+icon = ExtResource("2_icon")
+maxStackSize = 1

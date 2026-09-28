@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bgc22owzgdsqs"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://3weirepco6gq" path="res://game/assets/models/items/magnet_core.glb" id="2_model"]
+
+[node name="magnet_core" type="Box3DBody"]
+shape_type = 0
+box_size = Vector3(0.5, 0.5, 0.5)
+density = 6
+friction = 0.6
+script = ExtResource("1_item")
+itemID = "magnet_core"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([3, 12])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

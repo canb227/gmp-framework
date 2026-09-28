@@ -1,0 +1,35 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://441qihq2eiaf" path="res://game/assets/models/machines/rooms/sweep_arm.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+
+[node name="SweepArm" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+cellOffsets = Array[Vector3i]([Vector3i(-1, 0, -4), Vector3i(-1, 0, -3), Vector3i(-1, 0, -2), Vector3i(-1, 0, -1), Vector3i(-1, 1, -4), Vector3i(-1, 1, -3), Vector3i(-1, 1, -2), Vector3i(-1, 1, -1), Vector3i(0, 0, -6), Vector3i(0, 0, -5), Vector3i(0, 0, -4), Vector3i(0, 0, -3), Vector3i(0, 0, -2), Vector3i(0, 0, -1), Vector3i(0, 0, 0), Vector3i(0, 1, -6), Vector3i(0, 1, -5), Vector3i(0, 1, -4), Vector3i(0, 1, -3), Vector3i(0, 1, -2), Vector3i(0, 1, -1), Vector3i(0, 1, 0)])
+blueprintItemID = ""
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="Pylon" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.8, 4, 0.8)
+user_material_id = 3
+position = Vector3(0, 1, 0)
+
+[node name="Blade" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(8.10494, 0.12, 0.56)
+friction = 0.15
+user_material_id = 3
+transform = Transform3D(0.1604, -0.98705, 0, 0, 0, 1, -0.98705, -0.1604, 0, -0.85, 0.32, -7)
+
+[node name="BoomIn" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(3.3541, 0.24, 0.24)
+user_material_id = 3
+transform = Transform3D(-0.44721, -0.89443, 0, 0, 0, 1, -0.89443, 0.44721, 0, -0.75, 2.8, -1.5)
+
+[node name="BoomOut" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(8.10494, 0.24, 0.24)
+user_material_id = 3
+transform = Transform3D(0.1604, -0.98705, 0, 0, 0, 1, -0.98705, -0.1604, 0, -0.85, 2.8, -7)

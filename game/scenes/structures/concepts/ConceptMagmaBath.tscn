@@ -1,0 +1,90 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://bk83hawvbnrl7" path="res://game/assets/models/machines/concepts/concept_magma_bath.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+
+[node name="ConceptMagmaBath" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, -1), Vector3i(1, 0, -1)])
+blueprintItemID = ""
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="AnimationPlayer" parent="Model"]
+autoplay = "idle-loop"
+
+[node name="WallBack" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(3.9, 0.8, 0.12)
+user_material_id = 3
+position = Vector3(1, -0.6, 0.89)
+
+[node name="WallLeft" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.12, 0.8, 3.66)
+user_material_id = 3
+position = Vector3(-0.89, -0.6, -1)
+
+[node name="WallRightA" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.12, 0.8, 0.07)
+user_material_id = 3
+position = Vector3(2.89, -0.6, 0.865)
+
+[node name="WallRightB" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.12, 0.8, 1.93)
+user_material_id = 3
+position = Vector3(2.89, -0.6, -1.865)
+
+[node name="PortLintel" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.12, 0.25, 1.8)
+user_material_id = 3
+position = Vector3(2.89, -0.325, 0)
+
+[node name="WallFrontA" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(2.45, 0.8, 0.12)
+user_material_id = 3
+position = Vector3(0.275, -0.6, -2.89)
+
+[node name="WallFrontB" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.45, 0.8, 0.12)
+user_material_id = 3
+position = Vector3(2.725, -0.6, -2.89)
+
+[node name="Weir" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1, 0.6, 0.12)
+user_material_id = 3
+position = Vector3(2, -0.7, -2.89)
+
+[node name="FloorBack" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(3.66, 0.1, 1.73)
+friction = 0.5
+user_material_id = 3
+tangent_velocity = Vector3(1.2, 0, 0)
+position = Vector3(1, -0.9, -0.035)
+
+[node name="FloorFront" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(3.66, 0.1, 1.93)
+friction = 0.5
+user_material_id = 3
+tangent_velocity = Vector3(0, 0, 1.2)
+position = Vector3(1, -0.9, -1.865)
+
+[node name="PortSill" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.12, 0.1, 1.8)
+user_material_id = 3
+tangent_velocity = Vector3(1.2, 0, 0)
+position = Vector3(2.89, -0.9, 0)
+
+[node name="Spout" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.9, 0.16, 0.04)
+friction = 0.2
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.5, 0.86603, 0, -0.86603, -0.5, 2, -0.44732, -2.88)
+
+[node name="Bath" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(3.6, 0.6, 3.6)
+is_sensor = true
+collision_layer = 1073741824
+position = Vector3(1, -0.55, -1)

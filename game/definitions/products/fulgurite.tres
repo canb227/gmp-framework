@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://bmxy3ga5es260" path="res://game/assets/icons/items/fulgurite.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://blpuv2cvzzjv3" path="res://game/scenes/items/world/products/fulgurite.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "fulgurite"
+droppedScene = ExtResource("3_scene")
+displayName = "Fulgurite"
+description = "A branching glass tube fused by lightning and full of its charge. It repels other charged items, arcs into bare metal and cracks if dropped. Its charge leaks away in about a minute."
+icon = ExtResource("2_icon")
+maxStackSize = 1

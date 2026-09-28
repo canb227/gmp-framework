@@ -1,0 +1,89 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://bdptvbm3vxlt4" path="res://game/assets/models/machines/concepts/concept_impact_forge.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+
+[node name="ConceptImpactForge" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(0, 1, 0)])
+blueprintItemID = ""
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="AnimationPlayer" parent="Model"]
+autoplay = "idle-loop"
+
+[node name="Base" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.98, 0.06, 1.98)
+user_material_id = 3
+position = Vector3(0, -0.97, 0)
+
+[node name="Back" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.72, 3.98, 0.1)
+user_material_id = 3
+position = Vector3(0, 1, 0.9)
+
+[node name="CheekL" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.06, 2.5, 1.7)
+friction = 0.1
+user_material_id = 3
+position = Vector3(-0.94, 1.6, 0)
+
+[node name="SideL" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 1.2, 1.9)
+user_material_id = 3
+position = Vector3(-0.95, -0.35, 0)
+
+[node name="CheekR" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.06, 2.5, 1.7)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0.94, 1.6, 0)
+
+[node name="SideR" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 1.2, 1.9)
+user_material_id = 3
+position = Vector3(0.95, -0.35, 0)
+
+[node name="Roof" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.98, 0.12, 1.1)
+user_material_id = 3
+position = Vector3(0, 2.93, 0.4)
+
+[node name="Header" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.98, 0.12, 0.14)
+user_material_id = 3
+position = Vector3(0, 2.93, -0.9)
+
+[node name="Sill" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.98, 0.12, 0.14)
+user_material_id = 3
+position = Vector3(0, 0.3, -0.9)
+
+[node name="Lintel" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.98, 0.3, 0.1)
+user_material_id = 3
+position = Vector3(0, -0.2, -0.95)
+
+[node name="Anvil" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.5, 0.22, 1.5)
+friction = 0.6
+user_material_id = 3
+restitution = 0.05
+transform = Transform3D(1, 0, 0, 0, 0.25882, 0.96593, 0, -0.96593, 0.25882, 0, 1.5, 0.45)
+
+[node name="Slide" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.7, 1.95, 0.04)
+friction = 0.15
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.40674, 0.91355, 0, -0.91355, -0.40674, 0, -0.34827, -0.09187)
+
+[node name="Impact" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(1.5, 1.5, 0.4)
+is_sensor = true
+collision_layer = 1073741824
+position = Vector3(0, 1.5, 0.15)

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://3brob4cs7wtj" path="res://game/assets/icons/items/floatstone.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://bgu76bc7qopp8" path="res://game/scenes/items/world/resources/floatstone.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "floatstone"
+droppedScene = ExtResource("3_scene")
+displayName = "Floatstone"
+description = "Pumice so light it drifts. Fans, launch ramps and field projectors blow it off course. Floats in water and magma."
+icon = ExtResource("2_icon")
+maxStackSize = 1

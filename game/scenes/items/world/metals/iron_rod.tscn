@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://bafpk6es6sv6j"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://8h70r3hmidrb" path="res://game/assets/models/items/iron_rod.glb" id="2_model"]
+
+[node name="iron_rod" type="Box3DBody"]
+shape_type = 2
+capsule_radius = 0.1
+capsule_height = 1.2
+density = 7
+friction = 0.4
+rolling_resistance = 0.02
+script = ExtResource("1_item")
+itemID = "iron_rod"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([3, 22])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

@@ -27,3 +27,4 @@ mono_crash.*.json
 tests/logs/
 # Python bytecode from the tools scripts
 __pycache__/
+*.blend1

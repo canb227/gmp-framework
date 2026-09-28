@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://5lfdy3qlrg8j" path="res://game/assets/icons/items/coated_pellet.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://bm01cji25ycec" path="res://game/scenes/items/world/products/coated_pellet.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "coated_pellet"
+droppedScene = ExtResource("3_scene")
+displayName = "Coated Pellet"
+description = "A tar blob rolled in chalk dust: dry, round and free-rolling. No longer sticky and no longer curing."
+icon = ExtResource("2_icon")
+maxStackSize = 1

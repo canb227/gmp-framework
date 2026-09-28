@@ -1,0 +1,32 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://bbwn17w7effna" path="res://game/assets/models/machines/concepts/concept_platform_elevator.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+
+[node name="ConceptPlatformElevator" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(0, 0, -1), Vector3i(0, 1, 0), Vector3i(0, 1, -1), Vector3i(0, 2, 0), Vector3i(0, 2, -1)])
+blueprintItemID = ""
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="AnimationPlayer" parent="Model"]
+autoplay = "idle-loop"
+
+[node name="SideL" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.06, 5.96, 3.96)
+user_material_id = 3
+position = Vector3(-0.95, 2, -1)
+
+[node name="SideR" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.06, 5.96, 3.96)
+user_material_id = 3
+position = Vector3(0.95, 2, -1)
+
+[node name="Base" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.98, 0.06, 3.96)
+user_material_id = 3
+position = Vector3(0, -0.97, -1)

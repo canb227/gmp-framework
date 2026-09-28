@@ -69,3 +69,107 @@ chute tower, catapult, field projectors and a magnetic tunnel. Lines that can ru
 spawn tube in the utilities bay sits on an item void and drops into it.
 
 `python3 tools/structures/view_hall.py <out.png> [top | camera:target]` renders the hall for review.
+
+## Concept Lab
+
+Proof-of-concept pieces for visual reference; their behaviour is at most a rough approximation.
+
+- **Models:** `python3 tools/blender/run.py build concepts` (machines/concepts) and `build tools` (models/tools).
+  Moving parts are keyframed in Blender and exported as one looping clip, `idle-loop`, which the scenes autoplay.
+- **Scenes:** `game/scenes/structures/concepts/Concept*.tscn` come from `scenes_concepts.py`, run by `gen_scenes.py`.
+  They have no blueprints yet.
+
+| Scene | Cells | Animation | Rough behaviour |
+|---|---|---|---|
+| GravityInverter | 1×1×1 | orbiting emitters, field | trigger sensor only |
+| TagGate | 1×1×1 | belt, doors | working belt, scan sensor |
+| BouncePad | 1×1×1 | pad, springs, dial | pad restitution 1.25 |
+| VortexFunnel | 2×2×1 | swirling bowl | bowl pushes items tangentially, so they spiral to the hole |
+| TubeStraight / Bend / Junction / Receiver | 1×1×1 | pulse rings, flap, bellows | tube walls push along the tube at 6 m/s |
+| HeatLamp / CryoVent | 1×1×1 | belt, lamp coil / fan | working belt, zone sensor |
+| CounterweightElevator | 1×1×3 | cages trading places, pulley | static cage floors |
+| ScrewElevator | 1×1×3 | rotating helix | walls lift at 1.5 m/s |
+| PlatformElevator | 1×2×3 | six platforms on a chain loop | none |
+| RailGun | 1×4×1 | sled, charge rings | loader sensor |
+| TippingBucket | 1×1×2 | bucket tipping side to side | static tilted bucket, slides |
+| AssemblyChamber | 3×3×3, centred | floating parts, emitters | chamber sensor |
+
+**Heaters and coolers:** `run.py build thermal` (`machines/concepts/source/build_thermal.py`). Each one is built
+around a different mechanism, so each poses its own automation puzzle. They stand in a second row of bays
+behind the lab's spine wall.
+
+| Scene | Cells | In → out | Mechanism / puzzle | Rough behaviour |
+|---|---|---|---|---|
+| TunnelFurnace | 1×2×1 | back belt → front belt | heat = time inside; belt speed sets the dose | slow 0.8 m/s belt, heat sensor |
+| MagmaBath | 2×2×1 | dropped in from above → front weir (floaters) / right port (sinkers) | heats and sorts by density; sizing the drop-in and splitting the two outputs | floor drags sunk items to the port; bath sensor |
+| ImpactForge | 1×1×2 | launched into the upper front window → bottom of the same face | heat = impact energy, so it needs launchers aimed at the anvil | dead anvil (restitution 0.05), exit slide, impact sensor |
+| QuenchTank | 1×2×1 | dropped in from above → front belt | plain quench bath; lift belt drags items out to drip-dry | 1 m/s lift and output belts, quench sensor |
+| SpiralRadiator | 1×1×3 | top hopper → bottom front | cooling = ride length down a finned helix; items must be lifted 6 m first | 36-segment helix slide with lip, run-out guide |
+| CounterflowExchanger | 2×2×1 | lane A back → front, lane B front → back | no power: a hot and a cold stream swap heat through a copper wall, so both flows must be balanced | two opposed 1 m/s belts, lane sensors |
+
+- **Tools:** tether gun (spinning reel), tag painter (carousel that steps 60°) and blueprint stamp (hologram).
+  Each is a `.glb` only.
+- **In the museum:** `place_museum.py` adds the Concept Lab south of the original museum floor
+  (x -40..40, z -120..-60), open to the museum on the north side. The front row has three bays (tubes & routing,
+  elevators, thermal/launch/assembly), and the tools turn on plinths by the entrance. Behind the spine wall
+  (z -92) sits the thermal processing row: heaters and coolers. `view_hall.py <out.png> lab` renders it.
+- **Resource ids:** existing `hall_` ext resource ids are kept on re-runs, because hand-placed museum nodes use them.
+
+## Object Museum: Materials Wing
+
+`place_museum.py` also builds the Materials Wing north of the original museum floor (x -40..40, z 60..116). It
+is open to the museum on the south side. There are three rows: metals & scrap, base resources (handling) and base
+resources (hazards). Each item has a station:
+- the model turning on a plinth, with its name coloured by difficulty (green = 1/5, red = 5/5);
+- a walled tray holding two real, grabbable samples;
+- a wall panel describing how the item behaves and the automation challenge it's meant to pose.
+
+Where an item is made from the item to its left, the pair is joined by a floor stripe and an arrow naming the
+process. The items themselves are documented in `tools/items/README.md`. `view_hall.py <out.png> wing` renders
+the wing.
+
+## Object Museum: Puzzle Rooms wing
+
+`place_museum.py` also builds the Puzzle Rooms wing, a large open floor west of the original museum
+(x -150..-40, z -60..60) for whole-room puzzle concepts. Two plots are outlined and reserved for later rooms.
+
+**Room 1, the Tumbler:** a 5×5×5-cell room (10 m inside) centred on (-80, 7.5, -30) that turns 90° about its
+long (world X) axis every 10 s (a 4 s turn, then a 6 s hold). It is driven by `game/scripts/entities/RotatingRoom.cs`.
+- The room is one kinematic `Box3DBody`, turned by setting its angular velocity so that players and items
+  touching it get carried. The velocity follows a smoothstep profile, plus a correction toward the target angle.
+  Setting `driveTransform` rotates the node instead.
+- Every wall is a child `Box3DCollisionShape`, and so is every belt, frozen item, the spawner and the deposit box,
+  so it all turns and collides as one body. The meshes inside are plain children.
+- The tableau is a winding magnetic-belt path from a spawner: along the floor, up the far wall, across the
+  ceiling, down the near wall and back along the floor to a deposit box. It is loaded with frozen iron and
+  scrap items, and nothing inside operates.
+- Access:
+  - **Way in:** stairs and a bridge lead to the hub hole in the east end wall; you drop in from there.
+  - **Way out:** that end wall has a doorway at the middle of each edge, so whenever the room stops, one of them
+    sits at floor level over the static exit landing.
+- Rendering: `ROOM_ANGLE=<degrees> view_hall.py <out.png> <camera>` renders the room turned.
+
+**Rooms 2-4:** built by `place_museum.py`, with the machines from `run.py build rooms`
+(`machines/rooms/source/build_rooms.py`) and their scenes from `scenes_rooms.py`. The resources are in
+`tools/items/gen_items.py`. Every room is fed by a real ItemSpawner and drains into real ItemVoids.
+
+| Room | Feature (real physics) | New resources | New machines |
+|---|---|---|---|
+| 2 The Carousel (-80, 30) | A 9 m kinematic turntable spun continuously by `RotatingRoom` (`continuous`, 40°/s). Items dropped 3 m off the axis separate by friction. | slickstone puck (friction 0.03: spirals off), burr seed (friction 1.6: rides round) | SweepArm (a blade hung 4 cm over the disc scrapes riders off at one point), rim catcher (a trough conveying round to two exits, with dividers) |
+| 3 The Scales (-125, 0) | A 20×8 m dynamic deck on a `Box3DHingeJoint` (±10°). A counterweight sled holds it one way, and ballast dropped on the other end tips it, rolls off and tips it back. | ballast shot (density 20, rolls) | counterweight sled (part of the deck's mass), tilt gauge (visual) |
+| 4 The Scree Slope (-125, -35) | A 25° static slope. Pebbles roll and slabs slide; shale stops below about 19°. | scree pebbles (0.5 m, rolls), shale slab (flat, friction 0.35) | SlotSieve (0.54 m bar slots over a side-draining hopper), TerraceCatcher (a padded trough with a drag floor) |
+
+The hinge joint assumes Box3D hinges about the joint's local Z (here, world Z). If the deck tips the wrong way
+in Godot, rotate the `Hinge` node.
+
+**Rooms 5-6: production chains built around item tags.** Models come from `run.py build chains`
+(`machines/rooms/source/build_chains.py`), scenes from `scenes_rooms.py` and items from `gen_items.py`. The
+design draws on Factorio Space Age planets: Fulgora's bursty lightning, Gleba's spoilage clock (no buffers) and
+Corrundum's storm charge.
+
+| Room | Chain | Mechanics the player fights | Real in the demo |
+|---|---|---|---|
+| 5 The Storm Cage (-81, -1) | storm sand → **storm collector** (a bolt every 6 s fuses whatever is on the pad) → fulgurite (CHARGED, FRAGILE, leaks in about a minute) → **insulated belt** → **capacitor press** (+ copper plate) → capacitor cell | timing sand to the strikes; charged items repel (no piles), ground out on bare metal (insulated belts only) and crack when dropped; the leak means no buffering | spawner, belts, strike pad, insulated belts, press pass-through, void; the bolt and press are animated. Fulgurite, cells, the copper feed, the short circuit and the pile-up are a frozen tableau. |
+| 6 The Tar Pit (-125, 37) | tar blob (STICKY, cures into tar rock) + chalk → **belt scraper** → **coating drum** → coated pellet → plate press → bitumen brick | blobs cling to belts (they need scraping off), glue into plugs in chutes and cure if buffered; cold pauses both; the chalk ratio has to be right | spawner on a raised deck, belts, scraper, a really spinning tilted drum (kinematic, 12 staves + 4 lifters), exit ramp, a real Plate Press, void, a cryo-vent cold store, and a friction-3 tar floor. Pellets, bricks, the jam and the rejects are a frozen tableau. |
+
+Items don't transform yet (no recipes or tag scripts), so the live lines carry raw sand, tar and chalk end to end.

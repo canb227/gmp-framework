@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://6tzebbl4c51g" path="res://game/assets/icons/items/storm_sand.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://2h3fy1d7ti7b" path="res://game/scenes/items/world/resources/storm_sand.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "storm_sand"
+droppedScene = ExtResource("3_scene")
+displayName = "Storm Sand"
+description = "Clotted quartz sand from the storm flats. Inert and easy to move, but it's the only thing lightning fuses into fulgurite."
+icon = ExtResource("2_icon")
+maxStackSize = 1

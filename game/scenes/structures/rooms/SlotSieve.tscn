@@ -1,0 +1,103 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://bgndg3quy5jd3" path="res://game/assets/models/machines/rooms/slot_sieve.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+
+[node name="SlotSieve" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(2, 0, 0), Vector3i(0, 0, -1), Vector3i(1, 0, -1), Vector3i(2, 0, -1)])
+blueprintItemID = ""
+flowArrow = 1
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="SideClosed" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.1, 0.8, 4)
+user_material_id = 3
+position = Vector3(4.95, -0.6, -1)
+
+[node name="SideRail" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.1, 0.2, 4)
+user_material_id = 3
+position = Vector3(-0.95, -0.3, -1)
+
+[node name="Bar0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 0.1, 4)
+friction = 0.3
+user_material_id = 3
+position = Vector3(-0.32, -0.25, -1)
+
+[node name="Bar1" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 0.1, 4)
+friction = 0.3
+user_material_id = 3
+position = Vector3(0.3, -0.25, -1)
+
+[node name="Bar2" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 0.1, 4)
+friction = 0.3
+user_material_id = 3
+position = Vector3(0.92, -0.25, -1)
+
+[node name="Bar3" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 0.1, 4)
+friction = 0.3
+user_material_id = 3
+position = Vector3(1.54, -0.25, -1)
+
+[node name="Bar4" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 0.1, 4)
+friction = 0.3
+user_material_id = 3
+position = Vector3(2.16, -0.25, -1)
+
+[node name="Bar5" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 0.1, 4)
+friction = 0.3
+user_material_id = 3
+position = Vector3(2.78, -0.25, -1)
+
+[node name="Bar6" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 0.1, 4)
+friction = 0.3
+user_material_id = 3
+position = Vector3(3.4, -0.25, -1)
+
+[node name="Bar7" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 0.1, 4)
+friction = 0.3
+user_material_id = 3
+position = Vector3(4.02, -0.25, -1)
+
+[node name="Bar8" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 0.1, 4)
+friction = 0.3
+user_material_id = 3
+position = Vector3(4.64, -0.25, -1)
+
+[node name="HopperFloor" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(6, 0.05, 4)
+friction = 0.6
+user_material_id = 3
+tangent_velocity = Vector3(-1.2, 0, 0)
+position = Vector3(2, -0.975, -1)
+
+[node name="EndB" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(6, 0.7, 0.05)
+user_material_id = 3
+position = Vector3(2, -0.65, 0.975)
+
+[node name="EndF" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(6, 0.7, 0.05)
+user_material_id = 3
+position = Vector3(2, -0.65, -2.975)
+
+[node name="Undersize" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(5.6, 0.5, 3.8)
+is_sensor = true
+collision_layer = 1073741824
+position = Vector3(2, -0.65, -1)

@@ -1,8 +1,8 @@
 """
-Renders the Structure Hall from ObjectMuseum.tscn (structures, walls, decor and signs) for review without Godot.
+Renders the Structure Hall and Concept Lab from ObjectMuseum.tscn (structures, walls, decor and signs) for review without Godot.
 Needs Blender's Python module (pip install bpy==4.5.14).
 
-    python3 tools/structures/view_hall.py <out.png> [top | cam_x,cam_y,cam_z:target_x,target_y,target_z] (Godot coordinates)
+    python3 tools/structures/view_hall.py <out.png> [top | lab | wing | cam_x,cam_y,cam_z:target_x,target_y,target_z] (Godot coordinates)
 """
 import os, sys, re, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -13,7 +13,7 @@ from mathutils import Matrix, Vector
 G2B = Matrix(((1, 0, 0), (0, 0, -1), (0, 1, 0)))
 MUSEUM = os.path.join(REPO, "game", "scenes", "levels", "ObjectMuseum.tscn")
 COLORS = {"hall_box_panel": (0.75, 0.75, 0.72), "hall_box_frame": (0.06, 0.06, 0.07), "hall_box_hazard": (0.85, 0.6, 0.05),
-          "hall_box_floor": (0.2, 0.2, 0.21)}
+          "hall_box_floor": (0.2, 0.2, 0.21), "hall_box_tar": (0.02, 0.018, 0.015)}
 
 def xf(text):
     v = [float(x) for x in text.split("(", 1)[1].rstrip(")").split(",")]
@@ -36,7 +36,7 @@ def main(out, view):
     ext = dict((m.group(2), m.group(1)) for m in re.finditer(r'path="(res://[^"]+)" id="(hall_\d+)"', txt))
     body = txt[txt.find('[node name="StructureHall"'):]
     blocks = re.split(r"\n(?=\[node )", body)
-    frames = {"StructureHall": (Matrix.Identity(3), Vector())}
+    frames = {}
     glb_cache = {}
     for blk in blocks:
         head = blk.split("\n", 1)[0]
@@ -54,37 +54,56 @@ def main(out, view):
             M, o = xf(props["transform"])
         elif "position" in props:
             o = Vector([float(x) for x in props["position"].split("(", 1)[1].rstrip(")").split(",")])
+        if name == "Room" and os.environ.get("ROOM_ANGLE"):          # show the rotating room turned (degrees about X)
+            M = M @ Matrix.Rotation(math.radians(float(os.environ["ROOM_ANGLE"])), 3, 'X')
         Mw, ow = pm @ M, pm @ o + po
         frames[key] = (Mw, ow)
         inst = re.search(r'instance=ExtResource\("(hall_\d+)"\)', head)
         if inst:
-            scene = open(res_to_abs(ext[inst.group(1)])).read()
-            glb = re.search(r'path="(res://[^"]+\.glb)"', scene).group(1)
+            if ext[inst.group(1)].endswith(".glb"):
+                scene, glb = "", ext[inst.group(1)]
+            else:
+                scene = open(res_to_abs(ext[inst.group(1)])).read()
+                m = re.search(r'path="(res://[^"]+\.glb)"', scene)
+                if not m:
+                    print("no model in", ext[inst.group(1)]); continue
+                glb = m.group(1)
             mt = re.search(r'\[node name="Model"[^\n]*\]\ntransform = (Transform3D\([^)]+\))', scene)
             MM, mo = xf(mt.group(1)) if mt else (Matrix.Identity(3), Vector())
             before = set(sc.objects)
             bpy.ops.import_scene.gltf(filepath=res_to_abs(glb))
             T = to_blender(Mw @ MM, Mw @ mo + ow)
             for ob in [x for x in sc.objects if x not in before]:
+                ob.animation_data_clear()                     # keyframes would pull the parts back to the model origin
                 if ob.parent is None:
                     ob.matrix_world = T @ ob.matrix_world
-                if ob.name.startswith("Field"):
+                if ob.name.startswith(("Field", "Heat", "Steam", "Core")):     # additive shells in Godot; opaque here
                     ob.hide_render = True
         elif 'type="MeshInstance3D"' in head and "mesh" in props:
             mid = re.search(r'SubResource\("([^"]+)"\)', props["mesh"]).group(1)
+            if mid == "hall_box_glass":
+                continue
             bpy.ops.mesh.primitive_cube_add(size=1)
             ob = bpy.context.object
             ob.matrix_world = to_blender(Mw, ow)
             ob.data.materials.append(mat(mid, COLORS.get(mid, (0.5, 0.5, 0.5))))
         elif 'type="Label3D"' in head and "text" in props:
-            cu = bpy.data.curves.new("t", 'FONT'); cu.body = props["text"].strip('"')
+            cu = bpy.data.curves.new("t", 'FONT'); cu.body = props["text"].strip('"').replace("\\n", "\n")
             size = int(props.get("font_size", "32")) * float(props.get("pixel_size", "0.01"))
             cu.size = size; cu.align_x = 'CENTER'
             ob = bpy.data.objects.new("Label", cu); sc.collection.objects.link(ob)
             ob.data.materials.append(mat("LabelMat", (1, 1, 1), 2.0))
             ob.matrix_world = to_blender(Mw, ow) @ Matrix.Rotation(math.pi / 2, 4, 'X')
     cam = bpy.data.objects.new("Cam", bpy.data.cameras.new("Cam")); sc.collection.objects.link(cam); sc.camera = cam
-    if view == "top":
+    if view == "wing":
+        cam.data.type = 'ORTHO'; cam.data.ortho_scale = 84
+        cam.location = G2B @ Vector((0, 120, 88)); cam.rotation_euler = (0, 0, 0)
+        sc.render.resolution_x, sc.render.resolution_y = 1200, 900
+    elif view == "lab":
+        cam.data.type = 'ORTHO'; cam.data.ortho_scale = 84
+        cam.location = G2B @ Vector((0, 120, -90)); cam.rotation_euler = (0, 0, 0)
+        sc.render.resolution_x, sc.render.resolution_y = 1200, 900
+    elif view == "top":
         cam.data.type = 'ORTHO'; cam.data.ortho_scale = 124
         cam.location = G2B @ Vector((88, 120, 0)); cam.rotation_euler = (0, 0, 0)
         sc.render.resolution_x, sc.render.resolution_y = 1000, 1260
