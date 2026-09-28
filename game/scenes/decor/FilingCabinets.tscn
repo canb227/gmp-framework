@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://bij5yzeocs5z5"]
+
+[ext_resource type="PackedScene" uid="uid://535fbhzqsxgj" path="res://game/assets/models/props/decor/filing_cabinets.glb" id="1_model"]
+
+[node name="FilingCabinets" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(3.77396, 1.4, 2.04213)
+position = Vector3(0.36597, 0.7, 0.67106)

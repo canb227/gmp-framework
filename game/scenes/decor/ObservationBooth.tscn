@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://becqzu4h340fl"]
+
+[ext_resource type="PackedScene" uid="uid://bfyap13j85m2w" path="res://game/assets/models/props/decor/observation_booth.glb" id="1_model"]
+
+[node name="ObservationBooth" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(3.2, 3.6, 3.25291)
+position = Vector3(0, 1.8, 0.52646)

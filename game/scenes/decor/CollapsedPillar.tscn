@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://babhi0ptleobh"]
+
+[ext_resource type="PackedScene" uid="uid://8ridj5pc2e0q" path="res://game/assets/models/props/decor/collapsed_pillar.glb" id="1_model"]
+
+[node name="CollapsedPillar" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(5.49114, 1.35921, 2.79842)
+position = Vector3(-0.04446, 0.6796, 0.24339)

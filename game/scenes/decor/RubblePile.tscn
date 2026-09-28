@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://bdffrlz0vth7d"]
+
+[ext_resource type="PackedScene" uid="uid://1x8ddndqyodx" path="res://game/assets/models/props/decor/rubble_pile.glb" id="1_model"]
+
+[node name="RubblePile" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(3.30996, 1.52702, 3.32814)
+position = Vector3(-0.12308, 0.76351, -0.10217)

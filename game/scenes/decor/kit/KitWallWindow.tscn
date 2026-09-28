@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://bel2s1vkgrikb"]
+
+[ext_resource type="PackedScene" uid="uid://00lu28gckodp" path="res://game/assets/models/props/kit/kit_wall_window.glb" id="1_model"]
+
+[node name="KitWallWindow" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(4, 4, 0.3)
+position = Vector3(0, 2, 0)

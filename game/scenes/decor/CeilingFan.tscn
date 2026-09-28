@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://bhytopeu4eq7t"]
+
+[ext_resource type="PackedScene" uid="uid://bgu0j0g5xqs7j" path="res://game/assets/models/props/decor/ceiling_fan.glb" id="1_model"]
+
+[node name="CeilingFan" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="AnimationPlayer" parent="Model"]
+autoplay = "idle-loop"

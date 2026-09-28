@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://bllaxlhdzubet"]
+
+[ext_resource type="PackedScene" uid="uid://bh1s6mzgztu8s" path="res://game/assets/models/props/decor/cracked_pillar.glb" id="1_model"]
+
+[node name="CrackedPillar" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(1.9253, 5.98038, 2.12778)
+position = Vector3(0.13782, 2.99019, -0.00291)

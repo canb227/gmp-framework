@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://bjntggoylb7zo"]
+
+[ext_resource type="PackedScene" uid="uid://660eq0edyzfd" path="res://game/assets/models/props/decor/cryo_pod.glb" id="1_model"]
+
+[node name="CryoPod" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="AnimationPlayer" parent="Model"]
+autoplay = "idle-loop"
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(2.31238, 2.69069, 1.46083)
+position = Vector3(0.45619, 1.34535, -0.22842)

@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://bbkaj7pl42tqm"]
+
+[ext_resource type="PackedScene" uid="uid://blo4mrpj3ojh7" path="res://game/assets/models/props/decor/crate_stack.glb" id="1_model"]
+
+[node name="CrateStack" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(4.14963, 1.9, 1.94477)
+position = Vector3(-0.49844, 0.95, 0.14477)

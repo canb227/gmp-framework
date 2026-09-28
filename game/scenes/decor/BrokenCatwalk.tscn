@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://bd5cm31o4o4lb"]
+
+[ext_resource type="PackedScene" uid="uid://bagcyaqwdxhy2" path="res://game/assets/models/props/decor/broken_catwalk.glb" id="1_model"]
+
+[node name="BrokenCatwalk" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(4, 0.1, 1.4)
+position = Vector3(-2, 3, 0)
+
+[node name="Collider1" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(0.15, 3, 0.15)
+position = Vector3(-3.5, 1.5, -0.6)
+
+[node name="Collider2" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(0.15, 3, 0.15)
+position = Vector3(-3.5, 1.5, 0.6)
+
+[node name="Collider3" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(0.15, 3, 0.15)
+position = Vector3(-0.5, 1.5, -0.6)
+
+[node name="Collider4" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(0.15, 3, 0.15)
+position = Vector3(-0.5, 1.5, 0.6)

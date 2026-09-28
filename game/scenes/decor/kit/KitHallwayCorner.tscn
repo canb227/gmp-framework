@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://6z3hqfxm7yfc"]
+
+[ext_resource type="PackedScene" uid="uid://bgwj80kccxe4b" path="res://game/assets/models/props/kit/kit_hallway_corner.glb" id="1_model"]
+
+[node name="KitHallwayCorner" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(4, 0.3, 4)
+position = Vector3(0, -0.15, 0)
+
+[node name="Collider1" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(0.3, 4, 4)
+position = Vector3(-1.85, 2, 0)
+
+[node name="Collider2" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(4, 4, 0.3)
+position = Vector3(0, 2, -1.85)
+
+[node name="Collider3" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(4, 0.3, 4)
+position = Vector3(0, 4.15, 0)

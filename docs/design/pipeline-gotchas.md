@@ -42,3 +42,11 @@
 - There's no Godot or .NET in the cloud container, so C# can't be compiled or scenes run. Say so in PRs.
 - `excalidraw.com` is blocked by the network policy.
 - Use `pip install bpy==4.5.14` for Blender, and Pillow for contact sheets.
+
+## Decor and kit
+- Decor props put their origin on the floor, not at a cell centre, and their fronts face Blender -Y (Godot +Z).
+  Kit pieces use a 4 m module.
+- `gen_decor.py` builds bounding-box colliders from glb node translation and scale, ignoring rotation. Any
+  prop whose bounds would make a bad collider (a tree canopy, a catwalk, a hollow tower) needs hand-set boxes in `CUSTOM`/`KIT`.
+- A Box3DBody's own shape is always centred on its origin, so colliders offset from the root are separate
+  child bodies.

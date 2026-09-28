@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://bk37xctter5ep"]
+
+[ext_resource type="PackedScene" uid="uid://3hs710wjgfcr" path="res://game/assets/models/props/decor/panel_arm_wall.glb" id="1_model"]
+
+[node name="PanelArmWall" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="AnimationPlayer" parent="Model"]
+autoplay = "idle-loop"
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(38, 26, 1)
+position = Vector3(0, 13, -1.5)

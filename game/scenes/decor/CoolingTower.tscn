@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://bcq5a4hpikd2r"]
+
+[ext_resource type="PackedScene" uid="uid://blq5xggt6s746" path="res://game/assets/models/props/decor/cooling_tower.glb" id="1_model"]
+
+[node name="CoolingTower" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="AnimationPlayer" parent="Model"]
+autoplay = "idle-loop"

@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://bfu6du5yech45"]
+
+[ext_resource type="PackedScene" uid="uid://2h5e6llogxd0" path="res://game/assets/models/props/decor/cable_drapes.glb" id="1_model"]
+
+[node name="CableDrapes" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]

@@ -173,3 +173,35 @@ Corrundum's storm charge.
 | 6 The Tar Pit (-125, 37) | tar blob (STICKY, cures into tar rock) + chalk → **belt scraper** → **coating drum** → coated pellet → plate press → bitumen brick | blobs cling to belts (they need scraping off), glue into plugs in chutes and cure if buffered; cold pauses both; the chalk ratio has to be right | spawner on a raised deck, belts, scraper, a really spinning tilted drum (kinematic, 12 staves + 4 lifters), exit ramp, a real Plate Press, void, a cryo-vent cold store, and a friction-3 tar floor. Pellets, bricks, the jam and the rejects are a frozen tableau. |
 
 Items don't transform yet (no recipes or tag scripts), so the live lines carry raw sand, tar and chalk end to end.
+
+## Object Museum: the lower level (The Ruins)
+
+A second level 25 m below the museum (floor top y -25), built by `place_museum.py` (`lower_level()`). It
+holds non-functional decorative props, some of them animated. You reach it by a five-flight switchback
+stairwell cut into the Puzzle Rooms floor at x -57..-43, z 44..52, which opens east at the bottom.
+
+- **Catalogue** (x -40..40, z 30..90): one row of the level-building kit (catwalk decks shown on a support)
+  and two rows of ruin props, each labelled.
+- **Overgrown Laboratory** (x -134..-94, z -60..-36): a lab built from kit floors, walls, windows and a doorway,
+  gone to seed. It has benches, cryo pods, terminals, a monitor bank, trees through the floor and hanging
+  lamps, with a kit hallway leading out of its east door and wild growth around it.
+- **Crumbling Factory** (x 60..156, z -120..120): a grid of columns and cracked or collapsed pillars, a kit
+  catwalk loop at 4 m with stairs up to a landing, a broken catwalk, pipework, cable drapes, fans and
+  scattered wreckage.
+- **Superstructure Yard** (x 205..560, reached by a causeway): proofs of concept of massive structures, placed
+  in the open, away from the main area:
+  - a 42 m cooling tower with rising steam;
+  - a 50 m gantry crane with a travelling trolley;
+  - a reactor sphere with spinning containment rings;
+  - a 72 m arcology spire;
+  - a broken sky bridge;
+  - a wall of panels on pistons that shift in and out.
+- Omni lights light the level, since the floors above shade it. `VIEW_SECTION=LowerLevel view_hall.py ...`
+  renders only this level.
+
+**Assets.** The props come from `run.py build decor` (`props/decor/source/build_decor.py`) and the kit from
+`run.py build kit` (`props/kit/source/build_kit.py`). `tools/decor/gen_decor.py` writes the scenes to
+`game/scenes/decor/` and `game/scenes/decor/kit/`. Each scene is a Node3D root plus the model (its idle-loop
+autoplaying) plus static Box3DBody colliders: model bounds for solid props, hand-set boxes for the tree, the
+catwalk, the superstructures and every kit piece. Decor origins sit on the floor. Prop fronts face +Z;
+kit corridors and catwalks run along -Z on a 4 m module.

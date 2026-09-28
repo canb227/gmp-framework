@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://bchk0ok0c6rom"]
+
+[ext_resource type="PackedScene" uid="uid://1uk6w42usore" path="res://game/assets/models/props/decor/hanging_vines.glb" id="1_model"]
+
+[node name="HangingVines" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="AnimationPlayer" parent="Model"]
+autoplay = "idle-loop"

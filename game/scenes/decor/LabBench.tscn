@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://bla4ijevgg1pd"]
+
+[ext_resource type="PackedScene" uid="uid://babnz7kz8udg5" path="res://game/assets/models/props/decor/lab_bench.glb" id="1_model"]
+
+[node name="LabBench" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(3.14959, 1.35, 1.19868)
+position = Vector3(0.07479, 0.675, -0.00112)

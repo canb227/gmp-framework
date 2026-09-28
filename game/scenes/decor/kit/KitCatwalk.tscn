@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://857w2x4oxttu"]
+
+[ext_resource type="PackedScene" uid="uid://2bzxoi7w0eac" path="res://game/assets/models/props/kit/kit_catwalk.glb" id="1_model"]
+
+[node name="KitCatwalk" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(1.6, 0.12, 4)
+position = Vector3(0, -0.06, 0)
+
+[node name="Collider1" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(0.05, 1, 4)
+position = Vector3(-0.8, 0.5, 0)
+
+[node name="Collider2" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(0.05, 1, 4)
+position = Vector3(0.8, 0.5, 0)
