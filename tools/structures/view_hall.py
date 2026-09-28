@@ -54,6 +54,8 @@ def main(out, view):
             M, o = xf(props["transform"])
         elif "position" in props:
             o = Vector([float(x) for x in props["position"].split("(", 1)[1].rstrip(")").split(",")])
+        if name == "Room" and os.environ.get("ROOM_ANGLE"):          # show the rotating room turned (degrees about X)
+            M = M @ Matrix.Rotation(math.radians(float(os.environ["ROOM_ANGLE"])), 3, 'X')
         Mw, ow = pm @ M, pm @ o + po
         frames[key] = (Mw, ow)
         inst = re.search(r'instance=ExtResource\("(hall_\d+)"\)', head)
@@ -79,6 +81,8 @@ def main(out, view):
                     ob.hide_render = True
         elif 'type="MeshInstance3D"' in head and "mesh" in props:
             mid = re.search(r'SubResource\("([^"]+)"\)', props["mesh"]).group(1)
+            if mid == "hall_box_glass":
+                continue
             bpy.ops.mesh.primitive_cube_add(size=1)
             ob = bpy.context.object
             ob.matrix_world = to_blender(Mw, ow)

@@ -127,3 +127,24 @@ resources (hazards). Each item has a station:
 Where an item is made from the item to its left, the pair is joined by a floor stripe and an arrow naming the
 process. The items themselves are documented in `tools/items/README.md`. `view_hall.py <out.png> wing` renders
 the wing.
+
+## Object Museum: Puzzle Rooms wing
+
+`place_museum.py` also builds the Puzzle Rooms wing, a large open floor west of the original museum
+(x -150..-40, z -60..60) for whole-room puzzle concepts. Two plots are outlined and reserved for later rooms.
+
+**Room 1, the Tumbler:** a 5×5×5-cell room (10 m inside) centred on (-80, 7.5, -30) that turns 90° about its
+long (world X) axis every 10 s (a 4 s turn, then a 6 s hold). It is driven by `game/scripts/entities/RotatingRoom.cs`.
+- The room is one kinematic `Box3DBody`, turned by setting its angular velocity so that players and items
+  touching it get carried. The velocity follows a smoothstep profile, plus a correction toward the target angle.
+  Setting `driveTransform` rotates the node instead.
+- Every wall is a child `Box3DCollisionShape`, and so is every belt, frozen item, the spawner and the deposit box,
+  so it all turns and collides as one body. The meshes inside are plain children.
+- The tableau is a winding magnetic-belt path from a spawner: along the floor, up the far wall, across the
+  ceiling, down the near wall and back along the floor to a deposit box. It is loaded with frozen iron and
+  scrap items, and nothing inside operates.
+- Access:
+  - **Way in:** stairs and a bridge lead to the hub hole in the east end wall; you drop in from there.
+  - **Way out:** that end wall has a doorway at the middle of each edge, so whenever the room stops, one of them
+    sits at floor level over the static exit landing.
+- Rendering: `ROOM_ANGLE=<degrees> view_hall.py <out.png> <camera>` renders the room turned.

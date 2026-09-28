@@ -544,6 +544,173 @@ def wing():
                 h.stripe(st, "ChainStripe", (x - SPACING + 0.9, z - 0.1), (x - 0.9, z + 0.1))
             prev = (iid, name)
 
+# ---------------------------------------------------------------------------- the puzzle rooms wing
+def cross3(a, b): return (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
+def xf(cols, pos, scale=(1, 1, 1)):
+    """Transform3D text from basis columns (X, Y, Z), a position and a per-axis scale (the format is row-major)."""
+    X, Y, Z = cols
+    rows = [(X[r] * scale[0], Y[r] * scale[1], Z[r] * scale[2]) for r in range(3)]
+    return "Transform3D(" + ", ".join(f(v) for row in rows for v in row) + f", {f(pos[0])}, {f(pos[1])}, {f(pos[2])})"
+IDB = ((1, 0, 0), (0, 1, 0), (0, 0, 1))
+def on_surface(n, fwd):
+    """Basis for a structure lying on a surface with inward normal n and flow fwd (model -Z = flow, +Y = n)."""
+    return (cross3(fwd, n), n, tuple(-v for v in fwd))
+
+ROOM = (-80.0, 7.5, -30.0)          # rotating room centre = its axis (world X)
+RH, RT = 5.0, 0.3                   # inner half size, wall thickness
+DOOR = 1.0                          # doorway half width in the end faces
+M_MAG = "res://game/assets/models/conveyors_magnetic/conveyor_mag_straight.glb"
+
+def room_path():
+    """The tableau: spawner -> floor -> up the far wall -> across the ceiling -> down the near wall -> floor -> deposit.
+    Cells (i, j, k) of the 5x5x5 room, surface normal (into the room) and flow direction."""
+    up, down, north_wall, south_wall = (0, 1, 0), (0, -1, 0), (0, 0, -1), (0, 0, 1)
+    X, Y, Z = (1, 0, 0), (0, 1, 0), (0, 0, 1)
+    nY, nZ = (0, -1, 0), (0, 0, -1)
+    return ([((1, 0, k), up, Z) for k in (1, 2, 3, 4)] +
+            [((1, j, 4), north_wall, Y) for j in (1, 2, 3)] +
+            [((1, 4, 4), down, nZ), ((1, 4, 3), down, nZ), ((1, 4, 2), down, nZ), ((1, 4, 1), down, X), ((2, 4, 1), down, X),
+             ((3, 4, 1), down, nZ), ((3, 4, 0), down, nZ)] +
+            [((3, j, 0), south_wall, nY) for j in (3, 2, 1)] +
+            [((3, 0, k), up, Z) for k in (0, 1, 2, 3)])
+
+ITEMS_ON_BELT = [   # glb, half height along the belt normal, lying rod
+    ("res://game/assets/models/items/iron_ingot.glb", 0.15, False), ("res://game/assets/models/items/iron_plate.glb", 0.04, False),
+    ("res://game/assets/models/items/scrap_ball.glb", 0.34, False), ("res://game/assets/models/items/iron_rod.glb", 0.1, True),
+    ("res://game/assets/models/items/magnet_core.glb", 0.25, False),
+]
+
+def puzzle_rooms():
+    h = LAB
+    h.node('[node name="PuzzleRooms" type="Node3D" parent="."]')
+    h.block("PuzzleRooms", "WingFloor", (-150, -1, -60), (-40, 0, 60), "floor")
+    arch = h.group("Architecture", "PuzzleRooms")
+    h.wall(arch, "WallNorth", (-150, 60), (-40, 60), 10.0)
+    h.wall(arch, "WallSouth", (-150, -60), (-40, -60), 10.0)
+    h.wall(arch, "WallWest", (-150, -60), (-150, 60), 10.0)
+    h.stripe(arch, "Threshold", (-40.4, -60), (-40, 60))
+    h.label(arch, "WingTitle", (-40.6, 11.2, 0), "PUZZLE ROOMS", size=128, pixel=0.03, billboard=False, yaw=1)
+    h.label(arch, "WingSubtitle", (-40.6, 9.9, 0), "whole-room puzzle concepts  -  walk-in proofs of concept", size=64, pixel=0.02, billboard=False, yaw=1)
+    for name, (x, z) in (("Room2", (-80, 30)), ("Room3", (-125, 0))):                # reserved plots
+        g = h.group(name + "Plot", "PuzzleRooms")
+        h.outline(g, name + "Edge", int(x / 2) - 7, int(x / 2) + 6, int(z / 2) - 7, int(z / 2) + 6)
+        h.label(g, name + "Label", (x, 2.0, z), f"{name[:4].upper()} {name[4:]}  -  reserved", size=96, pixel=0.015)
+    tumbler(h)
+
+def tumbler(h):
+    RX, RY, RZ = ROOM
+    g = h.group("Tumbler", "PuzzleRooms")
+    # ---- the static frame: pylons with bearing collars, entrance bridge + stairs, exit landing + stairs
+    O = RH + RT                                           # outer half size
+    for sx in (-1, 1):
+        px = RX + sx * (O + 1.0)
+        if sx < 0:
+            h.block(g, "PylonWest", (px - 0.7, 0, RZ - 1.5), (px + 0.7, RY + 1.8, RZ + 1.5), "frame")
+        else:
+            for (z0, z1) in ((-3.0, -1.8), (1.8, 3.0)):     # two legs: the exit landing and bridge pass between them
+                h.block(g, "PylonLeg", (px - 0.4, 0, RZ + z0), (px + 0.4, RY + 2.6, RZ + z1), "frame")
+            h.block(g, "PylonLintel", (px - 0.4, RY + 2.6, RZ - 3.0), (px + 0.4, RY + 3.3, RZ + 3.0), "frame")
+        cx = RX + sx * (O + 0.25)                          # bearing collar (static) round the axis, clear of the room
+        for (y0, y1, z0, z1) in ((1.8, 2.3, -2.3, 2.3), (-2.3, -1.8, -2.3, 2.3), (-1.8, 1.8, 1.8, 2.3), (-1.8, 1.8, -2.3, -1.8)):
+            h.block(g, "Collar", (cx - 0.2, RY + y0, RZ + z0), (cx + 0.2, RY + y1, RZ + z1), "hazard", solid=False)
+    deck = RY - 1.2
+    x0 = RX + O + 0.05
+    h.block(g, "Bridge", (x0, deck - 0.3, RZ - 0.8), (RX + 15.0, deck, RZ + 0.8), "frame")
+    h.block(g, "BridgeHead", (RX + 13.0, deck - 0.3, RZ - 0.8), (RX + 15.0, deck, RZ + 1.6), "frame")
+    for sz in (-1, 1):
+        h.block(g, "Rail", (RX + O + 1.6, deck, RZ + sz * 0.8 - 0.04), (RX + 15.0, deck + 1.0, RZ + sz * 0.8 + 0.04), "hazard")
+    for k in range(20):                                   # entrance stairs, north from the bridge head
+        top = deck - 0.3 * (k + 1)
+        h.block(g, "Stair", (RX + 13.0, 0, RZ + 1.6 + 0.6 * k), (RX + 15.0, top, RZ + 1.6 + 0.6 * (k + 1)), "panel")
+    land = RY - RH                                        # the floor's height whenever the room is at rest
+    h.block(g, "Landing", (x0, 0, RZ - 1.5), (RX + 9.0, land, RZ + 1.5), "panel")
+    h.stripe(g, "LandingEdge", (x0, RZ - 1.5), (x0 + 0.3, RZ + 1.5))
+    for k in range(8):                                    # exit stairs, east from the landing
+        top = land - 0.3 * (k + 1)
+        h.block(g, "ExitStair", (RX + 9.0 + 0.6 * k, 0, RZ - 1.5), (RX + 9.0 + 0.6 * (k + 1), top, RZ + 1.5), "panel")
+    h.label(g, "Title", (RX + 16.5, 9.0, RZ + 3), "PUZZLE ROOM 1: THE TUMBLER", size=96, pixel=0.018)
+    h.label(g, "Story", (RX + 16.5, 5.5, RZ + 3),
+            "The whole room turns a quarter turn about its long axis, pauses, and turns again: floor becomes wall becomes ceiling. "
+            "Everything built inside turns with it, so only magnetic belts keep their loads, and the path from the spawner to the deposit "
+            "box has to work in every orientation (or use the turns on purpose: tip a load from one belt run onto another).\n\n"
+            "Walk in from the bridge and drop through the hub. Whenever the room stops, a doorway in the near end sits at floor level "
+            "over the exit landing. The structures and items here are a frozen tableau; the room and its colliders really turn.",
+            size=28, pixel=0.006, width=9.0, outline=4)
+    # ---- the rotating room: a kinematic body with every wall and structure collider as a child shape
+    body = h.uname("Room")
+    h.node(f'[node name="{body}" type="Box3DBody" parent="{g}"]', "body_type = 1", "shape_type = 1", "sphere_radius = 0.05",
+           f"position = Vector3({f(RX)}, {f(RY)}, {f(RZ)})", f'script = ExtResource("{h.ext_id("res://game/scripts/entities/RotatingRoom.cs", "Script")}")',
+           "axis = Vector3(1, 0, 0)", "stepDegrees = 90.0", "turnSeconds = 4.0", "holdSeconds = 6.0")
+    rb = f"{g}/{body}"
+    def shape(name, c, size, cols=IDB):
+        h.node(f'[node name="{h.uname(name)}" type="Box3DCollisionShape" parent="{rb}"]', f"box_size = Vector3({f(size[0])}, {f(size[1])}, {f(size[2])})",
+               f"transform = {xf(cols, c)}")
+    def mesh(name, c, size, mat, cols=IDB):
+        h.node(f'[node name="{h.uname(name)}" type="MeshInstance3D" parent="{rb}"]', f"transform = {xf(cols, c, size)}", f'mesh = SubResource("hall_box_{mat}")')
+    def slab(name, lo, hi, mat="panel", collide=True):
+        c = tuple((a + b) / 2 for a, b in zip(lo, hi)); size = tuple(b - a for a, b in zip(lo, hi))
+        if collide: shape(name + "Col", c, size)
+        mesh(name, c, size, mat)
+    # the four turning faces: floor-plate inside, a window band down the middle, frame edges
+    for axis in (1, 2):
+        for sgn in (-1, 1):
+            lo, hi = [-O, 0, 0], [O, 0, 0]
+            lo[axis], hi[axis] = sgn * RH if sgn > 0 else -O, O if sgn > 0 else -RH
+            other = 3 - axis
+            nm = {1: "Y", 2: "Z"}[axis] + ("P" if sgn > 0 else "N")
+            shape(f"Face{nm}Col", tuple((a + b) / 2 for a, b in zip(lo, hi)), tuple((hi[i] - lo[i]) if i != other else 2 * O for i in range(3)))
+            for (a0, a1, mat) in ((-O, -1.0, "floor"), (-1.0, 1.0, "glass"), (1.0, O, "floor")):
+                l2, h2 = list(lo), list(hi); l2[other], h2[other] = a0, a1
+                mesh(f"Face{nm}", tuple((p + q) / 2 for p, q in zip(l2, h2)), tuple(q - p for p, q in zip(l2, h2)), mat)
+            for so in (-1, 1):                            # dark edge frames along the long edges
+                c = [0, 0, 0]; c[axis] = sgn * (RH + RT / 2); c[other] = so * (O - 0.15)
+                size = [2 * O + 0.02, 0, 0]; size[axis] = RT + 0.04; size[other] = 0.32
+                mesh(f"Edge{nm}", tuple(c), tuple(size), "frame")
+    # end faces: the west one solid with a window, the east one with the entry hub and a doorway at each edge
+    slab("EndWest", (-O, -O, -O), (-RH, O, O), "panel")
+    cuts = [(-1.8, 1.8, -1.8, 1.8), (-O, -RH + 2.4, -DOOR, DOOR), (RH - 2.4, O, -DOOR, DOOR), (-DOOR, DOOR, -O, -RH + 2.4), (-DOOR, DOOR, RH - 2.4, O)]
+    grid = sorted({-O, O, -1.8, 1.8, -DOOR, DOOR, -RH + 2.4, RH - 2.4})
+    for a in range(len(grid) - 1):
+        for b in range(len(grid) - 1):
+            y0, y1, z0, z1 = grid[a], grid[a + 1], grid[b], grid[b + 1]
+            cy, cz = (y0 + y1) / 2, (z0 + z1) / 2
+            if any(c0 < cy < c1 and d0 < cz < d1 for c0, c1, d0, d1 in cuts):
+                continue
+            slab("EndEast", (RH, y0, z0), (O, y1, z1), "panel")
+    for (y0, y1, z0, z1) in cuts:                         # hazard frames round the hub and the doorways
+        w = 0.12
+        for (a0, a1, b0, b1) in ((y0 - w, y0, z0 - w, z1 + w), (y1, y1 + w, z0 - w, z1 + w), (y0, y1, z0 - w, z0), (y0, y1, z1, z1 + w)):
+            a0, a1, b0, b1 = max(a0, -O), min(a1, O), max(b0, -O), min(b1, O)
+            if a1 > a0 and b1 > b0:
+                mesh("OpeningFrame", (O + 0.01, (a0 + a1) / 2, (b0 + b1) / 2), (0.02, a1 - a0, b1 - b0), "hazard")
+    mesh("AxisMark", (0, 0, 0), (0.12, 0.12, 0.12), "hazard")
+    # the tableau: magnetic belts, frozen items, spawner and deposit box
+    cell = lambda i, j, k: (2 * i - 4, 2 * j - 4, 2 * k - 4)
+    mag = h.ext_id(M_MAG, "PackedScene")
+    for n, (c, nrm, fwd) in enumerate(room_path()):
+        p = cell(*c)
+        cols = on_surface(nrm, fwd)
+        h.node(f'[node name="{h.uname("MagBelt")}" parent="{rb}" instance=ExtResource("{mag}")]', f"transform = {xf(cols, p)}")
+        shape("BeltCol", tuple(p[i] + nrm[i] * -0.97 for i in range(3)), (1.9, 0.24, 1.9), cols)
+        if n % 2 == 0:
+            glb, half, lying = ITEMS_ON_BELT[(n // 2) % len(ITEMS_ON_BELT)]
+            q = tuple(p[i] + nrm[i] * (-0.85 + half) for i in range(3))
+            icol = (cross3(fwd, nrm), fwd, nrm) if lying else cols
+            h.node(f'[node name="{h.uname("FrozenItem")}" parent="{rb}" instance=ExtResource("{h.ext_id(glb, "PackedScene")}")]', f"transform = {xf(icol, q)}")
+            shape("ItemCol", q, (0.8, 2 * half, 0.8) if not lying else (0.25, 1.2, 0.25), icol)
+    up = (0, 1, 0)
+    sp = cell(1, 0, 0)
+    h.node(f'[node name="Spawner" parent="{rb}" instance=ExtResource("{h.ext_id("res://game/assets/models/props/spawner.glb", "PackedScene")}")]',
+           f"transform = {xf(on_surface(up, (0, 0, 1)), sp)}")
+    shape("SpawnerCol", (sp[0], sp[1] - 0.2, sp[2]), (1.8, 1.6, 1.8))
+    dp = cell(3, 0, 4)
+    h.node(f'[node name="Deposit" parent="{rb}" instance=ExtResource("{h.ext_id("res://game/assets/models/props/item_void.glb", "PackedScene")}")]',
+           f"transform = {xf(on_surface(up, (0, 0, 1)), dp)}")
+    shape("DepositCol", (dp[0], dp[1] - 0.6, dp[2]), (1.9, 0.8, 1.9))
+    for name, p, text in (("StartLabel", sp, "SPAWNER"), ("EndLabel", dp, "DEPOSIT")):
+        h.node(f'[node name="{name}" type="Label3D" parent="{rb}"]', f"position = Vector3({f(p[0])}, {f(p[1] + 1.4)}, {f(p[2])})",
+               "billboard = 1", "pixel_size = 0.01", "font_size = 48", "outline_size = 12", f'text = "{text}"')
+
 SUBS = """[sub_resource type="StandardMaterial3D" id="hall_mat_panel"]
 albedo_color = Color(0.78, 0.78, 0.76, 1)
 roughness = 0.45
@@ -575,6 +742,16 @@ material = SubResource("hall_mat_hazard")
 
 [sub_resource type="BoxMesh" id="hall_box_floor"]
 material = SubResource("hall_mat_floor")
+
+[sub_resource type="StandardMaterial3D" id="hall_mat_glass"]
+transparency = 1
+cull_mode = 2
+albedo_color = Color(0.5, 0.85, 1, 0.18)
+metallic = 0.3
+roughness = 0.05
+
+[sub_resource type="BoxMesh" id="hall_box_glass"]
+material = SubResource("hall_mat_glass")
 """
 
 def main():
@@ -585,13 +762,14 @@ def main():
     LAB = h
     lab()
     wing()
+    puzzle_rooms()
     floor_tex = h.ext_id("res://game/assets/textures/floor_1/floor_1_diffuseOriginal.png", "Texture2D")
     # remove earlier galleries / halls (new resources go where the old ones were)
     old = re.search(r'\[ext_resource [^\n]*id="(sg|hall)_[^"]*"\]\n', txt)
     txt = txt if not old else txt[:old.start()] + "\0HALL_EXT\n" + txt[old.start():]
     txt = re.sub(r'\[ext_resource [^\n]*id="(sg|hall)_[^"]*"\]\n', "", txt)
     txt = re.sub(r'\[sub_resource [^\n]*id="hall_[^"]*"\]\n(?:[^\[\n][^\n]*\n)*\n?', "", txt)
-    for marker in ('\n[node name="StructureGallery"', '\n[node name="StructureHall"', '\n[node name="ConceptLab"', '\n[node name="MaterialsWing"'):
+    for marker in ('\n[node name="StructureGallery"', '\n[node name="StructureHall"', '\n[node name="ConceptLab"', '\n[node name="MaterialsWing"', '\n[node name="PuzzleRooms"'):
         cut = txt.find(marker)
         if cut >= 0:
             txt = txt[:cut].rstrip("\n") + "\n"
