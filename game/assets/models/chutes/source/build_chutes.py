@@ -6,7 +6,8 @@ Chutes: gravity channels for solid items, in two tiers.
                              linear-motor emitters (show it / drive the push force when the chute is powered)
 
 Pieces (all origin at the anchor cell centre, floor z = -1, front = +Y):
-  h_straight      1x1x1  open-top channel along +Y, floor at belt height (z -0.85), walls to z 0.35
+  h_straight      1x1x1  closed channel along +Y (lidded, open only at its ends), floor at belt height (z -0.85),
+                         lid at z 0.35
   h_turn_right    1x1x1  enters at the back, leaves through +X (h_turn_left is the mirror)
   v_straight      1x1x1  vertical square bore (1.5 x 1.5 m) open at top and bottom
   v_turn          1x1x1  elbow: enters through the top face, leaves through the front face at channel height
@@ -111,12 +112,17 @@ def channel_basic(B, path, rng, height, closed=False, rollers=False):
             for side in (-1, 1):
                 B.cyl(p + Vector((side * (IN - 0.01), 0, 0)), p + Vector((side * (IN + 0.001), 0, 0)), 0.018, 6, "metal", C_DARK)
 
-def channel_adv(B, P, path, height, closed=False, drive=True):
+def channel_adv(B, P, path, height, closed=False, drive=True, roof="panel"):
     L = path.L
     top = height
     B.sweep(path, 0, L, -IN, IN, -0.05, 0.0, "metal", (0.1, 0.1, 0.11), 0.1)                            # dark motor deck
     B.sweep(path, 0, L, -IN - WT, IN + WT, -0.14, -0.05, "metal", C_FRAME, 0.12)
-    if closed:
+    if closed and roof == "glass":
+        # glass lid between panel edges, so the powered run stays visible and sealed
+        for side in (-1, 1):
+            B.sweep(path, 0, L, *sx(side, IN - 0.25, IN + WT), top, top + WT, "panel", C_FACILITY, 0.1)
+        B.sweep(path, 0, L, -IN + 0.25, IN - 0.25, top + 0.02, top + 0.05, "glass", (0.55, 0.9, 1.0), 0.02)
+    elif closed:
         B.sweep(path, 0, L, -IN - WT, IN + WT, top, top + WT, "panel", C_FACILITY, 0.1)
     for side in (-1, 1):
         B.sweep(path, 0, L, *sx(side, IN, IN + WT), -0.14, 0.3, "panel", C_FACILITY, 0.1)               # lower wall
@@ -270,18 +276,18 @@ def build_h_straight(tier):
     rng = random.Random(201 if tier == "basic" else 301); random.seed(rng.random())
     coll, B, P = new(prefix(tier) + "HStraight")
     if tier == "basic":
-        channel_basic(B, PATHS["straight"], rng, H_WALL, rollers=True)
+        channel_basic(B, PATHS["straight"], rng, H_WALL, closed=True, rollers=True)
     else:
-        channel_adv(B, P, PATHS["straight"], H_WALL)
+        channel_adv(B, P, PATHS["straight"], H_WALL, closed=True, roof="glass")
     return done(coll, B, P, tier)
 
 def build_h_turn(tier):
     rng = random.Random(203 if tier == "basic" else 303); random.seed(rng.random())
     coll, B, P = new(prefix(tier) + "HTurnRight")
     if tier == "basic":
-        channel_basic(B, PATHS["turn"], rng, H_WALL)
+        channel_basic(B, PATHS["turn"], rng, H_WALL, closed=True)
     else:
-        channel_adv(B, P, PATHS["turn"], H_WALL)
+        channel_adv(B, P, PATHS["turn"], H_WALL, closed=True, roof="glass")
     return done(coll, B, P, tier)
 
 def build_v_straight(tier):

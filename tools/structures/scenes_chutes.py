@@ -82,6 +82,7 @@ def h_straight(tier):
     sc.box_b("Floor", (0, 0, FLOOR_TOP - 0.03), (2 * IN, 2.0, 0.06), friction=floor_friction(tier))
     for side, tag in ((-1, "L"), (1, "R")):
         sc.box_b(f"Wall{tag}", (side * (IN + WT / 2), 0, (FLOOR_TOP - 0.14 + FLOOR_TOP + H_WALL) / 2), (WT, 2.0, H_WALL + 0.14), friction=WALL_FRICTION)
+    sc.box_b("Lid", (0, 0, FLOOR_TOP + H_WALL + WT / 2), (2 * IN + 2 * WT, 2.0, WT), friction=WALL_FRICTION)
     return sc
 
 def h_turn(tier, left):
@@ -94,6 +95,7 @@ def h_turn(tier, left):
     y0, y1 = FLOOR_TOP - 0.14, FLOOR_TOP + H_WALL
     arc_walls(sc, "WallOuter", 1 + IN, 1 + IN + WT, y0, y1, 8, left)
     arc_walls(sc, "WallInner", 1 - IN - WT, 1 - IN, y0, y1, 2, left)
+    sc.box_b("Lid", (0, 0, FLOOR_TOP + H_WALL + WT / 2), (1.98, 1.98, WT), friction=WALL_FRICTION)
     return sc
 
 def v_straight(tier):

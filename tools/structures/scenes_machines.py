@@ -248,15 +248,10 @@ def spawn_tube():
         f"outputPoint = {v3(b2g((0, 0, 1.8)))}"])
     sc.model()
     sc.spin("Rings", (0, 1, 0), 1.5)
-    sc.obox_b("Pad", (0, 0.05, -0.74), (1.3, 0, 0), (0, 1.8 * math.cos(math.radians(-6)), 1.8 * math.sin(math.radians(-6))),
-              (0, -0.04 * math.sin(math.radians(-6)), 0.04 * math.cos(math.radians(-6))), friction=0.3)
-    sc.box_b("CollarBack", (0, -0.84, -0.34), (1.3, 0.1, 1.24))
-    for side in (-1, 1):
-        sc.box_b(f"Collar{'LR'[side > 0]}", (side * 0.84, -0.2, -0.34), (0.1, 1.1, 1.24))
     for k in range(8):
         a = k / 8 * math.tau
         d = (math.cos(a), math.sin(a), 0); t = (-math.sin(a), math.cos(a), 0)
-        sc.obox_b(f"Tube{k}", (d[0] * 0.8, d[1] * 0.8, 1.3), mul(t, 0.66), mul(d, 0.04), (0, 0, 1.92), friction=WALL_FRICTION)
+        sc.obox_b(f"Tube{k}", (d[0] * 0.8, d[1] * 0.8, 0.64), mul(t, 0.66), mul(d, 0.04), (0, 0, 3.24), friction=WALL_FRICTION)
     sc.box_b("Hood", (0, 0, 2.64), (1.8, 1.8, 0.56))
     return sc.write("game/scenes/structures/SpawnTube.tscn")
 

@@ -78,3 +78,9 @@ box_size = Vector3(0.08, 1.34, 0.1542)
 friction = 0.1
 user_material_id = 3
 transform = Transform3D(-0.50445, 0, -0.86344, 0, 1, 0, 0.86344, 0, -0.50445, -0.89407, -0.32, 0.81868)
+
+[node name="Lid" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.98, 0.08, 1.98)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0, 0.39, 0)
