@@ -72,7 +72,7 @@ def main(out, view):
                 ob.animation_data_clear()                     # keyframes would pull the parts back to the model origin
                 if ob.parent is None:
                     ob.matrix_world = T @ ob.matrix_world
-                if ob.name.startswith("Field"):
+                if ob.name.startswith(("Field", "Heat", "Steam", "Core")):     # additive shells in Godot; opaque here
                     ob.hide_render = True
         elif 'type="MeshInstance3D"' in head and "mesh" in props:
             mid = re.search(r'SubResource\("([^"]+)"\)', props["mesh"]).group(1)
@@ -90,8 +90,8 @@ def main(out, view):
     cam = bpy.data.objects.new("Cam", bpy.data.cameras.new("Cam")); sc.collection.objects.link(cam); sc.camera = cam
     if view == "lab":
         cam.data.type = 'ORTHO'; cam.data.ortho_scale = 84
-        cam.location = G2B @ Vector((0, 120, -76)); cam.rotation_euler = (0, 0, 0)
-        sc.render.resolution_x, sc.render.resolution_y = 1400, 700
+        cam.location = G2B @ Vector((0, 120, -90)); cam.rotation_euler = (0, 0, 0)
+        sc.render.resolution_x, sc.render.resolution_y = 1200, 900
     elif view == "top":
         cam.data.type = 'ORTHO'; cam.data.ortho_scale = 124
         cam.location = G2B @ Vector((88, 120, 0)); cam.rotation_euler = (0, 0, 0)

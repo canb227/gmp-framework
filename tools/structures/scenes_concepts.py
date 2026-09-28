@@ -7,6 +7,8 @@ colliders, their baked "idle-loop" animation autoplaying, and a few cheap approx
   pneumatic tubes   walls that push items along the tube at TUBE_SPEED
   screw elevator    walls that carry items up the tube
   heat lamp / cryo  working conveyor belts (tagging items HOT / COLD needs a script)
+  heaters / coolers (build_thermal.py): slow furnace belt; magma bath floor that drags sunk items to the dredge
+                    port; dead anvil + exit slide; quench lift belt; spiral slide; two opposed exchanger belts
 
 They have no blueprints (blueprintItemID is empty): they're placed in the museum's Concept Lab.
 """
@@ -198,6 +200,117 @@ def platform_elevator():
     sc.box_b("Base", (0, 1.0, -0.97), (1.98, 3.96, 0.06))
     return sc
 
+# ---------------------------------------------------------------------------- heaters and coolers
+def plate(sc, name, c, width, length, angle, t=0.04, **kw):
+    """Plate `width` across X and `length` along Y tilted by angle about X, its top face through c (Blender)."""
+    v = (0, length * math.cos(angle), length * math.sin(angle))
+    w = (0, -t * math.sin(angle), t * math.cos(angle))
+    sc.obox_b(name, sub(c, mul(w, 0.5)), (width, 0, 0), v, w, **kw)
+
+FURNACE_SPEED = 0.8
+def tunnel_furnace():
+    sc = scene("ConceptTunnelFurnace", "concept_tunnel_furnace.glb", cells=cells(1, 2, 1), arrow=1)
+    sc.model_prop("Belt", f"instance_shader_parameters/belt_speed = {f(FURNACE_SPEED)}")
+    sc.box_b("Belt", (0, 1.0, BELT_TOP - 0.05), (1.68, 3.98, 0.1), friction=0.9, material=TAG_RUBBER, tangent=b2g((0, FURNACE_SPEED, 0)))
+    for sx in (-1, 1):
+        sc.box_b(f"Wall{'LR'[sx > 0]}", (sx * 0.93, 1.0, -0.1), (0.1, 3.1, 1.7))
+    sc.box_b("Roof", (0, 1.0, 0.82), (1.98, 3.1, 0.14))
+    sc.sensor_b("Heat", (0, 1.0, -0.3), (1.6, 3.0, 1.0))
+    return sc
+
+def magma_bath():
+    sc = scene("ConceptMagmaBath", "concept_magma_bath.glb", cells=cells(2, 2, 1))
+    for name, lo, hi in (("WallBack", (-0.95, -0.95, -1), (2.95, -0.83, -0.2)), ("WallLeft", (-0.95, -0.83, -1), (-0.83, 2.83, -0.2)),
+                         ("WallRightA", (2.83, -0.83, -1), (2.95, -0.9, -0.2)), ("WallRightB", (2.83, 0.9, -1), (2.95, 2.83, -0.2)),
+                         ("PortLintel", (2.83, -0.9, -0.45), (2.95, 0.9, -0.2)), ("WallFrontA", (-0.95, 2.83, -1), (1.5, 2.95, -0.2)),
+                         ("WallFrontB", (2.5, 2.83, -1), (2.95, 2.95, -0.2)), ("Weir", (1.5, 2.83, -1), (2.5, 2.95, -0.4))):
+        lo, hi = (min(a, b) for a, b in zip(lo, hi)), (max(a, b) for a, b in zip(lo, hi))
+        lo, hi = tuple(lo), tuple(hi)
+        sc.box_b(name, mul(add(lo, hi), 0.5), sub(hi, lo))
+    # the pool floor drags whatever sinks to the dredge port on the right (a buoyancy script would float the light ones)
+    sc.box_b("FloorBack", (1.0, 0.035, -0.9), (3.66, 1.73, 0.1), friction=0.5, tangent=b2g((1.2, 0, 0)))
+    sc.box_b("FloorFront", (1.0, 1.865, -0.9), (3.66, 1.93, 0.1), friction=0.5, tangent=b2g((0, -1.2, 0)))
+    sc.box_b("PortSill", (2.89, 0, -0.9), (0.12, 1.8, 0.1), tangent=b2g((1.2, 0, 0)))
+    plate(sc, "Spout", (2.0, 2.89, -0.43), 0.9, 0.16, math.radians(-30), friction=0.2)
+    sc.sensor_b("Bath", (1.0, 1.0, -0.55), (3.6, 3.6, 0.6))
+    return sc
+
+def impact_forge():
+    sc = scene("ConceptImpactForge", "concept_impact_forge.glb", cells=cells(1, 1, 2))
+    sc.box_b("Base", (0, 0, -0.97), (1.98, 1.98, 0.06))
+    sc.box_b("Back", (0, -0.9, 1.0), (1.72, 0.1, 3.98))
+    for sx in (-1, 1):
+        sc.box_b(f"Cheek{'LR'[sx > 0]}", (sx * 0.94, 0, 1.6), (0.06, 1.7, 2.5), friction=0.1)
+        sc.box_b(f"Side{'LR'[sx > 0]}", (sx * 0.95, 0, -0.35), (0.08, 1.9, 1.2))
+    sc.box_b("Roof", (0, -0.4, 2.93), (1.98, 1.1, 0.12))
+    sc.box_b("Header", (0, 0.9, 2.93), (1.98, 0.14, 0.12))
+    sc.box_b("Sill", (0, 0.9, 0.3), (1.98, 0.14, 0.12))
+    sc.box_b("Lintel", (0, 0.95, -0.2), (1.98, 0.1, 0.3))
+    t = math.radians(15)                                        # anvil face leaning forward; dead (no bounce)
+    sc.obox_b("Anvil", (0, -0.45, 1.5), (1.5, 0, 0), (0, 0.22 * math.cos(t), 0.22 * math.sin(t)), (0, -1.5 * math.sin(t), 1.5 * math.cos(t)),
+              friction=0.6, extra=("restitution = 0.05",))
+    plate(sc, "Slide", (0, 0.1, -0.33), 1.7, 1.95, math.radians(-24), friction=0.15)
+    sc.sensor_b("Impact", (0, -0.15, 1.5), (1.5, 0.4, 1.5))
+    return sc
+
+def quench_tank():
+    sc = scene("ConceptQuenchTank", "concept_quench_tank.glb", cells=cells(1, 2, 1), arrow=1)
+    for belt in ("Lift", "Belt"):
+        sc.model_prop(belt, "instance_shader_parameters/belt_speed = 1.0")
+    sc.box_b("Floor", (0, -0.4, -0.95), (1.84, 1.1, 0.1))
+    sc.box_b("Back", (0, -0.92, -0.38), (1.94, 0.1, 1.24))
+    for sx in (-1, 1):
+        sc.box_b(f"Side{'LR'[sx > 0]}", (sx * 0.92, 0.45, -0.38), (0.1, 2.8, 1.24))
+        sc.box_b(f"Drip{'LR'[sx > 0]}", (sx * 0.9, 2.45, -0.3), (0.06, 1.1, 0.9))
+    l0, l1 = (0, -0.3, -0.78), (0, 1.75, 0.2)
+    d = sub(l1, l0); a = math.atan2(d[2], d[1])
+    plate(sc, "Lift", mul(add(l0, l1), 0.5), 1.68, length(d), a, friction=0.9, material=TAG_RUBBER, tangent=b2g(mul(norm(d), 1.0)))
+    plate(sc, "Deflector", (0, 2.05, -0.28), 1.6, 0.9, math.radians(-58), friction=0.2)
+    sc.box_b("Belt", (0, 2.5, BELT_TOP - 0.05), (1.68, 1.0, 0.1), friction=0.9, material=TAG_RUBBER, tangent=b2g((0, 1.0, 0)))
+    funnel_walls(sc, (-0.92, 0.92, -0.92, 0.92), (-0.6, 0.6, -0.6, 0.6), 0.95, 0.35)
+    sc.sensor_b("Quench", (0, 0.1, -0.5), (1.7, 2.0, 0.8))
+    return sc
+
+SR_TOP, SR_BOT, SR_TURNS, SR_R0, SR_R1 = 4.3, -0.88, 2.25, 0.3, 0.86      # as build_thermal.py
+def spiral_radiator():
+    sc = scene("ConceptSpiralRadiator", "concept_spiral_radiator.glb", cells=cells(1, 1, 3), arrow=4)
+    sc.box_b("Base", (0, 0, -0.97), (1.98, 1.98, 0.06))
+    sc.box_b("Core", (0, 0, 1.85), (0.5, 0.5, 5.7))
+    n = 36
+    span = SR_TURNS * math.tau
+    pitch = (SR_TOP - SR_BOT) / span                              # drop per radian
+    rm, wr = (SR_R0 + SR_R1) / 2, SR_R1 - SR_R0
+    for k in range(n):                                            # the slide, top (back) to bottom (angle 0)
+        a = -math.pi / 2 + (k + 0.5) / n * span
+        z = SR_TOP - (k + 0.5) / n * (SR_TOP - SR_BOT) + 0.03
+        rad = (math.cos(a), math.sin(a), 0)
+        for name, r, seg_len, v_w, w_h, dz in (("Slide", rm, 0.37, wr, 0.04, 0), ("Lip", 0.9, 0.38, 0.04, 0.3, 0.15)):
+            t = norm((-r * math.sin(a), r * math.cos(a), -pitch))
+            nrm = norm(cross(t, rad))
+            if nrm[2] < 0: nrm = mul(nrm, -1)
+            c = add((r * math.cos(a), r * math.sin(a), z), mul(nrm, dz - w_h / 2 if name == "Slide" else dz))
+            sc.obox_b(f"{name}{k}", c, mul(t, seg_len), mul(rad, v_w), mul(nrm, w_h), friction=0.25)
+    sc.box_b("RunOut", (0.3, 0.5, -0.89), (1.2, 1.0, 0.04), friction=0.3, tangent=b2g((0, 1.0, 0)))
+    g = math.radians(30)
+    sc.obox_b("Guide", (0.6, 0.56, -0.72), (0.04 * math.cos(g), 0.04 * math.sin(g), 0), (-0.8 * math.sin(g), 0.8 * math.cos(g), 0), (0, 0, 0.3))
+    funnel_walls(sc, (-0.42, 0.42, -0.9, -0.13), (-0.26, 0.26, -0.81, -0.29), 4.98, 4.45)
+    sc.box_b("Cap", (0, 0.4, 4.8), (1.84, 0.9, 0.12))
+    sc.sensor_b("Radiator", (0, 0, 1.7), (1.7, 1.7, 5.0))
+    return sc
+
+def counterflow_exchanger():
+    sc = scene("ConceptCounterflowExchanger", "concept_counterflow_exchanger.glb", cells=cells(2, 2, 1), arrow=1)
+    for name, x, v in (("BeltA", 0, 1.0), ("BeltB", 2, -1.0)):
+        sc.model_prop(name, "instance_shader_parameters/belt_speed = 1.0")
+        sc.box_b(name, (x, 1.0, BELT_TOP - 0.05), (1.68, 3.98, 0.1), friction=0.9, material=TAG_RUBBER, tangent=b2g((0, v, 0)))
+    sc.box_b("WallA", (-0.93, 1.0, -0.1), (0.06, 3.9, 1.3))
+    sc.box_b("WallB", (2.93, 1.0, -0.1), (0.06, 3.9, 1.3))
+    sc.box_b("HeatWall", (1.0, 1.0, -0.3), (0.22, 3.96, 1.2), friction=0.2)
+    sc.box_b("Roof", (1.0, 1.0, 0.78), (3.8, 3.9, 0.04))
+    sc.sensor_b("LaneA", (0, 1.0, -0.4), (1.6, 3.8, 0.8))
+    sc.sensor_b("LaneB", (2, 1.0, -0.4), (1.6, 3.8, 0.8))
+    return sc
+
 def concepts():
     out = []
     for fn, glb in ((gravity_inverter, None), (tag_gate, None), (bounce_pad, None), (vortex_funnel, None),
@@ -205,7 +318,9 @@ def concepts():
                     (lambda: emitter("ConceptHeatLamp", "concept_heat_lamp.glb"), None),
                     (lambda: emitter("ConceptCryoVent", "concept_cryo_vent.glb"), None),
                     (counterweight_elevator, None), (rail_gun, None), (tipping_bucket, None), (assembly_chamber, None),
-                    (screw_elevator, None), (platform_elevator, None)):
+                    (screw_elevator, None), (platform_elevator, None),
+                    (tunnel_furnace, None), (magma_bath, None), (impact_forge, None),
+                    (quench_tank, None), (spiral_radiator, None), (counterflow_exchanger, None)):
         sc = fn()
         out.append(sc.write(D + sc.name + ".tscn"))
     return out

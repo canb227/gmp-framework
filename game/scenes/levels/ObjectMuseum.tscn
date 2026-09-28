@@ -91,6 +91,12 @@
 [ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptRailGun.tscn" id="hall_66"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptVortexFunnel.tscn" id="hall_67"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptAssemblyChamber.tscn" id="hall_68"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptTunnelFurnace.tscn" id="hall_74"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptMagmaBath.tscn" id="hall_75"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptImpactForge.tscn" id="hall_76"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptQuenchTank.tscn" id="hall_77"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptSpiralRadiator.tscn" id="hall_78"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptCounterflowExchanger.tscn" id="hall_79"]
 [ext_resource type="PackedScene" uid="uid://bu7yxskeusnvj" path="res://game/assets/models/props/display_plinth.glb" id="hall_69"]
 [ext_resource type="Script" uid="uid://de6ss1gh7mjqf" path="res://game/scripts/entities/Spinner.cs" id="hall_70"]
 [ext_resource type="PackedScene" uid="uid://bjudt0tlhenqv" path="res://game/assets/models/tools/tool_tether.glb" id="hall_71"]
@@ -3285,11 +3291,11 @@ text = "Floor / Wall / Ceiling magnetic belts"
 
 [node name="LabFloor" type="Box3DBody" parent="ConceptLab"]
 body_type = 0
-box_size = Vector3(80, 1, 32)
-position = Vector3(0, -0.5, -76)
+box_size = Vector3(80, 1, 60)
+position = Vector3(0, -0.5, -90)
 
 [node name="Mesh" type="MeshInstance3D" parent="ConceptLab/LabFloor"]
-transform = Transform3D(80, 0, 0, 0, 1, 0, 0, 0, 32, 0, 0, 0)
+transform = Transform3D(80, 0, 0, 0, 1, 0, 0, 0, 60, 0, 0, 0)
 mesh = SubResource("hall_box_floor")
 
 [node name="Architecture" type="Node3D" parent="ConceptLab"]
@@ -3297,209 +3303,399 @@ mesh = SubResource("hall_box_floor")
 [node name="WallSouth2" type="Box3DBody" parent="ConceptLab/Architecture"]
 body_type = 0
 box_size = Vector3(80, 8, 0.4)
-position = Vector3(0, 4, -92)
+position = Vector3(0, 4, -120)
 
 [node name="Mesh" type="MeshInstance3D" parent="ConceptLab/Architecture/WallSouth2"]
 transform = Transform3D(80, 0, 0, 0, 8, 0, 0, 0, 0.4, 0, 0, 0)
 mesh = SubResource("hall_box_panel")
 
 [node name="WallSouthCap2" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(80.1, 0, 0, 0, 0.15, 0, 0, 0, 0.5, 0, 8.075, -92)
+transform = Transform3D(80.1, 0, 0, 0, 0.15, 0, 0, 0, 0.5, 0, 8.075, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthSkirt2" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(80.1, 0, 0, 0, 0.3, 0, 0, 0, 0.5, 0, 0.15, -92)
+transform = Transform3D(80.1, 0, 0, 0, 0.3, 0, 0, 0, 0.5, 0, 0.15, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost26" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -40, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -40, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost27" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -36, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -36, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost28" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -32, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -32, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost29" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -28, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -28, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost30" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -24, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -24, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost31" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -20, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -20, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost32" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -16, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -16, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost33" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -12, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -12, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost34" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -8, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -8, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost35" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -4, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -4, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost36" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 0, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 0, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost37" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 4, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 4, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost38" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 8, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 8, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost39" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 12, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 12, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost40" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 16, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 16, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost41" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 20, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 20, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost42" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 24, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 24, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost43" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 28, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 28, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost44" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 32, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 32, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost45" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 36, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 36, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallSouthPost46" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 40, 4, -92)
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 40, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallWest" type="Box3DBody" parent="ConceptLab/Architecture"]
 body_type = 0
-box_size = Vector3(0.4, 8, 32)
-position = Vector3(-40, 4, -76)
+box_size = Vector3(0.4, 8, 60)
+position = Vector3(-40, 4, -90)
 
 [node name="Mesh" type="MeshInstance3D" parent="ConceptLab/Architecture/WallWest"]
-transform = Transform3D(0.4, 0, 0, 0, 8, 0, 0, 0, 32, 0, 0, 0)
+transform = Transform3D(0.4, 0, 0, 0, 8, 0, 0, 0, 60, 0, 0, 0)
 mesh = SubResource("hall_box_panel")
 
 [node name="WallWestCap" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 0.15, 0, 0, 0, 32.1, -40, 8.075, -76)
+transform = Transform3D(0.5, 0, 0, 0, 0.15, 0, 0, 0, 60.1, -40, 8.075, -90)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallWestSkirt" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 0.3, 0, 0, 0, 32.1, -40, 0.15, -76)
+transform = Transform3D(0.5, 0, 0, 0, 0.3, 0, 0, 0, 60.1, -40, 0.15, -90)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallWestPost" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -92)
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallWestPost2" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -88)
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -116)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallWestPost3" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -84)
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -112)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallWestPost4" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -80)
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -108)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallWestPost5" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -76)
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -104)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallWestPost6" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -72)
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -100)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallWestPost7" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -68)
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -96)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallWestPost8" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -64)
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -92)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallWestPost9" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -88)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost10" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -84)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost11" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -80)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost12" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -76)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost13" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -72)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost14" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -68)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost15" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -64)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost16" type="MeshInstance3D" parent="ConceptLab/Architecture"]
 transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, -60)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallEast2" type="Box3DBody" parent="ConceptLab/Architecture"]
 body_type = 0
-box_size = Vector3(0.4, 8, 32)
-position = Vector3(40, 4, -76)
+box_size = Vector3(0.4, 8, 60)
+position = Vector3(40, 4, -90)
 
 [node name="Mesh" type="MeshInstance3D" parent="ConceptLab/Architecture/WallEast2"]
-transform = Transform3D(0.4, 0, 0, 0, 8, 0, 0, 0, 32, 0, 0, 0)
+transform = Transform3D(0.4, 0, 0, 0, 8, 0, 0, 0, 60, 0, 0, 0)
 mesh = SubResource("hall_box_panel")
 
 [node name="WallEastCap2" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 0.15, 0, 0, 0, 32.1, 40, 8.075, -76)
+transform = Transform3D(0.5, 0, 0, 0, 0.15, 0, 0, 0, 60.1, 40, 8.075, -90)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallEastSkirt2" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 0.3, 0, 0, 0, 32.1, 40, 0.15, -76)
+transform = Transform3D(0.5, 0, 0, 0, 0.3, 0, 0, 0, 60.1, 40, 0.15, -90)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallEastPost32" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -92)
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -120)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallEastPost33" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -88)
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -116)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallEastPost34" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -84)
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -112)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallEastPost35" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -80)
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -108)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallEastPost36" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -76)
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -104)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallEastPost37" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -72)
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -100)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallEastPost38" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -68)
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -96)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallEastPost39" type="MeshInstance3D" parent="ConceptLab/Architecture"]
-transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -64)
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -92)
 mesh = SubResource("hall_box_frame")
 
 [node name="WallEastPost40" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -88)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost41" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -84)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost42" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -80)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost43" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -76)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost44" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -72)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost45" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -68)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost46" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -64)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost47" type="MeshInstance3D" parent="ConceptLab/Architecture"]
 transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, -60)
 mesh = SubResource("hall_box_frame")
+
+[node name="Spine" type="Box3DBody" parent="ConceptLab/Architecture"]
+body_type = 0
+box_size = Vector3(60, 8, 0.4)
+position = Vector3(0, 4, -92)
+
+[node name="Mesh" type="MeshInstance3D" parent="ConceptLab/Architecture/Spine"]
+transform = Transform3D(60, 0, 0, 0, 8, 0, 0, 0, 0.4, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="SpineCap" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(60.1, 0, 0, 0, 0.15, 0, 0, 0, 0.5, 0, 8.075, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpineSkirt" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(60.1, 0, 0, 0, 0.3, 0, 0, 0, 0.5, 0, 0.15, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpinePost" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -30, 4, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpinePost2" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -26, 4, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpinePost3" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -22, 4, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpinePost4" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -18, 4, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpinePost5" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -14, 4, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpinePost6" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -10, 4, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpinePost7" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -6, 4, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpinePost8" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -2, 4, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpinePost9" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 2, 4, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpinePost10" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 6, 4, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpinePost11" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 10, 4, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpinePost12" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 14, 4, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpinePost13" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 18, 4, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpinePost14" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 22, 4, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpinePost15" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 26, 4, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="SpinePost16" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 30, 4, -92)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionThermal" type="Box3DBody" parent="ConceptLab/Architecture"]
+body_type = 0
+box_size = Vector3(0.3, 4, 14)
+position = Vector3(0, 2, -113)
+
+[node name="Mesh" type="MeshInstance3D" parent="ConceptLab/Architecture/PartitionThermal"]
+transform = Transform3D(0.3, 0, 0, 0, 4, 0, 0, 0, 14, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="PartitionThermalCap" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 14.1, 0, 4.075, -113)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionThermalSkirt" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 14.1, 0, 0.15, -113)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionThermalPost" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 0, 2, -120)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionThermalPost2" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 0, 2, -116.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionThermalPost3" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 0, 2, -113)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionThermalPost4" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 0, 2, -109.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="PartitionThermalPost5" type="MeshInstance3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(0.4, 0, 0, 0, 4, 0, 0, 0, 0.2, 0, 2, -106)
+mesh = SubResource("hall_box_frame")
+
+[node name="ThermalTitle" type="Label3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 7, -92.4)
+double_sided = false
+pixel_size = 0.025
+font_size = 128
+outline_size = 12
+text = "THERMAL PROCESSING"
+
+[node name="ThermalSubtitle" type="Label3D" parent="ConceptLab/Architecture"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 5.8, -92.4)
+double_sided = false
+pixel_size = 0.018
+font_size = 64
+outline_size = 12
+text = "three heaters and three coolers, each a different physics puzzle"
 
 [node name="Threshold" type="MeshInstance3D" parent="ConceptLab/Architecture"]
 transform = Transform3D(80, 0, 0, 0, 0.01, 0, 0, 0, 0.4, 0, 0.007, -60.2)
@@ -3850,6 +4046,124 @@ pixel_size = 0.02
 font_size = 96
 outline_size = 12
 text = "THERMAL, LAUNCH & ASSEMBLY"
+
+[node name="Heaters" type="Node3D" parent="ConceptLab/Bays"]
+
+[node name="ConceptTunnelFurnace" parent="ConceptLab/Bays/Heaters" instance=ExtResource("hall_74")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -27, 1, -109)
+
+[node name="ConceptTunnelFurnaceLabel" type="Label3D" parent="ConceptLab/Bays/Heaters"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27, 2.7, -108)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Tunnel Furnace"
+
+[node name="ConceptMagmaBath" parent="ConceptLab/Bays/Heaters" instance=ExtResource("hall_75")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -21, 1, -109)
+
+[node name="ConceptMagmaBathLabel" type="Label3D" parent="ConceptLab/Bays/Heaters"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 2.7, -108)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Magma Bath"
+
+[node name="ConceptImpactForge" parent="ConceptLab/Bays/Heaters" instance=ExtResource("hall_76")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -17, 1, -107)
+
+[node name="ConceptImpactForgeLabel" type="Label3D" parent="ConceptLab/Bays/Heaters"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 4.7, -107)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Impact Forge"
+
+[node name="HeatersEdgeN" type="MeshInstance3D" parent="ConceptLab/Bays/Heaters"]
+transform = Transform3D(25, 0, 0, 0, 0.01, 0, 0, 0, 0.25, -16, 0.007, -97.625)
+mesh = SubResource("hall_box_hazard")
+
+[node name="HeatersEdgeS" type="MeshInstance3D" parent="ConceptLab/Bays/Heaters"]
+transform = Transform3D(25, 0, 0, 0, 0.01, 0, 0, 0, 0.25, -16, 0.007, -118.375)
+mesh = SubResource("hall_box_hazard")
+
+[node name="HeatersEdgeW" type="MeshInstance3D" parent="ConceptLab/Bays/Heaters"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 21, -28.375, 0.007, -108)
+mesh = SubResource("hall_box_hazard")
+
+[node name="HeatersEdgeE" type="MeshInstance3D" parent="ConceptLab/Bays/Heaters"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 21, -3.625, 0.007, -108)
+mesh = SubResource("hall_box_hazard")
+
+[node name="HeatersSign" type="Label3D" parent="ConceptLab/Bays/Heaters"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 6.4, -117.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "HEATERS"
+
+[node name="Coolers" type="Node3D" parent="ConceptLab/Bays"]
+
+[node name="ConceptQuenchTank" parent="ConceptLab/Bays/Coolers" instance=ExtResource("hall_77")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 5, 1, -109)
+
+[node name="ConceptQuenchTankLabel" type="Label3D" parent="ConceptLab/Bays/Coolers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 2.7, -108)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Quench Tank"
+
+[node name="ConceptSpiralRadiator" parent="ConceptLab/Bays/Coolers" instance=ExtResource("hall_78")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 9, 1, -107)
+
+[node name="ConceptSpiralRadiatorLabel" type="Label3D" parent="ConceptLab/Bays/Coolers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 6.7, -107)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Spiral Radiator"
+
+[node name="ConceptCounterflowExchanger" parent="ConceptLab/Bays/Coolers" instance=ExtResource("hall_79")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 15, 1, -109)
+
+[node name="ConceptCounterflowExchangerLabel" type="Label3D" parent="ConceptLab/Bays/Coolers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 2.7, -108)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Counterflow Exchanger"
+
+[node name="CoolersEdgeN" type="MeshInstance3D" parent="ConceptLab/Bays/Coolers"]
+transform = Transform3D(25, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 16, 0.007, -97.625)
+mesh = SubResource("hall_box_hazard")
+
+[node name="CoolersEdgeS" type="MeshInstance3D" parent="ConceptLab/Bays/Coolers"]
+transform = Transform3D(25, 0, 0, 0, 0.01, 0, 0, 0, 0.25, 16, 0.007, -118.375)
+mesh = SubResource("hall_box_hazard")
+
+[node name="CoolersEdgeW" type="MeshInstance3D" parent="ConceptLab/Bays/Coolers"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 21, 3.625, 0.007, -108)
+mesh = SubResource("hall_box_hazard")
+
+[node name="CoolersEdgeE" type="MeshInstance3D" parent="ConceptLab/Bays/Coolers"]
+transform = Transform3D(0.25, 0, 0, 0, 0.01, 0, 0, 0, 21, 28.375, 0.007, -108)
+mesh = SubResource("hall_box_hazard")
+
+[node name="CoolersSign" type="Label3D" parent="ConceptLab/Bays/Coolers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 6.4, -117.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "COOLERS"
 
 [node name="Tools" type="Node3D" parent="ConceptLab"]
 

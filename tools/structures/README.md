@@ -94,9 +94,23 @@ Proof-of-concept pieces for visual reference; their behaviour is at most a rough
 | TippingBucket | 1×1×2 | bucket tipping side to side | static tilted bucket, slides |
 | AssemblyChamber | 3×3×3, centred | floating parts, emitters | chamber sensor |
 
+**Heaters and coolers:** `run.py build thermal` (`machines/concepts/source/build_thermal.py`). Each one is built
+around a different mechanism, so each poses its own automation puzzle. They stand in a second row of bays
+behind the lab's spine wall.
+
+| Scene | Cells | In → out | Mechanism / puzzle | Rough behaviour |
+|---|---|---|---|---|
+| TunnelFurnace | 1×2×1 | back belt → front belt | heat = time inside; belt speed sets the dose | slow 0.8 m/s belt, heat sensor |
+| MagmaBath | 2×2×1 | dropped in from above → front weir (floaters) / right port (sinkers) | heats and sorts by density; sizing the drop-in and splitting the two outputs | floor drags sunk items to the port; bath sensor |
+| ImpactForge | 1×1×2 | launched into the upper front window → bottom of the same face | heat = impact energy, so it needs launchers aimed at the anvil | dead anvil (restitution 0.05), exit slide, impact sensor |
+| QuenchTank | 1×2×1 | dropped in from above → front belt | plain quench bath; lift belt drags items out to drip-dry | 1 m/s lift and output belts, quench sensor |
+| SpiralRadiator | 1×1×3 | top hopper → bottom front | cooling = ride length down a finned helix; items must be lifted 6 m first | 36-segment helix slide with lip, run-out guide |
+| CounterflowExchanger | 2×2×1 | lane A back → front, lane B front → back | no power: a hot and a cold stream swap heat through a copper wall, so both flows must be balanced | two opposed 1 m/s belts, lane sensors |
+
 - **Tools:** tether gun (spinning reel), tag painter (carousel that steps 60°) and blueprint stamp (hologram).
   Each is a `.glb` only.
 - **In the museum:** `place_museum.py` adds the Concept Lab south of the original museum floor
-  (x -40..40, z -92..-60), open to the museum on the north side. It has three bays (tubes & routing, elevators,
-  thermal/launch/assembly), and the tools turn on plinths by the entrance. `view_hall.py <out.png> lab` renders it.
+  (x -40..40, z -120..-60), open to the museum on the north side. The front row has three bays (tubes & routing,
+  elevators, thermal/launch/assembly), and the tools turn on plinths by the entrance. Behind the spine wall
+  (z -92) sits the thermal processing row: heaters and coolers. `view_hall.py <out.png> lab` renders it.
 - **Resource ids:** existing `hall_` ext resource ids are kept on re-runs, because hand-placed museum nodes use them.

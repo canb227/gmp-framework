@@ -19,7 +19,7 @@ from scenegen import REPO, f, glb_children, ensure_import, script_uid
 MUSEUM = os.path.join(REPO, "game", "scenes", "levels", "ObjectMuseum.tscn")
 S = "game/scenes/structures/"
 HALL_I, HALL_K = (20, 67), (-30, 29)            # hall cells (x 40..136, z -60..60)
-LAB_I, LAB_K = (-20, 19), (-46, -31)            # concept lab cells (x -40..40, z -92..-60), south of the museum floor
+LAB_I, LAB_K = (-20, 19), (-60, -31)            # concept lab cells (x -40..40, z -120..-60), south of the museum floor
 FIELD_CELLS = 2                                  # exhibit projectors' fields, kept short inside their bays
 
 YAW = {0: (1, 0, 0, 0, 1, 0, 0, 0, 1), 1: (0, 0, 1, 0, 1, 0, -1, 0, 0),
@@ -407,11 +407,17 @@ def lab():
     """Proof-of-concept structures and handheld tools, south of the original museum floor, open to it on the north."""
     h = LAB
     h.node('[node name="ConceptLab" type="Node3D" parent="."]')
-    h.block("ConceptLab", "LabFloor", (-40, -1, -92), (40, 0, -60), "floor")
+    h.block("ConceptLab", "LabFloor", (-40, -1, -120), (40, 0, -60), "floor")
     arch = h.group("Architecture", "ConceptLab")
-    h.wall(arch, "WallSouth", (-40, -92), (40, -92), 8.0)
-    h.wall(arch, "WallWest", (-40, -92), (-40, -60), 8.0)
-    h.wall(arch, "WallEast", (40, -92), (40, -60), 8.0)
+    h.wall(arch, "WallSouth", (-40, -120), (40, -120), 8.0)
+    h.wall(arch, "WallWest", (-40, -120), (-40, -60), 8.0)
+    h.wall(arch, "WallEast", (40, -120), (40, -60), 8.0)
+    # spine between the two rows of bays, walked round at both ends
+    h.wall(arch, "Spine", (-30, -92), (30, -92), 8.0)
+    h.wall(arch, "PartitionThermal", (0, -120), (0, -106), 4.0, t=0.3)
+    h.label(arch, "ThermalTitle", (0, 7.0, -92.4), "THERMAL PROCESSING", size=128, pixel=0.025, billboard=False, yaw=2)
+    h.label(arch, "ThermalSubtitle", (0, 5.8, -92.4), "three heaters and three coolers, each a different physics puzzle",
+            size=64, pixel=0.018, billboard=False, yaw=2)
     h.stripe(arch, "Threshold", (-40, -60.4), (40, -60))
     for x in (-5, 13):                                    # bays: i -19..-4 | -2..5 | 7..18
         h.wall(arch, "Partition", (x, -92), (x, -78), 4.0, t=0.3)
@@ -426,6 +432,8 @@ def lab():
         2, -2, 5, -45, -35, root=root)
     bay(h, "Thermal", "THERMAL, LAUNCH & ASSEMBLY", [CO + n for n in ("HeatLamp", "CryoVent", "RailGun", "VortexFunnel", "AssemblyChamber")],
         2, 7, 18, -45, -35, root=root)
+    bay(h, "Heaters", "HEATERS", [CO + n for n in ("TunnelFurnace", "MagmaBath", "ImpactForge")], 2, -14, -3, -59, -50, root=root)
+    bay(h, "Coolers", "COOLERS", [CO + n for n in ("QuenchTank", "SpiralRadiator", "CounterflowExchanger")], 2, 2, 13, -59, -50, root=root)
     # handheld tools: turning slowly on plinths by the entrance
     tools = h.group("Tools", "ConceptLab")
     plinth = h.ext_id("res://game/assets/models/props/display_plinth.glb", "PackedScene")
