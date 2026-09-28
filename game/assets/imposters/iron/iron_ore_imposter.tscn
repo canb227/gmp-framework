@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://cq45goi0wv3ol"]
+
+[ext_resource type="Shader" uid="uid://2u122t0xrggs" path="res://addons/Imposter/imposter/materials/shaders/ImpostorShader.gdshader" id="1_37wju"]
+[ext_resource type="Texture2D" uid="uid://ccml33skg1dor" path="res://game/assets/imposters/iron/base_iron_ore_albedo.png" id="2_6cubn"]
+[ext_resource type="Texture2D" uid="uid://bpkpllxcihcnh" path="res://game/assets/imposters/iron/base_iron_ore_depth.png" id="3_c1u46"]
+[ext_resource type="Texture2D" uid="uid://drdy5tmiod6w0" path="res://game/assets/imposters/iron/base_iron_ore_normal.png" id="4_nws2r"]
+[ext_resource type="Texture2D" uid="uid://c1okanp5ps2lp" path="res://game/assets/imposters/iron/base_iron_ore_orm.png" id="5_3kxw3"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fd6pv"]
+render_priority = 0
+shader = ExtResource("1_37wju")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/imposterTextureAlbedo = ExtResource("2_6cubn")
+shader_parameter/imposterTextureNormal = ExtResource("4_nws2r")
+shader_parameter/imposterTextureDepth = ExtResource("3_c1u46")
+shader_parameter/imposterTextureOrm = ExtResource("5_3kxw3")
+shader_parameter/imposterFrames = Vector2(16, 16)
+shader_parameter/positionOffset = Vector3(0.01009509, -0.015790135, 0.009291321)
+shader_parameter/isFullSphere = true
+shader_parameter/alpha_clamp = 0.5
+shader_parameter/dither = false
+shader_parameter/scale = 0.72055125
+shader_parameter/depth_scale = 0.0
+shader_parameter/normalmap_depth = 1.0
+shader_parameter/aabb_max = 0.36027563
+
+[sub_resource type="QuadMesh" id="QuadMesh_37wju"]
+material = SubResource("ShaderMaterial_fd6pv")
+custom_aabb = AABB(-0.47642434, -0.35981408, -0.39585122, 1.4595582, 1.0320718, 1.2154276)
+
+[node name="Impostor" type="Node3D" unique_id=293993727]
+
+[node name="mesh-impostor" type="MeshInstance3D" parent="." unique_id=1183935858]
+cast_shadow = 0
+mesh = SubResource("QuadMesh_37wju")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="." unique_id=79487764]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.332586)
+light_color = Color(1, 0, 1, 1)
+light_energy = 16.0
+spot_range = 6.088917
+spot_angle = 11.922925
