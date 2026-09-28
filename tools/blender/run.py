@@ -3,7 +3,7 @@ Headless driver for the model build scripts (needs Blender's Python module: pip 
 
     python3 tools/blender/run.py list
     python3 tools/blender/run.py build   <family> [<family> ...] [--no-export] [--save-blend]
-    python3 tools/blender/run.py preview <family> <out_dir> [--only NameA,NameB] [--view x,y,z] [--samples N]
+    python3 tools/blender/run.py preview <family> <out_dir> [--only NameA,NameB] [--view x,y,z] [--samples N] [--hide Node,Node]
     python3 tools/blender/run.py icons   <family> [<family> ...] [--only NameA,NameB]
 
 build     rebuilds a family and exports its .glb files next to the family's source folder (--save-blend also
@@ -78,7 +78,7 @@ def isolate(coll_name):
     for c in lc:
         c.exclude = c.name != coll_name
 
-def preview(family, out_dir, only=None, view=(1.2, 1.3, 0.8), samples=24):
+def preview(family, out_dir, only=None, view=(1.2, 1.3, 0.8), samples=24, hide=()):
     import bpy
     from mathutils import Vector
     os.makedirs(out_dir, exist_ok=True)
@@ -104,6 +104,8 @@ def preview(family, out_dir, only=None, view=(1.2, 1.3, 0.8), samples=24):
     for coll, glb, tag in built:
         if only and coll.name not in only:
             continue
+        for ob in coll.objects:
+            ob.hide_render = ob.name.split("__")[-1] in hide
         isolate(coll.name)
         lo, hi, pts = bounds(coll)
         print(f"BOUNDS {coll.name}: {tuple(round(v, 3) for v in lo)} .. {tuple(round(v, 3) for v in hi)}")
@@ -148,6 +150,6 @@ if __name__ == "__main__":
         build(pos, export="--no-export" not in args, save="--save-blend" in args)
     elif cmd == "preview":
         view = tuple(float(v) for v in opt("--view", "1.2,1.3,0.8").split(","))
-        preview(pos[0], pos[1], only, view, int(opt("--samples", "24")))
+        preview(pos[0], pos[1], only, view, int(opt("--samples", "24")), tuple(opt("--hide", "").split(",")))
     elif cmd == "icons":
         icons(pos, only)
