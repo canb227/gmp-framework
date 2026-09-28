@@ -56,3 +56,11 @@ Cells are W x L x H (x, along the flow, up). Nodes are inside each scene's `Mode
 Behaviour still to write: the switch, dropper doors, filter, arm, launchers, field projectors and the
 magnetic hold have their trigger sensors, sub-bodies and nodes in place but no scripts yet; the processing
 machines and smelter work through Grinder.cs with empty recipe tables until ingot / plate / rod items exist.
+
+## Object Museum gallery
+
+`python3 tools/structures/place_museum.py` (re-runnable) places one of every new structure in
+`ObjectMuseum.tscn` under `StructureGallery`, each with a floating name tag, grid-aligned and facing the middle
+of the museum: the conveyor family along the north end, chutes along the south end, machines down the east
+side. The spawn tube feeds an item void so its test cubes don't pile up; the gallery's field projectors are
+shortened to 2-cell fields so they stay clear of the display alcoves.

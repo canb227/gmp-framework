@@ -44,6 +44,55 @@
 [ext_resource type="PackedScene" uid="uid://bu7yxskeusnvj" path="res://game/assets/models/props/display_plinth.glb" id="sh_plinth"]
 [ext_resource type="Script" uid="uid://de6ss1gh7mjqf" path="res://game/scripts/entities/Spinner.cs" id="sh_spinner"]
 [ext_resource type="PackedScene" path="res://game/scenes/entities/Lever.tscn" id="sp_lever"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorSplitter.tscn" id="sg_0"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorSplitterSwitch.tscn" id="sg_1"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorLoader.tscn" id="sg_2"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvanced.tscn" id="sg_3"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedTurnRight.tscn" id="sg_4"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedTurnLeft.tscn" id="sg_5"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedSlope.tscn" id="sg_6"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedSlopeDown.tscn" id="sg_7"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedLoader.tscn" id="sg_8"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagnetic.tscn" id="sg_9"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticTurnRight.tscn" id="sg_10"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticTurnLeft.tscn" id="sg_11"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticWall.tscn" id="sg_12"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticWallTurnRight.tscn" id="sg_13"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticWallTurnLeft.tscn" id="sg_14"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticCeiling.tscn" id="sg_15"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticCeilingTurnRight.tscn" id="sg_16"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticCeilingTurnLeft.tscn" id="sg_17"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHStraight.tscn" id="sg_18"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHTurnRight.tscn" id="sg_19"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHTurnLeft.tscn" id="sg_20"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteVStraight.tscn" id="sg_21"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteVTurn.tscn" id="sg_22"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHopperUp.tscn" id="sg_23"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteDropperDown.tscn" id="sg_24"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHopper2x2.tscn" id="sg_25"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHStraight.tscn" id="sg_26"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHTurnRight.tscn" id="sg_27"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHTurnLeft.tscn" id="sg_28"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvVStraight.tscn" id="sg_29"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvVTurn.tscn" id="sg_30"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHopperUp.tscn" id="sg_31"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvDropperDown.tscn" id="sg_32"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHopper2x2.tscn" id="sg_33"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/launchers/LaunchRamp.tscn" id="sg_34"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/launchers/Cannon.tscn" id="sg_35"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/launchers/Catapult.tscn" id="sg_36"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/sorting/FilterBasic.tscn" id="sg_37"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/sorting/FilterArm.tscn" id="sg_38"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/fields/AntigravProjector.tscn" id="sg_39"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/fields/ZeroPointProjector.tscn" id="sg_40"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/processing/PlatePress.tscn" id="sg_41"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/processing/RodExtruder.tscn" id="sg_42"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/processing/Polisher.tscn" id="sg_43"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/Smelter.tscn" id="sg_44"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/SpawnTube.tscn" id="sg_45"]
+[ext_resource type="PackedScene" uid="uid://bywvnipt62y5r" path="res://game/scenes/structures/ItemVoid.tscn" id="sg_46"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHopper3x3.tscn" id="sg_47"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHopper3x3.tscn" id="sg_48"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
 material = ExtResource("1_2usgl")
@@ -926,3 +975,556 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.75, 1.31, 22.5)
 
 [node name="ShowCopperOreGround" parent="SalvageShowcase" unique_id=492718981 instance=ExtResource("rd_copper_ore_ground")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 1.06, 22.9)
+
+[node name="StructureGallery" type="Node3D" parent="."]
+
+[node name="North" type="Node3D" parent="StructureGallery"]
+
+[node name="South" type="Node3D" parent="StructureGallery"]
+
+[node name="East" type="Node3D" parent="StructureGallery"]
+
+[node name="ConveyorSplitter" parent="StructureGallery/North" instance=ExtResource("sg_0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37, 1, 45)
+
+[node name="ConveyorSplitterLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37, 2.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Splitter Conveyor"
+
+[node name="ConveyorSplitterSwitch" parent="StructureGallery/North" instance=ExtResource("sg_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 1, 45)
+
+[node name="ConveyorSplitterSwitchLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 2.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Switchable Splitter"
+
+[node name="ConveyorLoader" parent="StructureGallery/North" instance=ExtResource("sg_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, 1, 45)
+
+[node name="ConveyorLoaderLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, 2.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Loader Conveyor"
+
+[node name="ConveyorAdvanced" parent="StructureGallery/North" instance=ExtResource("sg_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 1, 45)
+
+[node name="ConveyorAdvancedLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 2.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Advanced Conveyor"
+
+[node name="ConveyorAdvancedTurnRight" parent="StructureGallery/North" instance=ExtResource("sg_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 1, 45)
+
+[node name="ConveyorAdvancedTurnRightLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 2.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Advanced Conveyor Turn"
+
+[node name="ConveyorAdvancedTurnLeft" parent="StructureGallery/North" instance=ExtResource("sg_5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 1, 45)
+
+[node name="ConveyorAdvancedTurnLeftLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 2.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Advanced Conveyor Turn (left)"
+
+[node name="ConveyorAdvancedSlope" parent="StructureGallery/North" instance=ExtResource("sg_6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 1, 47)
+
+[node name="ConveyorAdvancedSlopeLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 4.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Advanced Slanted Conveyor"
+
+[node name="ConveyorAdvancedSlopeDown" parent="StructureGallery/North" instance=ExtResource("sg_7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 1, 47)
+
+[node name="ConveyorAdvancedSlopeDownLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 4.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Advanced Slanted Conveyor (down)"
+
+[node name="ConveyorAdvancedLoader" parent="StructureGallery/North" instance=ExtResource("sg_8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, 45)
+
+[node name="ConveyorAdvancedLoaderLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 2.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Advanced Loader Conveyor"
+
+[node name="ConveyorMagnetic" parent="StructureGallery/North" instance=ExtResource("sg_9")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1, 45)
+
+[node name="ConveyorMagneticLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 2.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Magnetic Conveyor"
+
+[node name="ConveyorMagneticTurnRight" parent="StructureGallery/North" instance=ExtResource("sg_10")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1, 45)
+
+[node name="ConveyorMagneticTurnRightLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 2.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Magnetic Conveyor Turn"
+
+[node name="ConveyorMagneticTurnLeft" parent="StructureGallery/North" instance=ExtResource("sg_11")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1, 45)
+
+[node name="ConveyorMagneticTurnLeftLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 2.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Magnetic Conveyor Turn (left)"
+
+[node name="ConveyorMagneticWall" parent="StructureGallery/North" instance=ExtResource("sg_12")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 1, 45)
+
+[node name="ConveyorMagneticWallLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 2.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Magnetic Wall Conveyor"
+
+[node name="ConveyorMagneticWallTurnRight" parent="StructureGallery/North" instance=ExtResource("sg_13")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 1, 45)
+
+[node name="ConveyorMagneticWallTurnRightLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 2.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Magnetic Wall Conveyor Turn"
+
+[node name="ConveyorMagneticWallTurnLeft" parent="StructureGallery/North" instance=ExtResource("sg_14")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 1, 45)
+
+[node name="ConveyorMagneticWallTurnLeftLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 2.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Magnetic Wall Conveyor Turn (left)"
+
+[node name="ConveyorMagneticCeiling" parent="StructureGallery/North" instance=ExtResource("sg_15")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 1, 45)
+
+[node name="ConveyorMagneticCeilingLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 2.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Magnetic Ceiling Conveyor"
+
+[node name="ConveyorMagneticCeilingTurnRight" parent="StructureGallery/North" instance=ExtResource("sg_16")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27, 1, 45)
+
+[node name="ConveyorMagneticCeilingTurnRightLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27, 2.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Magnetic Ceiling Conveyor Turn"
+
+[node name="ConveyorMagneticCeilingTurnLeft" parent="StructureGallery/North" instance=ExtResource("sg_17")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 1, 45)
+
+[node name="ConveyorMagneticCeilingTurnLeftLabel" type="Label3D" parent="StructureGallery/North"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 2.6, 43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Magnetic Ceiling Conveyor Turn (left)"
+
+[node name="ChuteHStraight" parent="StructureGallery/South" instance=ExtResource("sg_18")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -37, 1, -45)
+
+[node name="ChuteHStraightLabel" type="Label3D" parent="StructureGallery/South"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37, 2.6, -43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Chute"
+
+[node name="ChuteHTurnRight" parent="StructureGallery/South" instance=ExtResource("sg_19")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -33, 1, -45)
+
+[node name="ChuteHTurnRightLabel" type="Label3D" parent="StructureGallery/South"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 2.6, -43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Chute Turn"
+
+[node name="ChuteHTurnLeft" parent="StructureGallery/South" instance=ExtResource("sg_20")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -29, 1, -45)
+
+[node name="ChuteHTurnLeftLabel" type="Label3D" parent="StructureGallery/South"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, 2.6, -43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Chute Turn (left)"
+
+[node name="ChuteVStraight" parent="StructureGallery/South" instance=ExtResource("sg_21")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -25, 1, -45)
+
+[node name="ChuteVStraightLabel" type="Label3D" parent="StructureGallery/South"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 2.6, -43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Vertical Chute"
+
+[node name="ChuteVTurn" parent="StructureGallery/South" instance=ExtResource("sg_22")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -21, 1, -45)
+
+[node name="ChuteVTurnLabel" type="Label3D" parent="StructureGallery/South"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 2.6, -43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Chute Elbow"
+
+[node name="ChuteHopperUp" parent="StructureGallery/South" instance=ExtResource("sg_23")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -17, 1, -45)
+
+[node name="ChuteHopperUpLabel" type="Label3D" parent="StructureGallery/South"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 2.6, -43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Chute Hopper"
+
+[node name="ChuteDropperDown" parent="StructureGallery/South" instance=ExtResource("sg_24")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -13, 1, -45)
+
+[node name="ChuteDropperDownLabel" type="Label3D" parent="StructureGallery/South"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 2.6, -43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Chute Dropper"
+
+[node name="ChuteHopper2x2" parent="StructureGallery/South" instance=ExtResource("sg_25")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -7, 1, -47)
+
+[node name="ChuteHopper2x2Label" type="Label3D" parent="StructureGallery/South"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 4.6, -43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Large Chute Hopper"
+
+[node name="ChuteAdvHStraight" parent="StructureGallery/South" instance=ExtResource("sg_26")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3, 1, -45)
+
+[node name="ChuteAdvHStraightLabel" type="Label3D" parent="StructureGallery/South"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 2.6, -43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Powered Chute"
+
+[node name="ChuteAdvHTurnRight" parent="StructureGallery/South" instance=ExtResource("sg_27")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1, 1, -45)
+
+[node name="ChuteAdvHTurnRightLabel" type="Label3D" parent="StructureGallery/South"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2.6, -43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Powered Chute Turn"
+
+[node name="ChuteAdvHTurnLeft" parent="StructureGallery/South" instance=ExtResource("sg_28")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 5, 1, -45)
+
+[node name="ChuteAdvHTurnLeftLabel" type="Label3D" parent="StructureGallery/South"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 2.6, -43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Powered Chute Turn (left)"
+
+[node name="ChuteAdvVStraight" parent="StructureGallery/South" instance=ExtResource("sg_29")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 9, 1, -45)
+
+[node name="ChuteAdvVStraightLabel" type="Label3D" parent="StructureGallery/South"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 2.6, -43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Powered Vertical Chute"
+
+[node name="ChuteAdvVTurn" parent="StructureGallery/South" instance=ExtResource("sg_30")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 13, 1, -45)
+
+[node name="ChuteAdvVTurnLabel" type="Label3D" parent="StructureGallery/South"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 2.6, -43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Powered Chute Elbow"
+
+[node name="ChuteAdvHopperUp" parent="StructureGallery/South" instance=ExtResource("sg_31")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 17, 1, -45)
+
+[node name="ChuteAdvHopperUpLabel" type="Label3D" parent="StructureGallery/South"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 2.6, -43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Powered Chute Hopper"
+
+[node name="ChuteAdvDropperDown" parent="StructureGallery/South" instance=ExtResource("sg_32")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 21, 1, -45)
+
+[node name="ChuteAdvDropperDownLabel" type="Label3D" parent="StructureGallery/South"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 2.6, -43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Powered Chute Dropper"
+
+[node name="ChuteAdvHopper2x2" parent="StructureGallery/South" instance=ExtResource("sg_33")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 27, 1, -47)
+
+[node name="ChuteAdvHopper2x2Label" type="Label3D" parent="StructureGallery/South"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 4.6, -43.8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Powered Large Chute Hopper"
+
+[node name="LaunchRamp" parent="StructureGallery/East" instance=ExtResource("sg_34")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31, 1, -41)
+
+[node name="LaunchRampLabel" type="Label3D" parent="StructureGallery/East"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, -41)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Launch Ramp"
+
+[node name="Cannon" parent="StructureGallery/East" instance=ExtResource("sg_35")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 1, -37)
+
+[node name="CannonLabel" type="Label3D" parent="StructureGallery/East"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, -37)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Cannon"
+
+[node name="Catapult" parent="StructureGallery/East" instance=ExtResource("sg_36")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31, 1, -33)
+
+[node name="CatapultLabel" type="Label3D" parent="StructureGallery/East"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, -33)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Catapult"
+
+[node name="FilterBasic" parent="StructureGallery/East" instance=ExtResource("sg_37")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 27, 1, -29)
+
+[node name="FilterBasicLabel" type="Label3D" parent="StructureGallery/East"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, -29)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Basic Filter"
+
+[node name="FilterArm" parent="StructureGallery/East" instance=ExtResource("sg_38")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 27, 1, -25)
+
+[node name="FilterArmLabel" type="Label3D" parent="StructureGallery/East"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, -25)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Filter Arm"
+
+[node name="AntigravProjector" parent="StructureGallery/East" instance=ExtResource("sg_39")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 27, 1, -21)
+
+[node name="AntigravProjectorLabel" type="Label3D" parent="StructureGallery/East"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 2.6, -21)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Antigravity Projector"
+
+[node name="Field" parent="StructureGallery/East/AntigravProjector/Model" index="2"]
+scale = Vector3(1, 1, 2)
+
+[node name="FieldTrigger" parent="StructureGallery/East/AntigravProjector"]
+box_size = Vector3(1.9, 1.9, 4)
+position = Vector3(0, 0, -3)
+
+[node name="ZeroPointProjector" parent="StructureGallery/East" instance=ExtResource("sg_40")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 27, 1, -17)
+
+[node name="ZeroPointProjectorLabel" type="Label3D" parent="StructureGallery/East"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 2.6, -17)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Zero Point Projector"
+
+[node name="Field" parent="StructureGallery/East/ZeroPointProjector/Model" index="2"]
+scale = Vector3(1, 1, 2)
+
+[node name="FieldTrigger" parent="StructureGallery/East/ZeroPointProjector"]
+box_size = Vector3(1.6, 1.6, 4)
+position = Vector3(0, 0, -3)
+
+[node name="PlatePress" parent="StructureGallery/East" instance=ExtResource("sg_41")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 1, -13)
+
+[node name="PlatePressLabel" type="Label3D" parent="StructureGallery/East"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 2.6, -13)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Plate Press"
+
+[node name="RodExtruder" parent="StructureGallery/East" instance=ExtResource("sg_42")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 1, -9)
+
+[node name="RodExtruderLabel" type="Label3D" parent="StructureGallery/East"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 2.6, -9)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Rod Extruder"
+
+[node name="Polisher" parent="StructureGallery/East" instance=ExtResource("sg_43")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 1, -3)
+
+[node name="PolisherLabel" type="Label3D" parent="StructureGallery/East"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 2.6, -4)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Polishing Machine"
+
+[node name="Smelter" parent="StructureGallery/East" instance=ExtResource("sg_44")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 1, 3)
+
+[node name="SmelterLabel" type="Label3D" parent="StructureGallery/East"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, 2)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Smelter"
+
+[node name="SpawnTube" parent="StructureGallery/East" instance=ExtResource("sg_45")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31, 1, 9)
+
+[node name="SpawnTubeLabel" type="Label3D" parent="StructureGallery/East"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, 8)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Spawn Tube (developer only)"
+
+[node name="ItemVoid" parent="StructureGallery/East" instance=ExtResource("sg_46")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 1, 9)
+
+[node name="ChuteHopper3x3" parent="StructureGallery/East" instance=ExtResource("sg_47")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 1, 15)
+
+[node name="ChuteHopper3x3Label" type="Label3D" parent="StructureGallery/East"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, 15)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Huge Chute Hopper"
+
+[node name="ChuteAdvHopper3x3" parent="StructureGallery/East" instance=ExtResource("sg_48")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 1, 23)
+
+[node name="ChuteAdvHopper3x3Label" type="Label3D" parent="StructureGallery/East"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 4.6, 23)
+billboard = 1
+pixel_size = 0.008
+font_size = 48
+outline_size = 10
+text = "Powered Huge Chute Hopper"
