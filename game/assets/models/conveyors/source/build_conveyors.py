@@ -22,7 +22,9 @@ import bpy, bmesh, math, random, os
 from mathutils import Vector, Matrix, noise
 
 HERE = os.path.dirname(bpy.data.filepath) if bpy.data.filepath else None
-OUT_DIR = r"C:\Users\steph\OneDrive\Documents\godot\projects\gmp-framework\game\assets\models\conveyors"
+# resolved from this file when run by path (tools/blender/run.py); the fallback is for exec() from Blender
+OUT_DIR = (os.path.dirname(os.path.dirname(os.path.abspath(__file__))) if "__file__" in globals()
+           else r"C:\Users\steph\OneDrive\Documents\godot\projects\gmp-framework\game\assets\models\conveyors")
 
 # ---------- layout constants (metres) ----------
 CELL = 2.0

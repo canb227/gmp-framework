@@ -11,11 +11,13 @@ rollers, beacon, spawner rings) are separate nodes whose origin sits on their pi
 import bpy, bmesh, math, random, os
 from mathutils import Vector, Matrix, noise
 
-HERE = r"C:\Users\steph\OneDrive\Documents\godot\projects\gmp-framework\game\assets\models\props\source"
+# resolved from this file when run by path (tools/blender/run.py); the fallback is for exec() from Blender
+HERE = (os.path.dirname(os.path.abspath(__file__)) if "__file__" in globals()
+        else r"C:\Users\steph\OneDrive\Documents\godot\projects\gmp-framework\game\assets\models\props\source")
 OUT_DIR = os.path.dirname(HERE)
-CONV = r"C:\Users\steph\OneDrive\Documents\godot\projects\gmp-framework\game\assets\models\conveyors\source\build_conveyors.py"
+CONV = os.path.normpath(os.path.join(HERE, "..", "..", "conveyors", "source", "build_conveyors.py"))
 
-L = {"__name__": "conveyor_lib"}
+L = {"__name__": "conveyor_lib", "__file__": CONV}
 exec(compile(open(CONV, encoding="utf-8").read(), CONV, "exec"), L)
 Builder, vc_mat, MATS, MAT_ORDER, MI = L["Builder"], L["vc_mat"], L["MATS"], L["MAT_ORDER"], L["MI"]
 C_WHITE, C_DARK, C_FRAME, C_STEEL = L["C_WHITE"], L["C_DARK"], L["C_FRAME"], L["C_STEEL"]
