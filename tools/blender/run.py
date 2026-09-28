@@ -2,7 +2,7 @@
 Headless driver for the model build scripts (needs Blender's Python module: pip install bpy==4.5.14).
 
     python3 tools/blender/run.py list
-    python3 tools/blender/run.py build   <family> [<family> ...] [--no-export] [--save-blend]
+    python3 tools/blender/run.py build   <family> [<family> ...] [--no-export] [--save-blend] [--only CollA,CollB]
     python3 tools/blender/run.py preview <family> <out_dir> [--only NameA,NameB] [--view x,y,z] [--samples N] [--hide Node,Node]
     python3 tools/blender/run.py icons   <family> [<family> ...] [--only NameA,NameB]
 
@@ -44,15 +44,30 @@ def fresh():
     import bpy
     bpy.ops.wm.read_factory_settings(use_empty=True)
 
-def build(families, export=True, save=False):
+def export_only(ns, built, only):
+    """Export just the named collections (plain node names, as build_all would)."""
+    for coll, glb, tag in built:
+        if coll.name not in only:
+            continue
+        for ob in coll.objects: ob.name = ob.name.split("__", 1)[1]
+        if "export_glb" in ns:
+            ns["export_glb"](coll, os.path.join(ns["OUT_DIR"], glb))
+        else:
+            ns["export"](coll, glb)
+        for ob in coll.objects: ob.name = f"{tag}__{ob.name}"
+        print(f"exported {glb}")
+
+def build(families, export=True, save=False, only=None):
     import bpy
     out = []
     for fam in families:
         fresh()
         ns = load(fam)
-        built = ns["build_all"](do_export=export)
+        built = ns["build_all"](do_export=export and not only)
+        if export and only:
+            export_only(ns, built, only)
         out.append((fam, ns, built))
-        print(f"[{fam}] built {len(built)} pieces" + (" and exported" if export else ""))
+        print(f"[{fam}] built {len(built)} pieces" + (" and exported" if export and not only else ""))
         if save:
             dst = os.path.join(os.path.dirname(FAMILIES[fam]), f"{fam}.blend")
             bpy.ops.wm.save_as_mainfile(filepath=dst, compress=True)
@@ -147,7 +162,7 @@ if __name__ == "__main__":
         for k, v in FAMILIES.items():
             print(f"{k:20s} {os.path.relpath(v, REPO)}{'' if os.path.exists(v) else '  (missing)'}")
     elif cmd == "build":
-        build(pos, export="--no-export" not in args, save="--save-blend" in args)
+        build(pos, export="--no-export" not in args, save="--save-blend" in args, only=only)
     elif cmd == "preview":
         view = tuple(float(v) for v in opt("--view", "1.2,1.3,0.8").split(","))
         preview(pos[0], pos[1], only, view, int(opt("--samples", "24")), tuple(opt("--hide", "").split(",")))

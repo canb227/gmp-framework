@@ -39,6 +39,7 @@ def mats():
         copper=vc_mat("M_PropCopper", 0.32, 0.95),
         vortex=vc_mat("M_VoidVortex", 0.5),
         molten=vc_mat("M_PropMolten", 0.35, 0.0, (1.0, 0.32, 0.04), 3.5),
+        lamp=vc_mat("M_PropLamp", 0.3, 0.0, (1.0, 0.96, 0.88), 5.0),
     )
     for k, m in extra.items():
         MATS[k] = m
@@ -656,6 +657,58 @@ def build_smelter():
     return coll
 
 # ======================================================================================
+# Spawn tube: developer-placed item spawner styled as the test facility's tubes. 1 x 1 x 2 cells (origin = bottom
+# cell centre, z -1..3). Items appear at the SpawnPoint marker high in the glass tube, fall onto a pad tilted
+# toward the front and slide out through the open lower front (1.2 m clear) at belt height.
+# ======================================================================================
+def build_spawn_tube():
+    random.seed(91)
+    coll = clear_collection("Prop_SpawnTube")
+    B = Builder(); I3 = Matrix.Identity(3)
+    # facility floor hatch: yellow frame round dark slats
+    B.box(Vector((0, 0, -0.985)), (1.9, 1.9, 0.03), I3, "metal", C_DARK, 0.2, rust=0.3)
+    for (c, sz) in ((Vector((0, 0.9, -0.96)), (1.9, 0.1, 0.03)), (Vector((0, -0.9, -0.96)), (1.9, 0.1, 0.03)),
+                    (Vector((0.9, 0, -0.96)), (0.1, 1.9, 0.03)), (Vector((-0.9, 0, -0.96)), (0.1, 1.9, 0.03))):
+        B.box(c, sz, I3, "panel", C_YELLOW, 0.2)
+    for k in range(7):
+        B.box(Vector((0, -0.75 + k * 0.25, -0.955)), (1.6, 0.12, 0.02), I3, "metal", (0.05, 0.05, 0.055), 0.1)
+    # lower collar: dark wall round the back and sides, open over the front third
+    for k in range(18):
+        a = math.radians(-120 + k * (240 / 18) + 240 / 36) - math.pi / 2
+        d = Vector((math.cos(a), math.sin(a), 0)); t = Vector((-math.sin(a), math.cos(a), 0))
+        R = Matrix((t, Vector((0, 0, 1)), d)).transposed()
+        B.box(d * 0.84 + Vector((0, 0, -0.34)), (0.24, 1.24, 0.08), R, "metal", C_FRAME, 0.2, rust=0.3)
+    ring(B, Vector((0, 0, 0.3)), (0, 0, 1), 0.76, 0.92, 0.08, 40, "metal", C_DARK, 0.2, rust=0.2)
+    hazard(B, Vector((-0.6, 0.93, -0.935)), (1, 0, 0), (0, 0, 1), 1.2, 0.06, (0, 1, 0), pitch=0.08)
+    # exit pad sloping toward the front
+    B.box(Vector((0, 0.05, -0.74)), (1.3, 1.8, 0.04), Matrix.Rotation(math.radians(-6), 3, 'X'), "steel", L["C_WEAR"], 0.15, rust=0.2)
+    # top collar, tie rods, lamp hood with its glow ring, feed pipes up through the ceiling
+    ring(B, Vector((0, 0, 2.3)), (0, 0, 1), 0.76, 0.92, 0.08, 40, "metal", C_DARK, 0.2, rust=0.2)
+    for k in range(6):
+        a = k / 6 * math.tau + 0.26
+        p = Vector((math.cos(a) * 0.86, math.sin(a) * 0.86, 0))
+        B.cyl(p + Vector((0, 0, 0.34)), p + Vector((0, 0, 2.26)), 0.018, 6, "steel", C_STEEL, rust=0.3)
+    hood = lambda z, r: [Vector((math.cos(a) * r, math.sin(a) * r, z)) for a in [k / 40 * math.tau for k in range(40)]]
+    B.tube_rings([hood(2.36, 0.95), hood(2.62, 0.9), hood(2.85, 0.6), hood(2.92, 0.35)], "metal", C_DARK, 0.15, 0.1, cap=True, smooth=True)
+    ring(B, Vector((0, 0, 2.37)), (0, 0, 1), 0.8, 0.93, 0.03, 40, "lamp", (1.0, 0.97, 0.9), 0.02)
+    for dx in (-0.15, 0.15):
+        B.cyl(Vector((dx, 0.1, 2.9)), Vector((dx, 0.1, 3.0)), 0.06, 10, "metal", (0.1, 0.1, 0.11), 0.1)
+    B.box(Vector((0.4, -0.2, 2.9)), (0.3, 0.2, 0.1), I3, "panel", C_WHITE, 0.3)
+    B.box(Vector((0.45, -0.2, 2.955)), (0.06, 0.06, 0.01), I3, "cyan", C_CYAN, 0.05)
+    finish(B, "Body", coll)
+    G = Builder()
+    tube = lambda z: [Vector((math.cos(a) * 0.78, math.sin(a) * 0.78, z)) for a in [k / 40 * math.tau for k in range(40)]]
+    G.tube_rings([tube(0.34), tube(2.26)], "glass", (0.55, 0.9, 1.0), 0.02, 0.0, cap=False, smooth=True)
+    finish(G, "Glass", coll)
+    Rg = Builder()
+    for z, r, tilt in ((-0.25, 0.6, 0.2), (0.0, 0.62, -0.25)):
+        pts = [Vector((math.cos(a) * r, math.sin(a) * r, z + math.sin(a) * tilt * 0.3)) for a in [k / 32 * math.tau for k in range(32)]]
+        Rg.pipe(pts + [pts[0]], 0.012, 5, "cyan", C_CYAN)
+    finish(Rg, "Rings", coll, Vector((0, 0, 2.0)))
+    sp = bpy.data.objects.new("SpawnPoint", None); coll.objects.link(sp); sp.location = (0, 0, 1.8)
+    return coll
+
+# ======================================================================================
 # Ores
 # ======================================================================================
 def band(p, freq, off):
@@ -753,7 +806,7 @@ PIECES = [
     (build_spawner, "spawner.glb"), (build_void, "item_void.glb"), (lambda: build_iron(False), "iron_ore.glb"),
     (lambda: build_iron(True), "iron_ore_ground.glb"), (lambda: build_copper(False), "copper_ore.glb"),
     (lambda: build_copper(True), "copper_ore_ground.glb"), (build_plinth, "display_plinth.glb"),
-    (build_smelter, "smelter.glb"),
+    (build_smelter, "smelter.glb"), (build_spawn_tube, "spawn_tube.glb"),
 ]
 
 def build_all(do_export=True):
@@ -765,7 +818,8 @@ def build_all(do_export=True):
         for ob in coll.objects:
             base = ob.name.split(".")[0]
             ob.name = f"{tag}__{base}"
-            ob.data.name = ob.name
+            if ob.data is not None:
+                ob.data.name = ob.name
         built.append((coll, glb, tag))
     if do_export:
         for coll, glb, tag in built:
