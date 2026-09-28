@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://52cmdkot7trb"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://648jlfhwft5i" path="res://game/assets/models/items/quartz_crystal.glb" id="2_model"]
+
+[node name="quartz_crystal" type="Box3DBody"]
+shape_type = 2
+capsule_radius = 0.18
+capsule_height = 0.9
+density = 2.6
+friction = 0.3
+restitution = 0.3
+script = ExtResource("1_item")
+itemID = "quartz_crystal"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([8, 10])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

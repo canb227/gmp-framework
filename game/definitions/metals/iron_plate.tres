@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://bd1g758b82tw6" path="res://game/assets/icons/items/iron_plate.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://bgutrt7n5vgoj" path="res://game/scenes/items/world/metals/iron_plate.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "iron_plate"
+droppedScene = ExtResource("3_scene")
+displayName = "Iron Plate"
+description = "Thin checker plate with a low centre of gravity. Slides a long way when shoved and stacks into tidy piles."
+icon = ExtResource("2_icon")
+maxStackSize = 1

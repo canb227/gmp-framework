@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://bljdxkefk3c7d"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://bi00tyrxffsxz" path="res://game/assets/models/items/aerogel_tile.glb" id="2_model"]
+
+[node name="aerogel_tile" type="Box3DBody"]
+shape_type = 0
+box_size = Vector3(0.8, 0.1, 0.8)
+density = 0.05
+friction = 0.5
+linear_damping = 0.9
+gravity_scale = 0.5
+script = ExtResource("1_item")
+itemID = "aerogel_tile"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([7, 17, 21])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

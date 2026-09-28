@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bezvnnf7c2kcm"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://zy73a2zy4zrq" path="res://game/assets/models/items/coke_briquette.glb" id="2_model"]
+
+[node name="coke_briquette" type="Box3DBody"]
+shape_type = 0
+box_size = Vector3(0.45, 0.3, 0.45)
+density = 1
+friction = 0.8
+script = ExtResource("1_item")
+itemID = "coke_briquette"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([4, 9])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

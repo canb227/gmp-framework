@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://bgu76bc7qopp8"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://150bhrxn7snz" path="res://game/assets/models/items/floatstone.glb" id="2_model"]
+
+[node name="floatstone" type="Box3DBody"]
+shape_type = 1
+sphere_radius = 0.4
+density = 0.15
+friction = 0.6
+rolling_resistance = 0.3
+linear_damping = 0.8
+gravity_scale = 0.6
+script = ExtResource("1_item")
+itemID = "floatstone"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([4, 17])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

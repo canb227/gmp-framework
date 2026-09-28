@@ -114,3 +114,16 @@ behind the lab's spine wall.
   elevators, thermal/launch/assembly), and the tools turn on plinths by the entrance. Behind the spine wall
   (z -92) sits the thermal processing row: heaters and coolers. `view_hall.py <out.png> lab` renders it.
 - **Resource ids:** existing `hall_` ext resource ids are kept on re-runs, because hand-placed museum nodes use them.
+
+## Object Museum: Materials Wing
+
+`place_museum.py` also builds the Materials Wing north of the original museum floor (x -40..40, z 60..116). It
+is open to the museum on the south side. There are three rows: metals & scrap, base resources (handling) and base
+resources (hazards). Each item has a station:
+- the model turning on a plinth, with its name coloured by difficulty (green = 1/5, red = 5/5);
+- a walled tray holding two real, grabbable samples;
+- a wall panel describing how the item behaves and the automation challenge it's meant to pose.
+
+Where an item is made from the item to its left, the pair is joined by a floor stripe and an arrow naming the
+process. The items themselves are documented in `tools/items/README.md`. `view_hall.py <out.png> wing` renders
+the wing.

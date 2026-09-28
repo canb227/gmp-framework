@@ -19,6 +19,25 @@ public static class TagInteractions
     {
         { (ItemTags.HOT, ItemTags.COLD), (self, other) => ReportTemperatureContact(self, other, "hot", "cold") },
         { (ItemTags.COLD, ItemTags.HOT), (self, other) => ReportTemperatureContact(self, other, "cold", "hot") },
+
+        // Resource behaviours (design stubs: they log the intended effect; see tools/items/gen_items.py for the
+        // gameplay each one is for). Each reaction runs on the item it changes.
+        { (ItemTags.FUEL, ItemTags.HOT), (self, other) => ReportReaction(self, other, "ignites: starts burning and becomes HOT") },
+        { (ItemTags.VOLATILE, ItemTags.HOT), (self, other) => ReportReaction(self, other, "detonates: blast impulse to neighbours, destroyed") },
+        { (ItemTags.VOLATILE, ItemTags.CHARGED), (self, other) => ReportReaction(self, other, "sparked: detonates") },
+        { (ItemTags.FERROUS, ItemTags.MAGNETIC), (self, other) => ReportReaction(self, other, "pulled toward the magnet and clings to it") },
+        { (ItemTags.MAGNETIC, ItemTags.MAGNETIC), (self, other) => ReportReaction(self, other, "snaps pole to pole with the other magnet") },
+        { (ItemTags.MAGNETIC, ItemTags.HOT), (self, other) => ReportReaction(self, other, "heated past its Curie point: field off for a while") },
+        { (ItemTags.STICKY, ItemTags.METAL), (self, other) => ReportReaction(self, other, "sticks to it") },
+        { (ItemTags.STICKY, ItemTags.ROCK), (self, other) => ReportReaction(self, other, "sticks to it") },
+        { (ItemTags.STICKY, ItemTags.STICKY), (self, other) => ReportReaction(self, other, "merges into a bigger clump") },
+        { (ItemTags.STICKY, ItemTags.COLD), (self, other) => ReportReaction(self, other, "chilled: hardens, stops sticking") },
+        { (ItemTags.SOLUBLE, ItemTags.WET), (self, other) => ReportReaction(self, other, "dissolves") },
+        { (ItemTags.COLD, ItemTags.SOLUBLE), (self, other) => ReportReaction(self, other, "melted by salt: becomes WET slush") },
+        { (ItemTags.LIQUID, ItemTags.LIQUID), (self, other) => ReportReaction(self, other, "merges into one bigger bead") },
+        { (ItemTags.LIQUID, ItemTags.CONDUCTIVE), (self, other) => ReportReaction(self, other, "amalgamates onto the copper") },
+        { (ItemTags.CHARGED, ItemTags.CHARGED), (self, other) => ReportReaction(self, other, "repels the other charged item") },
+        { (ItemTags.CHARGED, ItemTags.CONDUCTIVE), (self, other) => ReportReaction(self, other, "arcs into the metal and loses its charge") },
     };
 
     static readonly Dictionary<(ulong, ulong), ulong> lastReaction = new();
@@ -63,6 +82,15 @@ public static class TagInteractions
         {
             lastReaction[(self.id, other.id)] = now;
         }
+    }
+
+    /// <summary>Reactions reported on this peer (the resource behaviours are logged until they're implemented).</summary>
+    public static int reactions { get; private set; }
+
+    static void ReportReaction(PhysicalFactoryItem self, PhysicalFactoryItem other, string effect)
+    {
+        reactions++;
+        Logging.Log($"TAG REACTION: {self.itemID} touched {other.itemID}: {effect}", "TagInteractions");
     }
 
     static void ReportTemperatureContact(PhysicalFactoryItem self, PhysicalFactoryItem other, string mine, string theirs)

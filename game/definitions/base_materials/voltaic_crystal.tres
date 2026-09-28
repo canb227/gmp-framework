@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://5xumvqnm7oiw" path="res://game/assets/icons/items/voltaic_crystal.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://8vdechf0b2he" path="res://game/scenes/items/world/resources/voltaic_crystal.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "voltaic_crystal"
+droppedScene = ExtResource("3_scene")
+displayName = "Voltaic Crystal"
+description = "A crystal that holds charge. Two crystals repel, so they won't sit together. It arcs into conductive metal and sparks off volatile items."
+icon = ExtResource("2_icon")
+maxStackSize = 1

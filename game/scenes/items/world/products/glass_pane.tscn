@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://zlrttad4j3rj"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://7km8naxi2ljw" path="res://game/assets/models/items/glass_pane.glb" id="2_model"]
+
+[node name="glass_pane" type="Box3DBody"]
+shape_type = 0
+box_size = Vector3(0.9, 0.05, 0.9)
+density = 2.5
+friction = 0.15
+script = ExtResource("1_item")
+itemID = "glass_pane"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([8, 10, 16])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

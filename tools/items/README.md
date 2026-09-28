@@ -1,0 +1,58 @@
+# Resources and products
+
+`python3 tools/items/gen_items.py` writes the world scenes, item definitions and imports for these items from the
+`ITEMS` table in `gen_items.py`, which is the source of truth for their physics, tags and museum text. The models
+come from `run.py build items` and the icons from `run.py icons items`. The museum's Materials Wing is built by
+`tools/structures/place_museum.py`.
+
+**Tags:** the new tags (FUEL through FERROUS) are appended to `ItemTags.cs`. `TagInteractions.cs` lists the pair rules they
+are designed for: fuel ignites on HOT, volatile items detonate on HOT or CHARGED, magnets pull FERROUS items,
+sticky items glue and harden when COLD, soluble items dissolve when WET and melt COLD ones, liquid beads merge
+and amalgamate with CONDUCTIVE metal, and charged items repel each other and discharge into conductors. For now
+those rules only log the intended effect (`TAG REACTION`).
+
+**Implemented today:** the physical side is live. That covers shape, density, friction, rolling resistance, restitution, damping and
+gravity scale (e.g. frost's 0.02 friction, quicksilver's density of 13 with zero rolling resistance, floatstone's 0.6 gravity).
+
+Fragile shattering (an impact-speed rule), the processing recipes and scrap-ingot weight variance are designed but not implemented yet.
+
+## Metals
+
+| Item | Difficulty | Shape | Physics | Tags | From | Behaviour | Challenge |
+|---|---|---|---|---|---|---|---|
+| Iron Ingot (`iron_ingot`) | 1/5 | box 0.8×0.3×0.4 | density 7.0, friction 0.5 | METAL, FERROUS | Iron Ore → Smelter | Dense, flat-sided bar. Sits still on a belt, stacks neatly and never rolls. Ferrous: magnets and lodestone grab it. | The baseline item. Its weight makes launch ramps fall short and it needs powered chutes on long runs. |
+| Iron Rod (`iron_rod`) | 2/5 | capsule r 0.1 h 1.2 | density 7.0, friction 0.4, rolling 0.02 | METAL, FERROUS | Iron Ingot → Rod Extruder | Long, round bar. Rolls sideways at the slightest bump and swings round on turns. | Lengthwise it slides into chutes. Crosswise it bridges them and jams. Guard rails and aligning funnels matter. |
+| Iron Plate (`iron_plate`) | 2/5 | box 0.8×0.08×0.8 | density 7.0, friction 0.35 | METAL, FERROUS | Iron Ingot → Plate Press | Thin checker plate with a low centre of gravity. Slides a long way when shoved and stacks into tidy piles. | Plates skate off the ends of fast belts and lie flat over hopper mouths, bridging them shut until knocked in. |
+| Copper Ingot (`copper_ingot`) | 1/5 | box 0.8×0.3×0.4 | density 8.0, friction 0.4 | METAL, CONDUCTIVE | Copper Ore → Smelter | Heavier than iron and slicker. Conductive: it grounds voltaic charge. Not ferrous, so magnets ignore it. | Easy to move. The trick is separating it from iron: a magnetic belt lifts the iron and lets the copper pass. |
+| Copper Rod (`copper_rod`) | 2/5 | capsule r 0.1 h 1.2 | density 8.0, friction 0.35, rolling 0.02 | METAL, CONDUCTIVE | Copper Ingot → Rod Extruder | Rolls like the iron rod. Winds into magnet cores and makes a lightning rod for voltaic crystals. | Same rolling problems as iron rods, but magnetic belts can't hold it, so it needs walls or tubes instead. |
+| Copper Plate (`copper_plate`) | 2/5 | box 0.8×0.08×0.8 | density 8.0, friction 0.3 | METAL, CONDUCTIVE | Copper Ingot → Plate Press | Slick conductive plate. Touching a voltaic crystal drains its charge safely. Half of every battery cell. | A copper plate lining a chute is a cheap 'grounding strip' that defuses charged crystals as they pass. |
+| Scrap Ball (`scrap_ball`) | 2/5 | sphere r 0.36 | density 3.0, friction 0.9, rolling 0.5, restitution 0.15 | METAL, FERROUS | salvage / Grinder waste | A crushed bale of mixed metal. Lumpy, so it rolls in lurches and bounces off in odd directions. Weakly ferrous. | Unpredictable. It tumbles out of turns and ricochets in hoppers, so give it wide, walled routes. |
+| Scrap Ingot (`scrap_ingot`) | 3/5 | box 0.8×0.3×0.4 | density 6.0, friction 0.55 | METAL, FERROUS | Scrap Ball → Smelter | A cheap mixed-metal ingot. Every one comes out a different weight, depending on what went into the bale. | Recipes want a quality ingot: weigh them on a tipping bucket or counterweight and send the light ones back round. |
+
+## Base resources
+
+| Item | Difficulty | Shape | Physics | Tags | From | Behaviour | Challenge |
+|---|---|---|---|---|---|---|---|
+| Coal (`coal`) | 1/5 | sphere r 0.34 | density 1.3, friction 0.9, rolling 1.2 | ROCK, FUEL | mined | Light, grippy lumps that never roll. Fuel: touching anything hot makes it burn and turn hot itself. | Easy to carry, but a hot ingot dropped on a coal belt starts a fire that spreads lump to lump down the line. |
+| Salt Crystal (`salt_crystal`) | 1/5 | box 0.5×0.5×0.5 | density 2.2, friction 0.7 | ROCK, SOLUBLE | mined | A perfect cube: stacks, packs and counts neatly. Soluble: it dissolves when wet and melts frost it touches. | Keep it away from quench tanks. Used on purpose, a salt cube is the de-icer that clears a frost jam. |
+| Floatstone (`floatstone`) | 2/5 | sphere r 0.4 | density 0.15, friction 0.6, rolling 0.3, damping 0.8, gravity 0.6 | ROCK, BUOYANT | mined | Pumice so light it drifts. Fans, launch ramps and field projectors blow it off course. Floats in water and magma. | Needs covered belts and roofed chutes. Being buoyant, it rides the Magma Bath's weir and splits itself from heavy ore. |
+| Frost Crystal (`frost_crystal`) | 3/5 | box 0.5×0.5×0.5 | density 0.9, friction 0.02, restitution 0.05 | COLD, GLASS, SLIPPERY | mined | Nearly frictionless, and always cold. Belts slide out from under it instead of carrying it. It chills whatever it touches. | Belts can't move it: push it with tube walls, paddles or gravity. Heat turns it to water, salt melts it, and it's the best coolant. |
+| Lodestone (`lodestone`) | 3/5 | sphere r 0.4 | density 6.0, friction 0.7, rolling 0.4 | ROCK, MAGNETIC | mined | Naturally magnetic. It tugs ferrous items toward itself, clumps with them and clings to magnetic belts. | Lodestone gathers iron into jams in hoppers and splitters, so keep it separate. Heating it past the Curie point switches its field off for a while. |
+| Quartz Crystal (`quartz_crystal`) | 3/5 | capsule r 0.18 h 0.9 | density 2.6, friction 0.3, restitution 0.3 | GLASS, FRAGILE | mined | A long, glassy point that rolls. Fragile: any hard knock shatters it into quartz shards, including a drop of more than one cell, a launcher or a collision. | Gentle handling only: slow belts, rubber-padded chutes and elevators in place of drops. Every crash wastes material. |
+| Latex Resin (`latex_resin`) | 4/5 | sphere r 0.33 | density 1.0, friction 2.0, rolling 2.0, restitution 0.0, damping 0.5 | RUBBER, STICKY | tapped | A tacky, dead-soft blob. It glues itself to belts, walls and other items, and blobs merge into growing clumps. | Clumps block hoppers and splitters. Chill it with cold items or the cryo vent so it hardens enough to move, then heat it to cure it into rubber. |
+| Sulfur (`sulfur`) | 4/5 | sphere r 0.35 | density 2.0, friction 0.6, rolling 0.6 | ROCK, VOLATILE | mined | Brittle yellow crystal. Volatile: a hot item or a voltaic spark sets it off, blasting its neighbours away and destroying it. | One stray hot item can chain-react a whole belt. Route it clear of heaters and charged crystals, and space it out. |
+| Quicksilver (`quicksilver`) | 5/5 | sphere r 0.28 | density 13.0, friction 0.05, rolling 0.0, restitution 0.0 | METAL, LIQUID | tapped | A bead of liquid metal: very heavy, frictionless and it never stops rolling. Two beads that touch merge into one bigger bead, and a hard knock splits it again. | It escapes through every gap and runs down belt slopes. It has to be enclosed end to end, metered by weight and kept apart so beads don't merge. |
+| Voltaic Crystal (`voltaic_crystal`) | 5/5 | box 0.5×0.7×0.5 | density 2.4, friction 0.5 | GLASS, CHARGED | mined | A crystal that holds charge. Two crystals repel, so they won't sit together. It arcs into conductive metal and sparks off volatile items. | It spreads itself out on belts and won't pile into a hopper. Ground it on copper before bulk handling, and never let it near sulfur. |
+
+## Products (not counted among the 10)
+
+| Item | Difficulty | Shape | Physics | Tags | From | Behaviour | Challenge |
+|---|---|---|---|---|---|---|---|
+| Coke Briquette (`coke_briquette`) | 1/5 | box 0.45×0.3×0.45 | density 1.0, friction 0.8 | ROCK, FUEL | Coal → Tunnel Furnace | Baked coal pillows that stack. Burns much hotter than coal but only in a smelter, so it doesn't spread fire. | The safe fuel: once coal is coked, fire risk stops being a routing concern. |
+| Glass Pane (`glass_pane`) | 3/5 | box 0.9×0.05×0.9 | density 2.5, friction 0.15 | GLASS, FRAGILE, SLIPPERY | Quartz Crystal → Smelter | A thin, slippery, fragile sheet. It sleds the length of a belt at every stop and cracks if it lands on an edge. | Gentle stops, flat drops and stacking rather than piling. |
+| Quartz Shards (`quartz_shards`) | 2/5 | sphere r 0.22 | density 2.6, friction 0.7, rolling 0.8 | GLASS | Quartz Crystal, shattered | What's left of a dropped crystal. Small and sharp, so it catches in grates and gaps. | Still smelts into glass, at half the yield. A shard count is a score for how rough the handling was. |
+| Rubber Ball (`rubber_ball`) | 3/5 | sphere r 0.3 | density 1.1, friction 0.9, restitution 0.95 | RUBBER | Latex Resin → heat (cure) | Cured latex that bounces back almost as high as it fell, off every surface. | Hard to contain: it leaps out of open hoppers. Turned round, rubber lining gives quartz and glass a soft landing. |
+| Blast Charge (`blast_charge`) | 4/5 | capsule r 0.2 h 0.7 | density 1.5, friction 0.6 | METAL, VOLATILE | Sulfur + Coal → Assembly Chamber | Sulfur and coal packed in a steel can. Heat, a spark or a hard knock sets it off. | Planned as launcher propellant: one charge flings a load. Moving live charges demands everything learned from sulfur. |
+| Battery Cell (`battery_cell`) | 3/5 | capsule r 0.22 h 0.6 | density 3.0, friction 0.6 | METAL, CHARGED | Voltaic Crystal + Copper Plate → Assembly Chamber | Voltaic charge sealed in a copper cell. It stacks safely, but touching bare copper still drains it slowly. | Planned as portable power for machines. Keep cells off copper belts and grounding strips. |
+| Magnet Core (`magnet_core`) | 2/5 | box 0.5×0.5×0.5 | density 6.0, friction 0.6 | METAL, MAGNETIC | Lodestone + Copper Rod → Plate Press | Pressed lodestone wound with copper: a strong, fixed magnet with marked poles. | Crafting part for magnetic belts and tools. It pulls iron to it just as lodestone does, so handle it the same way. |
+| Aerogel Tile (`aerogel_tile`) | 2/5 | box 0.8×0.1×0.8 | density 0.05, friction 0.5, damping 0.9, gravity 0.5 | PLASTIC, BUOYANT, INSULATED | Floatstone → Plate Press | Frozen smoke: the lightest solid in the game. Insulating: nothing hot, cold or charged passes through it. | It flutters off belts like floatstone. Laid under or between items, it's the shield that lets volatile and charged loads travel. |

@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bferlle2ofw34"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://baufo66olsmqx" path="res://game/assets/models/items/iron_ingot.glb" id="2_model"]
+
+[node name="iron_ingot" type="Box3DBody"]
+shape_type = 0
+box_size = Vector3(0.8, 0.3, 0.4)
+density = 7
+friction = 0.5
+script = ExtResource("1_item")
+itemID = "iron_ingot"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([3, 22])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

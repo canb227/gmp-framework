@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://0krmhd2ltapw"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://yuvwj1i6fh5k" path="res://game/assets/models/items/quartz_shards.glb" id="2_model"]
+
+[node name="quartz_shards" type="Box3DBody"]
+shape_type = 1
+sphere_radius = 0.22
+density = 2.6
+friction = 0.7
+rolling_resistance = 0.8
+script = ExtResource("1_item")
+itemID = "quartz_shards"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([8])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

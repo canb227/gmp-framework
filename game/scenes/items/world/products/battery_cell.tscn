@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://yzzxvmwvtoou"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://0ls3tvhyplr5" path="res://game/assets/models/items/battery_cell.glb" id="2_model"]
+
+[node name="battery_cell" type="Box3DBody"]
+shape_type = 2
+capsule_radius = 0.22
+capsule_height = 0.6
+density = 3
+friction = 0.6
+script = ExtResource("1_item")
+itemID = "battery_cell"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([3, 19])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

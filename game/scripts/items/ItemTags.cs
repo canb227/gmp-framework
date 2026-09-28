@@ -23,4 +23,19 @@ public enum ItemTags
     CONCRETE = 6,
     PLASTIC = 7,
     GLASS = 8,
+    // Behaviour tags for the resources and products (see TagInteractions for what each pair does).
+    FUEL = 9,          // burns when it touches something HOT (and becomes HOT itself)
+    FRAGILE = 10,      // shatters on hard impacts (impact-speed rule, not a tag pair)
+    STICKY = 11,       // glues itself to whatever it touches; COLD hardens it
+    MAGNETIC = 12,     // pulls FERROUS items (and other magnets) toward itself; HOT switches it off
+    VOLATILE = 13,     // detonates on HOT or CHARGED contact
+    SOLUBLE = 14,      // dissolves when WET; melts COLD items it touches
+    WET = 15,          // soaked (quench tank, melted frost)
+    SLIPPERY = 16,     // near-frictionless: belts can't carry it (physical, via friction)
+    BUOYANT = 17,      // floats in liquids (water, magma), drifts in fans
+    LIQUID = 18,       // beads merge with other LIQUID items; amalgamate with CONDUCTIVE metal
+    CHARGED = 19,      // repels other CHARGED items, discharges into CONDUCTIVE ones, sparks VOLATILE ones
+    CONDUCTIVE = 20,   // grounds CHARGED items
+    INSULATED = 21,    // blocks HOT / COLD / CHARGED interactions through it
+    FERROUS = 22,      // attracted by MAGNETIC items and magnetic belts
 }

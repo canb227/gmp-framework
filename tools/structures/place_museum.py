@@ -15,6 +15,8 @@ structure's front (-Z) counter-clockwise: 0 faces -Z, 1 faces -X, 2 faces +Z, 3 
 import os, re, sys, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from scenegen import REPO, f, glb_children, ensure_import, script_uid
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "items"))
+import gen_items
 
 MUSEUM = os.path.join(REPO, "game", "scenes", "levels", "ObjectMuseum.tscn")
 S = "game/scenes/structures/"
@@ -133,12 +135,16 @@ class Hall:
         self.node(f'[node name="FieldTrigger" parent="{parent}/{name}"]', f"box_size = Vector3({f(cross)}, {f(cross)}, {2 * cells})",
                   f"position = Vector3(0, 0, {f(-(1 + cells))})")
 
-    def label(self, parent, name, pos, text, size=40, pixel=0.008, billboard=True, yaw=0, color=None):
+    def label(self, parent, name, pos, text, size=40, pixel=0.008, billboard=True, yaw=0, color=None, width=None, outline=12):
+        """Label3D; width (metres) wraps the text into a left-aligned block."""
         m = YAW[yaw]
+        text = text.replace('"', "'").replace("\n", "\\n")
         self.node(f'[node name="{self.uname(name)}" type="Label3D" parent="{parent}"]',
                   f"transform = Transform3D({', '.join(f(v) for v in m)}, {f(pos[0])}, {f(pos[1])}, {f(pos[2])})",
-                  "billboard = 1" if billboard else "double_sided = false", f"pixel_size = {f(pixel)}", f"font_size = {size}", "outline_size = 12",
-                  f"modulate = {color}" if color else None, f'text = "{text}"')
+                  "billboard = 1" if billboard else "double_sided = false", f"pixel_size = {f(pixel)}", f"font_size = {size}", f"outline_size = {outline}",
+                  f"modulate = {color}" if color else None,
+                  *((f"horizontal_alignment = 0", "autowrap_mode = 3", f"width = {f(width / pixel)}") if width else ()),
+                  f'text = "{text}"')
 
     # --- architecture (colliding blocks and decor strips)
     def block(self, parent, name, lo, hi, mat="panel", solid=True):
@@ -455,6 +461,89 @@ def lab():
 
 LAB = None
 
+# ---------------------------------------------------------------------------- the materials wing
+ORES = {   # the existing ores, shown at the head of their chains (same fields as gen_items.ITEMS)
+    "iron_ore": ("iron_ore", "Iron Ore", "base", None, None, None, 1, "mined",
+                 "Heavy, rough and round: rolls slowly and settles quickly.", "Smelt into iron ingots; grind for a finer, faster-flowing feed."),
+    "copper_ore": ("copper_ore", "Copper Ore", "base", None, None, None, 1, "mined",
+                   "Rough, round ore flecked with native copper.", "Smelt into copper ingots, the conductive half of the metal line."),
+}
+DIFF_COLOR = {1: "Color(0.55, 1, 0.55, 1)", 2: "Color(0.8, 1, 0.45, 1)", 3: "Color(1, 0.85, 0.35, 1)", 4: "Color(1, 0.55, 0.25, 1)", 5: "Color(1, 0.3, 0.3, 1)"}
+ROWS = [   # (backdrop wall z, title, item ids west -> east)
+    (74, "METALS & SCRAP", ["iron_ore", "iron_ingot", "iron_rod", "iron_plate", "copper_ore", "copper_ingot", "copper_rod",
+                            "copper_plate", "scrap_ball", "scrap_ingot"]),
+    (94, "BASE RESOURCES  -  HANDLING", ["coal", "coke_briquette", "salt_crystal", "floatstone", "aerogel_tile", "frost_crystal",
+                                         "lodestone", "magnet_core"]),
+    (116, "BASE RESOURCES  -  HAZARDS", ["quartz_crystal", "glass_pane", "quartz_shards", "latex_resin", "rubber_ball", "sulfur",
+                                         "blast_charge", "quicksilver", "voltaic_crystal", "battery_cell"]),
+]
+SPACING = 6.6
+
+def wing():
+    """One station per item: the model turning on a plinth, a walled tray of real, grabbable samples in front and
+    a description of its behaviour and intended challenge on the wall behind."""
+    h = LAB
+    items = {it[0]: it for it in gen_items.ITEMS}
+    items.update(ORES)
+    h.node('[node name="MaterialsWing" type="Node3D" parent="."]')
+    h.block("MaterialsWing", "WingFloor", (-40, -1, 60), (40, 0, 116), "floor")
+    arch = h.group("Architecture", "MaterialsWing")
+    h.wall(arch, "WallWest", (-40, 60), (-40, 116), 8.0)
+    h.wall(arch, "WallEast", (40, 60), (40, 116), 8.0)
+    h.stripe(arch, "Threshold", (-40, 60), (40, 60.4))
+    h.block(arch, "GateBeamW", (-40, 6.8, 59.8), (-12, 7.6, 60.2), "frame", solid=False)
+    h.block(arch, "GateBeamE", (12, 6.8, 59.8), (40, 7.6, 60.2), "frame", solid=False)
+    h.label(arch, "WingTitle", (0, 7.2, 59.6), "MATERIALS WING", size=128, pixel=0.03, billboard=False, yaw=2)
+    h.label(arch, "WingSubtitle", (0, 5.9, 59.6), "ores, resources and products  -  how each one behaves, and the problem it poses",
+            size=64, pixel=0.018, billboard=False, yaw=2)
+    spin = h.ext_id("res://game/scripts/entities/Spinner.cs", "Script")
+    plinth = h.ext_id("res://game/assets/models/props/display_plinth.glb", "PackedScene")
+    for r, (wz, title, ids) in enumerate(ROWS):
+        row = h.group(f"Row{r + 1}", "MaterialsWing")
+        last = wz == 116
+        h.wall(row, "Backdrop", (-40, wz) if last else (-36, wz), (40, wz) if last else (36, wz), 8.0 if last else 5.0)
+        h.label(row, "RowTitle", (0, 4.4, wz - 0.25), title, size=96, pixel=0.016, billboard=False, yaw=2)
+        x0 = -SPACING * (len(ids) - 1) / 2
+        z = wz - 6.0
+        prev = None
+        for n, iid in enumerate(ids):
+            (_, name, group, shape, phys, tags, diff, source, behaviour, challenge) = items[iid]
+            x = x0 + n * SPACING
+            sname = name.replace(" ", "")
+            if iid in ORES:
+                glb, scene = f"res://game/assets/models/props/{iid}.glb", f"res://game/scenes/items/world/resources/{iid}.tscn"
+            else:
+                glb, scene = f"res://game/assets/models/items/{iid}.glb", gen_items.scene_res(iid, group)
+            st = h.group(sname, row)
+            h.node(f'[node name="Plinth" parent="{st}" instance=ExtResource("{plinth}")]',
+                   f"transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, {f(x)}, 1, {f(z)})")
+            h.node(f'[node name="Turntable" type="Node3D" parent="{st}"]',
+                   f"transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, {f(x)}, 1.75, {f(z)})",
+                   f'script = ExtResource("{spin}")', "axis = Vector3(0, 1, 0)", "speed = 0.5")
+            h.node(f'[node name="Model" parent="{st}/Turntable" instance=ExtResource("{h.ext_id(glb, "PackedScene")}")]')
+            h.label(st, "Name", (x, 3.1, z), name, size=56, pixel=0.01, color=DIFF_COLOR[diff])
+            # samples: a walled tray of real items in front of the plinth
+            tz = z - 2.4
+            h.block(st, "TrayBase", (x - 1.3, 0, tz - 0.8), (x + 1.3, 0.06, tz + 0.8), "frame")
+            for (lo, hi) in (((x - 1.3, tz - 0.8), (x + 1.3, tz - 0.7)), ((x - 1.3, tz + 0.7), (x + 1.3, tz + 0.8)),
+                             ((x - 1.3, tz - 0.8), (x - 1.2, tz + 0.8)), ((x + 1.2, tz - 0.8), (x + 1.3, tz + 0.8))):
+                h.block(st, "TrayWall", (lo[0], 0.06, lo[1]), (hi[0], 0.45, hi[1]), "panel")
+            h.stripe(st, "TrayEdge", (x - 1.3, tz - 0.83), (x + 1.3, tz - 0.8))
+            sid = h.ext_id(scene, "PackedScene")
+            for k, dx in enumerate((-0.55, 0.55)):
+                h.node(f'[node name="Sample{k + 1}" parent="{st}" instance=ExtResource("{sid}")]',
+                       f"transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, {f(x + dx)}, 0.75, {f(tz)})")
+            # the story, on the wall behind
+            text = (f"{name.upper()}   difficulty {diff}/5\nfrom: {source}\n\n{behaviour}\n\nCHALLENGE: {challenge}")
+            h.block(st, "Panel", (x - SPACING / 2 + 0.2, 0.9, wz - 0.24), (x + SPACING / 2 - 0.2, 3.9, wz - 0.2), "frame", solid=False)
+            h.block(st, "PanelBar", (x - SPACING / 2 + 0.2, 3.9, wz - 0.26), (x + SPACING / 2 - 0.2, 3.98, wz - 0.2), "hazard", solid=False)
+            h.label(st, "Story", (x, 2.4, wz - 0.3), text, size=26, pixel=0.0052, billboard=False, yaw=2, width=SPACING - 0.8, outline=4)
+            if prev and prev[1] in source:                               # this one is made from its left neighbour
+                how = source.split("->")[-1].strip()
+                h.label(st, "Arrow", (x - SPACING / 2, 1.9, z), f"{how}  >", size=40, pixel=0.008, color="Color(1, 0.8, 0.3, 1)")
+                h.stripe(st, "ChainStripe", (x - SPACING + 0.9, z - 0.1), (x - 0.9, z + 0.1))
+            prev = (iid, name)
+
 SUBS = """[sub_resource type="StandardMaterial3D" id="hall_mat_panel"]
 albedo_color = Color(0.78, 0.78, 0.76, 1)
 roughness = 0.45
@@ -495,13 +584,14 @@ def main():
     h = hall(keep)
     LAB = h
     lab()
+    wing()
     floor_tex = h.ext_id("res://game/assets/textures/floor_1/floor_1_diffuseOriginal.png", "Texture2D")
     # remove earlier galleries / halls (new resources go where the old ones were)
     old = re.search(r'\[ext_resource [^\n]*id="(sg|hall)_[^"]*"\]\n', txt)
     txt = txt if not old else txt[:old.start()] + "\0HALL_EXT\n" + txt[old.start():]
     txt = re.sub(r'\[ext_resource [^\n]*id="(sg|hall)_[^"]*"\]\n', "", txt)
     txt = re.sub(r'\[sub_resource [^\n]*id="hall_[^"]*"\]\n(?:[^\[\n][^\n]*\n)*\n?', "", txt)
-    for marker in ('\n[node name="StructureGallery"', '\n[node name="StructureHall"', '\n[node name="ConceptLab"'):
+    for marker in ('\n[node name="StructureGallery"', '\n[node name="StructureHall"', '\n[node name="ConceptLab"', '\n[node name="MaterialsWing"'):
         cut = txt.find(marker)
         if cut >= 0:
             txt = txt[:cut].rstrip("\n") + "\n"

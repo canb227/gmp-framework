@@ -2,7 +2,7 @@
 Renders the Structure Hall and Concept Lab from ObjectMuseum.tscn (structures, walls, decor and signs) for review without Godot.
 Needs Blender's Python module (pip install bpy==4.5.14).
 
-    python3 tools/structures/view_hall.py <out.png> [top | lab | cam_x,cam_y,cam_z:target_x,target_y,target_z] (Godot coordinates)
+    python3 tools/structures/view_hall.py <out.png> [top | lab | wing | cam_x,cam_y,cam_z:target_x,target_y,target_z] (Godot coordinates)
 """
 import os, sys, re, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -62,7 +62,10 @@ def main(out, view):
                 scene, glb = "", ext[inst.group(1)]
             else:
                 scene = open(res_to_abs(ext[inst.group(1)])).read()
-                glb = re.search(r'path="(res://[^"]+\.glb)"', scene).group(1)
+                m = re.search(r'path="(res://[^"]+\.glb)"', scene)
+                if not m:
+                    print("no model in", ext[inst.group(1)]); continue
+                glb = m.group(1)
             mt = re.search(r'\[node name="Model"[^\n]*\]\ntransform = (Transform3D\([^)]+\))', scene)
             MM, mo = xf(mt.group(1)) if mt else (Matrix.Identity(3), Vector())
             before = set(sc.objects)
@@ -81,14 +84,18 @@ def main(out, view):
             ob.matrix_world = to_blender(Mw, ow)
             ob.data.materials.append(mat(mid, COLORS.get(mid, (0.5, 0.5, 0.5))))
         elif 'type="Label3D"' in head and "text" in props:
-            cu = bpy.data.curves.new("t", 'FONT'); cu.body = props["text"].strip('"')
+            cu = bpy.data.curves.new("t", 'FONT'); cu.body = props["text"].strip('"').replace("\\n", "\n")
             size = int(props.get("font_size", "32")) * float(props.get("pixel_size", "0.01"))
             cu.size = size; cu.align_x = 'CENTER'
             ob = bpy.data.objects.new("Label", cu); sc.collection.objects.link(ob)
             ob.data.materials.append(mat("LabelMat", (1, 1, 1), 2.0))
             ob.matrix_world = to_blender(Mw, ow) @ Matrix.Rotation(math.pi / 2, 4, 'X')
     cam = bpy.data.objects.new("Cam", bpy.data.cameras.new("Cam")); sc.collection.objects.link(cam); sc.camera = cam
-    if view == "lab":
+    if view == "wing":
+        cam.data.type = 'ORTHO'; cam.data.ortho_scale = 84
+        cam.location = G2B @ Vector((0, 120, 88)); cam.rotation_euler = (0, 0, 0)
+        sc.render.resolution_x, sc.render.resolution_y = 1200, 900
+    elif view == "lab":
         cam.data.type = 'ORTHO'; cam.data.ortho_scale = 84
         cam.location = G2B @ Vector((0, 120, -90)); cam.rotation_euler = (0, 0, 0)
         sc.render.resolution_x, sc.render.resolution_y = 1200, 900

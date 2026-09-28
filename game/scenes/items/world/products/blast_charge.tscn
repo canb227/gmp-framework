@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://5j7vq3qgpewo"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://bdwnxin5lia5q" path="res://game/assets/models/items/blast_charge.glb" id="2_model"]
+
+[node name="blast_charge" type="Box3DBody"]
+shape_type = 2
+capsule_radius = 0.2
+capsule_height = 0.7
+density = 1.5
+friction = 0.6
+script = ExtResource("1_item")
+itemID = "blast_charge"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([3, 13])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://7hjcflrsqaho" path="res://game/assets/icons/items/copper_plate.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://bkjtgk0yehfiv" path="res://game/scenes/items/world/metals/copper_plate.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "copper_plate"
+droppedScene = ExtResource("3_scene")
+displayName = "Copper Plate"
+description = "Slick conductive plate. Touching a voltaic crystal drains its charge safely. Half of every battery cell."
+icon = ExtResource("2_icon")
+maxStackSize = 1

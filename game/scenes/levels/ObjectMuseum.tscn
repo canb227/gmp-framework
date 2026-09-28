@@ -102,6 +102,62 @@
 [ext_resource type="PackedScene" uid="uid://bjudt0tlhenqv" path="res://game/assets/models/tools/tool_tether.glb" id="hall_71"]
 [ext_resource type="PackedScene" uid="uid://0507ikcznj7x" path="res://game/assets/models/tools/tool_tag_painter.glb" id="hall_72"]
 [ext_resource type="PackedScene" uid="uid://be215qgjpxw1p" path="res://game/assets/models/tools/tool_blueprint_stamp.glb" id="hall_73"]
+[ext_resource type="PackedScene" uid="uid://rflfkk8v0d68" path="res://game/assets/models/props/iron_ore.glb" id="hall_80"]
+[ext_resource type="PackedScene" uid="uid://bvun7kiv1cftb" path="res://game/scenes/items/world/resources/iron_ore.tscn" id="hall_81"]
+[ext_resource type="PackedScene" uid="uid://baufo66olsmqx" path="res://game/assets/models/items/iron_ingot.glb" id="hall_82"]
+[ext_resource type="PackedScene" uid="uid://bferlle2ofw34" path="res://game/scenes/items/world/metals/iron_ingot.tscn" id="hall_83"]
+[ext_resource type="PackedScene" uid="uid://8h70r3hmidrb" path="res://game/assets/models/items/iron_rod.glb" id="hall_84"]
+[ext_resource type="PackedScene" uid="uid://bafpk6es6sv6j" path="res://game/scenes/items/world/metals/iron_rod.tscn" id="hall_85"]
+[ext_resource type="PackedScene" uid="uid://ba5xi2fkzaggj" path="res://game/assets/models/items/iron_plate.glb" id="hall_86"]
+[ext_resource type="PackedScene" uid="uid://bgutrt7n5vgoj" path="res://game/scenes/items/world/metals/iron_plate.tscn" id="hall_87"]
+[ext_resource type="PackedScene" uid="uid://bb0kdvq7kften" path="res://game/assets/models/props/copper_ore.glb" id="hall_88"]
+[ext_resource type="PackedScene" uid="uid://dlnyuu4mrmp1r" path="res://game/scenes/items/world/resources/copper_ore.tscn" id="hall_89"]
+[ext_resource type="PackedScene" uid="uid://bj22f8rkobrbf" path="res://game/assets/models/items/copper_ingot.glb" id="hall_90"]
+[ext_resource type="PackedScene" uid="uid://bjdrc3p0cg7cb" path="res://game/scenes/items/world/metals/copper_ingot.tscn" id="hall_91"]
+[ext_resource type="PackedScene" uid="uid://3ta0nlpr457i" path="res://game/assets/models/items/copper_rod.glb" id="hall_92"]
+[ext_resource type="PackedScene" uid="uid://bjhn5kjlv2ahu" path="res://game/scenes/items/world/metals/copper_rod.tscn" id="hall_93"]
+[ext_resource type="PackedScene" uid="uid://4phtyhmrrndg" path="res://game/assets/models/items/copper_plate.glb" id="hall_94"]
+[ext_resource type="PackedScene" uid="uid://bkjtgk0yehfiv" path="res://game/scenes/items/world/metals/copper_plate.tscn" id="hall_95"]
+[ext_resource type="PackedScene" uid="uid://bgy7sre10sznd" path="res://game/assets/models/items/scrap_ball.glb" id="hall_96"]
+[ext_resource type="PackedScene" uid="uid://bkhap7zrv8wga" path="res://game/scenes/items/world/metals/scrap_ball.tscn" id="hall_97"]
+[ext_resource type="PackedScene" uid="uid://51l1ndre1sch" path="res://game/assets/models/items/scrap_ingot.glb" id="hall_98"]
+[ext_resource type="PackedScene" uid="uid://bjruedm5vci13" path="res://game/scenes/items/world/metals/scrap_ingot.tscn" id="hall_99"]
+[ext_resource type="PackedScene" uid="uid://birsfct2yd4p6" path="res://game/assets/models/items/coal.glb" id="hall_100"]
+[ext_resource type="PackedScene" uid="uid://zzjwqj1hibhy" path="res://game/scenes/items/world/resources/coal.tscn" id="hall_101"]
+[ext_resource type="PackedScene" uid="uid://zy73a2zy4zrq" path="res://game/assets/models/items/coke_briquette.glb" id="hall_102"]
+[ext_resource type="PackedScene" uid="uid://bezvnnf7c2kcm" path="res://game/scenes/items/world/products/coke_briquette.tscn" id="hall_103"]
+[ext_resource type="PackedScene" uid="uid://bcfjhzyl1svg3" path="res://game/assets/models/items/salt_crystal.glb" id="hall_104"]
+[ext_resource type="PackedScene" uid="uid://bl4u86wmz2neg" path="res://game/scenes/items/world/resources/salt_crystal.tscn" id="hall_105"]
+[ext_resource type="PackedScene" uid="uid://150bhrxn7snz" path="res://game/assets/models/items/floatstone.glb" id="hall_106"]
+[ext_resource type="PackedScene" uid="uid://bgu76bc7qopp8" path="res://game/scenes/items/world/resources/floatstone.tscn" id="hall_107"]
+[ext_resource type="PackedScene" uid="uid://bi00tyrxffsxz" path="res://game/assets/models/items/aerogel_tile.glb" id="hall_108"]
+[ext_resource type="PackedScene" uid="uid://bljdxkefk3c7d" path="res://game/scenes/items/world/products/aerogel_tile.tscn" id="hall_109"]
+[ext_resource type="PackedScene" uid="uid://ysqw3agkj25g" path="res://game/assets/models/items/frost_crystal.glb" id="hall_110"]
+[ext_resource type="PackedScene" uid="uid://6hhngsab72aq" path="res://game/scenes/items/world/resources/frost_crystal.tscn" id="hall_111"]
+[ext_resource type="PackedScene" uid="uid://bfiy4kz72fsfz" path="res://game/assets/models/items/lodestone.glb" id="hall_112"]
+[ext_resource type="PackedScene" uid="uid://bb3sgjp57vu4i" path="res://game/scenes/items/world/resources/lodestone.tscn" id="hall_113"]
+[ext_resource type="PackedScene" uid="uid://3weirepco6gq" path="res://game/assets/models/items/magnet_core.glb" id="hall_114"]
+[ext_resource type="PackedScene" uid="uid://bgc22owzgdsqs" path="res://game/scenes/items/world/products/magnet_core.tscn" id="hall_115"]
+[ext_resource type="PackedScene" uid="uid://648jlfhwft5i" path="res://game/assets/models/items/quartz_crystal.glb" id="hall_116"]
+[ext_resource type="PackedScene" uid="uid://52cmdkot7trb" path="res://game/scenes/items/world/resources/quartz_crystal.tscn" id="hall_117"]
+[ext_resource type="PackedScene" uid="uid://7km8naxi2ljw" path="res://game/assets/models/items/glass_pane.glb" id="hall_118"]
+[ext_resource type="PackedScene" uid="uid://zlrttad4j3rj" path="res://game/scenes/items/world/products/glass_pane.tscn" id="hall_119"]
+[ext_resource type="PackedScene" uid="uid://yuvwj1i6fh5k" path="res://game/assets/models/items/quartz_shards.glb" id="hall_120"]
+[ext_resource type="PackedScene" uid="uid://0krmhd2ltapw" path="res://game/scenes/items/world/products/quartz_shards.tscn" id="hall_121"]
+[ext_resource type="PackedScene" uid="uid://803s5j5ivbzr" path="res://game/assets/models/items/latex_resin.glb" id="hall_122"]
+[ext_resource type="PackedScene" uid="uid://yjwf3sst14nu" path="res://game/scenes/items/world/resources/latex_resin.tscn" id="hall_123"]
+[ext_resource type="PackedScene" uid="uid://yen0yai6n331" path="res://game/assets/models/items/rubber_ball.glb" id="hall_124"]
+[ext_resource type="PackedScene" uid="uid://66diabadfkna" path="res://game/scenes/items/world/products/rubber_ball.tscn" id="hall_125"]
+[ext_resource type="PackedScene" uid="uid://zzgxs5mssl12" path="res://game/assets/models/items/sulfur.glb" id="hall_126"]
+[ext_resource type="PackedScene" uid="uid://31gkr18v7xp2" path="res://game/scenes/items/world/resources/sulfur.tscn" id="hall_127"]
+[ext_resource type="PackedScene" uid="uid://bdwnxin5lia5q" path="res://game/assets/models/items/blast_charge.glb" id="hall_128"]
+[ext_resource type="PackedScene" uid="uid://5j7vq3qgpewo" path="res://game/scenes/items/world/products/blast_charge.tscn" id="hall_129"]
+[ext_resource type="PackedScene" uid="uid://52hngffsjg53" path="res://game/assets/models/items/quicksilver.glb" id="hall_130"]
+[ext_resource type="PackedScene" uid="uid://bfwpmz8fsx834" path="res://game/scenes/items/world/resources/quicksilver.tscn" id="hall_131"]
+[ext_resource type="PackedScene" uid="uid://6yzhxt41kdkz" path="res://game/assets/models/items/voltaic_crystal.glb" id="hall_132"]
+[ext_resource type="PackedScene" uid="uid://8vdechf0b2he" path="res://game/scenes/items/world/resources/voltaic_crystal.tscn" id="hall_133"]
+[ext_resource type="PackedScene" uid="uid://0ls3tvhyplr5" path="res://game/assets/models/items/battery_cell.glb" id="hall_134"]
+[ext_resource type="PackedScene" uid="uid://yzzxvmwvtoou" path="res://game/scenes/items/world/products/battery_cell.tscn" id="hall_135"]
 [ext_resource type="Texture2D" uid="uid://c1etlsqa07tlx" path="res://game/assets/textures/floor_1/floor_1_diffuseOriginal.png" id="hall_52"]
 [ext_resource type="PackedScene" uid="uid://dlnyuu4mrmp1r" path="res://game/scenes/items/world/resources/copper_ore.tscn" id="rd_copper_ore"]
 [ext_resource type="PackedScene" uid="uid://b4in0pqckrbvy" path="res://game/scenes/items/world/resources/copper_ore_ground.tscn" id="rd_copper_ore_ground"]
@@ -4240,3 +4296,3359 @@ pixel_size = 0.012
 font_size = 64
 outline_size = 12
 text = "Handheld tool concepts"
+
+[node name="MaterialsWing" type="Node3D" parent="."]
+
+[node name="WingFloor" type="Box3DBody" parent="MaterialsWing"]
+body_type = 0
+box_size = Vector3(80, 1, 56)
+position = Vector3(0, -0.5, 88)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/WingFloor"]
+transform = Transform3D(80, 0, 0, 0, 1, 0, 0, 0, 56, 0, 0, 0)
+mesh = SubResource("hall_box_floor")
+
+[node name="Architecture" type="Node3D" parent="MaterialsWing"]
+
+[node name="WallWest2" type="Box3DBody" parent="MaterialsWing/Architecture"]
+body_type = 0
+box_size = Vector3(0.4, 8, 56)
+position = Vector3(-40, 4, 88)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Architecture/WallWest2"]
+transform = Transform3D(0.4, 0, 0, 0, 8, 0, 0, 0, 56, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="WallWestCap2" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 0.15, 0, 0, 0, 56.1, -40, 8.075, 88)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestSkirt2" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 0.3, 0, 0, 0, 56.1, -40, 0.15, 88)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost17" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost18" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, 64)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost19" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, 68)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost20" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, 72)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost21" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, 76)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost22" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, 80)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost23" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, 84)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost24" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, 88)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost25" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, 92)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost26" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, 96)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost27" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, 100)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost28" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, 104)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost29" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, 108)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost30" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, 112)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallWestPost31" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, -40, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEast3" type="Box3DBody" parent="MaterialsWing/Architecture"]
+body_type = 0
+box_size = Vector3(0.4, 8, 56)
+position = Vector3(40, 4, 88)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Architecture/WallEast3"]
+transform = Transform3D(0.4, 0, 0, 0, 8, 0, 0, 0, 56, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="WallEastCap3" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 0.15, 0, 0, 0, 56.1, 40, 8.075, 88)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastSkirt3" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 0.3, 0, 0, 0, 56.1, 40, 0.15, 88)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost48" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost49" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 64)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost50" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 68)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost51" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 72)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost52" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 76)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost53" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 80)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost54" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 84)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost55" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 88)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost56" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 92)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost57" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 96)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost58" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 100)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost59" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 104)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost60" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 108)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost61" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 112)
+mesh = SubResource("hall_box_frame")
+
+[node name="WallEastPost62" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(0.5, 0, 0, 0, 8, 0, 0, 0, 0.2, 40, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="Threshold2" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(80, 0, 0, 0, 0.01, 0, 0, 0, 0.4, 0, 0.007, 60.2)
+mesh = SubResource("hall_box_hazard")
+
+[node name="GateBeamW" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(28, 0, 0, 0, 0.8, 0, 0, 0, 0.4, -26, 7.2, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="GateBeamE" type="MeshInstance3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(28, 0, 0, 0, 0.8, 0, 0, 0, 0.4, 26, 7.2, 60)
+mesh = SubResource("hall_box_frame")
+
+[node name="WingTitle" type="Label3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 7.2, 59.6)
+double_sided = false
+pixel_size = 0.03
+font_size = 128
+outline_size = 12
+text = "MATERIALS WING"
+
+[node name="WingSubtitle" type="Label3D" parent="MaterialsWing/Architecture"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 5.9, 59.6)
+double_sided = false
+pixel_size = 0.018
+font_size = 64
+outline_size = 12
+text = "ores, resources and products  -  how each one behaves, and the problem it poses"
+
+[node name="Row1" type="Node3D" parent="MaterialsWing"]
+
+[node name="Backdrop" type="Box3DBody" parent="MaterialsWing/Row1"]
+body_type = 0
+box_size = Vector3(72, 5, 0.4)
+position = Vector3(0, 2.5, 74)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/Backdrop"]
+transform = Transform3D(72, 0, 0, 0, 5, 0, 0, 0, 0.4, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="BackdropCap" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(72.1, 0, 0, 0, 0.15, 0, 0, 0, 0.5, 0, 5.075, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropSkirt" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(72.1, 0, 0, 0, 0.3, 0, 0, 0, 0.5, 0, 0.15, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -36, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost2" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -32, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost3" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -28, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost4" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -24, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost5" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -20, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost6" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -16, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost7" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -12, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost8" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -8, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost9" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -4, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost10" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 0, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost11" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 4, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost12" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 8, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost13" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 12, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost14" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 16, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost15" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 20, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost16" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 24, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost17" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 28, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost18" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 32, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost19" type="MeshInstance3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 36, 2.5, 74)
+mesh = SubResource("hall_box_frame")
+
+[node name="RowTitle" type="Label3D" parent="MaterialsWing/Row1"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 4.4, 73.75)
+double_sided = false
+pixel_size = 0.016
+font_size = 96
+outline_size = 12
+text = "METALS & SCRAP"
+
+[node name="IronOre" type="Node3D" parent="MaterialsWing/Row1"]
+
+[node name="Plinth" parent="MaterialsWing/Row1/IronOre" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.7, 1, 68)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row1/IronOre"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -29.7, 1.75, 68)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row1/IronOre/Turntable" instance=ExtResource("hall_80")]
+
+[node name="Name" type="Label3D" parent="MaterialsWing/Row1/IronOre"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.7, 3.1, 68)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(0.55, 1, 0.55, 1)
+text = "Iron Ore"
+
+[node name="TrayBase" type="Box3DBody" parent="MaterialsWing/Row1/IronOre"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(-29.7, 0.03, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronOre/TrayBase"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall" type="Box3DBody" parent="MaterialsWing/Row1/IronOre"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-29.7, 0.255, 64.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronOre/TrayWall"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall2" type="Box3DBody" parent="MaterialsWing/Row1/IronOre"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-29.7, 0.255, 66.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronOre/TrayWall2"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall3" type="Box3DBody" parent="MaterialsWing/Row1/IronOre"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-30.95, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronOre/TrayWall3"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall4" type="Box3DBody" parent="MaterialsWing/Row1/IronOre"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-28.45, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronOre/TrayWall4"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge" type="MeshInstance3D" parent="MaterialsWing/Row1/IronOre"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, -29.7, 0.007, 64.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row1/IronOre" instance=ExtResource("hall_81")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.25, 0.75, 65.6)
+
+[node name="Sample2" parent="MaterialsWing/Row1/IronOre" instance=ExtResource("hall_81")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.15, 0.75, 65.6)
+
+[node name="Panel" type="MeshInstance3D" parent="MaterialsWing/Row1/IronOre"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, -29.7, 2.4, 73.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar" type="MeshInstance3D" parent="MaterialsWing/Row1/IronOre"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, -29.7, 3.94, 73.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story" type="Label3D" parent="MaterialsWing/Row1/IronOre"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -29.7, 2.4, 73.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "IRON ORE   difficulty 1/5\nfrom: mined\n\nHeavy, rough and round: rolls slowly and settles quickly.\n\nCHALLENGE: Smelt into iron ingots; grind for a finer, faster-flowing feed."
+
+[node name="IronIngot" type="Node3D" parent="MaterialsWing/Row1"]
+
+[node name="Plinth" parent="MaterialsWing/Row1/IronIngot" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.1, 1, 68)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row1/IronIngot"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -23.1, 1.75, 68)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row1/IronIngot/Turntable" instance=ExtResource("hall_82")]
+
+[node name="Name2" type="Label3D" parent="MaterialsWing/Row1/IronIngot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.1, 3.1, 68)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(0.55, 1, 0.55, 1)
+text = "Iron Ingot"
+
+[node name="TrayBase2" type="Box3DBody" parent="MaterialsWing/Row1/IronIngot"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(-23.1, 0.03, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronIngot/TrayBase2"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall5" type="Box3DBody" parent="MaterialsWing/Row1/IronIngot"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-23.1, 0.255, 64.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronIngot/TrayWall5"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall6" type="Box3DBody" parent="MaterialsWing/Row1/IronIngot"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-23.1, 0.255, 66.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronIngot/TrayWall6"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall7" type="Box3DBody" parent="MaterialsWing/Row1/IronIngot"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-24.35, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronIngot/TrayWall7"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall8" type="Box3DBody" parent="MaterialsWing/Row1/IronIngot"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-21.85, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronIngot/TrayWall8"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge2" type="MeshInstance3D" parent="MaterialsWing/Row1/IronIngot"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, -23.1, 0.007, 64.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row1/IronIngot" instance=ExtResource("hall_83")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.65, 0.75, 65.6)
+
+[node name="Sample2" parent="MaterialsWing/Row1/IronIngot" instance=ExtResource("hall_83")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.55, 0.75, 65.6)
+
+[node name="Panel2" type="MeshInstance3D" parent="MaterialsWing/Row1/IronIngot"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, -23.1, 2.4, 73.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar2" type="MeshInstance3D" parent="MaterialsWing/Row1/IronIngot"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, -23.1, 3.94, 73.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story2" type="Label3D" parent="MaterialsWing/Row1/IronIngot"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -23.1, 2.4, 73.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "IRON INGOT   difficulty 1/5\nfrom: Iron Ore -> Smelter\n\nDense, flat-sided bar. Sits still on a belt, stacks neatly and never rolls. Ferrous: magnets and lodestone grab it.\n\nCHALLENGE: The baseline item. Its weight makes launch ramps fall short and it needs powered chutes on long runs."
+
+[node name="Arrow" type="Label3D" parent="MaterialsWing/Row1/IronIngot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.4, 1.9, 68)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.8, 0.3, 1)
+text = "Smelter  >"
+
+[node name="ChainStripe" type="MeshInstance3D" parent="MaterialsWing/Row1/IronIngot"]
+transform = Transform3D(4.8, 0, 0, 0, 0.01, 0, 0, 0, 0.2, -26.4, 0.007, 68)
+mesh = SubResource("hall_box_hazard")
+
+[node name="IronRod" type="Node3D" parent="MaterialsWing/Row1"]
+
+[node name="Plinth" parent="MaterialsWing/Row1/IronRod" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.5, 1, 68)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row1/IronRod"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -16.5, 1.75, 68)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row1/IronRod/Turntable" instance=ExtResource("hall_84")]
+
+[node name="Name3" type="Label3D" parent="MaterialsWing/Row1/IronRod"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.5, 3.1, 68)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(0.8, 1, 0.45, 1)
+text = "Iron Rod"
+
+[node name="TrayBase3" type="Box3DBody" parent="MaterialsWing/Row1/IronRod"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(-16.5, 0.03, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronRod/TrayBase3"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall9" type="Box3DBody" parent="MaterialsWing/Row1/IronRod"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-16.5, 0.255, 64.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronRod/TrayWall9"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall10" type="Box3DBody" parent="MaterialsWing/Row1/IronRod"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-16.5, 0.255, 66.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronRod/TrayWall10"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall11" type="Box3DBody" parent="MaterialsWing/Row1/IronRod"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-17.75, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronRod/TrayWall11"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall12" type="Box3DBody" parent="MaterialsWing/Row1/IronRod"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-15.25, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronRod/TrayWall12"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge3" type="MeshInstance3D" parent="MaterialsWing/Row1/IronRod"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, -16.5, 0.007, 64.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row1/IronRod" instance=ExtResource("hall_85")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.05, 0.75, 65.6)
+
+[node name="Sample2" parent="MaterialsWing/Row1/IronRod" instance=ExtResource("hall_85")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.95, 0.75, 65.6)
+
+[node name="Panel3" type="MeshInstance3D" parent="MaterialsWing/Row1/IronRod"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, -16.5, 2.4, 73.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar3" type="MeshInstance3D" parent="MaterialsWing/Row1/IronRod"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, -16.5, 3.94, 73.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story3" type="Label3D" parent="MaterialsWing/Row1/IronRod"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -16.5, 2.4, 73.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "IRON ROD   difficulty 2/5\nfrom: Iron Ingot -> Rod Extruder\n\nLong, round bar. Rolls sideways at the slightest bump and swings round on turns.\n\nCHALLENGE: Lengthwise it slides into chutes. Crosswise it bridges them and jams. Guard rails and aligning funnels matter."
+
+[node name="Arrow2" type="Label3D" parent="MaterialsWing/Row1/IronRod"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.8, 1.9, 68)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.8, 0.3, 1)
+text = "Rod Extruder  >"
+
+[node name="ChainStripe2" type="MeshInstance3D" parent="MaterialsWing/Row1/IronRod"]
+transform = Transform3D(4.8, 0, 0, 0, 0.01, 0, 0, 0, 0.2, -19.8, 0.007, 68)
+mesh = SubResource("hall_box_hazard")
+
+[node name="IronPlate" type="Node3D" parent="MaterialsWing/Row1"]
+
+[node name="Plinth" parent="MaterialsWing/Row1/IronPlate" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.9, 1, 68)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row1/IronPlate"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -9.9, 1.75, 68)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row1/IronPlate/Turntable" instance=ExtResource("hall_86")]
+
+[node name="Name4" type="Label3D" parent="MaterialsWing/Row1/IronPlate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.9, 3.1, 68)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(0.8, 1, 0.45, 1)
+text = "Iron Plate"
+
+[node name="TrayBase4" type="Box3DBody" parent="MaterialsWing/Row1/IronPlate"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(-9.9, 0.03, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronPlate/TrayBase4"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall13" type="Box3DBody" parent="MaterialsWing/Row1/IronPlate"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-9.9, 0.255, 64.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronPlate/TrayWall13"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall14" type="Box3DBody" parent="MaterialsWing/Row1/IronPlate"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-9.9, 0.255, 66.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronPlate/TrayWall14"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall15" type="Box3DBody" parent="MaterialsWing/Row1/IronPlate"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-11.15, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronPlate/TrayWall15"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall16" type="Box3DBody" parent="MaterialsWing/Row1/IronPlate"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-8.65, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/IronPlate/TrayWall16"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge4" type="MeshInstance3D" parent="MaterialsWing/Row1/IronPlate"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, -9.9, 0.007, 64.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row1/IronPlate" instance=ExtResource("hall_87")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.45, 0.75, 65.6)
+
+[node name="Sample2" parent="MaterialsWing/Row1/IronPlate" instance=ExtResource("hall_87")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.75, 65.6)
+
+[node name="Panel4" type="MeshInstance3D" parent="MaterialsWing/Row1/IronPlate"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, -9.9, 2.4, 73.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar4" type="MeshInstance3D" parent="MaterialsWing/Row1/IronPlate"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, -9.9, 3.94, 73.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story4" type="Label3D" parent="MaterialsWing/Row1/IronPlate"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -9.9, 2.4, 73.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "IRON PLATE   difficulty 2/5\nfrom: Iron Ingot -> Plate Press\n\nThin checker plate with a low centre of gravity. Slides a long way when shoved and stacks into tidy piles.\n\nCHALLENGE: Plates skate off the ends of fast belts and lie flat over hopper mouths, bridging them shut until knocked in."
+
+[node name="CopperOre" type="Node3D" parent="MaterialsWing/Row1"]
+
+[node name="Plinth" parent="MaterialsWing/Row1/CopperOre" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 1, 68)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row1/CopperOre"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -3.3, 1.75, 68)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row1/CopperOre/Turntable" instance=ExtResource("hall_88")]
+
+[node name="Name5" type="Label3D" parent="MaterialsWing/Row1/CopperOre"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 3.1, 68)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(0.55, 1, 0.55, 1)
+text = "Copper Ore"
+
+[node name="TrayBase5" type="Box3DBody" parent="MaterialsWing/Row1/CopperOre"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(-3.3, 0.03, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperOre/TrayBase5"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall17" type="Box3DBody" parent="MaterialsWing/Row1/CopperOre"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-3.3, 0.255, 64.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperOre/TrayWall17"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall18" type="Box3DBody" parent="MaterialsWing/Row1/CopperOre"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-3.3, 0.255, 66.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperOre/TrayWall18"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall19" type="Box3DBody" parent="MaterialsWing/Row1/CopperOre"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-4.55, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperOre/TrayWall19"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall20" type="Box3DBody" parent="MaterialsWing/Row1/CopperOre"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-2.05, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperOre/TrayWall20"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge5" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperOre"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, -3.3, 0.007, 64.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row1/CopperOre" instance=ExtResource("hall_89")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.85, 0.75, 65.6)
+
+[node name="Sample2" parent="MaterialsWing/Row1/CopperOre" instance=ExtResource("hall_89")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.75, 0.75, 65.6)
+
+[node name="Panel5" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperOre"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, -3.3, 2.4, 73.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar5" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperOre"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, -3.3, 3.94, 73.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story5" type="Label3D" parent="MaterialsWing/Row1/CopperOre"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.3, 2.4, 73.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "COPPER ORE   difficulty 1/5\nfrom: mined\n\nRough, round ore flecked with native copper.\n\nCHALLENGE: Smelt into copper ingots, the conductive half of the metal line."
+
+[node name="CopperIngot" type="Node3D" parent="MaterialsWing/Row1"]
+
+[node name="Plinth" parent="MaterialsWing/Row1/CopperIngot" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 1, 68)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row1/CopperIngot"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 3.3, 1.75, 68)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row1/CopperIngot/Turntable" instance=ExtResource("hall_90")]
+
+[node name="Name6" type="Label3D" parent="MaterialsWing/Row1/CopperIngot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 3.1, 68)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(0.55, 1, 0.55, 1)
+text = "Copper Ingot"
+
+[node name="TrayBase6" type="Box3DBody" parent="MaterialsWing/Row1/CopperIngot"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(3.3, 0.03, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperIngot/TrayBase6"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall21" type="Box3DBody" parent="MaterialsWing/Row1/CopperIngot"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(3.3, 0.255, 64.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperIngot/TrayWall21"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall22" type="Box3DBody" parent="MaterialsWing/Row1/CopperIngot"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(3.3, 0.255, 66.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperIngot/TrayWall22"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall23" type="Box3DBody" parent="MaterialsWing/Row1/CopperIngot"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(2.05, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperIngot/TrayWall23"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall24" type="Box3DBody" parent="MaterialsWing/Row1/CopperIngot"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(4.55, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperIngot/TrayWall24"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge6" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperIngot"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, 3.3, 0.007, 64.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row1/CopperIngot" instance=ExtResource("hall_91")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75, 0.75, 65.6)
+
+[node name="Sample2" parent="MaterialsWing/Row1/CopperIngot" instance=ExtResource("hall_91")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.85, 0.75, 65.6)
+
+[node name="Panel6" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperIngot"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, 3.3, 2.4, 73.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar6" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperIngot"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, 3.3, 3.94, 73.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story6" type="Label3D" parent="MaterialsWing/Row1/CopperIngot"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 3.3, 2.4, 73.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "COPPER INGOT   difficulty 1/5\nfrom: Copper Ore -> Smelter\n\nHeavier than iron and slicker. Conductive: it grounds voltaic charge. Not ferrous, so magnets ignore it.\n\nCHALLENGE: Easy to move. The trick is separating it from iron: a magnetic belt lifts the iron and lets the copper pass."
+
+[node name="Arrow3" type="Label3D" parent="MaterialsWing/Row1/CopperIngot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 68)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.8, 0.3, 1)
+text = "Smelter  >"
+
+[node name="ChainStripe3" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperIngot"]
+transform = Transform3D(4.8, 0, 0, 0, 0.01, 0, 0, 0, 0.2, 0, 0.007, 68)
+mesh = SubResource("hall_box_hazard")
+
+[node name="CopperRod" type="Node3D" parent="MaterialsWing/Row1"]
+
+[node name="Plinth" parent="MaterialsWing/Row1/CopperRod" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.9, 1, 68)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row1/CopperRod"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 9.9, 1.75, 68)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row1/CopperRod/Turntable" instance=ExtResource("hall_92")]
+
+[node name="Name7" type="Label3D" parent="MaterialsWing/Row1/CopperRod"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.9, 3.1, 68)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(0.8, 1, 0.45, 1)
+text = "Copper Rod"
+
+[node name="TrayBase7" type="Box3DBody" parent="MaterialsWing/Row1/CopperRod"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(9.9, 0.03, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperRod/TrayBase7"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall25" type="Box3DBody" parent="MaterialsWing/Row1/CopperRod"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(9.9, 0.255, 64.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperRod/TrayWall25"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall26" type="Box3DBody" parent="MaterialsWing/Row1/CopperRod"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(9.9, 0.255, 66.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperRod/TrayWall26"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall27" type="Box3DBody" parent="MaterialsWing/Row1/CopperRod"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(8.65, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperRod/TrayWall27"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall28" type="Box3DBody" parent="MaterialsWing/Row1/CopperRod"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(11.15, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperRod/TrayWall28"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge7" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperRod"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, 9.9, 0.007, 64.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row1/CopperRod" instance=ExtResource("hall_93")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.75, 65.6)
+
+[node name="Sample2" parent="MaterialsWing/Row1/CopperRod" instance=ExtResource("hall_93")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.45, 0.75, 65.6)
+
+[node name="Panel7" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperRod"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, 9.9, 2.4, 73.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar7" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperRod"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, 9.9, 3.94, 73.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story7" type="Label3D" parent="MaterialsWing/Row1/CopperRod"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 9.9, 2.4, 73.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "COPPER ROD   difficulty 2/5\nfrom: Copper Ingot -> Rod Extruder\n\nRolls like the iron rod. Winds into magnet cores and makes a lightning rod for voltaic crystals.\n\nCHALLENGE: Same rolling problems as iron rods, but magnetic belts can't hold it, so it needs walls or tubes instead."
+
+[node name="Arrow4" type="Label3D" parent="MaterialsWing/Row1/CopperRod"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.6, 1.9, 68)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.8, 0.3, 1)
+text = "Rod Extruder  >"
+
+[node name="ChainStripe4" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperRod"]
+transform = Transform3D(4.8, 0, 0, 0, 0.01, 0, 0, 0, 0.2, 6.6, 0.007, 68)
+mesh = SubResource("hall_box_hazard")
+
+[node name="CopperPlate" type="Node3D" parent="MaterialsWing/Row1"]
+
+[node name="Plinth" parent="MaterialsWing/Row1/CopperPlate" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5, 1, 68)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row1/CopperPlate"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 16.5, 1.75, 68)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row1/CopperPlate/Turntable" instance=ExtResource("hall_94")]
+
+[node name="Name8" type="Label3D" parent="MaterialsWing/Row1/CopperPlate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5, 3.1, 68)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(0.8, 1, 0.45, 1)
+text = "Copper Plate"
+
+[node name="TrayBase8" type="Box3DBody" parent="MaterialsWing/Row1/CopperPlate"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(16.5, 0.03, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperPlate/TrayBase8"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall29" type="Box3DBody" parent="MaterialsWing/Row1/CopperPlate"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(16.5, 0.255, 64.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperPlate/TrayWall29"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall30" type="Box3DBody" parent="MaterialsWing/Row1/CopperPlate"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(16.5, 0.255, 66.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperPlate/TrayWall30"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall31" type="Box3DBody" parent="MaterialsWing/Row1/CopperPlate"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(15.25, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperPlate/TrayWall31"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall32" type="Box3DBody" parent="MaterialsWing/Row1/CopperPlate"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(17.75, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperPlate/TrayWall32"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge8" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperPlate"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, 16.5, 0.007, 64.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row1/CopperPlate" instance=ExtResource("hall_95")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.95, 0.75, 65.6)
+
+[node name="Sample2" parent="MaterialsWing/Row1/CopperPlate" instance=ExtResource("hall_95")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.05, 0.75, 65.6)
+
+[node name="Panel8" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperPlate"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, 16.5, 2.4, 73.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar8" type="MeshInstance3D" parent="MaterialsWing/Row1/CopperPlate"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, 16.5, 3.94, 73.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story8" type="Label3D" parent="MaterialsWing/Row1/CopperPlate"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 16.5, 2.4, 73.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "COPPER PLATE   difficulty 2/5\nfrom: Copper Ingot -> Plate Press\n\nSlick conductive plate. Touching a voltaic crystal drains its charge safely. Half of every battery cell.\n\nCHALLENGE: A copper plate lining a chute is a cheap 'grounding strip' that defuses charged crystals as they pass."
+
+[node name="ScrapBall" type="Node3D" parent="MaterialsWing/Row1"]
+
+[node name="Plinth" parent="MaterialsWing/Row1/ScrapBall" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.1, 1, 68)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row1/ScrapBall"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 23.1, 1.75, 68)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row1/ScrapBall/Turntable" instance=ExtResource("hall_96")]
+
+[node name="Name9" type="Label3D" parent="MaterialsWing/Row1/ScrapBall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.1, 3.1, 68)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(0.8, 1, 0.45, 1)
+text = "Scrap Ball"
+
+[node name="TrayBase9" type="Box3DBody" parent="MaterialsWing/Row1/ScrapBall"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(23.1, 0.03, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapBall/TrayBase9"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall33" type="Box3DBody" parent="MaterialsWing/Row1/ScrapBall"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(23.1, 0.255, 64.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapBall/TrayWall33"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall34" type="Box3DBody" parent="MaterialsWing/Row1/ScrapBall"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(23.1, 0.255, 66.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapBall/TrayWall34"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall35" type="Box3DBody" parent="MaterialsWing/Row1/ScrapBall"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(21.85, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapBall/TrayWall35"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall36" type="Box3DBody" parent="MaterialsWing/Row1/ScrapBall"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(24.35, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapBall/TrayWall36"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge9" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapBall"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, 23.1, 0.007, 64.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row1/ScrapBall" instance=ExtResource("hall_97")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.55, 0.75, 65.6)
+
+[node name="Sample2" parent="MaterialsWing/Row1/ScrapBall" instance=ExtResource("hall_97")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.65, 0.75, 65.6)
+
+[node name="Panel9" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapBall"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, 23.1, 2.4, 73.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar9" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapBall"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, 23.1, 3.94, 73.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story9" type="Label3D" parent="MaterialsWing/Row1/ScrapBall"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 23.1, 2.4, 73.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "SCRAP BALL   difficulty 2/5\nfrom: salvage / Grinder waste\n\nA crushed bale of mixed metal. Lumpy, so it rolls in lurches and bounces off in odd directions. Weakly ferrous.\n\nCHALLENGE: Unpredictable. It tumbles out of turns and ricochets in hoppers, so give it wide, walled routes."
+
+[node name="ScrapIngot" type="Node3D" parent="MaterialsWing/Row1"]
+
+[node name="Plinth" parent="MaterialsWing/Row1/ScrapIngot" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.7, 1, 68)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row1/ScrapIngot"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 29.7, 1.75, 68)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row1/ScrapIngot/Turntable" instance=ExtResource("hall_98")]
+
+[node name="Name10" type="Label3D" parent="MaterialsWing/Row1/ScrapIngot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.7, 3.1, 68)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Scrap Ingot"
+
+[node name="TrayBase10" type="Box3DBody" parent="MaterialsWing/Row1/ScrapIngot"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(29.7, 0.03, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapIngot/TrayBase10"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall37" type="Box3DBody" parent="MaterialsWing/Row1/ScrapIngot"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(29.7, 0.255, 64.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapIngot/TrayWall37"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall38" type="Box3DBody" parent="MaterialsWing/Row1/ScrapIngot"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(29.7, 0.255, 66.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapIngot/TrayWall38"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall39" type="Box3DBody" parent="MaterialsWing/Row1/ScrapIngot"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(28.45, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapIngot/TrayWall39"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall40" type="Box3DBody" parent="MaterialsWing/Row1/ScrapIngot"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(30.95, 0.255, 65.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapIngot/TrayWall40"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge10" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapIngot"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, 29.7, 0.007, 64.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row1/ScrapIngot" instance=ExtResource("hall_99")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.15, 0.75, 65.6)
+
+[node name="Sample2" parent="MaterialsWing/Row1/ScrapIngot" instance=ExtResource("hall_99")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30.25, 0.75, 65.6)
+
+[node name="Panel10" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapIngot"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, 29.7, 2.4, 73.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar10" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapIngot"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, 29.7, 3.94, 73.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story10" type="Label3D" parent="MaterialsWing/Row1/ScrapIngot"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 29.7, 2.4, 73.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "SCRAP INGOT   difficulty 3/5\nfrom: Scrap Ball -> Smelter\n\nA cheap mixed-metal ingot. Every one comes out a different weight, depending on what went into the bale.\n\nCHALLENGE: Recipes want a quality ingot: weigh them on a tipping bucket or counterweight and send the light ones back round."
+
+[node name="Arrow5" type="Label3D" parent="MaterialsWing/Row1/ScrapIngot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.4, 1.9, 68)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.8, 0.3, 1)
+text = "Smelter  >"
+
+[node name="ChainStripe5" type="MeshInstance3D" parent="MaterialsWing/Row1/ScrapIngot"]
+transform = Transform3D(4.8, 0, 0, 0, 0.01, 0, 0, 0, 0.2, 26.4, 0.007, 68)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Row2" type="Node3D" parent="MaterialsWing"]
+
+[node name="Backdrop2" type="Box3DBody" parent="MaterialsWing/Row2"]
+body_type = 0
+box_size = Vector3(72, 5, 0.4)
+position = Vector3(0, 2.5, 94)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/Backdrop2"]
+transform = Transform3D(72, 0, 0, 0, 5, 0, 0, 0, 0.4, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="BackdropCap2" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(72.1, 0, 0, 0, 0.15, 0, 0, 0, 0.5, 0, 5.075, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropSkirt2" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(72.1, 0, 0, 0, 0.3, 0, 0, 0, 0.5, 0, 0.15, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost20" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -36, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost21" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -32, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost22" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -28, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost23" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -24, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost24" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -20, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost25" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -16, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost26" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -12, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost27" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -8, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost28" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, -4, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost29" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 0, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost30" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 4, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost31" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 8, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost32" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 12, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost33" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 16, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost34" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 20, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost35" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 24, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost36" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 28, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost37" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 32, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost38" type="MeshInstance3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(0.2, 0, 0, 0, 5, 0, 0, 0, 0.5, 36, 2.5, 94)
+mesh = SubResource("hall_box_frame")
+
+[node name="RowTitle2" type="Label3D" parent="MaterialsWing/Row2"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 4.4, 93.75)
+double_sided = false
+pixel_size = 0.016
+font_size = 96
+outline_size = 12
+text = "BASE RESOURCES  -  HANDLING"
+
+[node name="Coal" type="Node3D" parent="MaterialsWing/Row2"]
+
+[node name="Plinth" parent="MaterialsWing/Row2/Coal" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.1, 1, 88)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row2/Coal"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -23.1, 1.75, 88)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row2/Coal/Turntable" instance=ExtResource("hall_100")]
+
+[node name="Name11" type="Label3D" parent="MaterialsWing/Row2/Coal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.1, 3.1, 88)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(0.55, 1, 0.55, 1)
+text = "Coal"
+
+[node name="TrayBase11" type="Box3DBody" parent="MaterialsWing/Row2/Coal"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(-23.1, 0.03, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/Coal/TrayBase11"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall41" type="Box3DBody" parent="MaterialsWing/Row2/Coal"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-23.1, 0.255, 84.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/Coal/TrayWall41"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall42" type="Box3DBody" parent="MaterialsWing/Row2/Coal"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-23.1, 0.255, 86.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/Coal/TrayWall42"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall43" type="Box3DBody" parent="MaterialsWing/Row2/Coal"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-24.35, 0.255, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/Coal/TrayWall43"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall44" type="Box3DBody" parent="MaterialsWing/Row2/Coal"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-21.85, 0.255, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/Coal/TrayWall44"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge11" type="MeshInstance3D" parent="MaterialsWing/Row2/Coal"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, -23.1, 0.007, 84.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row2/Coal" instance=ExtResource("hall_101")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.65, 0.75, 85.6)
+
+[node name="Sample2" parent="MaterialsWing/Row2/Coal" instance=ExtResource("hall_101")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.55, 0.75, 85.6)
+
+[node name="Panel11" type="MeshInstance3D" parent="MaterialsWing/Row2/Coal"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, -23.1, 2.4, 93.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar11" type="MeshInstance3D" parent="MaterialsWing/Row2/Coal"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, -23.1, 3.94, 93.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story11" type="Label3D" parent="MaterialsWing/Row2/Coal"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -23.1, 2.4, 93.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "COAL   difficulty 1/5\nfrom: mined\n\nLight, grippy lumps that never roll. Fuel: touching anything hot makes it burn and turn hot itself.\n\nCHALLENGE: Easy to carry, but a hot ingot dropped on a coal belt starts a fire that spreads lump to lump down the line."
+
+[node name="CokeBriquette" type="Node3D" parent="MaterialsWing/Row2"]
+
+[node name="Plinth" parent="MaterialsWing/Row2/CokeBriquette" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.5, 1, 88)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row2/CokeBriquette"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -16.5, 1.75, 88)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row2/CokeBriquette/Turntable" instance=ExtResource("hall_102")]
+
+[node name="Name12" type="Label3D" parent="MaterialsWing/Row2/CokeBriquette"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.5, 3.1, 88)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(0.55, 1, 0.55, 1)
+text = "Coke Briquette"
+
+[node name="TrayBase12" type="Box3DBody" parent="MaterialsWing/Row2/CokeBriquette"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(-16.5, 0.03, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/CokeBriquette/TrayBase12"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall45" type="Box3DBody" parent="MaterialsWing/Row2/CokeBriquette"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-16.5, 0.255, 84.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/CokeBriquette/TrayWall45"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall46" type="Box3DBody" parent="MaterialsWing/Row2/CokeBriquette"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-16.5, 0.255, 86.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/CokeBriquette/TrayWall46"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall47" type="Box3DBody" parent="MaterialsWing/Row2/CokeBriquette"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-17.75, 0.255, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/CokeBriquette/TrayWall47"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall48" type="Box3DBody" parent="MaterialsWing/Row2/CokeBriquette"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-15.25, 0.255, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/CokeBriquette/TrayWall48"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge12" type="MeshInstance3D" parent="MaterialsWing/Row2/CokeBriquette"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, -16.5, 0.007, 84.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row2/CokeBriquette" instance=ExtResource("hall_103")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.05, 0.75, 85.6)
+
+[node name="Sample2" parent="MaterialsWing/Row2/CokeBriquette" instance=ExtResource("hall_103")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.95, 0.75, 85.6)
+
+[node name="Panel12" type="MeshInstance3D" parent="MaterialsWing/Row2/CokeBriquette"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, -16.5, 2.4, 93.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar12" type="MeshInstance3D" parent="MaterialsWing/Row2/CokeBriquette"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, -16.5, 3.94, 93.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story12" type="Label3D" parent="MaterialsWing/Row2/CokeBriquette"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -16.5, 2.4, 93.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "COKE BRIQUETTE   difficulty 1/5\nfrom: Coal -> Tunnel Furnace\n\nBaked coal pillows that stack. Burns much hotter than coal but only in a smelter, so it doesn't spread fire.\n\nCHALLENGE: The safe fuel: once coal is coked, fire risk stops being a routing concern."
+
+[node name="Arrow6" type="Label3D" parent="MaterialsWing/Row2/CokeBriquette"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.8, 1.9, 88)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.8, 0.3, 1)
+text = "Tunnel Furnace  >"
+
+[node name="ChainStripe6" type="MeshInstance3D" parent="MaterialsWing/Row2/CokeBriquette"]
+transform = Transform3D(4.8, 0, 0, 0, 0.01, 0, 0, 0, 0.2, -19.8, 0.007, 88)
+mesh = SubResource("hall_box_hazard")
+
+[node name="SaltCrystal" type="Node3D" parent="MaterialsWing/Row2"]
+
+[node name="Plinth" parent="MaterialsWing/Row2/SaltCrystal" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.9, 1, 88)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row2/SaltCrystal"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -9.9, 1.75, 88)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row2/SaltCrystal/Turntable" instance=ExtResource("hall_104")]
+
+[node name="Name13" type="Label3D" parent="MaterialsWing/Row2/SaltCrystal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.9, 3.1, 88)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(0.55, 1, 0.55, 1)
+text = "Salt Crystal"
+
+[node name="TrayBase13" type="Box3DBody" parent="MaterialsWing/Row2/SaltCrystal"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(-9.9, 0.03, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/SaltCrystal/TrayBase13"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall49" type="Box3DBody" parent="MaterialsWing/Row2/SaltCrystal"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-9.9, 0.255, 84.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/SaltCrystal/TrayWall49"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall50" type="Box3DBody" parent="MaterialsWing/Row2/SaltCrystal"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-9.9, 0.255, 86.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/SaltCrystal/TrayWall50"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall51" type="Box3DBody" parent="MaterialsWing/Row2/SaltCrystal"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-11.15, 0.255, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/SaltCrystal/TrayWall51"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall52" type="Box3DBody" parent="MaterialsWing/Row2/SaltCrystal"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-8.65, 0.255, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/SaltCrystal/TrayWall52"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge13" type="MeshInstance3D" parent="MaterialsWing/Row2/SaltCrystal"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, -9.9, 0.007, 84.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row2/SaltCrystal" instance=ExtResource("hall_105")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.45, 0.75, 85.6)
+
+[node name="Sample2" parent="MaterialsWing/Row2/SaltCrystal" instance=ExtResource("hall_105")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.75, 85.6)
+
+[node name="Panel13" type="MeshInstance3D" parent="MaterialsWing/Row2/SaltCrystal"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, -9.9, 2.4, 93.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar13" type="MeshInstance3D" parent="MaterialsWing/Row2/SaltCrystal"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, -9.9, 3.94, 93.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story13" type="Label3D" parent="MaterialsWing/Row2/SaltCrystal"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -9.9, 2.4, 93.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "SALT CRYSTAL   difficulty 1/5\nfrom: mined\n\nA perfect cube: stacks, packs and counts neatly. Soluble: it dissolves when wet and melts frost it touches.\n\nCHALLENGE: Keep it away from quench tanks. Used on purpose, a salt cube is the de-icer that clears a frost jam."
+
+[node name="Floatstone" type="Node3D" parent="MaterialsWing/Row2"]
+
+[node name="Plinth" parent="MaterialsWing/Row2/Floatstone" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 1, 88)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row2/Floatstone"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -3.3, 1.75, 88)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row2/Floatstone/Turntable" instance=ExtResource("hall_106")]
+
+[node name="Name14" type="Label3D" parent="MaterialsWing/Row2/Floatstone"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 3.1, 88)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(0.8, 1, 0.45, 1)
+text = "Floatstone"
+
+[node name="TrayBase14" type="Box3DBody" parent="MaterialsWing/Row2/Floatstone"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(-3.3, 0.03, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/Floatstone/TrayBase14"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall53" type="Box3DBody" parent="MaterialsWing/Row2/Floatstone"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-3.3, 0.255, 84.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/Floatstone/TrayWall53"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall54" type="Box3DBody" parent="MaterialsWing/Row2/Floatstone"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-3.3, 0.255, 86.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/Floatstone/TrayWall54"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall55" type="Box3DBody" parent="MaterialsWing/Row2/Floatstone"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-4.55, 0.255, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/Floatstone/TrayWall55"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall56" type="Box3DBody" parent="MaterialsWing/Row2/Floatstone"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-2.05, 0.255, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/Floatstone/TrayWall56"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge14" type="MeshInstance3D" parent="MaterialsWing/Row2/Floatstone"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, -3.3, 0.007, 84.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row2/Floatstone" instance=ExtResource("hall_107")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.85, 0.75, 85.6)
+
+[node name="Sample2" parent="MaterialsWing/Row2/Floatstone" instance=ExtResource("hall_107")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.75, 0.75, 85.6)
+
+[node name="Panel14" type="MeshInstance3D" parent="MaterialsWing/Row2/Floatstone"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, -3.3, 2.4, 93.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar14" type="MeshInstance3D" parent="MaterialsWing/Row2/Floatstone"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, -3.3, 3.94, 93.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story14" type="Label3D" parent="MaterialsWing/Row2/Floatstone"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.3, 2.4, 93.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "FLOATSTONE   difficulty 2/5\nfrom: mined\n\nPumice so light it drifts. Fans, launch ramps and field projectors blow it off course. Floats in water and magma.\n\nCHALLENGE: Needs covered belts and roofed chutes. Being buoyant, it rides the Magma Bath's weir and splits itself from heavy ore."
+
+[node name="AerogelTile" type="Node3D" parent="MaterialsWing/Row2"]
+
+[node name="Plinth" parent="MaterialsWing/Row2/AerogelTile" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 1, 88)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row2/AerogelTile"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 3.3, 1.75, 88)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row2/AerogelTile/Turntable" instance=ExtResource("hall_108")]
+
+[node name="Name15" type="Label3D" parent="MaterialsWing/Row2/AerogelTile"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 3.1, 88)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(0.8, 1, 0.45, 1)
+text = "Aerogel Tile"
+
+[node name="TrayBase15" type="Box3DBody" parent="MaterialsWing/Row2/AerogelTile"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(3.3, 0.03, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/AerogelTile/TrayBase15"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall57" type="Box3DBody" parent="MaterialsWing/Row2/AerogelTile"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(3.3, 0.255, 84.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/AerogelTile/TrayWall57"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall58" type="Box3DBody" parent="MaterialsWing/Row2/AerogelTile"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(3.3, 0.255, 86.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/AerogelTile/TrayWall58"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall59" type="Box3DBody" parent="MaterialsWing/Row2/AerogelTile"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(2.05, 0.255, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/AerogelTile/TrayWall59"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall60" type="Box3DBody" parent="MaterialsWing/Row2/AerogelTile"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(4.55, 0.255, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/AerogelTile/TrayWall60"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge15" type="MeshInstance3D" parent="MaterialsWing/Row2/AerogelTile"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, 3.3, 0.007, 84.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row2/AerogelTile" instance=ExtResource("hall_109")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75, 0.75, 85.6)
+
+[node name="Sample2" parent="MaterialsWing/Row2/AerogelTile" instance=ExtResource("hall_109")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.85, 0.75, 85.6)
+
+[node name="Panel15" type="MeshInstance3D" parent="MaterialsWing/Row2/AerogelTile"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, 3.3, 2.4, 93.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar15" type="MeshInstance3D" parent="MaterialsWing/Row2/AerogelTile"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, 3.3, 3.94, 93.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story15" type="Label3D" parent="MaterialsWing/Row2/AerogelTile"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 3.3, 2.4, 93.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "AEROGEL TILE   difficulty 2/5\nfrom: Floatstone -> Plate Press\n\nFrozen smoke: the lightest solid in the game. Insulating: nothing hot, cold or charged passes through it.\n\nCHALLENGE: It flutters off belts like floatstone. Laid under or between items, it's the shield that lets volatile and charged loads travel."
+
+[node name="Arrow7" type="Label3D" parent="MaterialsWing/Row2/AerogelTile"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 88)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.8, 0.3, 1)
+text = "Plate Press  >"
+
+[node name="ChainStripe7" type="MeshInstance3D" parent="MaterialsWing/Row2/AerogelTile"]
+transform = Transform3D(4.8, 0, 0, 0, 0.01, 0, 0, 0, 0.2, 0, 0.007, 88)
+mesh = SubResource("hall_box_hazard")
+
+[node name="FrostCrystal" type="Node3D" parent="MaterialsWing/Row2"]
+
+[node name="Plinth" parent="MaterialsWing/Row2/FrostCrystal" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.9, 1, 88)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row2/FrostCrystal"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 9.9, 1.75, 88)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row2/FrostCrystal/Turntable" instance=ExtResource("hall_110")]
+
+[node name="Name16" type="Label3D" parent="MaterialsWing/Row2/FrostCrystal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.9, 3.1, 88)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Frost Crystal"
+
+[node name="TrayBase16" type="Box3DBody" parent="MaterialsWing/Row2/FrostCrystal"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(9.9, 0.03, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/FrostCrystal/TrayBase16"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall61" type="Box3DBody" parent="MaterialsWing/Row2/FrostCrystal"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(9.9, 0.255, 84.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/FrostCrystal/TrayWall61"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall62" type="Box3DBody" parent="MaterialsWing/Row2/FrostCrystal"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(9.9, 0.255, 86.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/FrostCrystal/TrayWall62"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall63" type="Box3DBody" parent="MaterialsWing/Row2/FrostCrystal"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(8.65, 0.255, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/FrostCrystal/TrayWall63"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall64" type="Box3DBody" parent="MaterialsWing/Row2/FrostCrystal"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(11.15, 0.255, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/FrostCrystal/TrayWall64"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge16" type="MeshInstance3D" parent="MaterialsWing/Row2/FrostCrystal"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, 9.9, 0.007, 84.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row2/FrostCrystal" instance=ExtResource("hall_111")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.75, 85.6)
+
+[node name="Sample2" parent="MaterialsWing/Row2/FrostCrystal" instance=ExtResource("hall_111")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.45, 0.75, 85.6)
+
+[node name="Panel16" type="MeshInstance3D" parent="MaterialsWing/Row2/FrostCrystal"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, 9.9, 2.4, 93.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar16" type="MeshInstance3D" parent="MaterialsWing/Row2/FrostCrystal"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, 9.9, 3.94, 93.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story16" type="Label3D" parent="MaterialsWing/Row2/FrostCrystal"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 9.9, 2.4, 93.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "FROST CRYSTAL   difficulty 3/5\nfrom: mined\n\nNearly frictionless, and always cold. Belts slide out from under it instead of carrying it. It chills whatever it touches.\n\nCHALLENGE: Belts can't move it: push it with tube walls, paddles or gravity. Heat turns it to water, salt melts it, and it's the best coolant."
+
+[node name="Lodestone" type="Node3D" parent="MaterialsWing/Row2"]
+
+[node name="Plinth" parent="MaterialsWing/Row2/Lodestone" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5, 1, 88)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row2/Lodestone"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 16.5, 1.75, 88)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row2/Lodestone/Turntable" instance=ExtResource("hall_112")]
+
+[node name="Name17" type="Label3D" parent="MaterialsWing/Row2/Lodestone"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5, 3.1, 88)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Lodestone"
+
+[node name="TrayBase17" type="Box3DBody" parent="MaterialsWing/Row2/Lodestone"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(16.5, 0.03, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/Lodestone/TrayBase17"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall65" type="Box3DBody" parent="MaterialsWing/Row2/Lodestone"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(16.5, 0.255, 84.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/Lodestone/TrayWall65"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall66" type="Box3DBody" parent="MaterialsWing/Row2/Lodestone"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(16.5, 0.255, 86.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/Lodestone/TrayWall66"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall67" type="Box3DBody" parent="MaterialsWing/Row2/Lodestone"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(15.25, 0.255, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/Lodestone/TrayWall67"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall68" type="Box3DBody" parent="MaterialsWing/Row2/Lodestone"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(17.75, 0.255, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/Lodestone/TrayWall68"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge17" type="MeshInstance3D" parent="MaterialsWing/Row2/Lodestone"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, 16.5, 0.007, 84.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row2/Lodestone" instance=ExtResource("hall_113")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.95, 0.75, 85.6)
+
+[node name="Sample2" parent="MaterialsWing/Row2/Lodestone" instance=ExtResource("hall_113")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.05, 0.75, 85.6)
+
+[node name="Panel17" type="MeshInstance3D" parent="MaterialsWing/Row2/Lodestone"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, 16.5, 2.4, 93.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar17" type="MeshInstance3D" parent="MaterialsWing/Row2/Lodestone"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, 16.5, 3.94, 93.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story17" type="Label3D" parent="MaterialsWing/Row2/Lodestone"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 16.5, 2.4, 93.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "LODESTONE   difficulty 3/5\nfrom: mined\n\nNaturally magnetic. It tugs ferrous items toward itself, clumps with them and clings to magnetic belts.\n\nCHALLENGE: Lodestone gathers iron into jams in hoppers and splitters, so keep it separate. Heating it past the Curie point switches its field off for a while."
+
+[node name="MagnetCore" type="Node3D" parent="MaterialsWing/Row2"]
+
+[node name="Plinth" parent="MaterialsWing/Row2/MagnetCore" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.1, 1, 88)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row2/MagnetCore"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 23.1, 1.75, 88)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row2/MagnetCore/Turntable" instance=ExtResource("hall_114")]
+
+[node name="Name18" type="Label3D" parent="MaterialsWing/Row2/MagnetCore"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.1, 3.1, 88)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(0.8, 1, 0.45, 1)
+text = "Magnet Core"
+
+[node name="TrayBase18" type="Box3DBody" parent="MaterialsWing/Row2/MagnetCore"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(23.1, 0.03, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/MagnetCore/TrayBase18"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall69" type="Box3DBody" parent="MaterialsWing/Row2/MagnetCore"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(23.1, 0.255, 84.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/MagnetCore/TrayWall69"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall70" type="Box3DBody" parent="MaterialsWing/Row2/MagnetCore"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(23.1, 0.255, 86.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/MagnetCore/TrayWall70"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall71" type="Box3DBody" parent="MaterialsWing/Row2/MagnetCore"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(21.85, 0.255, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/MagnetCore/TrayWall71"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall72" type="Box3DBody" parent="MaterialsWing/Row2/MagnetCore"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(24.35, 0.255, 85.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row2/MagnetCore/TrayWall72"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge18" type="MeshInstance3D" parent="MaterialsWing/Row2/MagnetCore"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, 23.1, 0.007, 84.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row2/MagnetCore" instance=ExtResource("hall_115")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.55, 0.75, 85.6)
+
+[node name="Sample2" parent="MaterialsWing/Row2/MagnetCore" instance=ExtResource("hall_115")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.65, 0.75, 85.6)
+
+[node name="Panel18" type="MeshInstance3D" parent="MaterialsWing/Row2/MagnetCore"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, 23.1, 2.4, 93.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar18" type="MeshInstance3D" parent="MaterialsWing/Row2/MagnetCore"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, 23.1, 3.94, 93.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story18" type="Label3D" parent="MaterialsWing/Row2/MagnetCore"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 23.1, 2.4, 93.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "MAGNET CORE   difficulty 2/5\nfrom: Lodestone + Copper Rod -> Plate Press\n\nPressed lodestone wound with copper: a strong, fixed magnet with marked poles.\n\nCHALLENGE: Crafting part for magnetic belts and tools. It pulls iron to it just as lodestone does, so handle it the same way."
+
+[node name="Arrow8" type="Label3D" parent="MaterialsWing/Row2/MagnetCore"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.8, 1.9, 88)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.8, 0.3, 1)
+text = "Plate Press  >"
+
+[node name="ChainStripe8" type="MeshInstance3D" parent="MaterialsWing/Row2/MagnetCore"]
+transform = Transform3D(4.8, 0, 0, 0, 0.01, 0, 0, 0, 0.2, 19.8, 0.007, 88)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Row3" type="Node3D" parent="MaterialsWing"]
+
+[node name="Backdrop3" type="Box3DBody" parent="MaterialsWing/Row3"]
+body_type = 0
+box_size = Vector3(80, 8, 0.4)
+position = Vector3(0, 4, 116)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/Backdrop3"]
+transform = Transform3D(80, 0, 0, 0, 8, 0, 0, 0, 0.4, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="BackdropCap3" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(80.1, 0, 0, 0, 0.15, 0, 0, 0, 0.5, 0, 8.075, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropSkirt3" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(80.1, 0, 0, 0, 0.3, 0, 0, 0, 0.5, 0, 0.15, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost39" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -40, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost40" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -36, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost41" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -32, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost42" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -28, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost43" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -24, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost44" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -20, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost45" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -16, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost46" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -12, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost47" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -8, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost48" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, -4, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost49" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 0, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost50" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 4, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost51" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 8, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost52" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 12, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost53" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 16, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost54" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 20, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost55" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 24, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost56" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 28, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost57" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 32, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost58" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 36, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="BackdropPost59" type="MeshInstance3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(0.2, 0, 0, 0, 8, 0, 0, 0, 0.5, 40, 4, 116)
+mesh = SubResource("hall_box_frame")
+
+[node name="RowTitle3" type="Label3D" parent="MaterialsWing/Row3"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 4.4, 115.75)
+double_sided = false
+pixel_size = 0.016
+font_size = 96
+outline_size = 12
+text = "BASE RESOURCES  -  HAZARDS"
+
+[node name="QuartzCrystal" type="Node3D" parent="MaterialsWing/Row3"]
+
+[node name="Plinth" parent="MaterialsWing/Row3/QuartzCrystal" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.7, 1, 110)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row3/QuartzCrystal"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -29.7, 1.75, 110)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row3/QuartzCrystal/Turntable" instance=ExtResource("hall_116")]
+
+[node name="Name19" type="Label3D" parent="MaterialsWing/Row3/QuartzCrystal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.7, 3.1, 110)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Quartz Crystal"
+
+[node name="TrayBase19" type="Box3DBody" parent="MaterialsWing/Row3/QuartzCrystal"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(-29.7, 0.03, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/QuartzCrystal/TrayBase19"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall73" type="Box3DBody" parent="MaterialsWing/Row3/QuartzCrystal"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-29.7, 0.255, 106.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/QuartzCrystal/TrayWall73"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall74" type="Box3DBody" parent="MaterialsWing/Row3/QuartzCrystal"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-29.7, 0.255, 108.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/QuartzCrystal/TrayWall74"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall75" type="Box3DBody" parent="MaterialsWing/Row3/QuartzCrystal"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-30.95, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/QuartzCrystal/TrayWall75"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall76" type="Box3DBody" parent="MaterialsWing/Row3/QuartzCrystal"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-28.45, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/QuartzCrystal/TrayWall76"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge19" type="MeshInstance3D" parent="MaterialsWing/Row3/QuartzCrystal"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, -29.7, 0.007, 106.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row3/QuartzCrystal" instance=ExtResource("hall_117")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.25, 0.75, 107.6)
+
+[node name="Sample2" parent="MaterialsWing/Row3/QuartzCrystal" instance=ExtResource("hall_117")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.15, 0.75, 107.6)
+
+[node name="Panel19" type="MeshInstance3D" parent="MaterialsWing/Row3/QuartzCrystal"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, -29.7, 2.4, 115.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar19" type="MeshInstance3D" parent="MaterialsWing/Row3/QuartzCrystal"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, -29.7, 3.94, 115.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story19" type="Label3D" parent="MaterialsWing/Row3/QuartzCrystal"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -29.7, 2.4, 115.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "QUARTZ CRYSTAL   difficulty 3/5\nfrom: mined\n\nA long, glassy point that rolls. Fragile: any hard knock shatters it into quartz shards, including a drop of more than one cell, a launcher or a collision.\n\nCHALLENGE: Gentle handling only: slow belts, rubber-padded chutes and elevators in place of drops. Every crash wastes material."
+
+[node name="GlassPane" type="Node3D" parent="MaterialsWing/Row3"]
+
+[node name="Plinth" parent="MaterialsWing/Row3/GlassPane" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.1, 1, 110)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row3/GlassPane"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -23.1, 1.75, 110)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row3/GlassPane/Turntable" instance=ExtResource("hall_118")]
+
+[node name="Name20" type="Label3D" parent="MaterialsWing/Row3/GlassPane"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.1, 3.1, 110)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Glass Pane"
+
+[node name="TrayBase20" type="Box3DBody" parent="MaterialsWing/Row3/GlassPane"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(-23.1, 0.03, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/GlassPane/TrayBase20"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall77" type="Box3DBody" parent="MaterialsWing/Row3/GlassPane"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-23.1, 0.255, 106.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/GlassPane/TrayWall77"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall78" type="Box3DBody" parent="MaterialsWing/Row3/GlassPane"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-23.1, 0.255, 108.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/GlassPane/TrayWall78"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall79" type="Box3DBody" parent="MaterialsWing/Row3/GlassPane"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-24.35, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/GlassPane/TrayWall79"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall80" type="Box3DBody" parent="MaterialsWing/Row3/GlassPane"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-21.85, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/GlassPane/TrayWall80"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge20" type="MeshInstance3D" parent="MaterialsWing/Row3/GlassPane"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, -23.1, 0.007, 106.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row3/GlassPane" instance=ExtResource("hall_119")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.65, 0.75, 107.6)
+
+[node name="Sample2" parent="MaterialsWing/Row3/GlassPane" instance=ExtResource("hall_119")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.55, 0.75, 107.6)
+
+[node name="Panel20" type="MeshInstance3D" parent="MaterialsWing/Row3/GlassPane"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, -23.1, 2.4, 115.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar20" type="MeshInstance3D" parent="MaterialsWing/Row3/GlassPane"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, -23.1, 3.94, 115.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story20" type="Label3D" parent="MaterialsWing/Row3/GlassPane"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -23.1, 2.4, 115.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "GLASS PANE   difficulty 3/5\nfrom: Quartz Crystal -> Smelter\n\nA thin, slippery, fragile sheet. It sleds the length of a belt at every stop and cracks if it lands on an edge.\n\nCHALLENGE: Gentle stops, flat drops and stacking rather than piling."
+
+[node name="Arrow9" type="Label3D" parent="MaterialsWing/Row3/GlassPane"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.4, 1.9, 110)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.8, 0.3, 1)
+text = "Smelter  >"
+
+[node name="ChainStripe9" type="MeshInstance3D" parent="MaterialsWing/Row3/GlassPane"]
+transform = Transform3D(4.8, 0, 0, 0, 0.01, 0, 0, 0, 0.2, -26.4, 0.007, 110)
+mesh = SubResource("hall_box_hazard")
+
+[node name="QuartzShards" type="Node3D" parent="MaterialsWing/Row3"]
+
+[node name="Plinth" parent="MaterialsWing/Row3/QuartzShards" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.5, 1, 110)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row3/QuartzShards"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -16.5, 1.75, 110)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row3/QuartzShards/Turntable" instance=ExtResource("hall_120")]
+
+[node name="Name21" type="Label3D" parent="MaterialsWing/Row3/QuartzShards"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.5, 3.1, 110)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(0.8, 1, 0.45, 1)
+text = "Quartz Shards"
+
+[node name="TrayBase21" type="Box3DBody" parent="MaterialsWing/Row3/QuartzShards"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(-16.5, 0.03, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/QuartzShards/TrayBase21"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall81" type="Box3DBody" parent="MaterialsWing/Row3/QuartzShards"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-16.5, 0.255, 106.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/QuartzShards/TrayWall81"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall82" type="Box3DBody" parent="MaterialsWing/Row3/QuartzShards"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-16.5, 0.255, 108.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/QuartzShards/TrayWall82"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall83" type="Box3DBody" parent="MaterialsWing/Row3/QuartzShards"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-17.75, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/QuartzShards/TrayWall83"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall84" type="Box3DBody" parent="MaterialsWing/Row3/QuartzShards"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-15.25, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/QuartzShards/TrayWall84"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge21" type="MeshInstance3D" parent="MaterialsWing/Row3/QuartzShards"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, -16.5, 0.007, 106.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row3/QuartzShards" instance=ExtResource("hall_121")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.05, 0.75, 107.6)
+
+[node name="Sample2" parent="MaterialsWing/Row3/QuartzShards" instance=ExtResource("hall_121")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.95, 0.75, 107.6)
+
+[node name="Panel21" type="MeshInstance3D" parent="MaterialsWing/Row3/QuartzShards"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, -16.5, 2.4, 115.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar21" type="MeshInstance3D" parent="MaterialsWing/Row3/QuartzShards"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, -16.5, 3.94, 115.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story21" type="Label3D" parent="MaterialsWing/Row3/QuartzShards"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -16.5, 2.4, 115.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "QUARTZ SHARDS   difficulty 2/5\nfrom: Quartz Crystal, shattered\n\nWhat's left of a dropped crystal. Small and sharp, so it catches in grates and gaps.\n\nCHALLENGE: Still smelts into glass, at half the yield. A shard count is a score for how rough the handling was."
+
+[node name="LatexResin" type="Node3D" parent="MaterialsWing/Row3"]
+
+[node name="Plinth" parent="MaterialsWing/Row3/LatexResin" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.9, 1, 110)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row3/LatexResin"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -9.9, 1.75, 110)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row3/LatexResin/Turntable" instance=ExtResource("hall_122")]
+
+[node name="Name22" type="Label3D" parent="MaterialsWing/Row3/LatexResin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.9, 3.1, 110)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(1, 0.55, 0.25, 1)
+text = "Latex Resin"
+
+[node name="TrayBase22" type="Box3DBody" parent="MaterialsWing/Row3/LatexResin"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(-9.9, 0.03, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/LatexResin/TrayBase22"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall85" type="Box3DBody" parent="MaterialsWing/Row3/LatexResin"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-9.9, 0.255, 106.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/LatexResin/TrayWall85"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall86" type="Box3DBody" parent="MaterialsWing/Row3/LatexResin"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-9.9, 0.255, 108.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/LatexResin/TrayWall86"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall87" type="Box3DBody" parent="MaterialsWing/Row3/LatexResin"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-11.15, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/LatexResin/TrayWall87"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall88" type="Box3DBody" parent="MaterialsWing/Row3/LatexResin"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-8.65, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/LatexResin/TrayWall88"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge22" type="MeshInstance3D" parent="MaterialsWing/Row3/LatexResin"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, -9.9, 0.007, 106.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row3/LatexResin" instance=ExtResource("hall_123")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.45, 0.75, 107.6)
+
+[node name="Sample2" parent="MaterialsWing/Row3/LatexResin" instance=ExtResource("hall_123")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.35, 0.75, 107.6)
+
+[node name="Panel22" type="MeshInstance3D" parent="MaterialsWing/Row3/LatexResin"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, -9.9, 2.4, 115.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar22" type="MeshInstance3D" parent="MaterialsWing/Row3/LatexResin"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, -9.9, 3.94, 115.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story22" type="Label3D" parent="MaterialsWing/Row3/LatexResin"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -9.9, 2.4, 115.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "LATEX RESIN   difficulty 4/5\nfrom: tapped\n\nA tacky, dead-soft blob. It glues itself to belts, walls and other items, and blobs merge into growing clumps.\n\nCHALLENGE: Clumps block hoppers and splitters. Chill it with cold items or the cryo vent so it hardens enough to move, then heat it to cure it into rubber."
+
+[node name="RubberBall" type="Node3D" parent="MaterialsWing/Row3"]
+
+[node name="Plinth" parent="MaterialsWing/Row3/RubberBall" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 1, 110)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row3/RubberBall"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -3.3, 1.75, 110)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row3/RubberBall/Turntable" instance=ExtResource("hall_124")]
+
+[node name="Name23" type="Label3D" parent="MaterialsWing/Row3/RubberBall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 3.1, 110)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Rubber Ball"
+
+[node name="TrayBase23" type="Box3DBody" parent="MaterialsWing/Row3/RubberBall"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(-3.3, 0.03, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/RubberBall/TrayBase23"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall89" type="Box3DBody" parent="MaterialsWing/Row3/RubberBall"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-3.3, 0.255, 106.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/RubberBall/TrayWall89"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall90" type="Box3DBody" parent="MaterialsWing/Row3/RubberBall"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(-3.3, 0.255, 108.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/RubberBall/TrayWall90"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall91" type="Box3DBody" parent="MaterialsWing/Row3/RubberBall"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-4.55, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/RubberBall/TrayWall91"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall92" type="Box3DBody" parent="MaterialsWing/Row3/RubberBall"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(-2.05, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/RubberBall/TrayWall92"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge23" type="MeshInstance3D" parent="MaterialsWing/Row3/RubberBall"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, -3.3, 0.007, 106.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row3/RubberBall" instance=ExtResource("hall_125")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.85, 0.75, 107.6)
+
+[node name="Sample2" parent="MaterialsWing/Row3/RubberBall" instance=ExtResource("hall_125")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.75, 0.75, 107.6)
+
+[node name="Panel23" type="MeshInstance3D" parent="MaterialsWing/Row3/RubberBall"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, -3.3, 2.4, 115.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar23" type="MeshInstance3D" parent="MaterialsWing/Row3/RubberBall"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, -3.3, 3.94, 115.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story23" type="Label3D" parent="MaterialsWing/Row3/RubberBall"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.3, 2.4, 115.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "RUBBER BALL   difficulty 3/5\nfrom: Latex Resin -> heat (cure)\n\nCured latex that bounces back almost as high as it fell, off every surface.\n\nCHALLENGE: Hard to contain: it leaps out of open hoppers. Turned round, rubber lining gives quartz and glass a soft landing."
+
+[node name="Arrow10" type="Label3D" parent="MaterialsWing/Row3/RubberBall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.6, 1.9, 110)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.8, 0.3, 1)
+text = "heat (cure)  >"
+
+[node name="ChainStripe10" type="MeshInstance3D" parent="MaterialsWing/Row3/RubberBall"]
+transform = Transform3D(4.8, 0, 0, 0, 0.01, 0, 0, 0, 0.2, -6.6, 0.007, 110)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sulfur" type="Node3D" parent="MaterialsWing/Row3"]
+
+[node name="Plinth" parent="MaterialsWing/Row3/Sulfur" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 1, 110)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row3/Sulfur"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 3.3, 1.75, 110)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row3/Sulfur/Turntable" instance=ExtResource("hall_126")]
+
+[node name="Name24" type="Label3D" parent="MaterialsWing/Row3/Sulfur"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 3.1, 110)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(1, 0.55, 0.25, 1)
+text = "Sulfur"
+
+[node name="TrayBase24" type="Box3DBody" parent="MaterialsWing/Row3/Sulfur"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(3.3, 0.03, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/Sulfur/TrayBase24"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall93" type="Box3DBody" parent="MaterialsWing/Row3/Sulfur"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(3.3, 0.255, 106.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/Sulfur/TrayWall93"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall94" type="Box3DBody" parent="MaterialsWing/Row3/Sulfur"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(3.3, 0.255, 108.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/Sulfur/TrayWall94"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall95" type="Box3DBody" parent="MaterialsWing/Row3/Sulfur"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(2.05, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/Sulfur/TrayWall95"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall96" type="Box3DBody" parent="MaterialsWing/Row3/Sulfur"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(4.55, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/Sulfur/TrayWall96"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge24" type="MeshInstance3D" parent="MaterialsWing/Row3/Sulfur"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, 3.3, 0.007, 106.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row3/Sulfur" instance=ExtResource("hall_127")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75, 0.75, 107.6)
+
+[node name="Sample2" parent="MaterialsWing/Row3/Sulfur" instance=ExtResource("hall_127")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.85, 0.75, 107.6)
+
+[node name="Panel24" type="MeshInstance3D" parent="MaterialsWing/Row3/Sulfur"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, 3.3, 2.4, 115.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar24" type="MeshInstance3D" parent="MaterialsWing/Row3/Sulfur"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, 3.3, 3.94, 115.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story24" type="Label3D" parent="MaterialsWing/Row3/Sulfur"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 3.3, 2.4, 115.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "SULFUR   difficulty 4/5\nfrom: mined\n\nBrittle yellow crystal. Volatile: a hot item or a voltaic spark sets it off, blasting its neighbours away and destroying it.\n\nCHALLENGE: One stray hot item can chain-react a whole belt. Route it clear of heaters and charged crystals, and space it out."
+
+[node name="BlastCharge" type="Node3D" parent="MaterialsWing/Row3"]
+
+[node name="Plinth" parent="MaterialsWing/Row3/BlastCharge" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.9, 1, 110)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row3/BlastCharge"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 9.9, 1.75, 110)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row3/BlastCharge/Turntable" instance=ExtResource("hall_128")]
+
+[node name="Name25" type="Label3D" parent="MaterialsWing/Row3/BlastCharge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.9, 3.1, 110)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(1, 0.55, 0.25, 1)
+text = "Blast Charge"
+
+[node name="TrayBase25" type="Box3DBody" parent="MaterialsWing/Row3/BlastCharge"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(9.9, 0.03, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/BlastCharge/TrayBase25"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall97" type="Box3DBody" parent="MaterialsWing/Row3/BlastCharge"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(9.9, 0.255, 106.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/BlastCharge/TrayWall97"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall98" type="Box3DBody" parent="MaterialsWing/Row3/BlastCharge"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(9.9, 0.255, 108.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/BlastCharge/TrayWall98"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall99" type="Box3DBody" parent="MaterialsWing/Row3/BlastCharge"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(8.65, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/BlastCharge/TrayWall99"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall100" type="Box3DBody" parent="MaterialsWing/Row3/BlastCharge"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(11.15, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/BlastCharge/TrayWall100"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge25" type="MeshInstance3D" parent="MaterialsWing/Row3/BlastCharge"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, 9.9, 0.007, 106.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row3/BlastCharge" instance=ExtResource("hall_129")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.35, 0.75, 107.6)
+
+[node name="Sample2" parent="MaterialsWing/Row3/BlastCharge" instance=ExtResource("hall_129")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.45, 0.75, 107.6)
+
+[node name="Panel25" type="MeshInstance3D" parent="MaterialsWing/Row3/BlastCharge"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, 9.9, 2.4, 115.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar25" type="MeshInstance3D" parent="MaterialsWing/Row3/BlastCharge"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, 9.9, 3.94, 115.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story25" type="Label3D" parent="MaterialsWing/Row3/BlastCharge"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 9.9, 2.4, 115.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "BLAST CHARGE   difficulty 4/5\nfrom: Sulfur + Coal -> Assembly Chamber\n\nSulfur and coal packed in a steel can. Heat, a spark or a hard knock sets it off.\n\nCHALLENGE: Planned as launcher propellant: one charge flings a load. Moving live charges demands everything learned from sulfur."
+
+[node name="Arrow11" type="Label3D" parent="MaterialsWing/Row3/BlastCharge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.6, 1.9, 110)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.8, 0.3, 1)
+text = "Assembly Chamber  >"
+
+[node name="ChainStripe11" type="MeshInstance3D" parent="MaterialsWing/Row3/BlastCharge"]
+transform = Transform3D(4.8, 0, 0, 0, 0.01, 0, 0, 0, 0.2, 6.6, 0.007, 110)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Quicksilver" type="Node3D" parent="MaterialsWing/Row3"]
+
+[node name="Plinth" parent="MaterialsWing/Row3/Quicksilver" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5, 1, 110)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row3/Quicksilver"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 16.5, 1.75, 110)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row3/Quicksilver/Turntable" instance=ExtResource("hall_130")]
+
+[node name="Name26" type="Label3D" parent="MaterialsWing/Row3/Quicksilver"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5, 3.1, 110)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(1, 0.3, 0.3, 1)
+text = "Quicksilver"
+
+[node name="TrayBase26" type="Box3DBody" parent="MaterialsWing/Row3/Quicksilver"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(16.5, 0.03, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/Quicksilver/TrayBase26"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall101" type="Box3DBody" parent="MaterialsWing/Row3/Quicksilver"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(16.5, 0.255, 106.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/Quicksilver/TrayWall101"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall102" type="Box3DBody" parent="MaterialsWing/Row3/Quicksilver"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(16.5, 0.255, 108.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/Quicksilver/TrayWall102"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall103" type="Box3DBody" parent="MaterialsWing/Row3/Quicksilver"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(15.25, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/Quicksilver/TrayWall103"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall104" type="Box3DBody" parent="MaterialsWing/Row3/Quicksilver"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(17.75, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/Quicksilver/TrayWall104"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge26" type="MeshInstance3D" parent="MaterialsWing/Row3/Quicksilver"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, 16.5, 0.007, 106.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row3/Quicksilver" instance=ExtResource("hall_131")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.95, 0.75, 107.6)
+
+[node name="Sample2" parent="MaterialsWing/Row3/Quicksilver" instance=ExtResource("hall_131")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.05, 0.75, 107.6)
+
+[node name="Panel26" type="MeshInstance3D" parent="MaterialsWing/Row3/Quicksilver"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, 16.5, 2.4, 115.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar26" type="MeshInstance3D" parent="MaterialsWing/Row3/Quicksilver"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, 16.5, 3.94, 115.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story26" type="Label3D" parent="MaterialsWing/Row3/Quicksilver"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 16.5, 2.4, 115.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "QUICKSILVER   difficulty 5/5\nfrom: tapped\n\nA bead of liquid metal: very heavy, frictionless and it never stops rolling. Two beads that touch merge into one bigger bead, and a hard knock splits it again.\n\nCHALLENGE: It escapes through every gap and runs down belt slopes. It has to be enclosed end to end, metered by weight and kept apart so beads don't merge."
+
+[node name="VoltaicCrystal" type="Node3D" parent="MaterialsWing/Row3"]
+
+[node name="Plinth" parent="MaterialsWing/Row3/VoltaicCrystal" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.1, 1, 110)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row3/VoltaicCrystal"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 23.1, 1.75, 110)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row3/VoltaicCrystal/Turntable" instance=ExtResource("hall_132")]
+
+[node name="Name27" type="Label3D" parent="MaterialsWing/Row3/VoltaicCrystal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.1, 3.1, 110)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(1, 0.3, 0.3, 1)
+text = "Voltaic Crystal"
+
+[node name="TrayBase27" type="Box3DBody" parent="MaterialsWing/Row3/VoltaicCrystal"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(23.1, 0.03, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/VoltaicCrystal/TrayBase27"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall105" type="Box3DBody" parent="MaterialsWing/Row3/VoltaicCrystal"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(23.1, 0.255, 106.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/VoltaicCrystal/TrayWall105"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall106" type="Box3DBody" parent="MaterialsWing/Row3/VoltaicCrystal"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(23.1, 0.255, 108.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/VoltaicCrystal/TrayWall106"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall107" type="Box3DBody" parent="MaterialsWing/Row3/VoltaicCrystal"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(21.85, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/VoltaicCrystal/TrayWall107"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall108" type="Box3DBody" parent="MaterialsWing/Row3/VoltaicCrystal"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(24.35, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/VoltaicCrystal/TrayWall108"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge27" type="MeshInstance3D" parent="MaterialsWing/Row3/VoltaicCrystal"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, 23.1, 0.007, 106.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row3/VoltaicCrystal" instance=ExtResource("hall_133")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.55, 0.75, 107.6)
+
+[node name="Sample2" parent="MaterialsWing/Row3/VoltaicCrystal" instance=ExtResource("hall_133")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.65, 0.75, 107.6)
+
+[node name="Panel27" type="MeshInstance3D" parent="MaterialsWing/Row3/VoltaicCrystal"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, 23.1, 2.4, 115.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar27" type="MeshInstance3D" parent="MaterialsWing/Row3/VoltaicCrystal"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, 23.1, 3.94, 115.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story27" type="Label3D" parent="MaterialsWing/Row3/VoltaicCrystal"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 23.1, 2.4, 115.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "VOLTAIC CRYSTAL   difficulty 5/5\nfrom: mined\n\nA crystal that holds charge. Two crystals repel, so they won't sit together. It arcs into conductive metal and sparks off volatile items.\n\nCHALLENGE: It spreads itself out on belts and won't pile into a hopper. Ground it on copper before bulk handling, and never let it near sulfur."
+
+[node name="BatteryCell" type="Node3D" parent="MaterialsWing/Row3"]
+
+[node name="Plinth" parent="MaterialsWing/Row3/BatteryCell" instance=ExtResource("hall_69")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.7, 1, 110)
+
+[node name="Turntable" type="Node3D" parent="MaterialsWing/Row3/BatteryCell"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 29.7, 1.75, 110)
+script = ExtResource("hall_70")
+axis = Vector3(0, 1, 0)
+speed = 0.5
+
+[node name="Model" parent="MaterialsWing/Row3/BatteryCell/Turntable" instance=ExtResource("hall_134")]
+
+[node name="Name28" type="Label3D" parent="MaterialsWing/Row3/BatteryCell"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.7, 3.1, 110)
+billboard = 1
+pixel_size = 0.01
+font_size = 56
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Battery Cell"
+
+[node name="TrayBase28" type="Box3DBody" parent="MaterialsWing/Row3/BatteryCell"]
+body_type = 0
+box_size = Vector3(2.6, 0.06, 1.6)
+position = Vector3(29.7, 0.03, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/BatteryCell/TrayBase28"]
+transform = Transform3D(2.6, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="TrayWall109" type="Box3DBody" parent="MaterialsWing/Row3/BatteryCell"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(29.7, 0.255, 106.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/BatteryCell/TrayWall109"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall110" type="Box3DBody" parent="MaterialsWing/Row3/BatteryCell"]
+body_type = 0
+box_size = Vector3(2.6, 0.39, 0.1)
+position = Vector3(29.7, 0.255, 108.35)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/BatteryCell/TrayWall110"]
+transform = Transform3D(2.6, 0, 0, 0, 0.39, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall111" type="Box3DBody" parent="MaterialsWing/Row3/BatteryCell"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(28.45, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/BatteryCell/TrayWall111"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayWall112" type="Box3DBody" parent="MaterialsWing/Row3/BatteryCell"]
+body_type = 0
+box_size = Vector3(0.1, 0.39, 1.6)
+position = Vector3(30.95, 0.255, 107.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="MaterialsWing/Row3/BatteryCell/TrayWall112"]
+transform = Transform3D(0.1, 0, 0, 0, 0.39, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="TrayEdge28" type="MeshInstance3D" parent="MaterialsWing/Row3/BatteryCell"]
+transform = Transform3D(2.6, 0, 0, 0, 0.01, 0, 0, 0, 0.03, 29.7, 0.007, 106.785)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Sample1" parent="MaterialsWing/Row3/BatteryCell" instance=ExtResource("hall_135")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.15, 0.75, 107.6)
+
+[node name="Sample2" parent="MaterialsWing/Row3/BatteryCell" instance=ExtResource("hall_135")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30.25, 0.75, 107.6)
+
+[node name="Panel28" type="MeshInstance3D" parent="MaterialsWing/Row3/BatteryCell"]
+transform = Transform3D(6.2, 0, 0, 0, 3, 0, 0, 0, 0.04, 29.7, 2.4, 115.78)
+mesh = SubResource("hall_box_frame")
+
+[node name="PanelBar28" type="MeshInstance3D" parent="MaterialsWing/Row3/BatteryCell"]
+transform = Transform3D(6.2, 0, 0, 0, 0.08, 0, 0, 0, 0.06, 29.7, 3.94, 115.77)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Story28" type="Label3D" parent="MaterialsWing/Row3/BatteryCell"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 29.7, 2.4, 115.7)
+double_sided = false
+pixel_size = 0.0052
+font_size = 26
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1115.38462
+text = "BATTERY CELL   difficulty 3/5\nfrom: Voltaic Crystal + Copper Plate -> Assembly Chamber\n\nVoltaic charge sealed in a copper cell. It stacks safely, but touching bare copper still drains it slowly.\n\nCHALLENGE: Planned as portable power for machines. Keep cells off copper belts and grounding strips."
+
+[node name="Arrow12" type="Label3D" parent="MaterialsWing/Row3/BatteryCell"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.4, 1.9, 110)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.8, 0.3, 1)
+text = "Assembly Chamber  >"
+
+[node name="ChainStripe12" type="MeshInstance3D" parent="MaterialsWing/Row3/BatteryCell"]
+transform = Transform3D(4.8, 0, 0, 0, 0.01, 0, 0, 0, 0.2, 26.4, 0.007, 110)
+mesh = SubResource("hall_box_hazard")

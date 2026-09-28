@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://zzjwqj1hibhy"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://birsfct2yd4p6" path="res://game/assets/models/items/coal.glb" id="2_model"]
+
+[node name="coal" type="Box3DBody"]
+shape_type = 1
+sphere_radius = 0.34
+density = 1.3
+friction = 0.9
+rolling_resistance = 1.2
+script = ExtResource("1_item")
+itemID = "coal"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([4, 9])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

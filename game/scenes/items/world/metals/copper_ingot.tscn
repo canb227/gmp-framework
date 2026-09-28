@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bjdrc3p0cg7cb"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://bj22f8rkobrbf" path="res://game/assets/models/items/copper_ingot.glb" id="2_model"]
+
+[node name="copper_ingot" type="Box3DBody"]
+shape_type = 0
+box_size = Vector3(0.8, 0.3, 0.4)
+density = 8
+friction = 0.4
+script = ExtResource("1_item")
+itemID = "copper_ingot"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([3, 20])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
