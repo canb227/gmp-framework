@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bbrgl0sqve1x5"
-path="res://.godot/imported/slickstone_puck.glb-9c0802e71aac14e82103243cf1851d85.scn"
+uid="uid://cu0eautygiv10"
+path="res://.godot/imported/tilt_gauge.glb-74b7877a717f6948a2f2edc6d125f9d9.scn"
 
 [deps]
 
-source_file="res://game/assets/models/items/slickstone_puck.glb"
-dest_files=["res://.godot/imported/slickstone_puck.glb-9c0802e71aac14e82103243cf1851d85.scn"]
+source_file="res://game/assets/models/machines/rooms/tilt_gauge.glb"
+dest_files=["res://.godot/imported/tilt_gauge.glb-74b7877a717f6948a2f2edc6d125f9d9.scn"]
 
 [params]
 
@@ -35,7 +35,7 @@ animation/fps=30
 animation/trimming=false
 animation/remove_immutable_tracks=true
 animation/import_rest_as_RESET=false
-import_script/path="res://game/assets/models/shared/salvage_import.gd"
+import_script/path=""
 materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
