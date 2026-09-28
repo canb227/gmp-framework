@@ -11,11 +11,13 @@ rollers, beacon, spawner rings) are separate nodes whose origin sits on their pi
 import bpy, bmesh, math, random, os
 from mathutils import Vector, Matrix, noise
 
-HERE = r"C:\Users\steph\OneDrive\Documents\godot\projects\gmp-framework\game\assets\models\props\source"
+# resolved from this file when run by path (tools/blender/run.py); the fallback is for exec() from Blender
+HERE = (os.path.dirname(os.path.abspath(__file__)) if "__file__" in globals()
+        else r"C:\Users\steph\OneDrive\Documents\godot\projects\gmp-framework\game\assets\models\props\source")
 OUT_DIR = os.path.dirname(HERE)
-CONV = r"C:\Users\steph\OneDrive\Documents\godot\projects\gmp-framework\game\assets\models\conveyors\source\build_conveyors.py"
+CONV = os.path.normpath(os.path.join(HERE, "..", "..", "conveyors", "source", "build_conveyors.py"))
 
-L = {"__name__": "conveyor_lib"}
+L = {"__name__": "conveyor_lib", "__file__": CONV}
 exec(compile(open(CONV, encoding="utf-8").read(), CONV, "exec"), L)
 Builder, vc_mat, MATS, MAT_ORDER, MI = L["Builder"], L["vc_mat"], L["MATS"], L["MAT_ORDER"], L["MI"]
 C_WHITE, C_DARK, C_FRAME, C_STEEL = L["C_WHITE"], L["C_DARK"], L["C_FRAME"], L["C_STEEL"]
@@ -24,6 +26,8 @@ set_active_colors, clear_collection = L["set_active_colors"], L["clear_collectio
 
 C_CYAN = (0.35, 0.95, 1.0)
 C_COPPER = (0.8, 0.38, 0.16)
+C_MOLTEN = (1.0, 0.36, 0.06)
+C_MOSS = (0.10, 0.20, 0.05)
 
 def mats():
     L["mats"]()
@@ -34,6 +38,8 @@ def mats():
         gem=vc_mat("M_OreGem", 0.22, 0.35),
         copper=vc_mat("M_PropCopper", 0.32, 0.95),
         vortex=vc_mat("M_VoidVortex", 0.5),
+        molten=vc_mat("M_PropMolten", 0.35, 0.0, (1.0, 0.32, 0.04), 3.5),
+        lamp=vc_mat("M_PropLamp", 0.3, 0.0, (1.0, 0.96, 0.88), 5.0),
     )
     for k, m in extra.items():
         MATS[k] = m
@@ -427,6 +433,273 @@ def build_void():
     return coll
 
 # ======================================================================================
+# Smelter: 2 x 2 x 2 cells (origin = anchor cell centre; footprint x -1..3, y -1..3, z -1..3). A furnace rebuilt
+# from facility wall panels: panelled lower housing with the output mouth at belt height in front of the anchor
+# column (+Y); an open hopper across the back of the upper level with a low intake lip at the back (-Y) so an
+# upper-level conveyor can feed it; a panelled kiln with a molten seam and a chimney over the front half.
+# ======================================================================================
+SM_C = Vector((1.0, 1.0, 0.0))                      # footprint centre (x, y)
+SM_FACES = {"F": (Vector((0, 1, 0)), Vector((1, 0, 0))), "B": (Vector((0, -1, 0)), Vector((1, 0, 0))),
+            "R": (Vector((1, 0, 0)), Vector((0, 1, 0))), "L": (Vector((-1, 0, 0)), Vector((0, 1, 0)))}
+SM_ROWS = ((-0.92, 0.0), (0.0, 0.95))                # lower-housing panel rows (z)
+
+def sm_point(f, s, z, d):
+    """Point on housing face f: s = world coordinate along the face, d = distance out from the footprint centre."""
+    n, u = SM_FACES[f]
+    return SM_C + n * d + u * (s - 1.0) + Vector((0, 0, z))
+
+def sm_basis(f):
+    n, u = SM_FACES[f]
+    return Matrix((u, Vector((0, 0, 1)), n)).transposed()      # local x along the face, y up, z out
+
+def facility_panel(B, f, s0, z0, z1, kind):
+    """One salvaged 1 m facility panel in the housing cell starting at s0 (z0..z1).
+    kind: white / dark / patched / gone (panel missing: cooling fins with the furnace glowing between them)."""
+    R = sm_basis(f); n, _ = SM_FACES[f]
+    c = sm_point(f, s0 + 0.5, (z0 + z1) / 2, 1.955)
+    w, h = 0.93, (z1 - z0) - 0.07
+    if kind == "white":
+        B.box(c, (w, h, 0.04), R, "panel", C_WHITE, 0.3)
+    elif kind == "dark":
+        B.box(c, (w, h, 0.04), R, "metal", C_DARK, 0.2)
+    elif kind == "patched":                                       # rusty steel sheet bolted over the hole
+        B.box(c, (w * 0.85, h * 0.8, 0.02), R, "steel", C_STEEL, 0.25, rust=0.8)
+        bolts(B, [c + R @ Vector((sx * w * 0.38, sy * h * 0.34, 0.01)) for sx in (-1, 1) for sy in (-1, 1)], n)
+    else:
+        B.box(c - n * 0.03, (w, h, 0.01), R, "molten", C_MOLTEN, 0.05)
+        for k in range(5):
+            B.box(c + R @ Vector((0, -h / 2 + (k + 0.5) * h / 5, -0.005)), (w, 0.035, 0.05), R, "metal", C_DARK, 0.15, rust=0.3)
+
+def build_smelter():
+    random.seed(71); rng = random.Random(71)
+    coll = clear_collection("Prop_Smelter")
+    B = Builder(); I3 = Matrix.Identity(3); Z = Vector((0, 0, 1))
+
+    # ---- lower housing: dark frame box, base skid, deck, facility panels on a 1 m grid ----
+    B.box(Vector((1, 1, 0.015)), (3.84, 3.84, 1.87), I3, "metal", C_FRAME, 0.2, rust=0.3)
+    B.box(Vector((1, 1, -0.96)), (3.98, 3.98, 0.08), I3, "steel", C_STEEL, 0.25, rust=0.7)
+    B.box(Vector((1, 1, 1.0)), (3.98, 3.98, 0.1), I3, "metal", C_DARK, 0.2, rust=0.3)
+    for (x, y) in ((-0.94, -0.94), (2.94, -0.94), (-0.94, 2.94), (2.94, 2.94)):                 # corner posts
+        B.box(Vector((x, y, 0.0)), (0.1, 0.1, 1.84), I3, "metal", C_FRAME, 0.2, rust=0.4)
+    reserved = {("F", -1, 0), ("F", 0, 0), ("F", 1, 0), ("F", 2, 0), ("B", 0, 0)}
+    forced = {("R", 1, 0): "gone", ("L", 0, 1): "gone", ("B", 2, 1): "gone", ("R", -1, 1): "patched",
+              ("F", 2, 1): "dark", ("R", 0, 1): "white"}
+    for f in SM_FACES:
+        R = sm_basis(f)
+        for s in (0, 1, 2):                                                                      # vertical frame bars
+            for row, (z0, z1) in enumerate(SM_ROWS):
+                if (f, s - 1, row) in reserved and (f, s, row) in reserved:
+                    continue                                                                     # inside a fitted plate
+                B.box(sm_point(f, s, (z0 + z1) / 2, 1.96), (0.07, z1 - z0, 0.06), R, "metal", C_FRAME, 0.2, rust=0.3)
+        for z in (-0.92, 0.0, 0.93):                                                             # horizontal bars
+            B.box(sm_point(f, 1.0, z, 1.96), (3.8, 0.07, 0.06), R, "metal", C_FRAME, 0.2, rust=0.3)
+        for s0 in (-1, 0, 1, 2):
+            for row, (z0, z1) in enumerate(SM_ROWS):
+                if (f, s0, row) in reserved:
+                    continue
+                r = rng.random()
+                kind = forced.get((f, s0, row)) or ("white" if r < 0.74 else "dark" if r < 0.88 else "patched")
+                facility_panel(B, f, s0, z0, z1, kind)
+    hazard(B, Vector((-0.99, 2.991, -0.995)), (1, 0, 0), (0, 0, 1), 3.98, 0.07, (0, 1, 0), pitch=0.1)
+    hazard(B, Vector((2.99, 1.0, 0.955)), (0, 1, 0), (0, 0, 1), 1.98, 0.035, (1, 0, 0), pitch=0.08)
+
+    # ---- front: output mouth at belt height in front of the anchor column (x = 0) ----
+    RF = sm_basis("F")
+    B.box(Vector((0, 2.955, -0.46)), (1.92, 0.05, 0.88), I3, "metal", C_FRAME, 0.2, rust=0.3)
+    B.box(Vector((0, 2.975, -0.58)), (0.9, 0.02, 0.52), I3, "metal", (0.02, 0.02, 0.02), 0.05)        # dark mouth
+    B.box(Vector((0, 2.982, -0.37)), (0.84, 0.01, 0.05), I3, "molten", C_MOLTEN, 0.05)                 # heat at the lintel
+    B.box(Vector((0, 2.982, -0.8)), (0.7, 0.01, 0.04), I3, "molten", C_MOLTEN, 0.05)                   # glowing sill
+    for sx in (-1, 1):
+        B.box(Vector((sx * 0.5, 2.96, -0.55)), (0.08, 0.07, 0.72), I3, "steel", C_AMBER, 0.2, rust=0.2)
+    B.box(Vector((0, 2.96, -0.2)), (1.08, 0.07, 0.08), I3, "steel", C_AMBER, 0.2, rust=0.2)
+    B.box(Vector((0, 2.95, -0.86)), (0.92, 0.08, 0.03), Matrix.Rotation(math.radians(-15), 3, 'X'), "steel", L["C_WEAR"], 0.15, rust=0.3)
+    B.box(Vector((-0.72, 2.982, -0.1)), (0.34, 0.01, 0.1), I3, "tape", C_TAPE, 0.25)                    # stencil tape
+    # front right: inspection hatch with a porthole onto the melt
+    B.box(Vector((2.0, 2.955, -0.46)), (1.92, 0.05, 0.88), I3, "metal", C_DARK, 0.2, rust=0.2)
+    pc = Vector((2.0, 2.955, -0.46))
+    B.cyl(pc + Vector((0, 0.025, 0)), pc + Vector((0, 0.03, 0)), 0.3, 24, "molten", C_MOLTEN, 0.05)
+    ring(B, pc + Vector((0, 0.03, 0)), (0, 1, 0), 0.29, 0.39, 0.03, 24, "steel", C_STEEL, 0.2, rust=0.4)
+    for k in range(8):
+        a = k / 8 * math.tau
+        p = pc + Vector((math.cos(a) * 0.34, 0.034, math.sin(a) * 0.34))
+        B.cyl(p, p + Vector((0, 0.008, 0)), 0.014, 6, "steel", C_STEEL, rust=0.4)
+    for z in (-0.72, -0.2):                                                                      # hinges
+        B.cyl(Vector((1.52, 2.975, z - 0.06)), Vector((1.52, 2.975, z + 0.06)), 0.025, 8, "steel", C_STEEL, rust=0.5)
+    B.pipe([Vector((2.42, 2.97, -0.58)), Vector((2.52, 2.982, -0.52)), Vector((2.52, 2.982, -0.4)), Vector((2.42, 2.97, -0.34))], 0.012, 6, "steel", C_STEEL)
+    hazard(B, Vector((1.1, 2.981, -0.09)), (1, 0, 0), (0, 0, 1), 1.8, 0.06, (0, 1, 0), pitch=0.09)
+    B.box(Vector((2.7, 2.982, -0.78)), (0.12, 0.01, 0.05), I3, "glow", C_AMBER, 0.05)
+
+    # ---- back: salvaged air blower in the lower anchor-column cell (the fan is its own node) ----
+    fc = Vector((0.5, -0.955, -0.46))
+    B.box(fc + Vector((0, 0.005, 0)), (0.93, 0.03, 0.85), I3, "panel", C_WHITE, 0.3)
+    ring(B, fc + Vector((0, -0.01, 0)), (0, 1, 0), 0.34, 0.41, 0.06, 24, "metal", C_DARK, 0.2, rust=0.3)
+    for k in range(4):
+        a = k / 4 * math.tau + math.pi / 4
+        B.cyl(fc + Vector((math.cos(a) * 0.075, -0.02, math.sin(a) * 0.075)), fc + Vector((math.cos(a) * 0.33, -0.02, math.sin(a) * 0.33)),
+              0.008, 5, "steel", C_STEEL, rust=0.3)                                               # guard spokes
+    B.pipe([Vector((0.95, -0.975, -0.2)), Vector((1.3, -0.985, -0.1)), Vector((1.5, -0.985, 0.3)), Vector((1.6, -0.975, 0.9))], 0.015, 6)
+
+    # ---- right side: gauge board on a white panel ----
+    for k, y in enumerate((0.3, 0.7)):
+        gp = Vector((2.985, y, 0.5))
+        B.cyl(gp - Vector((0.008, 0, 0)), gp, 0.13, 16, "metal", C_DARK, 0.15)
+        B.cyl(gp, gp + Vector((0.004, 0, 0)), 0.11, 16, "panel", (0.85, 0.84, 0.8), 0.1)
+        a = math.radians(40 + 70 * k)
+        B.box(gp + Vector((0.006, math.cos(a) * 0.045, math.sin(a) * 0.045)), (0.003, 0.09, 0.01), Matrix.Rotation(a, 3, 'X'), "glow", (1.0, 0.15, 0.1), 0.05)
+    B.box(Vector((2.985, 0.5, 0.22)), (0.006, 0.6, 0.08), I3, "tape", C_TAPE, 0.25)
+
+    # ---- upper level, back half: open hopper with a low intake lip at the back ----
+    for sx in (-1, 1):
+        x = 1 + sx * 1.9
+        B.box(Vector((x, 0.0, 1.625)), (0.13, 1.98, 1.15), I3, "metal", C_FRAME, 0.2, rust=0.4)
+        B.box(Vector((x - sx * 0.07, 0.0, 1.6)), (0.012, 1.7, 0.95), I3, "steel", L["C_WEAR"], 0.12, rust=0.1)   # wear liner
+        for y0 in (-0.95, 0.03):                                                                  # facility cladding
+            B.box(Vector((x + sx * 0.075, y0 + 0.46, 1.55)), (0.02, 0.9, 0.9), I3, "panel", C_WHITE if y0 < 0 or sx > 0 else C_DARK, 0.3)
+        bolts(B, [Vector((x + sx * 0.085, y, z)) for y in (-0.93, -0.03, 0.05, 0.93) for z in (1.12, 1.98)], (sx, 0, 0))
+        hazard(B, Vector((x + sx * 0.0865, -0.99 if sx > 0 else 0.99, 2.03)), (0, 1 if sx > 0 else -1, 0), (0, 0, 1), 1.98, 0.15, (sx, 0, 0), pitch=0.12)
+    B.box(Vector((1.0, 0.925, 1.625)), (3.98, 0.13, 1.15), I3, "metal", C_FRAME, 0.2, rust=0.4)          # wall to the kiln
+    B.box(Vector((1.0, 0.855, 1.6)), (3.7, 0.012, 0.95), I3, "steel", L["C_WEAR"], 0.12, rust=0.1)
+    for x0 in (-0.95, 0.05, 2.03):                                                               # cladding facing the kiln
+        B.box(Vector((x0 + 0.46, 1.0, 1.66)), (0.9, 0.02, 1.0), I3, "panel", C_WHITE if x0 != 0.05 else (0.6, 0.6, 0.58), 0.3)
+    B.box(Vector((1.0, -0.925, 1.11)), (3.98, 0.13, 0.12), I3, "steel", C_STEEL, 0.2, rust=0.5)         # intake lip
+    hazard(B, Vector((-0.99, -0.991, 1.055)), (1, 0, 0), (0, 0, 1), 3.98, 0.11, (0, -1, 0), pitch=0.1)
+    for sx in (-1, 1):                                                                            # intake posts
+        B.box(Vector((1 + sx * 1.925, -0.925, 1.625)), (0.14, 0.14, 1.15), I3, "metal", C_DARK, 0.2, rust=0.3)
+    for (c, s) in ((Vector((1, 0.925, 2.22)), (3.98, 0.16, 0.06)), (Vector((-0.91, 0, 2.22)), (0.16, 1.98, 0.06)),
+                   (Vector((2.91, 0, 2.22)), (0.16, 1.98, 0.06))):                                 # rolled rim
+        B.box(c, s, I3, "metal", C_DARK, 0.2, rust=0.4)
+    # hopper floor: grate bars over the glowing melt
+    B.box(Vector((1.0, 0.0, 1.056)), (3.72, 1.72, 0.01), I3, "molten", C_MOLTEN, 0.05)
+    for k in range(15):
+        B.box(Vector((-0.75 + k * 0.25, 0.0, 1.085)), (0.05, 1.72, 0.05), I3, "metal", C_DARK, 0.15, rust=0.4)
+    for y in (-0.5, 0.0, 0.5):
+        B.box(Vector((1.0, y, 1.075)), (3.72, 0.04, 0.03), I3, "metal", C_DARK, 0.15, rust=0.4)
+
+    # ---- upper level, front half: panelled kiln ----
+    K = Vector((1.3, 2.0, 0.0))
+    kr = lambda z, r: [K + Vector((math.cos(a) * r, math.sin(a) * r, z)) for a in [k / 24 * math.tau for k in range(24)]]
+    B.tube_rings([kr(1.05, 0.92), kr(2.05, 0.92), kr(2.28, 0.78), kr(2.42, 0.5), kr(2.48, 0.3)], "metal", C_FRAME, 0.2, 0.3, cap=True, smooth=True)
+    for k in range(12):
+        a = (k + 0.5) / 12 * math.tau
+        nrm = Vector((math.cos(a), math.sin(a), 0)); tan = Vector((-math.sin(a), math.cos(a), 0))
+        R = Matrix((tan, Z, nrm)).transposed()
+        for (z0, z1) in ((1.12, 1.6), (1.8, 2.0)):
+            c = K + nrm * 0.935 + Z * ((z0 + z1) / 2)
+            if k == 2 and z0 < 1.5:                                                               # peephole panel
+                B.box(c, (0.45, z1 - z0, 0.03), R, "metal", C_DARK, 0.2)
+                B.box(c + nrm * 0.017, (0.2, 0.12, 0.005), R, "molten", C_MOLTEN, 0.05)
+                continue
+            if k in (8, 9) and z0 < 1.5:                                                          # behind the feed duct
+                continue
+            r = rng.random()
+            if r < 0.12:
+                continue                                                                          # panel missing
+            B.box(c, (0.45, z1 - z0, 0.03), R, "panel", C_WHITE if r < 0.85 else (0.6, 0.6, 0.58), 0.3)
+    ring(B, K + Z * 1.7, (0, 0, 1), 0.9, 0.94, 0.12, 32, "molten", C_MOLTEN, 0.05)                 # molten seam
+    ring(B, K + Z * 1.62, (0, 0, 1), 0.9, 0.955, 0.04, 32, "metal", C_DARK, 0.2, rust=0.3)
+    ring(B, K + Z * 1.78, (0, 0, 1), 0.9, 0.955, 0.04, 32, "metal", C_DARK, 0.2, rust=0.3)
+    ring(B, K + Z * 2.08, (0, 0, 1), 0.85, 0.95, 0.05, 32, "steel", C_STEEL, 0.2, rust=0.5)
+    for k in range(12):                                                                          # dome ribs
+        a = k / 12 * math.tau; d = Vector((math.cos(a), math.sin(a), 0))
+        B.pipe([K + d * 0.93 + Z * 2.05, K + d * 0.8 + Z * 2.29, K + d * 0.52 + Z * 2.43, K + d * 0.3 + Z * 2.49], 0.02, 5, "steel", C_STEEL)
+    B.cyl(K + Z * 2.46, K + Z * 2.53, 0.24, 16, "metal", C_DARK, 0.2, rust=0.3)                    # top vent
+    B.box(K + Vector((0, 0, 2.54)), (0.1, 0.1, 0.01), I3, "glow", C_AMBER, 0.05)
+    # feed duct from the hopper wall into the kiln
+    B.box(Vector((1.3, 1.07, 1.4)), (0.56, 0.28, 0.44), I3, "metal", C_DARK, 0.2, rust=0.4)
+    for y in (1.0, 1.17):
+        B.box(Vector((1.3, y, 1.4)), (0.64, 0.03, 0.52), I3, "steel", C_STEEL, 0.2, rust=0.5)
+    # chimney on scaffold at the front right
+    st = Vector((2.55, 2.5, 0.0))
+    B.cyl(st + Z * 1.05, st + Z * 2.92, 0.17, 14, "steel", (0.22, 0.22, 0.23), 0.2, rust=0.6)
+    for z in (1.1, 1.9, 2.9):
+        B.cyl(st + Z * (z - 0.03), st + Z * (z + 0.03), 0.21, 14, "metal", C_DARK, 0.15, rust=0.3)
+    B.cyl(st + Z * 2.7, st + Z * 2.86, 0.176, 14, "metal", (0.04, 0.035, 0.03), 0.1)               # soot
+    B.cyl(Vector((2.12, 2.28, 2.12)), st + Vector((-0.1, -0.05, 2.12)), 0.09, 10, "steel", (0.22, 0.22, 0.23), rust=0.6)
+    for (x, y) in ((2.9, 2.15), (2.9, 2.85)):
+        B.cyl(Vector((x, y, 1.05)), Vector((x, y, 2.6)), 0.024, 8, "steel", C_STEEL, rust=0.55)
+        B.cyl(Vector((x, y, 2.3)), st + Vector((0.12 if y < 2.5 else 0.12, 0.0, 2.3)), 0.017, 6, "steel", C_STEEL, rust=0.5)
+    B.cyl(Vector((2.9, 2.15, 1.6)), Vector((2.9, 2.85, 2.4)), 0.017, 6, "steel", C_STEEL, rust=0.6)   # brace
+
+    # ---- upper level, front left: salvaged facility console ----
+    cc = Vector((-0.5, 2.25, 1.55))
+    B.box(cc, (0.7, 0.9, 1.0), I3, "panel", C_WHITE, 0.3)
+    B.box(cc + Vector((0, 0, 0.52)), (0.74, 0.94, 0.04), I3, "metal", C_DARK, 0.2)
+    B.box(cc + Vector((0, 0.455, 0.2)), (0.5, 0.01, 0.3), I3, "metal", (0.02, 0.03, 0.03), 0.05)          # screen
+    for k in range(4):
+        B.box(cc + Vector((-0.12 + k * 0.07, 0.462, 0.14 + (k % 2) * 0.06)), (0.05, 0.004, 0.012), I3, "glow", C_AMBER, 0.05)
+    for k, col in enumerate((C_AMBER, C_CYAN, (1.0, 0.15, 0.1))):
+        B.cyl(cc + Vector((-0.18 + k * 0.18, 0.45, -0.12)), cc + Vector((-0.18 + k * 0.18, 0.47, -0.12)), 0.035, 10, "glow", col, 0.05)
+    B.box(cc + Vector((0, 0.455, -0.32)), (0.6, 0.012, 0.08), I3, "tape", C_TAPE, 0.25)
+    hazard(B, cc + Vector((-0.35, 0.451, -0.49)), (1, 0, 0), (0, 0, 1), 0.7, 0.08, (0, 1, 0), pitch=0.08)
+    for dx in (-0.06, 0.0, 0.06):                                                                 # cables to the kiln
+        B.pipe([cc + Vector((0.35, dx, -0.3)), Vector((0.2, 2.25 + dx, 1.08)), Vector((0.45, 2.1 + dx, 1.08)), Vector((0.6, 2.0 + dx, 1.3))], 0.016, 6)
+    B.cyl(cc + Vector((0.2, -0.3, 0.54)), cc + Vector((0.2, -0.3, 0.58)), 0.07, 12, "metal", C_DARK)
+    B.cyl(cc + Vector((0.2, -0.3, 0.58)), cc + Vector((0.2, -0.3, 0.71)), 0.06, 12, "glow", C_AMBER, 0.05)
+
+    # ---- overgrowth: moss creeping up from the floor and onto the deck ----
+    for (p, r, sd) in ((Vector((-0.85, 2.82, -0.9)), 0.13, 1.0), (Vector((2.8, -0.82, -0.9)), 0.11, 2.0),
+                       (Vector((-0.8, -0.8, -0.9)), 0.1, 3.0), (Vector((-0.82, 1.2, 1.06)), 0.1, 4.0)):
+        rock(B, p, r, sd, 1, 0.3, "rock", lambda q, n: [c * random.uniform(0.8, 1.2) for c in C_MOSS], (1.2, 1.2, 0.35))
+    finish(B, "Body", coll)
+
+    # blower fan (spins about Y)
+    F = Builder()
+    for k in range(5):
+        a = k / 5 * math.tau
+        Rb = Matrix.Rotation(a, 3, 'Y') @ Matrix.Rotation(0.45, 3, 'X')
+        F.box(Matrix.Rotation(a, 3, 'Y') @ Vector((0.19, 0, 0)), (0.28, 0.012, 0.1), Rb, "metal", (0.2, 0.2, 0.21), 0.15, rust=0.3)
+    F.cyl(Vector((0, 0.02, 0)), Vector((0, -0.02, 0)), 0.06, 12, "metal", C_DARK, rust=0.2)
+    finish(F, "Fan", coll, fc + Vector((0, -0.02, 0)))
+    # rotating warning beacon on the console
+    Rf = Builder()
+    Rf.box(Vector((0, 0.02, 0)), (0.07, 0.01, 0.09), Matrix.Identity(3), "steel", (0.8, 0.8, 0.8), 0.05)
+    finish(Rf, "Beacon", coll, cc + Vector((0.2, -0.3, 0.645)))
+    return coll
+
+# ======================================================================================
+# Spawn tube: developer-placed item spawner styled as the test facility's tubes. 1 x 1 x 2 cells (origin = bottom
+# cell centre, z -1..3). Items appear at the SpawnPoint marker high in the glass tube and drop out through the
+# open hatch in its bottom, into whatever sits below (the museum mounts it over an item void).
+# ======================================================================================
+def build_spawn_tube():
+    random.seed(91)
+    coll = clear_collection("Prop_SpawnTube")
+    B = Builder(); I3 = Matrix.Identity(3)
+    # open drop hatch at the bottom: a yellow-framed square plate with a round hole, so spawned items fall
+    # straight out of the tube into whatever is below (an item void in the museum)
+    for (c, sz) in ((Vector((0, 0.86, -0.97)), (1.9, 0.18, 0.06)), (Vector((0, -0.86, -0.97)), (1.9, 0.18, 0.06)),
+                    (Vector((0.86, 0, -0.97)), (0.18, 1.54, 0.06)), (Vector((-0.86, 0, -0.97)), (0.18, 1.54, 0.06))):
+        B.box(c, sz, I3, "panel", C_YELLOW, 0.2)
+    ring(B, Vector((0, 0, -0.96)), (0, 0, 1), 0.78, 0.95, 0.08, 40, "metal", C_DARK, 0.2, rust=0.3)
+    hazard(B, Vector((-0.6, 0.951, -0.99)), (1, 0, 0), (0, 0, 1), 1.2, 0.05, (0, 1, 0), pitch=0.08)
+    ring(B, Vector((0, 0, -0.9)), (0, 0, 1), 0.76, 0.92, 0.08, 40, "metal", C_DARK, 0.2, rust=0.2)
+    # top collar, tie rods, lamp hood with its glow ring, feed pipes up through the ceiling
+    ring(B, Vector((0, 0, 2.3)), (0, 0, 1), 0.76, 0.92, 0.08, 40, "metal", C_DARK, 0.2, rust=0.2)
+    for k in range(6):
+        a = k / 6 * math.tau + 0.26
+        p = Vector((math.cos(a) * 0.86, math.sin(a) * 0.86, 0))
+        B.cyl(p + Vector((0, 0, -0.86)), p + Vector((0, 0, 2.26)), 0.018, 6, "steel", C_STEEL, rust=0.3)
+    hood = lambda z, r: [Vector((math.cos(a) * r, math.sin(a) * r, z)) for a in [k / 40 * math.tau for k in range(40)]]
+    B.tube_rings([hood(2.36, 0.95), hood(2.62, 0.9), hood(2.85, 0.6), hood(2.92, 0.35)], "metal", C_DARK, 0.15, 0.1, cap=True, smooth=True)
+    ring(B, Vector((0, 0, 2.37)), (0, 0, 1), 0.8, 0.93, 0.03, 40, "lamp", (1.0, 0.97, 0.9), 0.02)
+    for dx in (-0.15, 0.15):
+        B.cyl(Vector((dx, 0.1, 2.9)), Vector((dx, 0.1, 3.0)), 0.06, 10, "metal", (0.1, 0.1, 0.11), 0.1)
+    B.box(Vector((0.4, -0.2, 2.9)), (0.3, 0.2, 0.1), I3, "panel", C_WHITE, 0.3)
+    B.box(Vector((0.45, -0.2, 2.955)), (0.06, 0.06, 0.01), I3, "cyan", C_CYAN, 0.05)
+    finish(B, "Body", coll)
+    G = Builder()
+    tube = lambda z: [Vector((math.cos(a) * 0.78, math.sin(a) * 0.78, z)) for a in [k / 40 * math.tau for k in range(40)]]
+    G.tube_rings([tube(-0.86), tube(2.26)], "glass", (0.55, 0.9, 1.0), 0.02, 0.0, cap=False, smooth=True)
+    finish(G, "Glass", coll)
+    Rg = Builder()
+    for z, r, tilt in ((-0.25, 0.6, 0.2), (0.0, 0.62, -0.25)):
+        pts = [Vector((math.cos(a) * r, math.sin(a) * r, z + math.sin(a) * tilt * 0.3)) for a in [k / 32 * math.tau for k in range(32)]]
+        Rg.pipe(pts + [pts[0]], 0.012, 5, "cyan", C_CYAN)
+    finish(Rg, "Rings", coll, Vector((0, 0, 2.0)))
+    sp = bpy.data.objects.new("SpawnPoint", None); coll.objects.link(sp); sp.location = (0, 0, 1.8)
+    return coll
+
+# ======================================================================================
 # Ores
 # ======================================================================================
 def band(p, freq, off):
@@ -524,6 +797,7 @@ PIECES = [
     (build_spawner, "spawner.glb"), (build_void, "item_void.glb"), (lambda: build_iron(False), "iron_ore.glb"),
     (lambda: build_iron(True), "iron_ore_ground.glb"), (lambda: build_copper(False), "copper_ore.glb"),
     (lambda: build_copper(True), "copper_ore_ground.glb"), (build_plinth, "display_plinth.glb"),
+    (build_smelter, "smelter.glb"), (build_spawn_tube, "spawn_tube.glb"),
 ]
 
 def build_all(do_export=True):
@@ -535,7 +809,8 @@ def build_all(do_export=True):
         for ob in coll.objects:
             base = ob.name.split(".")[0]
             ob.name = f"{tag}__{base}"
-            ob.data.name = ob.name
+            if ob.data is not None:
+                ob.data.name = ob.name
         built.append((coll, glb, tag))
     if do_export:
         for coll, glb, tag in built:

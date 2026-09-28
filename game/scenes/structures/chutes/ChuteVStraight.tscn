@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://je5p5g2vyvoz" path="res://game/assets/models/chutes/chute_v_straight.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+
+[node name="ChuteVStraight" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+blueprintItemID = "blueprint_chute_v_straight"
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="BoreXL" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 1.98, 1.66)
+friction = 0.1
+user_material_id = 3
+position = Vector3(-0.79, 0, 0)
+
+[node name="BoreXR" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 1.98, 1.66)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0.79, 0, 0)
+
+[node name="BoreYB" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.5, 1.98, 0.08)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0, 0, 0.79)
+
+[node name="BoreYF" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.5, 1.98, 0.08)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0, 0, -0.79)

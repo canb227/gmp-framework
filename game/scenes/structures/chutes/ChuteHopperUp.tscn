@@ -1,0 +1,61 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://ml4kr7ij72cs" path="res://game/assets/models/chutes/chute_hopper_up.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+
+[node name="ChuteHopperUp" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+blueprintItemID = "blueprint_chute_hopper_up"
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="FunnelXL" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.78, 1.12872, 0.08)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0, 0.12403, -0.99228, 0, -0.99228, -0.12403, -1, 0, 0, -0.85969, 0.35504, 0)
+
+[node name="FunnelXR" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.78, 1.12872, 0.08)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0, -0.12403, 0.99228, 0, -0.99228, -0.12403, 1, 0, 0, 0.85969, 0.35504, 0)
+
+[node name="FunnelYB" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.78, 1.12872, 0.08)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(-1, 0, 0, 0, -0.99228, -0.12403, 0, -0.12403, 0.99228, 0, 0.35504, 0.85969)
+
+[node name="FunnelYF" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.78, 1.12872, 0.08)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.99228, -0.12403, 0, 0.12403, -0.99228, 0, 0.35504, -0.85969)
+
+[node name="BoreXL" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 0.79, 1.66)
+friction = 0.1
+user_material_id = 3
+position = Vector3(-0.79, -0.595, 0)
+
+[node name="BoreXR" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.08, 0.79, 1.66)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0.79, -0.595, 0)
+
+[node name="BoreYB" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.5, 0.79, 0.08)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0, -0.595, 0.79)
+
+[node name="BoreYF" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.5, 0.79, 0.08)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0, -0.595, -0.79)

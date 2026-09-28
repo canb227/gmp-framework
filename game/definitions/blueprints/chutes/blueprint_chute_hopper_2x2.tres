@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BlueprintItem" format=3]
+
+[ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_bp"]
+[ext_resource type="Texture2D" uid="uid://p2x1xpeb28ci" path="res://game/assets/icons/blueprints/blueprint_chute_hopper_2x2.png" id="2_icon"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/BlueprintGhost.tscn" id="3_ghost"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHopper2x2.tscn" id="4_struct"]
+
+[resource]
+script = ExtResource("1_bp")
+structureScene = ExtResource("4_struct")
+itemID = "blueprint_chute_hopper_2x2"
+displayName = "Blueprint: Large Chute Hopper"
+description = "A 2x2x2 funnel that catches falling items and feeds a chute under its anchor cell."
+icon = ExtResource("2_icon")
+inHandScene = ExtResource("3_ghost")
+maxStackSize = 10

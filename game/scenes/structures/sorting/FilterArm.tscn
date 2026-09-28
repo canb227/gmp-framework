@@ -1,0 +1,57 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://lm7coe1vyl58" path="res://game/assets/models/machines/sorting/filter_arm.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+[ext_resource type="Script" path="res://game/scripts/entities/Oscillator.cs" id="3_r"]
+
+[node name="FilterArm" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(0, 1, 0)])
+blueprintItemID = "blueprint_filter_arm"
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="Skid" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.9, 0.06, 1.9)
+user_material_id = 3
+position = Vector3(0, -0.97, 0)
+
+[node name="Pedestal" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.2, 0.88, 1.2)
+user_material_id = 3
+position = Vector3(0, -0.5, 0)
+
+[node name="Turntable" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.88, 0.1, 0.88)
+user_material_id = 3
+position = Vector3(0, 0.04, 0)
+
+[node name="Turret" parent="Model" index="1"]
+script = ExtResource("3_r")
+rotationDegrees = Vector3(0, 70, 0)
+period = 7.0
+
+[node name="UpperArm" parent="Model/Turret" index="0"]
+script = ExtResource("3_r")
+rotationDegrees = Vector3(-18, 0, 0)
+period = 5.3
+phase = 0.3
+
+[node name="Head" parent="Model/Turret/UpperArm/Forearm" index="0"]
+script = ExtResource("3_r")
+rotationDegrees = Vector3(20, 0, 0)
+period = 3.1
+phase = 0.6
+
+[node name="ClawL" parent="Model/Turret/UpperArm/Forearm/Head" index="0"]
+script = ExtResource("3_r")
+rotationDegrees = Vector3(0, 0, 22)
+period = 2.4
+
+[node name="ClawR" parent="Model/Turret/UpperArm/Forearm/Head" index="1"]
+script = ExtResource("3_r")
+rotationDegrees = Vector3(0, 0, -22)
+period = 2.4
