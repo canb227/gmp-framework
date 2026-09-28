@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://bmwzqso6i4ciz"]
+
+[ext_resource type="PackedScene" uid="uid://3gzobecohjq3" path="res://game/assets/models/props/decor/monitor_bank.glb" id="1_model"]
+
+[node name="MonitorBank" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="AnimationPlayer" parent="Model"]
+autoplay = "idle-loop"
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(4, 3, 0.585)
+position = Vector3(0, 1.5, -0.2075)

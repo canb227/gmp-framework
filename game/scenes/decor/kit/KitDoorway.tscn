@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://bhcqqfsoh257n"]
+
+[ext_resource type="PackedScene" uid="uid://bf62wqwztqvzt" path="res://game/assets/models/props/kit/kit_doorway.glb" id="1_model"]
+
+[node name="KitDoorway" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(1, 4, 0.3)
+position = Vector3(-1.5, 2, 0)
+
+[node name="Collider1" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(1, 4, 0.3)
+position = Vector3(1.5, 2, 0)
+
+[node name="Collider2" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(2, 1, 0.3)
+position = Vector3(0, 3.5, 0)

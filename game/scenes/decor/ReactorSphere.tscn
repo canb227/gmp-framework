@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://5ov53o1z3gcc"]
+
+[ext_resource type="PackedScene" uid="uid://y0gvu0t16zjk" path="res://game/assets/models/props/decor/reactor_sphere.glb" id="1_model"]
+
+[node name="ReactorSphere" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="AnimationPlayer" parent="Model"]
+autoplay = "idle-loop"
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(20, 20, 20)
+position = Vector3(0, 18, 0)

@@ -34,7 +34,8 @@ def main(out, view):
     sc = bpy.context.scene
     txt = open(MUSEUM, encoding="utf-8").read()
     ext = dict((m.group(2), m.group(1)) for m in re.finditer(r'path="(res://[^"]+)" id="(hall_\d+)"', txt))
-    body = txt[txt.find('[node name="StructureHall"'):]
+    section = os.environ.get("VIEW_SECTION", "StructureHall")                 # e.g. LowerLevel: render just that root and what follows
+    body = txt[txt.find(f'[node name="{section}"'):]
     blocks = re.split(r"\n(?=\[node )", body)
     frames = {}
     glb_cache = {}

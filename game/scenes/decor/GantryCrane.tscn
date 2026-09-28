@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://3t0wwwk8jxhb"]
+
+[ext_resource type="PackedScene" uid="uid://4w7jubyv2onq" path="res://game/assets/models/props/decor/gantry_crane.glb" id="1_model"]
+
+[node name="GantryCrane" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="AnimationPlayer" parent="Model"]
+autoplay = "idle-loop"
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(1.4, 32, 1.4)
+position = Vector3(-25, 16, -6)
+
+[node name="Collider1" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(1.4, 32, 1.4)
+position = Vector3(-25, 16, 6)
+
+[node name="Collider2" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(1.4, 32, 1.4)
+position = Vector3(25, 16, -6)
+
+[node name="Collider3" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(1.4, 32, 1.4)
+position = Vector3(25, 16, 6)

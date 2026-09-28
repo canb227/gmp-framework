@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://bbggemiyxsejv"]
+
+[ext_resource type="PackedScene" uid="uid://bd71qdugb25rz" path="res://game/assets/models/props/decor/puddle_debris.glb" id="1_model"]
+
+[node name="PuddleDebris" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]

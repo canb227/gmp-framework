@@ -583,7 +583,10 @@ ITEMS_ON_BELT = [   # glb, half height along the belt normal, lying rod
 def puzzle_rooms():
     h = LAB
     h.node('[node name="PuzzleRooms" type="Node3D" parent="."]')
-    h.block("PuzzleRooms", "WingFloor", (-150, -1, -60), (-40, 0, 60), "floor")
+    # the floor, with the stairwell down to the lower level cut out of it
+    ox0, ox1, oz0, oz1 = STAIRWELL
+    for lo, hi in (((-150, -60), (ox0, 60)), ((ox1, -60), (-40, 60)), ((ox0, -60), (ox1, oz0)), ((ox0, oz1), (ox1, 60))):
+        h.block("PuzzleRooms", "WingFloor", (lo[0], -1, lo[1]), (hi[0], 0, hi[1]), "floor")
     arch = h.group("Architecture", "PuzzleRooms")
     h.wall(arch, "WallNorth", (-150, 60), (-40, 60), 10.0)
     h.wall(arch, "WallSouth", (-150, -60), (-40, -60), 10.0)
@@ -597,6 +600,7 @@ def puzzle_rooms():
     scree_slope(h)
     storm_cage(h)
     tar_pit(h)
+    lower_level(h)
 
 def tumbler(h):
     RX, RY, RZ = ROOM
@@ -1068,6 +1072,181 @@ def tar_pit(h):
                          ((-116, 3.2, z), "Press: Bitumen Brick"), ((-136, 2.6, 45), "Cold storage"), ((-125, 5.6, 46), "Jam: glued plug"),
                          ((-119, 2.0, 46), "Cured: tar rock"), ((-135, 1.4, 27.5), "Tar floor (friction 3)")])
 
+# ---------------------------------------------------------------------------- the lower level: ruins
+LOW = -25.0                                  # floor top of the lower level
+STAIRWELL = (-57.0, -43.0, 44.0, 52.0)       # opening in the Puzzle Rooms floor (x0, x1, z0, z1)
+DECOR = "game/scenes/decor/"
+RUIN_PROPS = ["CrackedPillar", "CollapsedPillar", "RubblePile", "MossMound", "OvergrownTree", "FernCluster", "HangingVines",
+              "CollapsedPanelWall", "BrokenCatwalk", "CableDrapes", "LabBench", "FlickerTerminal", "MonitorBank", "FilingCabinets",
+              "CryoPod", "ObservationBooth", "PipeCluster", "HangingLamp", "CeilingFan", "RustedBarrels", "CrateStack", "PuddleDebris",
+              "TippedBarriers", "ElevatorRuin"]
+KIT_PIECES = ["KitFloor", "KitFloorCracked", "KitWall", "KitWallDamaged", "KitWallWindow", "KitDoorway", "KitHallway", "KitHallwayCorner",
+              "KitHallwayBroken", "KitCatwalk", "KitCatwalkCorner", "KitCatwalkStairs", "KitCatwalkSupport", "KitStairs", "KitColumn", "KitRailing"]
+
+def deco(h, parent, name, x, z, yaw=0.0, y=LOW, kit=False):
+    return inst(h, parent, name, DECOR + ("kit/" if kit else "") + name, yaw_cols(yaw), (x, y, z))
+
+def spaced(rng, n, x0, x1, z0, z1, gap, taken):
+    """n random points in a rectangle, at least `gap` from each other and from `taken` (list of (x, z, r))."""
+    out = []
+    for _ in range(n * 40):
+        if len(out) == n:
+            break
+        x, z = rng.uniform(x0, x1), rng.uniform(z0, z1)
+        if all((x - a) ** 2 + (z - b) ** 2 > (gap + r) ** 2 for a, b, r in taken + [(p[0], p[1], 0) for p in out]):
+            out.append((x, z))
+    return out
+
+def lower_level(h):
+    import random as _r
+    rng = _r.Random(2600)
+    h.node('[node name="LowerLevel" type="Node3D" parent="."]')
+    g = "LowerLevel"
+    y = LOW
+    # ---- the stairwell: five switchback flights of 24 steps (5 m each) in a walled shaft
+    sw = h.group("Stairwell", g)
+    ox0, ox1, oz0, oz1 = STAIRWELL
+    lanes = ((44.5, 47.5), (48.5, 51.5))
+    for k in range(5):
+        za, zb = lanes[k % 2]
+        for i in range(24):
+            top = -5 * k - (i + 1) * 5 / 24
+            x0 = ox0 + 0.5 * i if k % 2 == 0 else ox1 - 2 - 0.5 * (i + 1)
+            h.block(sw, "Step", (x0, top - 0.25, za), (x0 + 0.5, top, zb), "panel")
+        lx = (ox1 - 2, ox1) if k % 2 == 0 else (ox0 - 2, ox0)
+        ly = -5 * (k + 1)
+        if k < 4:
+            h.block(sw, "Landing", (lx[0], ly - 0.3, 44.5), (lx[1], ly, 51.5), "frame")
+    for (lo, hi) in (((ox0 - 2.2, 44.3), (ox1, 44.5)), ((ox0 - 2.2, 51.5), (ox1, 51.7)), ((ox0 - 2.2, 44.3), (ox0 - 2.0, 51.7))):
+        h.block(sw, "ShaftWall", (lo[0], y, lo[1]), (hi[0], -1, hi[1]), "panel")
+    h.block(sw, "ShaftWallE", (ox1, y + 4.5, 44.3), (ox1 + 0.2, -1, 51.7), "panel")          # open at the bottom: the way out
+    for (lo, hi) in (((ox0, 43.8), (ox1, 44.0)), ((ox0, 52.0), (ox1, 52.2)), ((ox1, 44.0), (ox1 + 0.2, 52.0)), ((ox0 - 0.2, 47.6), (ox0, 52.0))):
+        h.block(sw, "TopRail", (lo[0], 0, lo[1]), (hi[0], 1.1, hi[1]), "hazard")
+    h.label(sw, "Down", (ox0 + 7, 3.2, 43.5), "LOWER LEVEL: THE RUINS  (stairs down)", size=64, pixel=0.012)
+    # ---- the level: a vast floor under the museum, low walls, a causeway east to the superstructure yard
+    h.block(g, "Floor", (-160, y - 1, -140), (170, y, 140), "floor")
+    for (a, b) in (((-160, -140), (170, -140)), ((-160, 140), (170, 140)), ((-160, -140), (-160, 140)), ((170, -140), (170, -6)), ((170, 6), (170, 140))):
+        h.wall(g, "Edge", a, b, y + 3.0, t=0.4, y0=y)
+    h.block(g, "Causeway", (170, y - 1, -6), (205, y, 6), "frame")
+    for sz in (-1, 1):
+        for k in range(8):
+            deco(h, g, "KitRailing", 172 + 4 * k, sz * 5.8, 0, kit=True)
+    lights = h.group("Lights", g)
+    for lx in range(-140, 171, 45):
+        for lz in range(-120, 121, 45):
+            h.node(f'[node name="{h.uname("Lamp")}" type="OmniLight3D" parent="{lights}"]', f"position = Vector3({f(lx)}, {f(y + 12)}, {f(lz)})",
+                   f"light_color = Color({'1, 0.85, 0.65' if (lx + lz) % 90 else '0.7, 0.9, 1'}, 1)", "light_energy = 2.5", "omni_range = 40.0", "shadow_enabled = false")
+    h.label(g, "Title", (-30, y + 9, 50), "THE RUINS", size=160, pixel=0.03, billboard=False, yaw=1)
+    h.label(g, "Subtitle", (-30, y + 7, 50), "lower level: decorative props and a level-building kit (non-functional)", size=64, pixel=0.018, billboard=False, yaw=1)
+    # ---- catalogue: the kit in one row, the ruin props in two, each labelled
+    cat = h.group("Catalogue", g)
+    for n, name in enumerate(KIT_PIECES):
+        x = -37.5 + n * 5.0
+        extra = 4.0 if name in ("KitCatwalk", "KitCatwalkCorner") else 0.0       # decks shown at height, on a support
+        deco(h, cat, name, x, 34, 0, y=y + extra, kit=True)
+        if extra:
+            deco(h, cat, "KitCatwalkSupport", x, 34, 0, y=y + extra, kit=True)
+        h.label(cat, name + "Tag", (x, y + 5.6 + extra, 31.5), name.replace("Kit", "Kit: "), size=40, pixel=0.01)
+    for n, name in enumerate(RUIN_PROPS):
+        row, i = divmod(n, 12)
+        x, z = -35.75 + i * 6.5, 60 + row * 22
+        deco(h, cat, name, x, z, 0)
+        h.label(cat, name + "Tag", (x, y + 7.5, z - 3), re.sub(r"(?<=[a-z])(?=[A-Z])", " ", name), size=44, pixel=0.012)
+    # ---- the overgrown laboratory: a kit-built lab (40 x 24 m) gone to seed, reached down a hallway
+    lab = h.group("OvergrownLab", g)
+    X0, X1, Z0, Z1 = -134.0, -94.0, -60.0, -36.0
+    for i in range(10):
+        for j in range(6):
+            deco(h, lab, "KitFloorCracked" if rng.random() < 0.35 else "KitFloor", X0 + 2 + 4 * i, Z0 + 2 + 4 * j, rng.choice((0, 90, 180, 270)), y=y + 0.3, kit=True)
+    for i in range(10):
+        for (zz, yaw) in ((Z0, 0), (Z1, 180)):
+            kind = "KitWallWindow" if i % 3 == 1 else ("KitWallDamaged" if rng.random() < 0.3 else "KitWall")
+            deco(h, lab, kind, X0 + 2 + 4 * i, zz, yaw, y=y + 0.3, kit=True)
+    for j in range(6):
+        deco(h, lab, "KitWall" if j != 3 else "KitWallDamaged", X0, Z0 + 2 + 4 * j, 90, y=y + 0.3, kit=True)
+        deco(h, lab, "KitDoorway" if j == 3 else ("KitWallDamaged" if j == 1 else "KitWall"), X1, Z0 + 2 + 4 * j, 270, y=y + 0.3, kit=True)
+    for k in range(5):                                                  # hallway out of the lab's east door
+        deco(h, lab, "KitHallwayBroken" if k == 2 else "KitHallway", X1 + 2 + 4 * k, Z0 + 14, 90, y=y + 0.3, kit=True)
+    for (px, pz, yaw) in ((-128, -56, 0), (-120, -56, 0), (-112, -56, 0), (-104, -56, 0)):
+        deco(h, lab, "LabBench", px, pz + 6, yaw, y=y + 0.3)
+        deco(h, lab, "LabBench", px, pz + 12, 180, y=y + 0.3)
+    deco(h, lab, "MonitorBank", -114, -38.5, 180, y=y + 0.3)
+    for k in range(4):
+        deco(h, lab, "CryoPod", -131.5, -56 + 4 * k, 90, y=y + 0.3)
+    for k in range(3):
+        deco(h, lab, "FlickerTerminal", -106 + 3 * k, -38.8, 180, y=y + 0.3)
+    deco(h, lab, "FilingCabinets", -98, -57.5, 0, y=y + 0.3)
+    deco(h, lab, "ObservationBooth", -100, -42, 180, y=y + 0.3)
+    for (px, pz) in ((-124, -44), (-108, -47)):
+        deco(h, lab, "OvergrownTree", px, pz, rng.uniform(0, 360), y=y + 0.3)
+    for (px, pz) in ((-126, -40), (-117, -52), (-102, -50), (-110, -41)):
+        deco(h, lab, rng.choice(["FernCluster", "MossMound", "PuddleDebris"]), px, pz, rng.uniform(0, 360), y=y + 0.3)
+    for (px, pz) in ((-124, -48), (-112, -48), (-100, -48)):
+        deco(h, lab, "HangingLamp", px, pz, 0, y=y - 1.7)
+    deco(h, lab, "HangingVines", -118, -58, 0, y=y + 0.3)
+    deco(h, lab, "ElevatorRuin", -130, -40, 0, y=y + 0.3)
+    h.label(lab, "Title", (-114, y + 8, -34), "OVERGROWN LABORATORY", size=96, pixel=0.02)
+    # wild growth round the lab
+    taken = [(-114, -48, 24)]
+    for (px, pz) in spaced(rng, 26, -155, -50, -130, 15, 5.0, taken):
+        deco(h, g, rng.choice(["OvergrownTree", "FernCluster", "MossMound", "RubblePile", "CollapsedPillar", "PuddleDebris", "FernCluster", "CrackedPillar"]),
+             px, pz, rng.uniform(0, 360))
+    # ---- the crumbling factory: a pillar grid with a catwalk loop at 4 m, pipework, cables and wreckage
+    fac = h.group("CrumblingFactory", g)
+    FX0, FX1, FZ0, FZ1 = 60.0, 156.0, -120.0, 120.0
+    for i, px in enumerate(range(int(FX0), int(FX1) + 1, 16)):
+        for j, pz in enumerate(range(int(FZ0), int(FZ1) + 1, 16)):
+            r = rng.random()
+            if r < 0.12:
+                deco(h, fac, "CollapsedPillar", px, pz, rng.uniform(0, 360))
+            elif r < 0.45:
+                deco(h, fac, "CrackedPillar", px, pz, rng.choice((0, 90, 180, 270)))
+            else:
+                deco(h, fac, "KitColumn", px, pz, 0, kit=True)
+    cw_y = y + 4.0                                                      # catwalk loop at 4 m (x 76..140, z -40..40)
+    for k in range(15):
+        for zz in (-40, 40):
+            deco(h, fac, "KitCatwalk", 80 + 4 * k, zz, 90, y=cw_y, kit=True)
+    for k in range(19):
+        z_ = -36 + 4 * k
+        deco(h, fac, "KitCatwalk", 140, z_, 0, y=cw_y, kit=True)
+        if z_ == 16:                                                    # a landing on the west run where the stairs come up
+            deco(h, fac, "KitFloor", 76, z_, 0, y=cw_y, kit=True)
+        else:
+            deco(h, fac, "KitCatwalk", 76, z_, 0, y=cw_y, kit=True)
+    for (cx, cz, yaw) in ((76, -40, 0), (140, -40, 270), (140, 40, 180), (76, 40, 90)):
+        deco(h, fac, "KitCatwalkCorner", cx, cz, yaw, y=cw_y, kit=True)
+    for k in range(0, 15, 4):
+        for zz in (-40, 40):
+            deco(h, fac, "KitCatwalkSupport", 80 + 4 * k, zz, 90, y=cw_y, kit=True)
+    for k in range(0, 19, 4):
+        for xx in (76, 140):
+            deco(h, fac, "KitCatwalkSupport", xx, -36 + 4 * k, 0, y=cw_y, kit=True)
+    deco(h, fac, "KitCatwalkStairs", 68, 16, 270, y=y, kit=True)        # two flights up from the floor to the landing
+    deco(h, fac, "KitCatwalkStairs", 72, 16, 270, y=y + 2.0, kit=True)
+    deco(h, fac, "BrokenCatwalk", 110, 0, 90)
+    for (px, pz, yaw) in ((96, -60, 0), (120, -60, 0), (96, 60, 180), (120, 60, 180)):
+        deco(h, fac, "PipeCluster", px, pz, yaw)
+    for (px, pz) in ((88, -20), (130, 20), (100, 90), (126, -90)):
+        deco(h, fac, "CableDrapes", px, pz, rng.choice((0, 90)))
+    for (px, pz) in ((84, -96), (140, -70), (104, 104)):
+        deco(h, fac, "CeilingFan", px, pz, 0, y=y + 8.0)
+    taken = [(110, 0, 10)]
+    for (px, pz) in spaced(rng, 30, FX0 - 4, FX1 + 4, FZ0, FZ1, 6.0, taken):
+        deco(h, fac, rng.choice(["RustedBarrels", "CrateStack", "RubblePile", "TippedBarriers", "PuddleDebris", "RustedBarrels", "CrateStack", "MossMound"]),
+             px, pz, rng.uniform(0, 360))
+    h.label(fac, "Title", (108, y + 10, -44), "CRUMBLING FACTORY", size=96, pixel=0.02)
+    # ---- the superstructure yard: far out east, in the open
+    yard = h.group("SuperstructureYard", g)
+    h.block(yard, "YardFloor", (205, y - 1, -180), (560, y, 180), "floor")
+    for (name, px, pz, yaw) in (("CoolingTower", 270, -90, 0), ("GantryCrane", 280, 80, 0), ("ReactorSphere", 400, -100, 0),
+                                ("ArcologySpire", 420, 70, 0), ("SkyBridge", 500, -10, 90), ("PanelArmWall", 340, 0, 270)):
+        deco(h, yard, name, px, pz, yaw)
+        h.label(yard, name + "Tag", (px, y + 3, pz + 30 if name != "PanelArmWall" else pz), re.sub(r"(?<=[a-z])(?=[A-Z])", " ", name), size=160, pixel=0.03)
+    for (px, pz) in spaced(rng, 40, 215, 550, -170, 170, 12.0, [(270, -90, 25), (280, 80, 30), (400, -100, 25), (420, 70, 14), (500, -10, 45), (340, 0, 22)]):
+        deco(h, yard, rng.choice(["RubblePile", "OvergrownTree", "MossMound", "CollapsedPillar", "FernCluster"]), px, pz, rng.uniform(0, 360))
+    h.label(yard, "Title", (215, y + 12, 0), "SUPERSTRUCTURE YARD  (proofs of concept)", size=160, pixel=0.03, billboard=False, yaw=1)
+
 SUBS = """[sub_resource type="StandardMaterial3D" id="hall_mat_panel"]
 albedo_color = Color(0.78, 0.78, 0.76, 1)
 roughness = 0.45
@@ -1134,7 +1313,7 @@ def main():
     txt = txt if not old else txt[:old.start()] + "\0HALL_EXT\n" + txt[old.start():]
     txt = re.sub(r'\[ext_resource [^\n]*id="(sg|hall)_[^"]*"\]\n', "", txt)
     txt = re.sub(r'\[sub_resource [^\n]*id="hall_[^"]*"\]\n(?:[^\[\n][^\n]*\n)*\n?', "", txt)
-    for marker in ('\n[node name="StructureGallery"', '\n[node name="StructureHall"', '\n[node name="ConceptLab"', '\n[node name="MaterialsWing"', '\n[node name="PuzzleRooms"'):
+    for marker in ('\n[node name="StructureGallery"', '\n[node name="StructureHall"', '\n[node name="ConceptLab"', '\n[node name="MaterialsWing"', '\n[node name="PuzzleRooms"', '\n[node name="LowerLevel"'):
         cut = txt.find(marker)
         if cut >= 0:
             txt = txt[:cut].rstrip("\n") + "\n"

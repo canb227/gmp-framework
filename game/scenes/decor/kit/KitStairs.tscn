@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://bamu2tqi2e2ye"]
+
+[ext_resource type="PackedScene" uid="uid://bhdmp3tnkqcxv" path="res://game/assets/models/props/kit/kit_stairs.glb" id="1_model"]
+
+[node name="KitStairs" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(2.4, 0.2, 4.47)
+transform = Transform3D(1, 0, 0, 0, 0.89443, -0.44721, 0, 0.44721, 0.89443, 0, 0.9, 0)

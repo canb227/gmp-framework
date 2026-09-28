@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://bjx00xttnxqh3"]
+
+[ext_resource type="PackedScene" uid="uid://bcncoazm065qj" path="res://game/assets/models/props/decor/overgrown_tree.glb" id="1_model"]
+
+[node name="OvergrownTree" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(0.9, 5, 0.9)
+position = Vector3(0, 2.5, 0)

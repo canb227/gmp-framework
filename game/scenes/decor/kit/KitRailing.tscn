@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://bfm2m6h86phnw"]
+
+[ext_resource type="PackedScene" uid="uid://bguwgkciy6erm" path="res://game/assets/models/props/kit/kit_railing.glb" id="1_model"]
+
+[node name="KitRailing" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(4, 1, 0.1)
+position = Vector3(0, 0.5, 0)

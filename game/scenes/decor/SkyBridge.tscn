@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bg8wu1wzndnah"]
+
+[ext_resource type="PackedScene" uid="uid://0ee5tk0eske2" path="res://game/assets/models/props/decor/sky_bridge.glb" id="1_model"]
+
+[node name="SkyBridge" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="Collider0" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(8, 40, 8)
+position = Vector3(-40, 20, 0)
+
+[node name="Collider1" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(8, 40, 8)
+position = Vector3(40, 20, 0)
