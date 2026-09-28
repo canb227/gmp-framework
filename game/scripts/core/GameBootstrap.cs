@@ -13,7 +13,7 @@ public static class GameBootstrap
     [
         "blueprint_test_block", "blueprint_conveyor", "blueprint_conveyor_slope", "blueprint_conveyor_turn",
         "blueprint_item_void", "blueprint_grinder", "blueprint_item_spawner",
-        "blueprint_test_block_2x1x1",
+        "blueprint_test_block_2x1x1", "blueprint_smelter",
     ];
     public const int StartingBlueprintCount = 3;
 
@@ -44,6 +44,7 @@ public static class GameBootstrap
         }
         player.inventory.AddItem("magnet_rod", 1);
         player.UpdateEquippedItem();
+        BlueprintCommands.Ensure(); // the other structure blueprints: "blueprints <set>" in the console
     }
 
     /// <summary>Group for spawn markers placed in level scenes (e.g. a Marker3D named PlayerStart).</summary>

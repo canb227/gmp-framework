@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BlueprintItem" format=3]
+
+[ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_bp"]
+[ext_resource type="Texture2D" uid="uid://wvj8o1rtiq5z" path="res://game/assets/icons/blueprints/blueprint_chute_h_straight.png" id="2_icon"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/BlueprintGhost.tscn" id="3_ghost"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHStraight.tscn" id="4_struct"]
+
+[resource]
+script = ExtResource("1_bp")
+structureScene = ExtResource("4_struct")
+itemID = "blueprint_chute_h_straight"
+displayName = "Blueprint: Chute"
+description = "A horizontal chute on free rollers; items coast along it."
+icon = ExtResource("2_icon")
+inHandScene = ExtResource("3_ghost")
+maxStackSize = 10

@@ -100,7 +100,21 @@ PIECES = [
 ICONS = [
     ("ConveyorMag_Straight", "blueprints/blueprint_conveyor_mag.png", "blueprint", (1.3, 1.0, 1.05)),
     ("ConveyorMag_TurnRight", "blueprints/blueprint_conveyor_mag_turn.png", "blueprint", (-0.35, -0.9, 1.6)),
+    ("ConveyorMag_StraightWall", "blueprints/blueprint_conveyor_mag_wall.png", "blueprint", (1.5, 0.9, 0.6)),
+    ("ConveyorMag_TurnRightWall", "blueprints/blueprint_conveyor_mag_turn_wall.png", "blueprint", (1.5, -0.6, 0.6)),
+    ("ConveyorMag_StraightCeiling", "blueprints/blueprint_conveyor_mag_ceiling.png", "blueprint", (1.0, 0.9, -1.2)),
+    ("ConveyorMag_TurnRightCeiling", "blueprints/blueprint_conveyor_mag_turn_ceiling.png", "blueprint", (0.5, -0.9, -1.4)),
 ]
+
+def icon_collections():
+    """Posed copies for the wall / ceiling blueprint icons: turned about the flow axis onto the -X wall
+    (+90 deg about Y) and onto the ceiling (180 deg), as the wall and ceiling scenes turn them."""
+    for src in ("ConveyorMag_Straight", "ConveyorMag_TurnRight"):
+        for tag, ang in (("Wall", 90), ("Ceiling", 180)):
+            dst = clear_collection(src + tag)
+            for ob in bpy.data.collections[src].objects:
+                nb = ob.copy(); dst.objects.link(nb)
+                nb.matrix_world = Matrix.Rotation(math.radians(ang), 4, 'Y') @ ob.matrix_world
 
 def build_all(do_export=True):
     return build_family(PIECES, OUT_DIR, do_export)

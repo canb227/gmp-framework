@@ -142,7 +142,9 @@ def icons(families, only=None):
     exec(compile(open(ri, encoding="utf-8").read(), ri, "exec"), R)
     for fam in families:
         (_, ns, built), = build([fam], export=False)
-        entries = [e for e in ns.get("ICONS", []) if not only or e[0] in only]
+        if "icon_collections" in ns:
+            ns["icon_collections"]()                 # extra posed copies some families render icons from
+        entries = [e for e in (ns.get("ICONS") or list(R["ICONS"])) if not only or e[0] in only]
         R["ROOT"] = ICON_ROOT
         R["ICONS"] = entries
         world = bpy.data.worlds.new("IconWorld"); world.use_nodes = True
