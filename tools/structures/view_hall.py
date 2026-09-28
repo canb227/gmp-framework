@@ -13,7 +13,7 @@ from mathutils import Matrix, Vector
 G2B = Matrix(((1, 0, 0), (0, 0, -1), (0, 1, 0)))
 MUSEUM = os.path.join(REPO, "game", "scenes", "levels", "ObjectMuseum.tscn")
 COLORS = {"hall_box_panel": (0.75, 0.75, 0.72), "hall_box_frame": (0.06, 0.06, 0.07), "hall_box_hazard": (0.85, 0.6, 0.05),
-          "hall_box_floor": (0.2, 0.2, 0.21)}
+          "hall_box_floor": (0.2, 0.2, 0.21), "hall_box_tar": (0.02, 0.018, 0.015)}
 
 def xf(text):
     v = [float(x) for x in text.split("(", 1)[1].rstrip(")").split(",")]

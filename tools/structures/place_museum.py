@@ -595,6 +595,8 @@ def puzzle_rooms():
     carousel(h)
     scales(h)
     scree_slope(h)
+    storm_cage(h)
+    tar_pit(h)
 
 def tumbler(h):
     RX, RY, RZ = ROOM
@@ -911,6 +913,161 @@ def scree_slope(h):
                callouts=[((-138.9, 10.8, -35.0), "Scree Pebbles + Shale Slabs"), ((-126.5, 4.8, -35.0), "Slot Sieve"),
                          ((-124.1, 3.9, -35.0), "Terrace Catcher")])
 
+# ---------------------------------------------------------------------------- rooms 5-6: tag-themed production chains
+RM = "res://game/assets/models/machines/rooms/"
+IT = "res://game/assets/models/items/"
+C = S + "conveyors/"
+
+def frozen(h, parent, glb, pos, cols=IDB, name="Frozen"):
+    """A model-only stand-in for an item or machine (no physics): part of a room's tableau."""
+    h.node(f'[node name="{h.uname(name)}" parent="{parent}" instance=ExtResource("{h.ext_id(glb, "PackedScene")}")]', f"transform = {xf(cols, pos)}")
+
+def storm_cage(h):
+    """Room 5: the electric chain. Storm sand -> (lightning) fulgurite, which leaks charge, repels, grounds and cracks
+    -> capacitor press (with copper plate) -> capacitor cell."""
+    g = h.group("StormCage", "PuzzleRooms")
+    enclosure(h, g, -100, -62, -12, 10, (-3, 1))
+    z, y = -1.0, 1.0
+    E3 = YAWC[3]                                             # fronts face +X: the line runs west to east
+    spawner(h, g, (-95, y, z), 3, ["storm_sand"], 2.0, (0, -0.3, -1.6))
+    for x in (-93, -91):
+        inst(h, g, "Conveyor", C + "Conveyor", E3, (x, y, z))
+    inst(h, g, "StormCollector", S + "rooms/StormCollector", E3, (-89, y, z))
+    for x in (-85, -83, -81):
+        inst(h, g, "InsulatedBelt", S + "rooms/InsulatedBelt", E3, (x, y, z))
+    inst(h, g, "CapacitorPress", S + "rooms/CapacitorPress", E3, (-79, y, z))
+    inst(h, g, "InsulatedBelt", S + "rooms/InsulatedBelt", E3, (-77, y, z))
+    inst(h, g, "ItemVoid", S + "ItemVoid", E3, (-75, y, -2))
+    # tableau: what the line is meant to carry, and what goes wrong
+    tab = h.group("Tableau", g)
+    belt_top = y - 0.85
+    for x, dx in ((-85, -0.5), (-83, 0.3), (-81, -0.2)):     # fulgurite, spaced out on the insulated run (they repel)
+        frozen(h, tab, IT + "fulgurite.glb", (x + dx, belt_top + 0.14, z + 0.9), ((0, 0, 1), (1, 0, 0), (0, 1, 0)))
+    frozen(h, tab, IT + "capacitor_cell.glb", (-75.5, 0.35, -2.5))
+    frozen(h, tab, IT + "capacitor_cell.glb", (-74.6, 0.35, -1.6))
+    # copper feed into the press's side port (visual)
+    frozen(h, tab, "res://game/assets/models/conveyors/conveyor_straight.glb", (-79, y, -3), YAWC[2], "CopperFeed")
+    frozen(h, tab, "res://game/assets/models/conveyors/conveyor_straight.glb", (-79, y, -5), YAWC[2], "CopperFeed")
+    frozen(h, tab, IT + "copper_plate.glb", (-79, belt_top + 0.04, -3.3))
+    frozen(h, tab, IT + "copper_plate.glb", (-79, belt_top + 0.04, -5.2))
+    # a short circuit: a bare steel belt beside the line, where fulgurite grounded out and went flat
+    inst(h, g, "Conveyor", C + "Conveyor", E3, (-85, y, 5))
+    inst(h, g, "Conveyor", C + "Conveyor", E3, (-83, y, 5))
+    frozen(h, tab, IT + "spent_fulgurite.glb", (-85.3, belt_top + 0.14, 5), ((0, 0, 1), (1, 0, 0), (0, 1, 0)))
+    frozen(h, tab, IT + "spent_fulgurite.glb", (-83.2, belt_top + 0.14, 5.3), ((0, 0, 1), (1, 0, 0), (0, 1, 0)))
+    h.block(tab, "Scorch", (-86, 0.16, 4.3), (-82, 0.17, 5.7), "frame", solid=False)
+    # a pile-up: fulgurite in an open hopper, pushing itself apart and cracking
+    h.block(tab, "BinFloor", (-94, 0, 4), (-90, 0.1, 7), "frame")
+    for (lo, hi) in (((-94, 4), (-90, 4.15)), ((-94, 6.85), (-90, 7)), ((-94, 4), (-93.85, 7)), ((-90.15, 4), (-90, 7))):
+        h.block(tab, "BinWall", (lo[0], 0.1, lo[1]), (hi[0], 0.6, hi[1]), "panel")
+    for k, (px, pz) in enumerate(((-93.2, 4.8), (-91.0, 6.2), (-92.1, 5.5), (-90.8, 4.9))):
+        frozen(h, tab, IT + ("spent_fulgurite.glb" if k % 2 else "quartz_shards.glb"), (px, 0.35, pz))
+    # storm atmosphere: lightning rods on the corners of the cage
+    for (x, zz) in ((-99, -11), (-99, 9), (-63, -11), (-63, 9)):
+        h.block(g, "StormRod", (x - 0.15, 0, zz - 0.15), (x + 0.15, 9.0, zz + 0.15), "frame")
+        h.block(g, "StormRodTip", (x - 0.06, 9.0, zz - 0.06), (x + 0.06, 9.8, zz + 0.06), "hazard", solid=False)
+    room_signs(h, g, -62, 5.5, "ROOM 5: THE STORM CAGE",
+               "ELECTRIC CHAIN (after Fulgora's lightning and Gleba's spoilage).\n"
+               "Storm sand rides across the storm collector's strike pad. A bolt lands every 6 s, and only sand on the pad at that "
+               "instant fuses into fulgurite. Fulgurite is CHARGED: it repels other charged items (so no piles or hoppers), arcs into bare "
+               "metal and goes flat (so it needs insulated belts), cracks if dropped (FRAGILE), and leaks its charge in about a minute (so no buffers). "
+               "The capacitor press seals it with a copper plate into a capacitor cell, which is stable, stackable power.\n\n"
+               "PUZZLE: time the sand to the strikes, then rush every fulgurite, spaced out and insulated, to the press before it goes flat. "
+               "Spent fulgurite can go back under the storm.\n"
+               "NEW: storm sand, fulgurite, spent fulgurite, capacitor cell, storm collector, insulated belt, capacitor press.",
+               callouts=[((-95, 3.0, z), "Storm Sand"), ((-88, 6.2, z), "Storm Collector (bolt every 6 s)"), ((-83, 2.4, z), "Insulated Belt + Fulgurite"),
+                         ((-79, 3.0, z), "Capacitor Press"), ((-75, 2.2, -2), "Capacitor Cells"), ((-84, 2.2, 5), "Short circuit: bare belt"),
+                         ((-92, 1.8, 5.5), "Pile-up: repelled and cracked")])
+
+DRUM = (-125.0, 2.5, 37.0)
+DRUM_TILT = math.radians(5)
+
+def tar_pit(h):
+    """Room 6: the sticky chain. Tar blob (sticky, cures) + chalk -> coating drum -> coated pellet -> press -> bitumen brick."""
+    g = h.group("TarPit", "PuzzleRooms")
+    enclosure(h, g, -143, -107, 20, 56, (34, 40))
+    z = 37.0
+    E3 = YAWC[3]
+    # raised feed deck: spawner, belts and the belt scraper, 2 m up so the drum can be fed by gravity
+    h.block(g, "FeedDeck", (-140.0, 0, 35.6), (-130.0, 2.0, 38.4), "frame")
+    spawner(h, g, (-139, 3.0, z), 3, ["tar_blob", "chalk_nodule"], 2.5, (0, -0.3, -1.6))
+    for x in (-137, -135, -133):
+        inst(h, g, "Conveyor", C + "Conveyor", E3, (x, 3.0, z))
+    inst(h, g, "BeltScraper", S + "rooms/BeltScraper", E3, (-131, 3.0, z))
+    ch = (math.cos(math.radians(-20)), math.sin(math.radians(-20)), 0)
+    rblock(h, g, "FeedChute", (-129.1, 1.75, z), (1.9, 0.06, 1.4), (ch, (-ch[1], ch[0], 0), (0, 0, 1)), "hazard", props=("friction = 0.2",))
+    for sz in (-1, 1):
+        rblock(h, g, "FeedChuteSide", (-129.1, 2.0, z + sz * 0.72), (1.9, 0.5, 0.05), (ch, (-ch[1], ch[0], 0), (0, 0, 1)), "panel")
+    # the coating drum: a kinematic tube (12 planks + 4 lifters) spun about its tilted axis by RotatingRoom
+    c5, s5 = math.cos(DRUM_TILT), math.sin(DRUM_TILT)
+    tilt = ((c5, -s5, 0), (s5, c5, 0), (0, 0, 1))
+    body = h.uname("CoatingDrum")
+    h.node(f'[node name="{body}" type="Box3DBody" parent="{g}"]', "body_type = 1", "shape_type = 1", "sphere_radius = 0.05",
+           f"transform = {xf(tilt, DRUM)}", f'script = ExtResource("{h.ext_id("res://game/scripts/entities/RotatingRoom.cs", "Script")}")',
+           "axis = Vector3(1, 0, 0)", "continuous = true", "degreesPerSecond = 90.0")
+    db = f"{g}/{body}"
+    h.node(f'[node name="Drum" parent="{db}" instance=ExtResource("{h.ext_id(RM + "coating_drum.glb", "PackedScene")}")]')
+    R, n = 1.4, 12
+    for k in range(n):
+        a = k / n * math.tau
+        cols = ((1, 0, 0), (0, math.cos(a), math.sin(a)), (0, -math.sin(a), math.cos(a)))
+        h.node(f'[node name="{h.uname("Stave")}" type="Box3DCollisionShape" parent="{db}"]', f"box_size = Vector3(6, 0.15, {f(2 * (R + 0.075) * math.tan(math.pi / n) + 0.02)})",
+               "friction = 0.7", f"transform = {xf(cols, (0, (R + 0.075) * math.cos(a), (R + 0.075) * math.sin(a)))}")
+    for k in range(4):
+        a = k / 4 * math.tau
+        cols = ((1, 0, 0), (0, math.cos(a), math.sin(a)), (0, -math.sin(a), math.cos(a)))
+        h.node(f'[node name="{h.uname("Lifter")}" type="Box3DCollisionShape" parent="{db}"]', "box_size = Vector3(5.8, 0.26, 0.08)",
+               f"transform = {xf(cols, (0, (R - 0.13) * math.cos(a), (R - 0.13) * math.sin(a)))}")
+    frozen(h, g, RM + "drum_cradle.glb", DRUM, tilt, "DrumCradle")
+    # out of the low end, down a ramp onto the belt to the press (a real Plate Press stands in for the brick press)
+    ex = DRUM[0] + 3.0 * c5
+    rd = (math.cos(math.radians(-35)), math.sin(math.radians(-35)), 0)
+    rblock(h, g, "ExitRamp", (ex + 0.55, 0.55, z), (1.2, 0.06, 1.6), (rd, (-rd[1], rd[0], 0), (0, 0, 1)), "hazard", props=("friction = 0.3",))
+    inst(h, g, "Conveyor", C + "Conveyor", E3, (-119, 1.0, z))
+    inst(h, g, "PlatePress", S + "processing/PlatePress", E3, (-117, 1.0, z))
+    inst(h, g, "Conveyor", C + "Conveyor", E3, (-113, 1.0, z))
+    inst(h, g, "ItemVoid", S + "ItemVoid", E3, (-111, 1.0, 36))
+    # tableau
+    tab = h.group("Tableau", g)
+    frozen(h, tab, IT + "coated_pellet.glb", (-119.3, 0.48, z))
+    frozen(h, tab, IT + "bitumen_brick.glb", (-112.9, 0.3, z))
+    frozen(h, tab, IT + "bitumen_brick.glb", (-111.5, 0.3, 35.2))
+    # cold storage: a real cryo vent belt holding chilled blobs (chilled tar stops curing and stops sticking)
+    inst(h, g, "ColdStore", S + "concepts/ConceptCryoVent", E3, (-135, 1.0, 45))
+    inst(h, g, "Conveyor", C + "Conveyor", E3, (-137, 1.0, 45))
+    for x in (-137.4, -135.2):
+        frozen(h, tab, IT + "tar_blob.glb", (x, 0.47, 45))
+    # a jam: blobs glued into a plug inside a real vertical chute on a stand
+    h.block(tab, "JamStand", (-126, 0, 45), (-124, 2, 47), "frame")
+    inst(h, g, "JamChute", S + "chutes/ChuteVStraight", YAWC[0], (-125, 3.0, 46))
+    for k, (dx, dy) in enumerate(((0, 2.3), (0.2, 2.8), (-0.2, 3.2), (0.1, 3.7))):
+        frozen(h, tab, IT + "tar_blob.glb", (-125 + dx, dy, 46 + (0.1 if k % 2 else -0.1)))
+    # cured rejects: a bin of tar rock
+    h.block(tab, "RejectFloor", (-121, 0, 44), (-117, 0.1, 48), "frame")
+    for (lo, hi) in (((-121, 44), (-117, 44.15)), ((-121, 47.85), (-117, 48)), ((-121, 44), (-120.85, 48)), ((-117.15, 44), (-117, 48))):
+        h.block(tab, "RejectWall", (lo[0], 0.1, lo[1]), (hi[0], 0.7, hi[1]), "panel")
+    for (px, pz) in ((-120.2, 45.0), (-119.3, 46.4), (-118.2, 45.3), (-119.8, 47.2), (-118.0, 47.0)):
+        frozen(h, tab, IT + "tar_rock.glb", (px, 0.44, pz))
+    # the pit itself: a patch of real, very high-friction floor that bogs down anything crossing it
+    h.node(f'[node name="TarPool" type="Box3DBody" parent="{g}"]', "body_type = 0", "box_size = Vector3(8, 0.04, 5)", "friction = 3.0",
+           "position = Vector3(-135, 0.02, 27.5)")
+    h.node(f'[node name="Mesh" type="MeshInstance3D" parent="{g}/TarPool"]', "transform = Transform3D(8, 0, 0, 0, 0.04, 0, 0, 0, 5, 0, 0, 0)",
+           'mesh = SubResource("hall_box_tar")')
+    for (px, pz) in ((-137, 26.5), (-133.5, 28.8), (-135.5, 28.0)):
+        frozen(h, tab, IT + "tar_blob.glb", (px, 0.36, pz))
+    room_signs(h, g, -107, 44, "ROOM 6: THE TAR PIT",
+               "STICKY CHAIN (after Gleba's spoilage clock and Corrundum's clinging chemistry).\n"
+               "Tar blobs are STICKY: they grip belts, so they won't drop off a belt end without a scraper; they glue to walls and to each other, "
+               "so they clump into plugs in chutes; and they cure into worthless tar rock within a couple of minutes, so buffering them is waste. "
+               "Chilling (the cryo vent) pauses both. Tumbling them with chalk in the coating drum rolls them into dry, free-rolling coated pellets, "
+               "which a press turns into grippy bitumen bricks.\n\n"
+               "PUZZLE: scrape, drop and tumble the blobs with the right chalk ratio before they cure or jam. Cold storage buys time, "
+               "and the high-friction tar floor slows anything crossing it.\n"
+               "NEW: tar blob, chalk nodule, coated pellet, tar rock, bitumen brick, belt scraper, coating drum.",
+               callouts=[((-139, 5.0, z), "Tar Blob + Chalk"), ((-131, 4.8, z), "Belt Scraper"), ((-125, 5.2, z), "Coating Drum (really spins)"),
+                         ((-116, 3.2, z), "Press: Bitumen Brick"), ((-136, 2.6, 45), "Cold storage"), ((-125, 5.6, 46), "Jam: glued plug"),
+                         ((-119, 2.0, 46), "Cured: tar rock"), ((-135, 1.4, 27.5), "Tar floor (friction 3)")])
+
 SUBS = """[sub_resource type="StandardMaterial3D" id="hall_mat_panel"]
 albedo_color = Color(0.78, 0.78, 0.76, 1)
 roughness = 0.45
@@ -952,6 +1109,14 @@ roughness = 0.05
 
 [sub_resource type="BoxMesh" id="hall_box_glass"]
 material = SubResource("hall_mat_glass")
+
+[sub_resource type="StandardMaterial3D" id="hall_mat_tar"]
+albedo_color = Color(0.03, 0.025, 0.02, 1)
+metallic = 0.2
+roughness = 0.08
+
+[sub_resource type="BoxMesh" id="hall_box_tar"]
+material = SubResource("hall_mat_tar")
 """
 
 def main():

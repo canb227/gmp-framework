@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://biv5pa2hbl24q"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://bh6tijk7lohxq" path="res://game/assets/models/items/spent_fulgurite.glb" id="2_model"]
+
+[node name="spent_fulgurite" type="Box3DBody"]
+shape_type = 2
+capsule_radius = 0.14
+capsule_height = 0.8
+density = 1.8
+friction = 0.3
+restitution = 0.2
+script = ExtResource("1_item")
+itemID = "spent_fulgurite"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([8, 10])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

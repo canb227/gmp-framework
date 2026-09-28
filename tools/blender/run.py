@@ -34,6 +34,7 @@ FAMILIES = {
     "tools": os.path.join(M, "tools", "source", "build_tools.py"),
     "items": os.path.join(M, "items", "source", "build_items.py"),
     "rooms": os.path.join(M, "machines", "rooms", "source", "build_rooms.py"),
+    "chains": os.path.join(M, "machines", "rooms", "source", "build_chains.py"),
 }
 ICON_ROOT = os.path.join(REPO, "game", "assets", "icons")
 

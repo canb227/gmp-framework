@@ -4,12 +4,17 @@ Puzzle-room machines (models from game/assets/models/machines/rooms/source/build
   SweepArm        a rubber blade hung 4 cm over the Carousel's turntable: riding items hit it and are scraped outward
   SlotSieve       a bar grate with 0.54 m slots over a hopper whose drag floor empties out of its open side
   TerraceCatcher  a padded catch trough whose drag floor empties out of its open end
+  StormCollector  (electric chain) a strike pad that conveys items under a lightning mast; "Strike" sensor over the pad
+  InsulatedBelt   (electric chain) a plain working belt on insulators
+  CapacitorPress  (electric chain) a pass-through press; "Press" sensor under the ram
+  BeltScraper     (sticky chain) a working belt with a blade at its head roller
 
 They have no blueprints yet; place_museum.py places them in the Puzzle Rooms wing.
 """
 import math
 from scenegen import *
 from scenes_concepts import scene, cells
+from scenes_conveyors import straight_cols, BASIC_SPEED, BASIC_WALL
 
 M = "res://game/assets/models/machines/rooms/"
 D = "game/scenes/structures/rooms/"
@@ -69,9 +74,44 @@ def terrace_catcher():
     sc.sensor_b("Catch", (2.0, 0, -0.6), (5.8, 1.7, 0.6))
     return sc
 
+def storm_collector():
+    sc = room_scene("StormCollector", "storm_collector.glb", cells(1, 2, 3), arrow=1)
+    sc.autoplay()
+    sc.box_b("Pad", (0, 1.0, (BELT_TOP - 1) / 2), (1.9, 3.96, BELT_TOP + 1), friction=0.8, material=TAG_RUBBER,
+             tangent=b2g((0, BASIC_SPEED, 0)))
+    for sx in (-1, 1):
+        sc.box_b(f"Cheek{'LR'[sx > 0]}", (sx * 0.94, 1.0, (BELT_TOP + 0.6) / 2), (0.04, 3.6, 0.6 - BELT_TOP), friction=0.1)
+    for i, (x, y) in enumerate(((-0.92, -0.92), (0.92, -0.92), (0.92, 2.92), (-0.92, 2.92))):
+        sc.box_b(f"Post{i}", (x, y, 0.45), (0.12, 0.12, 2.9))
+    sc.box_b("Cage", (0, 1.0, 1.9), (1.96, 3.96, 0.12))
+    sc.box_b("Mast", (0, 1.0, 3.3), (0.16, 0.16, 2.8))
+    sc.sensor_b("Strike", (0, 1.0, BELT_TOP + 0.5), (1.7, 3.7, 0.9))
+    return sc
+
+def insulated_belt():
+    sc = room_scene("InsulatedBelt", "insulated_belt.glb", [(0, 0, 0)], arrow=1)
+    straight_cols(sc, BASIC_SPEED, BASIC_WALL)
+    return sc
+
+def capacitor_press():
+    sc = room_scene("CapacitorPress", "capacitor_press.glb", [(0, 0, 0)], arrow=1)
+    sc.autoplay()
+    straight_cols(sc, BASIC_SPEED, BASIC_WALL)
+    for sx in (-1, 1):
+        sc.box_b(f"Side{'LR'[sx > 0]}", (sx * 0.9, 0, 0.0), (0.16, 1.4, 1.8))
+    sc.box_b("Head", (0, 0, 0.85), (1.96, 1.4, 0.3))
+    sc.sensor_b("Press", (0, 0, BELT_TOP + 0.4), (1.5, 1.2, 0.7))
+    return sc
+
+def belt_scraper():
+    sc = room_scene("BeltScraper", "belt_scraper.glb", [(0, 0, 0)], arrow=1)
+    sc.autoplay()
+    straight_cols(sc, BASIC_SPEED, BASIC_WALL)
+    return sc
+
 def rooms():
     out = []
-    for fn in (sweep_arm, slot_sieve, terrace_catcher):
+    for fn in (sweep_arm, slot_sieve, terrace_catcher, storm_collector, insulated_belt, capacitor_press, belt_scraper):
         sc = fn()
         out.append(sc.write(D + sc.name + ".tscn"))
     return out

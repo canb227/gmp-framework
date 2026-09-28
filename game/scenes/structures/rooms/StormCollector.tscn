@@ -1,0 +1,74 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://03v1grlf5o8h" path="res://game/assets/models/machines/rooms/storm_collector.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+
+[node name="StormCollector" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(0, 0, -1), Vector3i(0, 1, 0), Vector3i(0, 1, -1), Vector3i(0, 2, 0), Vector3i(0, 2, -1)])
+blueprintItemID = ""
+flowArrow = 1
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="AnimationPlayer" parent="Model"]
+autoplay = "idle-loop"
+
+[node name="Pad" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.9, 0.15, 3.96)
+friction = 0.8
+user_material_id = 5
+tangent_velocity = Vector3(0, 0, -2)
+position = Vector3(0, -0.925, -1)
+
+[node name="CheekL" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.04, 1.45, 3.6)
+friction = 0.1
+user_material_id = 3
+position = Vector3(-0.94, -0.125, -1)
+
+[node name="CheekR" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.04, 1.45, 3.6)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0.94, -0.125, -1)
+
+[node name="Post0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.12, 2.9, 0.12)
+user_material_id = 3
+position = Vector3(-0.92, 0.45, 0.92)
+
+[node name="Post1" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.12, 2.9, 0.12)
+user_material_id = 3
+position = Vector3(0.92, 0.45, 0.92)
+
+[node name="Post2" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.12, 2.9, 0.12)
+user_material_id = 3
+position = Vector3(0.92, 0.45, -2.92)
+
+[node name="Post3" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.12, 2.9, 0.12)
+user_material_id = 3
+position = Vector3(-0.92, 0.45, -2.92)
+
+[node name="Cage" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.96, 0.12, 3.96)
+user_material_id = 3
+position = Vector3(0, 1.9, -1)
+
+[node name="Mast" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.16, 2.8, 0.16)
+user_material_id = 3
+position = Vector3(0, 3.3, -1)
+
+[node name="Strike" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(1.7, 0.9, 3.7)
+is_sensor = true
+collision_layer = 1073741824
+position = Vector3(0, -0.35, -1)

@@ -169,6 +169,20 @@
 [ext_resource type="PackedScene" path="res://game/assets/models/machines/rooms/tilt_gauge.glb" id="hall_144"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/rooms/SlotSieve.tscn" id="hall_145"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/rooms/TerraceCatcher.tscn" id="hall_146"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/rooms/StormCollector.tscn" id="hall_147"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/rooms/InsulatedBelt.tscn" id="hall_148"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/rooms/CapacitorPress.tscn" id="hall_149"]
+[ext_resource type="PackedScene" uid="uid://bmp3hpug50x5p" path="res://game/assets/models/items/fulgurite.glb" id="hall_150"]
+[ext_resource type="PackedScene" uid="uid://bb4m2vwc6syhq" path="res://game/assets/models/items/capacitor_cell.glb" id="hall_151"]
+[ext_resource type="PackedScene" uid="uid://btl173g422b6k" path="res://game/assets/models/conveyors/conveyor_straight.glb" id="hall_152"]
+[ext_resource type="PackedScene" uid="uid://bh6tijk7lohxq" path="res://game/assets/models/items/spent_fulgurite.glb" id="hall_153"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/rooms/BeltScraper.tscn" id="hall_154"]
+[ext_resource type="PackedScene" path="res://game/assets/models/machines/rooms/coating_drum.glb" id="hall_155"]
+[ext_resource type="PackedScene" path="res://game/assets/models/machines/rooms/drum_cradle.glb" id="hall_156"]
+[ext_resource type="PackedScene" uid="uid://bj2n4tq7fic4a" path="res://game/assets/models/items/coated_pellet.glb" id="hall_157"]
+[ext_resource type="PackedScene" uid="uid://6aonbv1c5uy3" path="res://game/assets/models/items/bitumen_brick.glb" id="hall_158"]
+[ext_resource type="PackedScene" uid="uid://zfdxeu2zue8n" path="res://game/assets/models/items/tar_blob.glb" id="hall_159"]
+[ext_resource type="PackedScene" uid="uid://10ndqevumirx" path="res://game/assets/models/items/tar_rock.glb" id="hall_160"]
 [ext_resource type="Texture2D" uid="uid://c1etlsqa07tlx" path="res://game/assets/textures/floor_1/floor_1_diffuseOriginal.png" id="hall_52"]
 [ext_resource type="PackedScene" uid="uid://dlnyuu4mrmp1r" path="res://game/scenes/items/world/resources/copper_ore.tscn" id="rd_copper_ore"]
 [ext_resource type="PackedScene" uid="uid://b4in0pqckrbvy" path="res://game/scenes/items/world/resources/copper_ore_ground.tscn" id="rd_copper_ore_ground"]
@@ -229,6 +243,14 @@ roughness = 0.05
 
 [sub_resource type="BoxMesh" id="hall_box_glass"]
 material = SubResource("hall_mat_glass")
+
+[sub_resource type="StandardMaterial3D" id="hall_mat_tar"]
+albedo_color = Color(0.03, 0.025, 0.02, 1)
+metallic = 0.2
+roughness = 0.08
+
+[sub_resource type="BoxMesh" id="hall_box_tar"]
+material = SubResource("hall_mat_tar")
 
 [sub_resource type="BoxMesh" id="BoxMesh_7qi08"]
 material = ExtResource("1_2usgl")
@@ -11099,3 +11121,1139 @@ font_size = 40
 outline_size = 12
 modulate = Color(1, 0.85, 0.35, 1)
 text = "Terrace Catcher"
+
+[node name="StormCage" type="Node3D" parent="PuzzleRooms"]
+
+[node name="EncN4" type="Box3DBody" parent="PuzzleRooms/StormCage"]
+body_type = 0
+box_size = Vector3(38, 2.5, 0.3)
+position = Vector3(-81, 1.25, 10)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/StormCage/EncN4"]
+transform = Transform3D(38, 0, 0, 0, 2.5, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncNCap4" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(38.1, 0, 0, 0, 0.15, 0, 0, 0, 0.4, -81, 2.575, 10)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNSkirt4" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(38.1, 0, 0, 0, 0.3, 0, 0, 0, 0.4, -81, 0.15, 10)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost28" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -100, 1.25, 10)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost29" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -96.2, 1.25, 10)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost30" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -92.4, 1.25, 10)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost31" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -88.6, 1.25, 10)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost32" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -84.8, 1.25, 10)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost33" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -81, 1.25, 10)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost34" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -77.2, 1.25, 10)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost35" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -73.4, 1.25, 10)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost36" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -69.6, 1.25, 10)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost37" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -65.8, 1.25, 10)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost38" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -62, 1.25, 10)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncS4" type="Box3DBody" parent="PuzzleRooms/StormCage"]
+body_type = 0
+box_size = Vector3(38, 2.5, 0.3)
+position = Vector3(-81, 1.25, -12)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/StormCage/EncS4"]
+transform = Transform3D(38, 0, 0, 0, 2.5, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncSCap4" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(38.1, 0, 0, 0, 0.15, 0, 0, 0, 0.4, -81, 2.575, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSSkirt4" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(38.1, 0, 0, 0, 0.3, 0, 0, 0, 0.4, -81, 0.15, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost28" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -100, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost29" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -96.2, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost30" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -92.4, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost31" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -88.6, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost32" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -84.8, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost33" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -81, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost34" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -77.2, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost35" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -73.4, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost36" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -69.6, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost37" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -65.8, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost38" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -62, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncW4" type="Box3DBody" parent="PuzzleRooms/StormCage"]
+body_type = 0
+box_size = Vector3(0.3, 2.5, 22)
+position = Vector3(-100, 1.25, -1)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/StormCage/EncW4"]
+transform = Transform3D(0.3, 0, 0, 0, 2.5, 0, 0, 0, 22, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncWCap4" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 22.1, -100, 2.575, -1)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWSkirt4" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 22.1, -100, 0.15, -1)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost23" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -100, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost24" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -100, 1.25, -8.33333)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost25" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -100, 1.25, -4.66667)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost26" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -100, 1.25, -1)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost27" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -100, 1.25, 2.66667)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost28" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -100, 1.25, 6.33333)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost29" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -100, 1.25, 10)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncE7" type="Box3DBody" parent="PuzzleRooms/StormCage"]
+body_type = 0
+box_size = Vector3(0.3, 2.5, 9)
+position = Vector3(-62, 1.25, -7.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/StormCage/EncE7"]
+transform = Transform3D(0.3, 0, 0, 0, 2.5, 0, 0, 0, 9, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncECap7" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 9.1, -62, 2.575, -7.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncESkirt7" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 9.1, -62, 0.15, -7.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost20" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -62, 1.25, -12)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost21" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -62, 1.25, -7.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost22" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -62, 1.25, -3)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncE8" type="Box3DBody" parent="PuzzleRooms/StormCage"]
+body_type = 0
+box_size = Vector3(0.3, 2.5, 9)
+position = Vector3(-62, 1.25, 5.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/StormCage/EncE8"]
+transform = Transform3D(0.3, 0, 0, 0, 2.5, 0, 0, 0, 9, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncECap8" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 9.1, -62, 2.575, 5.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncESkirt8" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 9.1, -62, 0.15, 5.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost23" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -62, 1.25, 1)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost24" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -62, 1.25, 5.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost25" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -62, 1.25, 10)
+mesh = SubResource("hall_box_frame")
+
+[node name="Entry4" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.6, 0, 0, 0, 0.01, 0, 0, 0, 4, -62, 0.007, -1)
+mesh = SubResource("hall_box_hazard")
+
+[node name="ItemSpawner8" parent="PuzzleRooms/StormCage" instance=ExtResource("hall_49")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -95, 1, -1)
+itemWeights = Dictionary[String, float]({"storm_sand": 1.0})
+interval = 2
+outputPoint = Vector3(0, -0.3, -1.6)
+
+[node name="Conveyor27" parent="PuzzleRooms/StormCage" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -93, 1, -1)
+
+[node name="Conveyor28" parent="PuzzleRooms/StormCage" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -91, 1, -1)
+
+[node name="StormCollector" parent="PuzzleRooms/StormCage" instance=ExtResource("hall_147")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -89, 1, -1)
+
+[node name="InsulatedBelt" parent="PuzzleRooms/StormCage" instance=ExtResource("hall_148")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -85, 1, -1)
+
+[node name="InsulatedBelt2" parent="PuzzleRooms/StormCage" instance=ExtResource("hall_148")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -83, 1, -1)
+
+[node name="InsulatedBelt3" parent="PuzzleRooms/StormCage" instance=ExtResource("hall_148")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -81, 1, -1)
+
+[node name="CapacitorPress" parent="PuzzleRooms/StormCage" instance=ExtResource("hall_149")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -79, 1, -1)
+
+[node name="InsulatedBelt4" parent="PuzzleRooms/StormCage" instance=ExtResource("hall_148")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -77, 1, -1)
+
+[node name="ItemVoid19" parent="PuzzleRooms/StormCage" instance=ExtResource("hall_47")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -75, 1, -2)
+
+[node name="Tableau" type="Node3D" parent="PuzzleRooms/StormCage"]
+
+[node name="Frozen" parent="PuzzleRooms/StormCage/Tableau" instance=ExtResource("hall_150")]
+transform = Transform3D(0, 1, 0, 0, 0, 1, 1, 0, 0, -85.5, 0.29, -0.1)
+
+[node name="Frozen2" parent="PuzzleRooms/StormCage/Tableau" instance=ExtResource("hall_150")]
+transform = Transform3D(0, 1, 0, 0, 0, 1, 1, 0, 0, -82.7, 0.29, -0.1)
+
+[node name="Frozen3" parent="PuzzleRooms/StormCage/Tableau" instance=ExtResource("hall_150")]
+transform = Transform3D(0, 1, 0, 0, 0, 1, 1, 0, 0, -81.2, 0.29, -0.1)
+
+[node name="Frozen4" parent="PuzzleRooms/StormCage/Tableau" instance=ExtResource("hall_151")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -75.5, 0.35, -2.5)
+
+[node name="Frozen5" parent="PuzzleRooms/StormCage/Tableau" instance=ExtResource("hall_151")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -74.6, 0.35, -1.6)
+
+[node name="CopperFeed" parent="PuzzleRooms/StormCage/Tableau" instance=ExtResource("hall_152")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -79, 1, -3)
+
+[node name="CopperFeed2" parent="PuzzleRooms/StormCage/Tableau" instance=ExtResource("hall_152")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -79, 1, -5)
+
+[node name="Frozen6" parent="PuzzleRooms/StormCage/Tableau" instance=ExtResource("hall_94")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -79, 0.19, -3.3)
+
+[node name="Frozen7" parent="PuzzleRooms/StormCage/Tableau" instance=ExtResource("hall_94")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -79, 0.19, -5.2)
+
+[node name="Conveyor29" parent="PuzzleRooms/StormCage" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -85, 1, 5)
+
+[node name="Conveyor30" parent="PuzzleRooms/StormCage" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -83, 1, 5)
+
+[node name="Frozen8" parent="PuzzleRooms/StormCage/Tableau" instance=ExtResource("hall_153")]
+transform = Transform3D(0, 1, 0, 0, 0, 1, 1, 0, 0, -85.3, 0.29, 5)
+
+[node name="Frozen9" parent="PuzzleRooms/StormCage/Tableau" instance=ExtResource("hall_153")]
+transform = Transform3D(0, 1, 0, 0, 0, 1, 1, 0, 0, -83.2, 0.29, 5.3)
+
+[node name="Scorch" type="MeshInstance3D" parent="PuzzleRooms/StormCage/Tableau"]
+transform = Transform3D(4, 0, 0, 0, 0.01, 0, 0, 0, 1.4, -84, 0.165, 5)
+mesh = SubResource("hall_box_frame")
+
+[node name="BinFloor" type="Box3DBody" parent="PuzzleRooms/StormCage/Tableau"]
+body_type = 0
+box_size = Vector3(4, 0.1, 3)
+position = Vector3(-92, 0.05, 5.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/StormCage/Tableau/BinFloor"]
+transform = Transform3D(4, 0, 0, 0, 0.1, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="BinWall" type="Box3DBody" parent="PuzzleRooms/StormCage/Tableau"]
+body_type = 0
+box_size = Vector3(4, 0.5, 0.15)
+position = Vector3(-92, 0.35, 4.075)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/StormCage/Tableau/BinWall"]
+transform = Transform3D(4, 0, 0, 0, 0.5, 0, 0, 0, 0.15, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="BinWall2" type="Box3DBody" parent="PuzzleRooms/StormCage/Tableau"]
+body_type = 0
+box_size = Vector3(4, 0.5, 0.15)
+position = Vector3(-92, 0.35, 6.925)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/StormCage/Tableau/BinWall2"]
+transform = Transform3D(4, 0, 0, 0, 0.5, 0, 0, 0, 0.15, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="BinWall3" type="Box3DBody" parent="PuzzleRooms/StormCage/Tableau"]
+body_type = 0
+box_size = Vector3(0.15, 0.5, 3)
+position = Vector3(-93.925, 0.35, 5.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/StormCage/Tableau/BinWall3"]
+transform = Transform3D(0.15, 0, 0, 0, 0.5, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="BinWall4" type="Box3DBody" parent="PuzzleRooms/StormCage/Tableau"]
+body_type = 0
+box_size = Vector3(0.15, 0.5, 3)
+position = Vector3(-90.075, 0.35, 5.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/StormCage/Tableau/BinWall4"]
+transform = Transform3D(0.15, 0, 0, 0, 0.5, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Frozen10" parent="PuzzleRooms/StormCage/Tableau" instance=ExtResource("hall_120")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -93.2, 0.35, 4.8)
+
+[node name="Frozen11" parent="PuzzleRooms/StormCage/Tableau" instance=ExtResource("hall_153")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -91, 0.35, 6.2)
+
+[node name="Frozen12" parent="PuzzleRooms/StormCage/Tableau" instance=ExtResource("hall_120")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -92.1, 0.35, 5.5)
+
+[node name="Frozen13" parent="PuzzleRooms/StormCage/Tableau" instance=ExtResource("hall_153")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90.8, 0.35, 4.9)
+
+[node name="StormRod" type="Box3DBody" parent="PuzzleRooms/StormCage"]
+body_type = 0
+box_size = Vector3(0.3, 9, 0.3)
+position = Vector3(-99, 4.5, -11)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/StormCage/StormRod"]
+transform = Transform3D(0.3, 0, 0, 0, 9, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="StormRodTip" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.12, 0, 0, 0, 0.8, 0, 0, 0, 0.12, -99, 9.4, -11)
+mesh = SubResource("hall_box_hazard")
+
+[node name="StormRod2" type="Box3DBody" parent="PuzzleRooms/StormCage"]
+body_type = 0
+box_size = Vector3(0.3, 9, 0.3)
+position = Vector3(-99, 4.5, 9)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/StormCage/StormRod2"]
+transform = Transform3D(0.3, 0, 0, 0, 9, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="StormRodTip2" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.12, 0, 0, 0, 0.8, 0, 0, 0, 0.12, -99, 9.4, 9)
+mesh = SubResource("hall_box_hazard")
+
+[node name="StormRod3" type="Box3DBody" parent="PuzzleRooms/StormCage"]
+body_type = 0
+box_size = Vector3(0.3, 9, 0.3)
+position = Vector3(-63, 4.5, -11)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/StormCage/StormRod3"]
+transform = Transform3D(0.3, 0, 0, 0, 9, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="StormRodTip3" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.12, 0, 0, 0, 0.8, 0, 0, 0, 0.12, -63, 9.4, -11)
+mesh = SubResource("hall_box_hazard")
+
+[node name="StormRod4" type="Box3DBody" parent="PuzzleRooms/StormCage"]
+body_type = 0
+box_size = Vector3(0.3, 9, 0.3)
+position = Vector3(-63, 4.5, 9)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/StormCage/StormRod4"]
+transform = Transform3D(0.3, 0, 0, 0, 9, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="StormRodTip4" type="MeshInstance3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0.12, 0, 0, 0, 0.8, 0, 0, 0, 0.12, -63, 9.4, 9)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Title5" type="Label3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -60.8, 5.2, 5.5)
+double_sided = false
+pixel_size = 0.016
+font_size = 96
+outline_size = 12
+text = "ROOM 5: THE STORM CAGE"
+
+[node name="Story33" type="Label3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -60.8, 3.4, 5.5)
+double_sided = false
+pixel_size = 0.006
+font_size = 28
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1833.33333
+text = "ELECTRIC CHAIN (after Fulgora's lightning and Gleba's spoilage).\nStorm sand rides across the storm collector's strike pad. A bolt lands every 6 s, and only sand on the pad at that instant fuses into fulgurite. Fulgurite is CHARGED: it repels other charged items (so no piles or hoppers), arcs into bare metal and goes flat (so it needs insulated belts), cracks if dropped (FRAGILE), and leaks its charge in about a minute (so no buffers). The capacitor press seals it with a copper plate into a capacitor cell, which is stable, stackable power.\n\nPUZZLE: time the sand to the strikes, then rush every fulgurite, spaced out and insulated, to the press before it goes flat. Spent fulgurite can go back under the storm.\nNEW: storm sand, fulgurite, spent fulgurite, capacitor cell, storm collector, insulated belt, capacitor press."
+
+[node name="Callout11" type="Label3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -95, 3, -1)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Storm Sand"
+
+[node name="Callout12" type="Label3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -88, 6.2, -1)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Storm Collector (bolt every 6 s)"
+
+[node name="Callout13" type="Label3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -83, 2.4, -1)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Insulated Belt + Fulgurite"
+
+[node name="Callout14" type="Label3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -79, 3, -1)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Capacitor Press"
+
+[node name="Callout15" type="Label3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -75, 2.2, -2)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Capacitor Cells"
+
+[node name="Callout16" type="Label3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -84, 2.2, 5)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Short circuit: bare belt"
+
+[node name="Callout17" type="Label3D" parent="PuzzleRooms/StormCage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -92, 1.8, 5.5)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Pile-up: repelled and cracked"
+
+[node name="TarPit" type="Node3D" parent="PuzzleRooms"]
+
+[node name="EncN5" type="Box3DBody" parent="PuzzleRooms/TarPit"]
+body_type = 0
+box_size = Vector3(36, 2.5, 0.3)
+position = Vector3(-125, 1.25, 56)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/EncN5"]
+transform = Transform3D(36, 0, 0, 0, 2.5, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncNCap5" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(36.1, 0, 0, 0, 0.15, 0, 0, 0, 0.4, -125, 2.575, 56)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNSkirt5" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(36.1, 0, 0, 0, 0.3, 0, 0, 0, 0.4, -125, 0.15, 56)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost39" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -143, 1.25, 56)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost40" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -139, 1.25, 56)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost41" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -135, 1.25, 56)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost42" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -131, 1.25, 56)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost43" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -127, 1.25, 56)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost44" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -123, 1.25, 56)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost45" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -119, 1.25, 56)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost46" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -115, 1.25, 56)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost47" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -111, 1.25, 56)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncNPost48" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -107, 1.25, 56)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncS5" type="Box3DBody" parent="PuzzleRooms/TarPit"]
+body_type = 0
+box_size = Vector3(36, 2.5, 0.3)
+position = Vector3(-125, 1.25, 20)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/EncS5"]
+transform = Transform3D(36, 0, 0, 0, 2.5, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncSCap5" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(36.1, 0, 0, 0, 0.15, 0, 0, 0, 0.4, -125, 2.575, 20)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSSkirt5" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(36.1, 0, 0, 0, 0.3, 0, 0, 0, 0.4, -125, 0.15, 20)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost39" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -143, 1.25, 20)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost40" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -139, 1.25, 20)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost41" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -135, 1.25, 20)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost42" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -131, 1.25, 20)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost43" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -127, 1.25, 20)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost44" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -123, 1.25, 20)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost45" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -119, 1.25, 20)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost46" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -115, 1.25, 20)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost47" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -111, 1.25, 20)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncSPost48" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.2, 0, 0, 0, 2.5, 0, 0, 0, 0.4, -107, 1.25, 20)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncW5" type="Box3DBody" parent="PuzzleRooms/TarPit"]
+body_type = 0
+box_size = Vector3(0.3, 2.5, 36)
+position = Vector3(-143, 1.25, 38)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/EncW5"]
+transform = Transform3D(0.3, 0, 0, 0, 2.5, 0, 0, 0, 36, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncWCap5" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 36.1, -143, 2.575, 38)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWSkirt5" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 36.1, -143, 0.15, 38)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost30" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -143, 1.25, 20)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost31" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -143, 1.25, 24)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost32" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -143, 1.25, 28)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost33" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -143, 1.25, 32)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost34" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -143, 1.25, 36)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost35" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -143, 1.25, 40)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost36" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -143, 1.25, 44)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost37" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -143, 1.25, 48)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost38" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -143, 1.25, 52)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncWPost39" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -143, 1.25, 56)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncE9" type="Box3DBody" parent="PuzzleRooms/TarPit"]
+body_type = 0
+box_size = Vector3(0.3, 2.5, 14)
+position = Vector3(-107, 1.25, 27)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/EncE9"]
+transform = Transform3D(0.3, 0, 0, 0, 2.5, 0, 0, 0, 14, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncECap9" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 14.1, -107, 2.575, 27)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncESkirt9" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 14.1, -107, 0.15, 27)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost26" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -107, 1.25, 20)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost27" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -107, 1.25, 23.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost28" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -107, 1.25, 27)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost29" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -107, 1.25, 30.5)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost30" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -107, 1.25, 34)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncE10" type="Box3DBody" parent="PuzzleRooms/TarPit"]
+body_type = 0
+box_size = Vector3(0.3, 2.5, 16)
+position = Vector3(-107, 1.25, 48)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/EncE10"]
+transform = Transform3D(0.3, 0, 0, 0, 2.5, 0, 0, 0, 16, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="EncECap10" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 0.15, 0, 0, 0, 16.1, -107, 2.575, 48)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncESkirt10" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 0.3, 0, 0, 0, 16.1, -107, 0.15, 48)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost31" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -107, 1.25, 40)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost32" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -107, 1.25, 44)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost33" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -107, 1.25, 48)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost34" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -107, 1.25, 52)
+mesh = SubResource("hall_box_frame")
+
+[node name="EncEPost35" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.4, 0, 0, 0, 2.5, 0, 0, 0, 0.2, -107, 1.25, 56)
+mesh = SubResource("hall_box_frame")
+
+[node name="Entry5" type="MeshInstance3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0.6, 0, 0, 0, 0.01, 0, 0, 0, 6, -107, 0.007, 37)
+mesh = SubResource("hall_box_hazard")
+
+[node name="FeedDeck" type="Box3DBody" parent="PuzzleRooms/TarPit"]
+body_type = 0
+box_size = Vector3(10, 2, 2.8)
+position = Vector3(-135, 1, 37)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/FeedDeck"]
+transform = Transform3D(10, 0, 0, 0, 2, 0, 0, 0, 2.8, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="ItemSpawner9" parent="PuzzleRooms/TarPit" instance=ExtResource("hall_49")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -139, 3, 37)
+itemWeights = Dictionary[String, float]({"tar_blob": 1.0, "chalk_nodule": 1.0})
+interval = 2.5
+outputPoint = Vector3(0, -0.3, -1.6)
+
+[node name="Conveyor31" parent="PuzzleRooms/TarPit" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -137, 3, 37)
+
+[node name="Conveyor32" parent="PuzzleRooms/TarPit" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -135, 3, 37)
+
+[node name="Conveyor33" parent="PuzzleRooms/TarPit" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -133, 3, 37)
+
+[node name="BeltScraper" parent="PuzzleRooms/TarPit" instance=ExtResource("hall_154")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -131, 3, 37)
+
+[node name="FeedChute" type="Box3DBody" parent="PuzzleRooms/TarPit"]
+body_type = 0
+box_size = Vector3(1.9, 0.06, 1.4)
+transform = Transform3D(0.93969, 0.34202, 0, -0.34202, 0.93969, 0, 0, 0, 1, -129.1, 1.75, 37)
+friction = 0.2
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/FeedChute"]
+transform = Transform3D(1.9, 0, 0, 0, 0.06, 0, 0, 0, 1.4, 0, 0, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="FeedChuteSide" type="Box3DBody" parent="PuzzleRooms/TarPit"]
+body_type = 0
+box_size = Vector3(1.9, 0.5, 0.05)
+transform = Transform3D(0.93969, 0.34202, 0, -0.34202, 0.93969, 0, 0, 0, 1, -129.1, 2, 36.28)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/FeedChuteSide"]
+transform = Transform3D(1.9, 0, 0, 0, 0.5, 0, 0, 0, 0.05, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="FeedChuteSide2" type="Box3DBody" parent="PuzzleRooms/TarPit"]
+body_type = 0
+box_size = Vector3(1.9, 0.5, 0.05)
+transform = Transform3D(0.93969, 0.34202, 0, -0.34202, 0.93969, 0, 0, 0, 1, -129.1, 2, 37.72)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/FeedChuteSide2"]
+transform = Transform3D(1.9, 0, 0, 0, 0.5, 0, 0, 0, 0.05, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="CoatingDrum" type="Box3DBody" parent="PuzzleRooms/TarPit"]
+body_type = 1
+shape_type = 1
+sphere_radius = 0.05
+transform = Transform3D(0.99619, 0.08716, 0, -0.08716, 0.99619, 0, 0, 0, 1, -125, 2.5, 37)
+script = ExtResource("hall_136")
+axis = Vector3(1, 0, 0)
+continuous = true
+degreesPerSecond = 90.0
+
+[node name="Drum" parent="PuzzleRooms/TarPit/CoatingDrum" instance=ExtResource("hall_155")]
+
+[node name="Stave" type="Box3DCollisionShape" parent="PuzzleRooms/TarPit/CoatingDrum"]
+box_size = Vector3(6, 0.15, 0.81045)
+friction = 0.7
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.475, 0)
+
+[node name="Stave2" type="Box3DCollisionShape" parent="PuzzleRooms/TarPit/CoatingDrum"]
+box_size = Vector3(6, 0.15, 0.81045)
+friction = 0.7
+transform = Transform3D(1, 0, 0, 0, 0.86603, -0.5, 0, 0.5, 0.86603, 0, 1.27739, 0.7375)
+
+[node name="Stave3" type="Box3DCollisionShape" parent="PuzzleRooms/TarPit/CoatingDrum"]
+box_size = Vector3(6, 0.15, 0.81045)
+friction = 0.7
+transform = Transform3D(1, 0, 0, 0, 0.5, -0.86603, 0, 0.86603, 0.5, 0, 0.7375, 1.27739)
+
+[node name="Stave4" type="Box3DCollisionShape" parent="PuzzleRooms/TarPit/CoatingDrum"]
+box_size = Vector3(6, 0.15, 0.81045)
+friction = 0.7
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, 1.475)
+
+[node name="Stave5" type="Box3DCollisionShape" parent="PuzzleRooms/TarPit/CoatingDrum"]
+box_size = Vector3(6, 0.15, 0.81045)
+friction = 0.7
+transform = Transform3D(1, 0, 0, 0, -0.5, -0.86603, 0, 0.86603, -0.5, 0, -0.7375, 1.27739)
+
+[node name="Stave6" type="Box3DCollisionShape" parent="PuzzleRooms/TarPit/CoatingDrum"]
+box_size = Vector3(6, 0.15, 0.81045)
+friction = 0.7
+transform = Transform3D(1, 0, 0, 0, -0.86603, -0.5, 0, 0.5, -0.86603, 0, -1.27739, 0.7375)
+
+[node name="Stave7" type="Box3DCollisionShape" parent="PuzzleRooms/TarPit/CoatingDrum"]
+box_size = Vector3(6, 0.15, 0.81045)
+friction = 0.7
+transform = Transform3D(1, 0, 0, 0, -1, 0, 0, 0, -1, 0, -1.475, 0)
+
+[node name="Stave8" type="Box3DCollisionShape" parent="PuzzleRooms/TarPit/CoatingDrum"]
+box_size = Vector3(6, 0.15, 0.81045)
+friction = 0.7
+transform = Transform3D(1, 0, 0, 0, -0.86603, 0.5, 0, -0.5, -0.86603, 0, -1.27739, -0.7375)
+
+[node name="Stave9" type="Box3DCollisionShape" parent="PuzzleRooms/TarPit/CoatingDrum"]
+box_size = Vector3(6, 0.15, 0.81045)
+friction = 0.7
+transform = Transform3D(1, 0, 0, 0, -0.5, 0.86603, 0, -0.86603, -0.5, 0, -0.7375, -1.27739)
+
+[node name="Stave10" type="Box3DCollisionShape" parent="PuzzleRooms/TarPit/CoatingDrum"]
+box_size = Vector3(6, 0.15, 0.81045)
+friction = 0.7
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -1.475)
+
+[node name="Stave11" type="Box3DCollisionShape" parent="PuzzleRooms/TarPit/CoatingDrum"]
+box_size = Vector3(6, 0.15, 0.81045)
+friction = 0.7
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.86603, 0, -0.86603, 0.5, 0, 0.7375, -1.27739)
+
+[node name="Stave12" type="Box3DCollisionShape" parent="PuzzleRooms/TarPit/CoatingDrum"]
+box_size = Vector3(6, 0.15, 0.81045)
+friction = 0.7
+transform = Transform3D(1, 0, 0, 0, 0.86603, 0.5, 0, -0.5, 0.86603, 0, 1.27739, -0.7375)
+
+[node name="Lifter" type="Box3DCollisionShape" parent="PuzzleRooms/TarPit/CoatingDrum"]
+box_size = Vector3(5.8, 0.26, 0.08)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.27, 0)
+
+[node name="Lifter2" type="Box3DCollisionShape" parent="PuzzleRooms/TarPit/CoatingDrum"]
+box_size = Vector3(5.8, 0.26, 0.08)
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, 1.27)
+
+[node name="Lifter3" type="Box3DCollisionShape" parent="PuzzleRooms/TarPit/CoatingDrum"]
+box_size = Vector3(5.8, 0.26, 0.08)
+transform = Transform3D(1, 0, 0, 0, -1, 0, 0, 0, -1, 0, -1.27, 0)
+
+[node name="Lifter4" type="Box3DCollisionShape" parent="PuzzleRooms/TarPit/CoatingDrum"]
+box_size = Vector3(5.8, 0.26, 0.08)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -1.27)
+
+[node name="DrumCradle" parent="PuzzleRooms/TarPit" instance=ExtResource("hall_156")]
+transform = Transform3D(0.99619, 0.08716, 0, -0.08716, 0.99619, 0, 0, 0, 1, -125, 2.5, 37)
+
+[node name="ExitRamp" type="Box3DBody" parent="PuzzleRooms/TarPit"]
+body_type = 0
+box_size = Vector3(1.2, 0.06, 1.6)
+transform = Transform3D(0.81915, 0.57358, 0, -0.57358, 0.81915, 0, 0, 0, 1, -121.46142, 0.55, 37)
+friction = 0.3
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/ExitRamp"]
+transform = Transform3D(1.2, 0, 0, 0, 0.06, 0, 0, 0, 1.6, 0, 0, 0)
+mesh = SubResource("hall_box_hazard")
+
+[node name="Conveyor34" parent="PuzzleRooms/TarPit" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -119, 1, 37)
+
+[node name="PlatePress3" parent="PuzzleRooms/TarPit" instance=ExtResource("hall_43")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -117, 1, 37)
+
+[node name="Conveyor35" parent="PuzzleRooms/TarPit" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -113, 1, 37)
+
+[node name="ItemVoid20" parent="PuzzleRooms/TarPit" instance=ExtResource("hall_47")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -111, 1, 36)
+
+[node name="Tableau" type="Node3D" parent="PuzzleRooms/TarPit"]
+
+[node name="Frozen14" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_157")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -119.3, 0.48, 37)
+
+[node name="Frozen15" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_158")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -112.9, 0.3, 37)
+
+[node name="Frozen16" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_158")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -111.5, 0.3, 35.2)
+
+[node name="ColdStore" parent="PuzzleRooms/TarPit" instance=ExtResource("hall_65")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -135, 1, 45)
+
+[node name="Conveyor36" parent="PuzzleRooms/TarPit" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -137, 1, 45)
+
+[node name="Frozen17" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_159")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -137.4, 0.47, 45)
+
+[node name="Frozen18" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_159")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -135.2, 0.47, 45)
+
+[node name="JamStand" type="Box3DBody" parent="PuzzleRooms/TarPit/Tableau"]
+body_type = 0
+box_size = Vector3(2, 2, 2)
+position = Vector3(-125, 1, 46)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/Tableau/JamStand"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="JamChute" parent="PuzzleRooms/TarPit" instance=ExtResource("hall_24")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -125, 3, 46)
+
+[node name="Frozen19" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_159")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -125, 2.3, 45.9)
+
+[node name="Frozen20" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_159")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -124.8, 2.8, 46.1)
+
+[node name="Frozen21" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_159")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -125.2, 3.2, 45.9)
+
+[node name="Frozen22" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_159")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -124.9, 3.7, 46.1)
+
+[node name="RejectFloor" type="Box3DBody" parent="PuzzleRooms/TarPit/Tableau"]
+body_type = 0
+box_size = Vector3(4, 0.1, 4)
+position = Vector3(-119, 0.05, 46)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/Tableau/RejectFloor"]
+transform = Transform3D(4, 0, 0, 0, 0.1, 0, 0, 0, 4, 0, 0, 0)
+mesh = SubResource("hall_box_frame")
+
+[node name="RejectWall" type="Box3DBody" parent="PuzzleRooms/TarPit/Tableau"]
+body_type = 0
+box_size = Vector3(4, 0.6, 0.15)
+position = Vector3(-119, 0.4, 44.075)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/Tableau/RejectWall"]
+transform = Transform3D(4, 0, 0, 0, 0.6, 0, 0, 0, 0.15, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="RejectWall2" type="Box3DBody" parent="PuzzleRooms/TarPit/Tableau"]
+body_type = 0
+box_size = Vector3(4, 0.6, 0.15)
+position = Vector3(-119, 0.4, 47.925)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/Tableau/RejectWall2"]
+transform = Transform3D(4, 0, 0, 0, 0.6, 0, 0, 0, 0.15, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="RejectWall3" type="Box3DBody" parent="PuzzleRooms/TarPit/Tableau"]
+body_type = 0
+box_size = Vector3(0.15, 0.6, 4)
+position = Vector3(-120.925, 0.4, 46)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/Tableau/RejectWall3"]
+transform = Transform3D(0.15, 0, 0, 0, 0.6, 0, 0, 0, 4, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="RejectWall4" type="Box3DBody" parent="PuzzleRooms/TarPit/Tableau"]
+body_type = 0
+box_size = Vector3(0.15, 0.6, 4)
+position = Vector3(-117.075, 0.4, 46)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/Tableau/RejectWall4"]
+transform = Transform3D(0.15, 0, 0, 0, 0.6, 0, 0, 0, 4, 0, 0, 0)
+mesh = SubResource("hall_box_panel")
+
+[node name="Frozen23" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_160")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -120.2, 0.44, 45)
+
+[node name="Frozen24" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_160")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -119.3, 0.44, 46.4)
+
+[node name="Frozen25" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_160")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -118.2, 0.44, 45.3)
+
+[node name="Frozen26" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_160")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -119.8, 0.44, 47.2)
+
+[node name="Frozen27" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_160")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -118, 0.44, 47)
+
+[node name="TarPool" type="Box3DBody" parent="PuzzleRooms/TarPit"]
+body_type = 0
+box_size = Vector3(8, 0.04, 5)
+friction = 3.0
+position = Vector3(-135, 0.02, 27.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="PuzzleRooms/TarPit/TarPool"]
+transform = Transform3D(8, 0, 0, 0, 0.04, 0, 0, 0, 5, 0, 0, 0)
+mesh = SubResource("hall_box_tar")
+
+[node name="Frozen28" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_159")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -137, 0.36, 26.5)
+
+[node name="Frozen29" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_159")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -133.5, 0.36, 28.8)
+
+[node name="Frozen30" parent="PuzzleRooms/TarPit/Tableau" instance=ExtResource("hall_159")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -135.5, 0.36, 28)
+
+[node name="Title6" type="Label3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -105.8, 5.2, 44)
+double_sided = false
+pixel_size = 0.016
+font_size = 96
+outline_size = 12
+text = "ROOM 6: THE TAR PIT"
+
+[node name="Story34" type="Label3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -105.8, 3.4, 44)
+double_sided = false
+pixel_size = 0.006
+font_size = 28
+outline_size = 4
+horizontal_alignment = 0
+autowrap_mode = 3
+width = 1833.33333
+text = "STICKY CHAIN (after Gleba's spoilage clock and Corrundum's clinging chemistry).\nTar blobs are STICKY: they grip belts, so they won't drop off a belt end without a scraper; they glue to walls and to each other, so they clump into plugs in chutes; and they cure into worthless tar rock within a couple of minutes, so buffering them is waste. Chilling (the cryo vent) pauses both. Tumbling them with chalk in the coating drum rolls them into dry, free-rolling coated pellets, which a press turns into grippy bitumen bricks.\n\nPUZZLE: scrape, drop and tumble the blobs with the right chalk ratio before they cure or jam. Cold storage buys time, and the high-friction tar floor slows anything crossing it.\nNEW: tar blob, chalk nodule, coated pellet, tar rock, bitumen brick, belt scraper, coating drum."
+
+[node name="Callout18" type="Label3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -139, 5, 37)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Tar Blob + Chalk"
+
+[node name="Callout19" type="Label3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -131, 4.8, 37)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Belt Scraper"
+
+[node name="Callout20" type="Label3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -125, 5.2, 37)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Coating Drum (really spins)"
+
+[node name="Callout21" type="Label3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -116, 3.2, 37)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Press: Bitumen Brick"
+
+[node name="Callout22" type="Label3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -136, 2.6, 45)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Cold storage"
+
+[node name="Callout23" type="Label3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -125, 5.6, 46)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Jam: glued plug"
+
+[node name="Callout24" type="Label3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -119, 2, 46)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Cured: tar rock"
+
+[node name="Callout25" type="Label3D" parent="PuzzleRooms/TarPit"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -135, 1.4, 27.5)
+billboard = 1
+pixel_size = 0.01
+font_size = 40
+outline_size = 12
+modulate = Color(1, 0.85, 0.35, 1)
+text = "Tar floor (friction 3)"

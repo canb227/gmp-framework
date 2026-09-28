@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://beo5dkvl7nxaa"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://zfdxeu2zue8n" path="res://game/assets/models/items/tar_blob.glb" id="2_model"]
+
+[node name="tar_blob" type="Box3DBody"]
+shape_type = 1
+sphere_radius = 0.32
+density = 1.2
+friction = 2
+rolling_resistance = 3
+restitution = 0
+linear_damping = 0.6
+script = ExtResource("1_item")
+itemID = "tar_blob"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([5, 11])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

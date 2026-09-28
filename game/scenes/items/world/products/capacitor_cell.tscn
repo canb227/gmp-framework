@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://3rr75d3a0itd"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
+[ext_resource type="PackedScene" uid="uid://bb4m2vwc6syhq" path="res://game/assets/models/items/capacitor_cell.glb" id="2_model"]
+
+[node name="capacitor_cell" type="Box3DBody"]
+shape_type = 0
+box_size = Vector3(0.5, 0.6, 0.5)
+density = 3
+friction = 0.6
+script = ExtResource("1_item")
+itemID = "capacitor_cell"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([3, 19, 21])
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

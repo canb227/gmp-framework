@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="Texture2D" uid="uid://ysjcxjm358cf" path="res://game/assets/icons/items/tar_blob.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://beo5dkvl7nxaa" path="res://game/scenes/items/world/resources/tar_blob.tscn" id="3_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "tar_blob"
+droppedScene = ExtResource("3_scene")
+displayName = "Tar Blob"
+description = "Warm, glossy tar. It sticks to belts (so it won't leave the belt end), to walls and to other blobs, and cures into useless tar rock within a couple of minutes."
+icon = ExtResource("2_icon")
+maxStackSize = 1

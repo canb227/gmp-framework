@@ -161,3 +161,15 @@ long (world X) axis every 10 s (a 4 s turn, then a 6 s hold). It is driven by `g
 
 The hinge joint assumes Box3D hinges about the joint's local Z (here, world Z). If the deck tips the wrong way
 in Godot, rotate the `Hinge` node.
+
+**Rooms 5-6: production chains built around item tags.** Models come from `run.py build chains`
+(`machines/rooms/source/build_chains.py`), scenes from `scenes_rooms.py` and items from `gen_items.py`. The
+design draws on Factorio Space Age planets: Fulgora's bursty lightning, Gleba's spoilage clock (no buffers) and
+Corrundum's storm charge.
+
+| Room | Chain | Mechanics the player fights | Real in the demo |
+|---|---|---|---|
+| 5 The Storm Cage (-81, -1) | storm sand → **storm collector** (a bolt every 6 s fuses whatever is on the pad) → fulgurite (CHARGED, FRAGILE, leaks in about a minute) → **insulated belt** → **capacitor press** (+ copper plate) → capacitor cell | timing sand to the strikes; charged items repel (no piles), ground out on bare metal (insulated belts only) and crack when dropped; the leak means no buffering | spawner, belts, strike pad, insulated belts, press pass-through, void; the bolt and press are animated. Fulgurite, cells, the copper feed, the short circuit and the pile-up are a frozen tableau. |
+| 6 The Tar Pit (-125, 37) | tar blob (STICKY, cures into tar rock) + chalk → **belt scraper** → **coating drum** → coated pellet → plate press → bitumen brick | blobs cling to belts (they need scraping off), glue into plugs in chutes and cure if buffered; cold pauses both; the chalk ratio has to be right | spawner on a raised deck, belts, scraper, a really spinning tilted drum (kinematic, 12 staves + 4 lifters), exit ramp, a real Plate Press, void, a cryo-vent cold store, and a friction-3 tar floor. Pellets, bricks, the jam and the rejects are a frozen tableau. |
+
+Items don't transform yet (no recipes or tag scripts), so the live lines carry raw sand, tar and chalk end to end.

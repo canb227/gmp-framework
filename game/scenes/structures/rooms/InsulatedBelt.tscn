@@ -1,0 +1,52 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://bc8vlrws8re2m" path="res://game/assets/models/machines/rooms/insulated_belt.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+
+[node name="InsulatedBelt" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+blueprintItemID = ""
+flowArrow = 1
+tags = Array[int]([3])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="BeltTop0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.68, 0.04, 2)
+friction = 0.8
+user_material_id = 5
+tangent_velocity = Vector3(0, 0, -2)
+position = Vector3(0, -0.87, 0)
+
+[node name="BeltReturn0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.624, 0.03, 2)
+friction = 0.8
+user_material_id = 5
+tangent_velocity = Vector3(0, 0, 2)
+position = Vector3(0, -0.92, 0)
+
+[node name="WallL0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 2)
+friction = 0.1
+user_material_id = 3
+position = Vector3(-0.895, -0.8, 0)
+
+[node name="LipL0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 2)
+friction = 0.1
+user_material_id = 3
+position = Vector3(-0.827, -0.9725, 0)
+
+[node name="WallR0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 2)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0.895, -0.8, 0)
+
+[node name="LipR0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 2)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0.827, -0.9725, 0)
