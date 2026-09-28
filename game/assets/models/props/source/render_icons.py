@@ -20,6 +20,7 @@ ICONS = [
     ("Prop_Grinder", "blueprints/blueprint_grinder.png", "blueprint", (1.2, 1.3, 0.8)),
     ("Prop_Spawner", "blueprints/blueprint_item_spawner.png", "blueprint", (1.0, 1.4, 0.8)),
     ("Prop_Void", "blueprints/blueprint_item_void.png", "blueprint", (0.9, -1.3, 1.3)),
+    ("Prop_Smelter", "blueprints/blueprint_smelter.png", "blueprint", (1.2, 1.3, 0.8)),
     ("Prop_Magnet", "items/magnet_rod.png", "item", (1.6, 0.6, 0.7)),
     ("Ore_Iron", "items/iron_ore.png", "item", (1.2, 1.3, 0.9)),
     ("Ore_IronGround", "items/iron_ore_ground.png", "item", (1.2, 1.3, 1.0)),
