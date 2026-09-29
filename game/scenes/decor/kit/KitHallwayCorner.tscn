@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://6z3hqfxm7yfc"]
+[gd_scene format=3 uid="uid://603hqfxm7yfc"]
 
 [ext_resource type="PackedScene" uid="uid://bgwj80kccxe4b" path="res://game/assets/models/props/kit/kit_hallway_corner.glb" id="1_model"]
 

@@ -1,8 +1,14 @@
 # Pipeline gotchas (each one cost real time)
 
 ## Godot files
-- **UIDs use a base-35 alphabet**: `a-z` then `0-8`, with **no 9**. `scenegen.uid_text` does this now. A uid
-  containing 9 gets reassigned by Godot, and every reference to it goes stale.
+- **UIDs use a base-34 alphabet: `a-y` then `0-8`, never `z` or `9`** (Godot's off-by-one, kept for
+  compatibility; see `core/io/resource_uid.cpp`). Godot reads `z` as `0`, then rewrites every uid holding a `z`
+  in every file it saves, and a human had to clean that up once. `scenegen.uid_text` is right now. Generators must
+  also **reuse a file's existing uid** instead of re-deriving it (gen_decor, gen_items and place_museum do).
+- **Every generated asset needs its sidecar**: each `.glb`/`.png` needs a `.import` (`ensure_import` /
+  `icon_uid`), and each new `.cs`/`.gd`/`.gdshader` needs a `.uid`. Models placed straight into the museum
+  never went through `ensure_import`, so six room glbs had none. Check before handing off:
+  `for f in $(git ls-files 'game/*.glb'); do [ -f $f.import ] || echo $f; done`.
 - **Keep ext_resource ids stable** when regenerating a scene someone has edited by hand. `place_museum.py` keeps
   existing `hall_` ids, because hand-placed nodes (e.g. `SpawnerConveyorLine`) reference them.
 - **Godot adds `unique_id=` to nodes** on save. Regenerated nodes lose them, which is harmless.

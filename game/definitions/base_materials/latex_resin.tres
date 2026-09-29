@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="ItemInfo" format=3]
 
 [ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
-[ext_resource type="Texture2D" uid="uid://bkke5z8optd4e" path="res://game/assets/icons/items/latex_resin.png" id="2_icon"]
+[ext_resource type="Texture2D" uid="uid://bkke508optd4e" path="res://game/assets/icons/items/latex_resin.png" id="2_icon"]
 [ext_resource type="PackedScene" uid="uid://yjwf3sst14nu" path="res://game/scenes/items/world/resources/latex_resin.tscn" id="3_scene"]
 
 [resource]

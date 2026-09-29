@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="ItemInfo" format=3]
 
 [ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
-[ext_resource type="Texture2D" uid="uid://461cz3l3ty4u" path="res://game/assets/icons/items/quartz_shards.png" id="2_icon"]
+[ext_resource type="Texture2D" uid="uid://461c03l3ty4u" path="res://game/assets/icons/items/quartz_shards.png" id="2_icon"]
 [ext_resource type="PackedScene" uid="uid://0krmhd2ltapw" path="res://game/scenes/items/world/products/quartz_shards.tscn" id="3_scene"]
 
 [resource]

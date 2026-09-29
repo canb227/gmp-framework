@@ -1,8 +1,8 @@
 [gd_resource type="Resource" script_class="ItemInfo" format=3]
 
 [ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
-[ext_resource type="Texture2D" uid="uid://bcwzj0x04b0jv" path="res://game/assets/icons/items/coke_briquette.png" id="2_icon"]
-[ext_resource type="PackedScene" uid="uid://bezvnnf7c2kcm" path="res://game/scenes/items/world/products/coke_briquette.tscn" id="3_scene"]
+[ext_resource type="Texture2D" uid="uid://bcw0j0x04b0jv" path="res://game/assets/icons/items/coke_briquette.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://be0vnnf7c2kcm" path="res://game/scenes/items/world/products/coke_briquette.tscn" id="3_scene"]
 
 [resource]
 script = ExtResource("1_fi")

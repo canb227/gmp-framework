@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://738sysm1c23n"]
 
-[ext_resource type="PackedScene" uid="uid://bgqozcjyyb8ht" path="res://game/assets/models/props/kit/kit_floor.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://bgqo0cjyyb8ht" path="res://game/assets/models/props/kit/kit_floor.glb" id="1_model"]
 
 [node name="KitFloor" type="Node3D"]
 

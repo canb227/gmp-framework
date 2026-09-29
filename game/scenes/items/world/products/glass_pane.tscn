@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://zlrttad4j3rj"]
+[gd_scene format=3 uid="uid://0lrttad4j3rj"]
 
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
 [ext_resource type="PackedScene" uid="uid://7km8naxi2ljw" path="res://game/assets/models/items/glass_pane.glb" id="2_model"]

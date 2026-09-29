@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
 [ext_resource type="Texture2D" uid="uid://5av17d4nqsw7" path="res://game/assets/icons/items/chalk_nodule.png" id="2_icon"]
-[ext_resource type="PackedScene" uid="uid://23bd1h5yz1p0" path="res://game/scenes/items/world/resources/chalk_nodule.tscn" id="3_scene"]
+[ext_resource type="PackedScene" uid="uid://23bd1h5y01p0" path="res://game/scenes/items/world/resources/chalk_nodule.tscn" id="3_scene"]
 
 [resource]
 script = ExtResource("1_fi")

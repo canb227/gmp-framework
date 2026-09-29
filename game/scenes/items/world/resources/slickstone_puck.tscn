@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bmwmp2i4wr8qk"]
 
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
-[ext_resource type="PackedScene" uid="uid://bbrglzsqve1x5" path="res://game/assets/models/items/slickstone_puck.glb" id="2_model"]
+[ext_resource type="PackedScene" uid="uid://bbrgl0sqve1x5" path="res://game/assets/models/items/slickstone_puck.glb" id="2_model"]
 
 [node name="slickstone_puck" type="Box3DBody"]
 shape_type = 0

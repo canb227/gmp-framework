@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://bmvvvouitlz1o"]
+[gd_scene format=3 uid="uid://bmvvvouitl01o"]
 
 [ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptTubeStraight.tscn" id="hall_53"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptTubeBend.tscn" id="hall_54"]

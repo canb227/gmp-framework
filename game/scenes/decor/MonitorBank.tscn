@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://bmwzqso6i4ciz"]
+[gd_scene format=3 uid="uid://bmw0qso6i4ci0"]
 
-[ext_resource type="PackedScene" uid="uid://3gzobecohjq3" path="res://game/assets/models/props/decor/monitor_bank.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://3g0obecohjq3" path="res://game/assets/models/props/decor/monitor_bank.glb" id="1_model"]
 
 [node name="MonitorBank" type="Node3D"]
 

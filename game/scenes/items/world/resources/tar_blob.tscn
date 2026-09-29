@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://beo5dkvl7nxaa"]
 
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
-[ext_resource type="PackedScene" uid="uid://zfdxeu2zue8n" path="res://game/assets/models/items/tar_blob.glb" id="2_model"]
+[ext_resource type="PackedScene" uid="uid://0fdxeu20ue8n" path="res://game/assets/models/items/tar_blob.glb" id="2_model"]
 
 [node name="tar_blob" type="Box3DBody"]
 shape_type = 1

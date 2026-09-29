@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://bdffrlz0vth7d"]
+[gd_scene format=3 uid="uid://bdffrl00vth7d"]
 
 [ext_resource type="PackedScene" uid="uid://1x8ddndqyodx" path="res://game/assets/models/props/decor/rubble_pile.glb" id="1_model"]
 

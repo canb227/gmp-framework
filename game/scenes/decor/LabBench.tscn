@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bla4ijevgg1pd"]
 
-[ext_resource type="PackedScene" uid="uid://babnz7kz8udg5" path="res://game/assets/models/props/decor/lab_bench.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://babn07k08udg5" path="res://game/assets/models/props/decor/lab_bench.glb" id="1_model"]
 
 [node name="LabBench" type="Node3D"]
 

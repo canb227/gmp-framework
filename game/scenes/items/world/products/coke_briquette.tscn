@@ -1,7 +1,7 @@
-[gd_scene format=3 uid="uid://bezvnnf7c2kcm"]
+[gd_scene format=3 uid="uid://be0vnnf7c2kcm"]
 
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
-[ext_resource type="PackedScene" uid="uid://zy73a2zy4zrq" path="res://game/assets/models/items/coke_briquette.glb" id="2_model"]
+[ext_resource type="PackedScene" uid="uid://0y73a20y40rq" path="res://game/assets/models/items/coke_briquette.glb" id="2_model"]
 
 [node name="coke_briquette" type="Box3DBody"]
 shape_type = 0

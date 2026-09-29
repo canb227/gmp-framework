@@ -72,12 +72,15 @@ def xform_text(m, o):
     return "Transform3D(" + ", ".join(f(m[i][j]) for i in range(3) for j in range(3)) + ", " + ", ".join(f(x) for x in o) + ")"
 
 # ---------------------------------------------------------------------------- uids / imports
-_ALPH = "abcdefghijklmnopqrstuvwxyz012345678"         # Godot's ResourceUID text alphabet (base 35)
+# Godot's ResourceUID writes base 34 with the characters a-y and 0-8, never 'z' or '9' (an off-by-one kept for
+# compatibility, see godot core/io/resource_uid.cpp and GH-83843). It reads 'z' and '0' as the same digit, and
+# rewrites any uid holding a 'z' or '9' when it saves.
+_ALPH = "abcdefghijklmnopqrstuvwxy012345678"
 
 def uid_text(n):
     s = ""
     while n:
-        s = _ALPH[n % 35] + s; n //= 35
+        s = _ALPH[n % 34] + s; n //= 34
     return "uid://" + s
 
 def new_uid(seed_text):

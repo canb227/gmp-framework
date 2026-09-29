@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://y7wv0fu3qo0p"]
 
-[ext_resource type="PackedScene" uid="uid://bjljtdywok8hz" path="res://game/assets/models/props/decor/rusted_barrels.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://bjljtdywok8h0" path="res://game/assets/models/props/decor/rusted_barrels.glb" id="1_model"]
 
 [node name="RustedBarrels" type="Node3D"]
 

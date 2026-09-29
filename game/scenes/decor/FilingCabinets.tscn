@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://bij5yzeocs5z5"]
+[gd_scene format=3 uid="uid://bij5y0eocs505"]
 
-[ext_resource type="PackedScene" uid="uid://535fbhzqsxgj" path="res://game/assets/models/props/decor/filing_cabinets.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://535fbh0qsxgj" path="res://game/assets/models/props/decor/filing_cabinets.glb" id="1_model"]
 
 [node name="FilingCabinets" type="Node3D"]
 

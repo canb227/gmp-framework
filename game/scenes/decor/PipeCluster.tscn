@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://bgnlkdbwzpcfc"]
+[gd_scene format=3 uid="uid://bgnlkdbw0pcfc"]
 
 [ext_resource type="PackedScene" uid="uid://4ky21nq87i2x" path="res://game/assets/models/props/decor/pipe_cluster.glb" id="1_model"]
 

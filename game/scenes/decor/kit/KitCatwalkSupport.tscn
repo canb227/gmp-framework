@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://5ilztmqnrqui"]
+[gd_scene format=3 uid="uid://5il0tmqnrqui"]
 
-[ext_resource type="PackedScene" uid="uid://7jtr06azp83t" path="res://game/assets/models/props/kit/kit_catwalk_support.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://7jtr06a0p83t" path="res://game/assets/models/props/kit/kit_catwalk_support.glb" id="1_model"]
 
 [node name="KitCatwalkSupport" type="Node3D"]
 

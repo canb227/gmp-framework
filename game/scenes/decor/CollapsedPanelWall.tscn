@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://0bktr7204cx4"]
 
-[ext_resource type="PackedScene" uid="uid://ya24zxcxdd6n" path="res://game/assets/models/props/decor/collapsed_panel_wall.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://ya240xcxdd6n" path="res://game/assets/models/props/decor/collapsed_panel_wall.glb" id="1_model"]
 
 [node name="CollapsedPanelWall" type="Node3D"]
 

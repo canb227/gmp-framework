@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://55wl1q6idziv"]
+[gd_scene format=3 uid="uid://55wl1q6id0iv"]
 
 [ext_resource type="PackedScene" uid="uid://bu7yxskeusnvj" path="res://game/assets/models/props/display_plinth.glb" id="hall_207"]
 [ext_resource type="Script" uid="uid://de6ss1gh7mjqf" path="res://game/scripts/entities/Spinner.cs" id="hall_208"]

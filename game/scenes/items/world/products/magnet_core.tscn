@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://bgc22owzgdsqs"]
+[gd_scene format=3 uid="uid://bgc22ow0gdsqs"]
 
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
 [ext_resource type="PackedScene" uid="uid://3weirepco6gq" path="res://game/assets/models/items/magnet_core.glb" id="2_model"]

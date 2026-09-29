@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://2qrygv64sm5e"]
 
-[ext_resource type="PackedScene" uid="uid://znngr7tgivl6" path="res://game/assets/models/props/kit/kit_column.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://0nngr7tgivl6" path="res://game/assets/models/props/kit/kit_column.glb" id="1_model"]
 
 [node name="KitColumn" type="Node3D"]
 

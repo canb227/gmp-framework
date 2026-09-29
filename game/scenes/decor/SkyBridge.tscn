@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://bg8wu1wzndnah"]
+[gd_scene format=3 uid="uid://bg8wu1w0ndnah"]
 
 [ext_resource type="PackedScene" uid="uid://0ee5tk0eske2" path="res://game/assets/models/props/decor/sky_bridge.glb" id="1_model"]
 

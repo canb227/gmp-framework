@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://bjntggoylb7zo"]
+[gd_scene format=3 uid="uid://bjntggoylb70o"]
 
-[ext_resource type="PackedScene" uid="uid://660eq0edyzfd" path="res://game/assets/models/props/decor/cryo_pod.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://660eq0edy0fd" path="res://game/assets/models/props/decor/cryo_pod.glb" id="1_model"]
 
 [node name="CryoPod" type="Node3D"]
 

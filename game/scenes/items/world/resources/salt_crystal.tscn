@@ -1,7 +1,7 @@
-[gd_scene format=3 uid="uid://bl4u86wmz2neg"]
+[gd_scene format=3 uid="uid://bl4u86wm02neg"]
 
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
-[ext_resource type="PackedScene" uid="uid://bcfjhzyl1svg3" path="res://game/assets/models/items/salt_crystal.glb" id="2_model"]
+[ext_resource type="PackedScene" uid="uid://bcfjh0yl1svg3" path="res://game/assets/models/items/salt_crystal.glb" id="2_model"]
 
 [node name="salt_crystal" type="Box3DBody"]
 shape_type = 0
