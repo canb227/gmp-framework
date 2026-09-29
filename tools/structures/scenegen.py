@@ -31,6 +31,13 @@ def f(x):
     s = f"{x:.5f}".rstrip("0").rstrip(".")
     return "0" if s in ("-0", "") else s
 
+def ff(x):
+    """A float property value that always carries a decimal point ("40.0", not "40"). C# [Export] float/double
+    properties set from an integer literal in a .tscn don't take (Godot drops them on the next save), and
+    native float properties given an int get re-saved as overrides."""
+    s = f(x)
+    return s if any(c in s for c in ".e") else s + ".0"
+
 def v3(v):
     return f"Vector3({f(v[0])}, {f(v[1])}, {f(v[2])})"
 
@@ -230,7 +237,7 @@ class Scene:
 
     def spin(self, path, axis_g, speed):
         """Cosmetic Spinner on a model node (axis in the node's local Godot frame, rad/s)."""
-        self.model_prop(path, f'script = ExtResource("{self.script("spinner")}")', f"axis = {v3(axis_g)}", f"speed = {f(speed)}")
+        self.model_prop(path, f'script = ExtResource("{self.script("spinner")}")', f"axis = {v3(axis_g)}", f"speed = {ff(speed)}")
 
     def oscillate(self, path, *props):
         """Cosmetic Oscillator on a model node (see game/scripts/entities/Oscillator.cs)."""
@@ -242,7 +249,7 @@ class Scene:
         p = add(mat_vec(self.xf, pos), self.xo) if parent == "." else pos
         t = (mat_vec(self.xf, tangent) if parent == "." else tangent) if tangent else None
         props = [f"box_size = {v3(size)}",
-                 f"friction = {f(friction)}" if friction is not None else None,
+                 f"friction = {ff(friction)}" if friction is not None else None,
                  f"user_material_id = {material}" if material else None,
                  f"tangent_velocity = {v3(t)}" if t else None] + list(extra)
         props.append(f"position = {v3(p)}" if is_ident(m) else f"transform = {xform_text(m, p)}")

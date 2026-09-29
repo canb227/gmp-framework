@@ -6,7 +6,7 @@
 [node name="scrap_ball" type="Box3DBody"]
 shape_type = 1
 sphere_radius = 0.36
-density = 3
+density = 3.0
 friction = 0.9
 rolling_resistance = 0.5
 restitution = 0.15

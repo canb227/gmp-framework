@@ -22,17 +22,17 @@ tags = Array[int]([3])
 [node name="RollerA" parent="Model" index="2"]
 script = ExtResource("3_r")
 axis = Vector3(1, 0, 0)
-speed = 4
+speed = 4.0
 
 [node name="RollerB" parent="Model" index="3"]
 script = ExtResource("3_r")
 axis = Vector3(1, 0, 0)
-speed = -4
+speed = -4.0
 
 [node name="Screw" parent="Model" index="4"]
 script = ExtResource("3_r")
 axis = Vector3(0, 0, 1)
-speed = 3
+speed = 3.0
 
 [node name="BeltTop0" type="Box3DCollisionShape" parent="."]
 box_size = Vector3(1.68, 0.04, 4)

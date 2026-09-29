@@ -6,7 +6,7 @@
 [node name="ballast_shot" type="Box3DBody"]
 shape_type = 1
 sphere_radius = 0.35
-density = 20
+density = 20.0
 friction = 0.4
 rolling_resistance = 0.02
 script = ExtResource("1_item")

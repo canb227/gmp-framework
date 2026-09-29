@@ -14,6 +14,12 @@
 - **Godot adds `unique_id=` to nodes** on save. Regenerated nodes lose them, which is harmless.
 - **Transform3D text is row-major** in .tscn: `Transform3D(xx, xy, xz, yx, ...)` gives rows, not columns. Use
   the `xf(cols, pos)` helper in `place_museum.py`.
+- **Write float properties with a decimal point** (`scenegen.ff`: `40.0`, not `40`). A C# `[Export] float/double`
+  set from an integer literal in a .tscn silently doesn't take, and Godot drops it on the next save: the
+  Carousel's `degreesPerSecond = 40` and spawner intervals `6`, `3`, `2` never applied until this was fixed.
+- **Hand edits inside generated wings are lost on regeneration.** Port them into the generator (e.g. the Structure Hall
+  demo spawners were set to `iron_ore` in the editor, and `SLOW_SPAWNER` carries it now). Compare an editor-saved
+  scene semantically (node by node), not by text diff: Godot reorders properties and drops defaults on save.
 - **Typed dictionaries** in scenes: `itemWeights = Dictionary[String, float]({"a": 1.0})`.
 - **Label3D** text needs `\n` escaped as `\\n` in the file. Wrapping needs `autowrap_mode = 3` plus `width` in
   pixels (metres ÷ `pixel_size`). With yaw 0 a label faces +Z, and yaw 1 faces +X.

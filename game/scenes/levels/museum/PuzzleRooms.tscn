@@ -989,7 +989,7 @@ position = Vector3(-80, 0.6, 30)
 script = ExtResource("hall_136")
 axis = Vector3(0, 1, 0)
 continuous = true
-degreesPerSecond = 40
+degreesPerSecond = 40.0
 
 [node name="Disc" parent="Carousel/Turntable" instance=ExtResource("hall_140")]
 
@@ -1656,7 +1656,7 @@ position = Vector3(-131, 5.9, 0)
 [node name="ItemSpawner6" parent="Scales" instance=ExtResource("hall_49")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -131, 7, 0)
 itemWeights = Dictionary[String, float]({"ballast_shot": 1.0})
-interval = 6
+interval = 6.0
 outputPoint = Vector3(0, -1.6, 0)
 
 [node name="Title3" type="Label3D" parent="Scales"]
@@ -1786,7 +1786,7 @@ position = Vector3(-138.5, 4, -35)
 [node name="ItemSpawner7" parent="ScreeSlope" instance=ExtResource("hall_49")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -138.9, 9, -35)
 itemWeights = Dictionary[String, float]({"scree_pebbles": 1.0, "shale_slab": 1.0})
-interval = 3
+interval = 3.0
 outputPoint = Vector3(0, -0.3, -2.2)
 
 [node name="SlotSieve" parent="ScreeSlope" instance=ExtResource("hall_145")]
@@ -1907,7 +1907,7 @@ position = Vector3(-62, 1.25, 5.5)
 [node name="ItemSpawner8" parent="StormCage" instance=ExtResource("hall_49")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -95, 1, -1)
 itemWeights = Dictionary[String, float]({"storm_sand": 1.0})
-interval = 2
+interval = 2.0
 outputPoint = Vector3(0, -0.3, -1.6)
 
 [node name="Conveyor27" parent="StormCage" instance=ExtResource("hall_50")]

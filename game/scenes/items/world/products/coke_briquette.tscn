@@ -6,7 +6,7 @@
 [node name="coke_briquette" type="Box3DBody"]
 shape_type = 0
 box_size = Vector3(0.45, 0.3, 0.45)
-density = 1
+density = 1.0
 friction = 0.8
 script = ExtResource("1_item")
 itemID = "coke_briquette"

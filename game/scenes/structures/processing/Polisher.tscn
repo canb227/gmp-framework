@@ -22,22 +22,22 @@ tags = Array[int]([3])
 [node name="BrushA" parent="Model" index="2"]
 script = ExtResource("3_r")
 axis = Vector3(1, 0, 0)
-speed = 9
+speed = 9.0
 
 [node name="BrushB" parent="Model" index="3"]
 script = ExtResource("3_r")
 axis = Vector3(1, 0, 0)
-speed = -9
+speed = -9.0
 
 [node name="Buffer" parent="Model" index="4"]
 script = ExtResource("3_r")
 axis = Vector3(0, 1, 0)
-speed = 7
+speed = 7.0
 
 [node name="Fan" parent="Model" index="5"]
 script = ExtResource("3_r")
 axis = Vector3(0, 1, 0)
-speed = 12
+speed = 12.0
 
 [node name="BeltTop0" type="Box3DCollisionShape" parent="."]
 box_size = Vector3(1.68, 0.04, 4)

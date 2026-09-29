@@ -6,7 +6,7 @@
 [node name="copper_ingot" type="Box3DBody"]
 shape_type = 0
 box_size = Vector3(0.8, 0.3, 0.4)
-density = 8
+density = 8.0
 friction = 0.4
 script = ExtResource("1_item")
 itemID = "copper_ingot"

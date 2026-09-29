@@ -14,7 +14,7 @@ structure's front (-Z) counter-clockwise: 0 faces -Z, 1 faces -X, 2 faces +Z, 3 
 """
 import os, re, sys, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from scenegen import REPO, f, glb_children, ensure_import, script_uid, new_uid
+from scenegen import REPO, f, ff, glb_children, ensure_import, script_uid, new_uid
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "items"))
 import gen_items
 
@@ -286,7 +286,7 @@ def run(h, parent, rel, start, n, k=E):
         d = FWD[k]
         h.place(parent, rel, (i + d[0] * s, j, kk + d[2] * s), k, label=False)
 
-SLOW_SPAWNER = ("interval = 4.0",)
+SLOW_SPAWNER = ('itemWeights = Dictionary[String, float]({"iron_ore": 1.0})', "interval = 4.0")   # iron ore: set in the editor, kept here
 
 def demos(h):
     root = h.group("Demos")
@@ -758,7 +758,7 @@ YAWC = {k: yaw_cols(90 * k) for k in range(4)}
 def spawner(h, parent, pos, k, items, interval, out):
     weights = ", ".join(f'"{i}": 1.0' for i in items)
     return inst(h, parent, "ItemSpawner", S + "ItemSpawner", YAWC[k], pos, f"itemWeights = Dictionary[String, float]({{{weights}}})",
-                f"interval = {f(interval)}", f"outputPoint = Vector3({f(out[0])}, {f(out[1])}, {f(out[2])})")
+                f"interval = {ff(interval)}", f"outputPoint = Vector3({f(out[0])}, {f(out[1])}, {f(out[2])})")
 
 def enclosure(h, parent, x0, x1, z0, z1, gap):
     """Low walls round a room plot with an entry gap (z0..z1 of the gap) in the east wall."""
@@ -798,7 +798,7 @@ def carousel(h):
     body = h.uname("Turntable")
     h.node(f'[node name="{body}" type="Box3DBody" parent="{g}"]', "body_type = 1", "shape_type = 1", "sphere_radius = 0.05",
            f"position = Vector3({f(cx)}, 0.6, {f(cz)})", f'script = ExtResource("{h.ext_id("res://game/scripts/entities/RotatingRoom.cs", "Script")}")',
-           "axis = Vector3(0, 1, 0)", "continuous = true", f"degreesPerSecond = {f(CAR_SPIN)}")
+           "axis = Vector3(0, 1, 0)", "continuous = true", f"degreesPerSecond = {ff(CAR_SPIN)}")
     tb = f"{g}/{body}"
     h.node(f'[node name="Disc" parent="{tb}" instance=ExtResource("{h.ext_id("res://game/assets/models/machines/rooms/turntable.glb", "PackedScene")}")]')
     for k in range(16):

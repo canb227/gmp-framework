@@ -6,7 +6,7 @@
 [node name="capacitor_cell" type="Box3DBody"]
 shape_type = 0
 box_size = Vector3(0.5, 0.6, 0.5)
-density = 3
+density = 3.0
 friction = 0.6
 script = ExtResource("1_item")
 itemID = "capacitor_cell"

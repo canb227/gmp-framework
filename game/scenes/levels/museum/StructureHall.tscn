@@ -898,6 +898,7 @@ text = "Demo: Smelting & Plate Line"
 
 [node name="ItemSpawner" parent="Demos/SmeltingLine" instance=ExtResource("hall_49")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 49, 1, 25)
+itemWeights = Dictionary[String, float]({"iron_ore": 1.0})
 interval = 4.0
 
 [node name="ItemSpawnerLabel" type="Label3D" parent="Demos/SmeltingLine"]
@@ -1003,6 +1004,7 @@ text = "Demo: Sorted Rod Line"
 
 [node name="ItemSpawner2" parent="Demos/RodLine" instance=ExtResource("hall_49")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 49, 1, 5)
+itemWeights = Dictionary[String, float]({"iron_ore": 1.0})
 interval = 4.0
 
 [node name="ItemSpawner2Label" type="Label3D" parent="Demos/RodLine"]
@@ -1107,6 +1109,7 @@ position = Vector3(53, 1, -11)
 
 [node name="ItemSpawner3" parent="Demos/LaunchLine" instance=ExtResource("hall_49")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 49, 3, -11)
+itemWeights = Dictionary[String, float]({"iron_ore": 1.0})
 interval = 4.0
 
 [node name="ItemSpawner3Label" type="Label3D" parent="Demos/LaunchLine"]
@@ -1293,6 +1296,7 @@ text = "Antigravity Projector"
 
 [node name="ItemSpawner4" parent="Demos/FieldLine" instance=ExtResource("hall_49")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 93, 1, 23)
+itemWeights = Dictionary[String, float]({"iron_ore": 1.0})
 interval = 4.0
 
 [node name="Conveyor19" parent="Demos/FieldLine" instance=ExtResource("hall_50")]

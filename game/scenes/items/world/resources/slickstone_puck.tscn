@@ -6,9 +6,9 @@
 [node name="slickstone_puck" type="Box3DBody"]
 shape_type = 0
 box_size = Vector3(0.7, 0.16, 0.7)
-density = 3
+density = 3.0
 friction = 0.03
-rolling_resistance = 0
+rolling_resistance = 0.0
 script = ExtResource("1_item")
 itemID = "slickstone_puck"
 canBePickTarget = true

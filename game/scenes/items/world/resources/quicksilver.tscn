@@ -6,10 +6,10 @@
 [node name="quicksilver" type="Box3DBody"]
 shape_type = 1
 sphere_radius = 0.28
-density = 13
+density = 13.0
 friction = 0.05
-rolling_resistance = 0
-restitution = 0
+rolling_resistance = 0.0
+restitution = 0.0
 script = ExtResource("1_item")
 itemID = "quicksilver"
 canBePickTarget = true

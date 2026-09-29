@@ -7,7 +7,7 @@
 shape_type = 2
 capsule_radius = 0.1
 capsule_height = 1.2
-density = 8
+density = 8.0
 friction = 0.35
 rolling_resistance = 0.02
 script = ExtResource("1_item")
