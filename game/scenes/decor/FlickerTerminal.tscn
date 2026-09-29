@@ -11,5 +11,5 @@ autoplay = "idle-loop"
 
 [node name="Collider0" type="Box3DBody" parent="."]
 body_type = 0
-box_size = Vector3(0.94238, 1.80252, 0.66645)
-position = Vector3(0.02119, 0.90126, 0.03322)
+box_size = Vector3(0.94238, 1.79956, 0.74224)
+position = Vector3(0.02119, 0.89978, -0.00764)
