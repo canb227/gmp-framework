@@ -22,6 +22,48 @@ globals().update({k: v for k, v in _S.items() if not k.startswith("__") and k no
 HERE = _HERE
 OUT_DIR = os.path.dirname(HERE)
 
+# ---------- lean rules for these many-times-placed pieces ----------
+SHARP_BELOW = 0.035                            # boxes thinner than this stay sharp: a < 7 mm chamfer only costs tris
+FOLD = {"tape": "rubber", "wood": "rubber"}    # look-alike surfaces share one material (one draw call fewer)
+
+class Builder(Builder):
+    def box(self, center, size, basis=I3, mat="metal", c=C_FRAME, var=0.18, rust=0.0, bevel=None):
+        if bevel is None and min(size) < SHARP_BELOW:
+            bevel = 0
+        return super().box(center, size, basis, mat, c, var, rust, bevel)
+    def to_object(self, name, coll, material_keys=None):
+        fold = {MI[a]: MI[b] for a, b in FOLD.items()}
+        for f in self.bm.faces:
+            f.material_index = fold.get(f.material_index, f.material_index)
+        return super().to_object(name, coll, material_keys)
+
+def stud(B, p, n, r=0.011, h=0.01, mat="steel", c=C_STEEL, rust=0.3):
+    """Bolt head standing on a surface along n: six sides and a top, no hidden bottom (16 tris)."""
+    n = Vector(n).normalized()
+    u = n.cross(ZV if abs(n.z) < 0.9 else Vector((1, 0, 0))).normalized(); w = n.cross(u)
+    rim = [(u * math.cos(k / 6 * math.tau) + w * math.sin(k / 6 * math.tau)) * r for k in range(6)]
+    v0 = [B.bm.verts.new(p + d) for d in rim]; v1 = [B.bm.verts.new(p + d + n * h) for d in rim]
+    fs = [B.quad([v0[k], v0[(k + 1) % 6], v1[(k + 1) % 6], v1[k]], mat) for k in range(6)] + [B.quad(v1, mat)]
+    B.paint(fs, c, 0.15, rust)
+    return fs
+
+def decal(B, pts, n, mat="panel", c=C_DARK, var=0.1):
+    """Flat painted shape (one n-gon) facing n, e.g. a flow arrow on a guard."""
+    f = B.quad([B.bm.verts.new(Vector(p)) for p in pts], mat)
+    if f.normal.dot(Vector(n)) < 0:
+        f.normal_flip()
+    B.paint([f], c, var)
+    return f
+
+def streak(B, p, n, length=0.14, w=0.011, c=C_RUST):
+    """Rust run washed down a surface (facing n) from a bolt at p: one tapering painted quad."""
+    n = Vector(n).normalized(); dn = -ZV + n * n.z
+    if dn.length < 1e-3:
+        return
+    dn.normalize(); u = n.cross(dn)
+    p = p + n * 0.0015
+    return decal(B, [p + u * w, p + dn * length + u * w * 0.2, p + dn * length - u * w * 0.2, p - u * w], n, "steel", c, 0.3)
+
 AG_HALF = 0.95               # antigravity field half-size (across x and z)
 ZP_RADIUS = 0.8
 
@@ -42,13 +84,25 @@ def housing(B, rng, tier, front=0.8):
                     if r < 0.12:
                         continue
                     panel_face(B, c, n, 0.8, 0.8, C_WHITE if r < 0.75 else C_DARK)
+                    for du, dv in ((-0.36, 0.36), (0.36, -0.36)):              # two surviving rivets per panel
+                        p = c + n * 0.018 + u * du + v * dv
+                        stud(B, p, n, 0.012, 0.007, rust=0.5)
+                        if dv > 0 and n.z == 0 and r < 0.5:
+                            streak(B, p, n, 0.2)
                 else:
                     panel_face(B, c, n, 0.82, 0.82, C_FACILITY)
-    B.box(Vector((0, 0, -0.97)), (1.96, 1.96, 0.06), I3, "steel", C_STEEL, 0.25, rust=0.6 if tier == "basic" else 0.05)
+                    for du in (-0.37, 0.37):                                     # panel fixings
+                        stud(B, c + n * 0.018 + u * du + v * 0.37, n, 0.009, 0.005, "metal", (0.3, 0.3, 0.32))
+    B.box(Vector((0, 0, -0.97)), (1.96, 1.96, 0.06), I3, "steel" if tier == "basic" else "metal", C_STEEL, 0.25,
+          rust=0.6 if tier == "basic" else 0.05)                               # adv: no extra steel surface
+    for (x, y) in ((-0.93, -0.93), (0.93, -0.93), (-0.93, 0.93), (0.93, 0.93)):   # anchor bolts at the posts
+        for d in (Vector((0.1, 0, 0)), Vector((0, 0.1, 0))):
+            stud(B, Vector((x, y, -0.94)) - Vector((d.x * (1 if x > 0 else -1), d.y * (1 if y > 0 else -1), 0)), ZV,
+                 0.014, 0.01, "steel" if tier == "basic" else "metal", C_STEEL, rust=0.5 if tier == "basic" else 0.0)
 
 def field_box(coll):
     F = Builder()
-    F.box(Vector((0, 1.0, 0)), (2 * AG_HALF, 2.0, 2 * AG_HALF), I3, "field_ag", C_VIOLET, 0.02)
+    F.box(Vector((0, 1.0, 0)), (2 * AG_HALF, 2.0, 2 * AG_HALF), I3, "field_ag", C_VIOLET, 0.02, bevel=0)   # scaled in Godot: keep it a plain box
     return node(F, "Field", coll, Vector((0, 1.0, 0)))          # local y 0..2: origin on the front face
 
 def build_antigrav():

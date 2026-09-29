@@ -33,6 +33,57 @@ globals().update({k: v for k, v in _S.items() if not k.startswith("__") and k no
 HERE = _HERE
 OUT_DIR = os.path.dirname(HERE)
 
+# ---------- lean rules for these many-times-placed pieces ----------
+SHARP_BELOW = 0.035                            # boxes thinner than this stay sharp: a < 7 mm chamfer only costs tris
+FOLD = {"tape": "rubber", "wood": "rubber"}    # look-alike surfaces share one material (one draw call fewer)
+
+class Builder(Builder):
+    def box(self, center, size, basis=I3, mat="metal", c=C_FRAME, var=0.18, rust=0.0, bevel=None):
+        if bevel is None and min(size) < SHARP_BELOW:
+            bevel = 0
+        return super().box(center, size, basis, mat, c, var, rust, bevel)
+    def to_object(self, name, coll, material_keys=None):
+        fold = {MI[a]: MI[b] for a, b in FOLD.items()}
+        for f in self.bm.faces:
+            f.material_index = fold.get(f.material_index, f.material_index)
+        return super().to_object(name, coll, material_keys)
+
+def mirror(src_name, dst_name):
+    """mirror_collection plus the weighted normals the copies would otherwise lose."""
+    dst = mirror_collection(bpy.data.collections[src_name], dst_name)
+    for ob in dst.objects:
+        weighted_normals(ob)
+    return dst
+
+def stud(B, p, n, r=0.011, h=0.01, mat="steel", c=C_STEEL, rust=0.3):
+    """Bolt head standing on a surface along n: six sides and a top, no hidden bottom (16 tris)."""
+    n = Vector(n).normalized()
+    u = n.cross(ZV if abs(n.z) < 0.9 else Vector((1, 0, 0))).normalized(); w = n.cross(u)
+    rim = [(u * math.cos(k / 6 * math.tau) + w * math.sin(k / 6 * math.tau)) * r for k in range(6)]
+    v0 = [B.bm.verts.new(p + d) for d in rim]; v1 = [B.bm.verts.new(p + d + n * h) for d in rim]
+    fs = [B.quad([v0[k], v0[(k + 1) % 6], v1[(k + 1) % 6], v1[k]], mat) for k in range(6)] + [B.quad(v1, mat)]
+    B.paint(fs, c, 0.15, rust)
+    return fs
+
+def decal(B, pts, n, mat="panel", c=C_DARK, var=0.1):
+    """Flat painted shape (one n-gon) facing n, e.g. a flow arrow on a guard."""
+    f = B.quad([B.bm.verts.new(Vector(p)) for p in pts], mat)
+    if f.normal.dot(Vector(n)) < 0:
+        f.normal_flip()
+    B.paint([f], c, var)
+    return f
+
+def streak(B, p, n, length=0.14, w=0.011, c=C_RUST):
+    """Rust run washed down a surface (facing n) from a bolt at p: one tapering painted quad."""
+    n = Vector(n).normalized(); dn = -ZV + n * n.z
+    if dn.length < 1e-3:
+        return
+    dn.normalize(); u = n.cross(dn)
+    p = p + n * 0.0015
+    return decal(B, [p + u * w, p + dn * length + u * w * 0.2, p + dn * length - u * w * 0.2, p - u * w], n, "steel", c, 0.3)
+
+EXPORT_KEEP.update({"Power", "Lever", "DoorL", "DoorR"})     # switchable / moving parts stay their own nodes
+
 IN = 0.75            # interior half-width
 WT = 0.08            # wall thickness
 FLOOR_TOP = BELT_TOP # channel floor = belt height, so chutes and conveyors hand over level
@@ -67,6 +118,22 @@ def vturn_path():
 def ribs_at(L, pitch):
     n = max(1, int(round(L / pitch)))
     return [min(max(L * i / n, 0.03), L - 0.03) for i in range(n + 1)]
+
+def rib_bolts(B, path, s, top, rng, basic=True):
+    """Bolts down the outer faces of a hoop rib (rusty on the salvage tier, with the odd rust run)."""
+    sd = path.frame(s)[2]
+    x = IN + WT + (0.1 if basic else 0.07)
+    for side in (-1, 1):
+        for o in (0.08, top * 0.5, top - 0.08):
+            p = path.point(s, side * x, o)
+            if max(abs(p.x), abs(p.y)) > 0.98:                                  # tight inner corner of a turn
+                continue
+            if basic:
+                stud(B, p, sd * side, 0.013, 0.009, rust=0.5)
+                if rng.random() < 0.3:
+                    streak(B, p, sd * side, 0.16)
+            else:
+                stud(B, p, sd * side, 0.01, 0.006, "metal", (0.3, 0.3, 0.32), rust=0.0)
 
 def channel_basic(B, path, rng, height, closed=False, rollers=False):
     L = path.L
@@ -105,6 +172,7 @@ def channel_basic(B, path, rng, height, closed=False, rollers=False):
         B.sweep(path, s0, s1, -IN - WT - 0.1, IN + WT + 0.1, -0.14, -0.1, "metal", C_FRAME, 0.2, rust=0.4)
         if closed:
             B.sweep(path, s0, s1, -IN - WT - 0.1, IN + WT + 0.1, top + WT, top + WT + 0.05, "metal", C_FRAME, 0.2, rust=0.4)
+        rib_bolts(B, path, s, top, rng, basic=True)
     if rollers:
         for s in [0.1 + 0.2 * k for k in range(10)]:
             p = path.point(s, 0, -0.04)
@@ -141,6 +209,7 @@ def channel_adv(B, P, path, height, closed=False, drive=True, roof="panel"):
         B.sweep(path, s0, s1, -IN - WT - 0.07, IN + WT + 0.07, -0.14, -0.1, "metal", C_DARK, 0.1)
         if closed:
             B.sweep(path, s0, s1, -IN - WT - 0.07, IN + WT + 0.07, top + WT, top + WT + 0.04, "metal", C_DARK, 0.1)
+        rib_bolts(B, path, s, top, None, basic=False)
         # emitter bar across the deck at each rib
         P.sweep(path, max(0, s - 0.012), min(L, s + 0.012), -IN + 0.1, IN - 0.1, 0.0, 0.006, "cyan", C_CYAN, 0.05)
 
@@ -163,10 +232,10 @@ def bore(B, P, tier, rng, z0, z1, cx=0.0, cy=0.0, collars=True):
     for side in (-1, 1):
         B.box(Vector((cx + side * (IN + WT / 2), cy, zc)), (WT, 2 * IN + 2 * WT, h), I3,
               "steel" if tier == "basic" else "panel", (0.3, 0.3, 0.3) if tier == "basic" else C_FACILITY, 0.2,
-              rust=0.5 if tier == "basic" else 0.0)
+              rust=0.5 if tier == "basic" else 0.0, bevel=0)                  # edges hide under the corner posts
         B.box(Vector((cx, cy + side * (IN + WT / 2), zc)), (2 * IN, WT, h), I3,
               "steel" if tier == "basic" else "panel", (0.3, 0.3, 0.3) if tier == "basic" else C_FACILITY, 0.2,
-              rust=0.5 if tier == "basic" else 0.0)
+              rust=0.5 if tier == "basic" else 0.0, bevel=0)
     for (px, py) in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
         B.box(Vector((cx + px * (IN + WT + 0.03), cy + py * (IN + WT + 0.03), zc)), (0.1, 0.1, h), I3, "metal", C_FRAME, 0.2, rust=0.3)
     faces = [(Vector((1, 0, 0)), Vector((0, 1, 0))), (Vector((-1, 0, 0)), Vector((0, 1, 0))),
@@ -186,8 +255,15 @@ def bore(B, P, tier, rng, z0, z1, cx=0.0, cy=0.0, collars=True):
                     continue
                 col = C_WHITE if k < 0.78 else C_DARK
                 B.box(c + n * 0.012, (1.5, zb - za, 0.024), facing_basis(n), "panel", col, 0.3)
+                for du, dz in ((-0.69, 1), (0.69, 1), (-0.69, -1), (0.69, -1)):   # corner rivets
+                    p = c + n * 0.024 + u * du + Vector((0, 0, dz * ((zb - za) / 2 - 0.05)))
+                    stud(B, p, n, 0.011, 0.007, rust=0.4)
+                    if dz > 0 and rng.random() < 0.35:
+                        streak(B, p, n, 0.18)
             else:
                 B.box(c + n * 0.012 + Vector((0, 0, -(zb - za) * 0.25)), (1.5, (zb - za) * 0.5, 0.024), facing_basis(n), "panel", C_FACILITY, 0.1)
+                for du in (-0.69, 0.69):                                         # panel fixings
+                    stud(B, c + n * 0.024 + u * du + Vector((0, 0, -(zb - za) * 0.5 + 0.06)), n, 0.009, 0.005, "metal", C_DARK)
                 B.box(c + n * 0.03 + Vector((0, 0, (zb - za) * 0.25)), (1.4, (zb - za) * 0.45, 0.01), facing_basis(n), "glass", (0.55, 0.9, 1.0), 0.02)
     if collars:
         for z in (z0 + 0.04, z1 - 0.04):
@@ -237,6 +313,14 @@ def funnel(B, P, tier, rng, top, bot, z_top, z_bot, legs=True):
                    (Vector((tx0 - 0.02, (ty0 + ty1) / 2, z_top + 0.03)), (0.12, ty1 - ty0 + 0.12, 0.06)),
                    (Vector((tx1 + 0.02, (ty0 + ty1) / 2, z_top + 0.03)), (0.12, ty1 - ty0 + 0.12, 0.06))):
         B.box(c, s, I3, "metal", C_DARK if tier == "basic" else C_STEEL, 0.2, rust=0.4 if tier == "basic" else 0.0)
+        ln = max(s[0], s[1]); ax = Vector((1, 0, 0)) if s[0] > s[1] else Vector((0, 1, 0))
+        k = max(2, int(round(ln / 0.6)))
+        for j in range(k):                                                     # rim bolts along the top
+            p = c + ax * (-ln / 2 + 0.1 + (ln - 0.2) * (j + 0.5) / k) + Vector((0, 0, 0.03))
+            if tier == "basic":
+                stud(B, p, ZV, 0.014, 0.01, rust=0.5)
+            else:
+                stud(B, p, ZV, 0.011, 0.006, "metal", (0.3, 0.3, 0.32))
     for (org, u, n, w) in ((Vector((tx0, ty0 - 0.081, z_top - 0.12)), (1, 0, 0), (0, -1, 0), tx1 - tx0),
                            (Vector((tx1, ty1 + 0.081, z_top - 0.12)), (-1, 0, 0), (0, 1, 0), tx1 - tx0)):
         hazard(B, org, u, (0, 0, 1), w, 0.1, n, pitch=0.12)
@@ -325,9 +409,13 @@ def build_dropper_down(tier):
     B.box(lb, (0.08, 0.3, 0.36), I3, "metal", C_BLUE if tier == "basic" else C_DARK, 0.2, rust=0.2 if tier == "basic" else 0.0)
     B.box(lb + Vector((0.042, 0, 0.12)), (0.004, 0.2, 0.05), I3, "panel", C_WHITE, 0.2)
     B.box(lb + Vector((0.045, -0.05, 0.12)), (0.004, 0.03, 0.02), I3, "glow", C_AMBER, 0.05)
-    B.box(lb + Vector((0.045, 0.05, 0.12)), (0.004, 0.03, 0.02), I3, "cyan", C_CYAN, 0.05)
+    B.box(lb + Vector((0.045, 0.05, 0.12)), (0.004, 0.03, 0.02), I3, "glow" if tier == "basic" else "cyan",
+          C_AMBER if tier == "basic" else C_CYAN, 0.05)                         # salvage tier: one lamp material
     hazard(B, lb + Vector((0.041, -0.15, -0.17)), (0, 1, 0), (0, 0, 1), 0.3, 0.06, (1, 0, 0), pitch=0.06)
-    B.pipe([lb + Vector((0, 0, -0.18)), Vector((IN + WT + 0.06, 0.0, DOOR_Z + 0.05)), Vector((IN + WT + 0.02, 0.4, DOOR_Z))], 0.012, 5)
+    B.pipe([lb + Vector((0, 0, -0.18)), Vector((IN + WT + 0.06, 0.0, DOOR_Z + 0.05)), Vector((IN + WT + 0.02, 0.4, DOOR_Z))], 0.012, 5, "metal", C_BLACK)
+    for dy in (-0.12, 0.12):                                                     # box screwed to the bore
+        for dz in (-0.14, 0.14):
+            stud(B, lb + Vector((0.04, dy, dz)), (1, 0, 0), 0.008, 0.005, rust=0.3 if tier == "basic" else 0.0)
     done(coll, B, P, tier)
     Lv = Builder()
     Lv.cyl(Vector((0, -0.03, 0)), Vector((0, 0.03, 0)), 0.03, 10, "metal", C_DARK)
@@ -363,7 +451,7 @@ def build_hopper_3x3(tier):
     return done(coll, B, P, tier)
 
 def mirror_turn(tier):
-    return mirror_collection(bpy.data.collections[prefix(tier) + "HTurnRight"], prefix(tier) + "HTurnLeft")
+    return mirror(prefix(tier) + "HTurnRight", prefix(tier) + "HTurnLeft")
 
 PIECES = []
 ICONS = []

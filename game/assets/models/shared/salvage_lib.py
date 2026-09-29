@@ -225,6 +225,8 @@ def mirror_collection(src, dst_name, axis=0):
             bm.to_mesh(me); bm.free()
             set_active_colors(me)
             nb = bpy.data.objects.new(ob.name.split(".")[0].split("__")[-1], me)
+            if any(m.type == 'WEIGHTED_NORMAL' for m in ob.modifiers):
+                weighted_normals(nb)
         else:
             nb = bpy.data.objects.new(ob.name.split(".")[0].split("__")[-1], None)
             nb.empty_display_type = 'PLAIN_AXES'; nb.empty_display_size = 0.2
@@ -362,8 +364,11 @@ def merge_static(coll, name="Body"):
                 return True
             ob = ob.parent
         return False
+    def special(ob):                                           # Builder meshes carry every material slot: check the used ones
+        mats = ob.data.materials
+        return any(mats[i] and mats[i].name.startswith(SPECIAL_MATS) for i in {p.material_index for p in ob.data.polygons} if i < len(mats))
     cands = [ob for ob in obs if ob.type == 'MESH' and ob.parent is None and not ob.children and not moving(ob)
-             and ob.name not in keep and not any(m and m.name.startswith(SPECIAL_MATS) for m in ob.data.materials)]
+             and ob.name not in keep and not special(ob)]
     if len(cands) < 2:
         return
     view = bpy.context.view_layer

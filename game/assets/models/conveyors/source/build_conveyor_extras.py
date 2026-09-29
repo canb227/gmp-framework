@@ -23,6 +23,73 @@ globals().update({k: v for k, v in _S.items() if not k.startswith("__") and k no
 HERE = _HERE
 OUT_DIR = os.path.dirname(HERE)
 
+# ---------- lean rules for these many-times-placed pieces ----------
+SHARP_BELOW = 0.035                            # boxes thinner than this stay sharp: a < 7 mm chamfer only costs tris
+FOLD = {"tape": "rubber", "wood": "rubber"}    # look-alike surfaces share one material (one draw call fewer)
+
+class Builder(Builder):
+    def box(self, center, size, basis=I3, mat="metal", c=C_FRAME, var=0.18, rust=0.0, bevel=None):
+        if bevel is None and min(size) < SHARP_BELOW:
+            bevel = 0
+        return super().box(center, size, basis, mat, c, var, rust, bevel)
+    def to_object(self, name, coll, material_keys=None):
+        fold = {MI[a]: MI[b] for a, b in FOLD.items()}
+        for f in self.bm.faces:
+            f.material_index = fold.get(f.material_index, f.material_index)
+        return super().to_object(name, coll, material_keys)
+
+def lean_path(path, straight, max_per_m=None):
+    """The same path, but its default sampling leaves out the stations inside the straight spans [(s0, s1)]:
+    a straight run needs no rings in its middle. Explicit per_m (sagging cables) still samples uniformly, at
+    most max_per_m stations per metre when given."""
+    lp = Path(path.L, path.fn, path.stations)
+    uniform = lp.samples
+    def samples(s0, s1, per_m=None):
+        if per_m is not None:
+            return uniform(s0, s1, min(per_m, max_per_m or per_m))
+        ss = uniform(s0, s1)
+        lo, hi = min(s0, s1), max(s0, s1)
+        ss = [lo, hi] + [s for s in ss if not any(a + 1e-6 < s < b - 1e-6 for a, b in straight)]
+        ss += [e for a, b in straight for e in (a, b) if lo + 1e-4 < e < hi - 1e-4]
+        out = []
+        for s in sorted(ss):
+            if not out or s - out[-1] > 1e-4:
+                out.append(s)
+        return out[::-1] if s0 > s1 else out
+    lp.samples = samples
+    return lp
+
+def lean_bend_up(max_per_m=None, **kw):
+    path, flat, ls = bend_up_path(**kw)
+    return lean_path(path, [(0.0, flat), (path.L - ls, path.L)], max_per_m), flat, ls
+
+def stud(B, p, n, r=0.011, h=0.01, mat="steel", c=C_STEEL, rust=0.3):
+    """Bolt head standing on a surface along n: six sides and a top, no hidden bottom (16 tris)."""
+    n = Vector(n).normalized()
+    u = n.cross(ZV if abs(n.z) < 0.9 else Vector((1, 0, 0))).normalized(); w = n.cross(u)
+    rim = [(u * math.cos(k / 6 * math.tau) + w * math.sin(k / 6 * math.tau)) * r for k in range(6)]
+    v0 = [B.bm.verts.new(p + d) for d in rim]; v1 = [B.bm.verts.new(p + d + n * h) for d in rim]
+    fs = [B.quad([v0[k], v0[(k + 1) % 6], v1[(k + 1) % 6], v1[k]], mat) for k in range(6)] + [B.quad(v1, mat)]
+    B.paint(fs, c, 0.15, rust)
+    return fs
+
+def decal(B, pts, n, mat="panel", c=C_DARK, var=0.1):
+    """Flat painted shape (one n-gon) facing n, e.g. a flow arrow on a guard."""
+    f = B.quad([B.bm.verts.new(Vector(p)) for p in pts], mat)
+    if f.normal.dot(Vector(n)) < 0:
+        f.normal_flip()
+    B.paint([f], c, var)
+    return f
+
+def streak(B, p, n, length=0.14, w=0.011, c=C_RUST):
+    """Rust run washed down a surface (facing n) from a bolt at p: one tapering painted quad."""
+    n = Vector(n).normalized(); dn = -ZV + n * n.z
+    if dn.length < 1e-3:
+        return
+    dn.normalize(); u = n.cross(dn)
+    p = p + n * 0.0015
+    return decal(B, [p + u * w, p + dn * length + u * w * 0.2, p + dn * length - u * w * 0.2, p - u * w], n, "steel", c, 0.3)
+
 EXIT_Y = 0.0            # the side exits are open from here to the front face
 
 def half_paths():
@@ -39,6 +106,9 @@ def split_frame(B, rng):
         x = side * 0.93
         B.box(Vector((x, EXIT_Y - 0.03, BELT_TOP + 0.05)), (0.07, 0.07, 0.42), I3, "steel", C_STEEL, 0.2, rust=0.5)
         B.box(Vector((x, EXIT_Y - 0.03, BELT_TOP + 0.2)), (0.075, 0.075, 0.06), I3, "panel", C_YELLOW, 0.2)
+        for z in (BELT_TOP - 0.06, BELT_TOP + 0.1):                         # post clamped to the stringer
+            stud(B, Vector((x + side * 0.035, EXIT_Y - 0.03, z)), (side, 0, 0), rust=0.5)
+        streak(B, Vector((x + side * 0.035, EXIT_Y - 0.03, BELT_TOP + 0.1)), (side, 0, 0), 0.1)
     build_cable(B, full)
     return full
 
@@ -48,6 +118,11 @@ def front_wall(B, hz=0.3):
     hazard(B, Vector((-0.84, 0.919, BELT_TOP + 0.03)), (1, 0, 0), (0, 0, 1), 1.68, hz - 0.08, (0, -1, 0), pitch=0.09)
     for sx in (-1, 1):
         B.box(Vector((sx * 0.93, 0.955, BELT_TOP + hz / 2)), (0.07, 0.08, hz + 0.1), I3, "steel", C_STEEL, 0.2, rust=0.5)
+    for k in range(5):                                                      # wall bolted to the posts / rail
+        p = Vector((-0.72 + k * 0.36, 0.99, BELT_TOP + hz - 0.04))
+        stud(B, p, (0, 1, 0), rust=0.5)
+        if k % 2:
+            streak(B, p, (0, 1, 0), hz * 0.5)
 
 # ======================================================================================
 def build_splitter():
@@ -71,8 +146,11 @@ def build_splitter():
         B.box(mid + Vector((0, 0, (z0 + z1) / 2 + 0.02)), (ln - 0.14, 0.2, 0.02), R, "panel", C_WHITE, 0.3)
         B.box(mid + nrm * 0.004 + Vector((0, 0, z0 + 0.035)), (ln - 0.06, 0.05, 0.03), R, "rubber", C_BLACK, 0.1)   # rubber skirt
         for t in (0.25, 0.75):
-            p = pa + (pb - pa) * t + nrm * 0.025 + Vector((0, 0, (z0 + z1) / 2 + 0.02))
-            B.cyl(p, p + nrm * 0.01, 0.012, 6, "steel", C_STEEL, rust=0.4)
+            p = pa + (pb - pa) * t + nrm * 0.022 + Vector((0, 0, (z0 + z1) / 2 + 0.02))
+            stud(B, p, nrm, 0.012, rust=0.4)
+            streak(B, p - Vector((0, 0, 0.012)), nrm, 0.09)
+        for t in (0.12, 0.37, 0.62, 0.87):                                   # skirt bolts
+            stud(B, pa + (pb - pa) * t + nrm * 0.03 + Vector((0, 0, z0 + 0.035)), nrm, 0.008, 0.006, rust=0.3)
     B.cyl(Vector((0, -0.25, z0)), Vector((0, -0.25, z1 + 0.04)), 0.045, 10, "steel", C_STEEL, 0.2, rust=0.4)       # tip post
     B.box(Vector((0, -0.25, z1 - 0.05)), (0.1, 0.1, 0.07), I3, "panel", C_YELLOW, 0.2)
     vprism(B, [(0.0, -0.08), (0.66, 0.82), (-0.66, 0.82)], z1, z1 + 0.012, "panel", C_WHITE, 0.3)              # lid panel
@@ -98,7 +176,13 @@ def build_splitter_switch():
     B.box(gb, (0.3, 0.1, 0.2), I3, "metal", C_BLUE, 0.2, rust=0.2)
     B.box(gb + Vector((0, -0.055, 0.02)), (0.2, 0.01, 0.1), I3, "panel", C_WHITE, 0.3)
     B.box(gb + Vector((-0.07, -0.062, 0.05)), (0.03, 0.004, 0.02), I3, "glow", C_AMBER, 0.05)
-    B.box(gb + Vector((0.06, -0.062, 0.05)), (0.03, 0.004, 0.02), I3, "cyan", C_CYAN, 0.05)
+    B.box(gb + Vector((0.06, -0.062, 0.05)), (0.03, 0.004, 0.02), I3, "glow", C_AMBER, 0.05)
+    for dx in (-0.13, 0.13):                                                # lid screws and a louvre
+        for dz in (-0.08, 0.08):
+            stud(B, gb + Vector((dx, -0.05, dz)), (0, -1, 0), 0.008, 0.005, rust=0.2)
+    for k in range(2):
+        B.box(gb + Vector((0, -0.052, -0.05 - k * 0.025)), (0.2, 0.006, 0.01), I3, "metal", C_DARK, 0.1)
+    B.box(gb + Vector((0, -0.01, -0.105)), (0.24, 0.08, 0.02), I3, "steel", C_STEEL, 0.2, rust=0.4)       # mounting flange
     B.pipe([gb + Vector((-0.15, 0, -0.05)), Vector((-0.3, 0.955, BELT_TOP + 0.2)), Vector((-0.8, 0.97, BELT_TOP + 0.05))], 0.01, 5)
     finish(B, "Frame", coll)
     # the lever: pivot on the gearbox side, handle up
@@ -126,7 +210,7 @@ def build_splitter_switch():
 def build_loader():
     rng = random.Random(87); random.seed(87)
     coll = clear_collection("Conveyor_Loader")
-    path, flat, ls = bend_up_path(**LOADER)
+    path, flat, ls = lean_bend_up(**LOADER)
     build_belt(path, "Belt", coll, 2.0)
     B = Builder()
     for side in (-1, 1):
@@ -139,11 +223,20 @@ def build_loader():
             top = path.point(s, x, -0.15)
             B.cyl(Vector((x, top.y, FLOOR + 0.01)), top + Vector((0, 0, 0.02)), 0.024, 8, "steel", C_STEEL, rust=0.55)
             B.box(Vector((x - side * 0.01, top.y, FLOOR + 0.005)), (0.05, 0.12, 0.01), I3, "steel", C_STEEL, rust=0.7)
+            for dy in (-0.04, 0.04):
+                stud(B, Vector((x - side * 0.01, top.y + dy, FLOOR + 0.01)), ZV, 0.009, 0.007, rust=0.6)
+        a, b = (path.point(s, x, -0.15) for s in (flat + 0.35, path.L - 0.3))   # diagonal brace between the legs
+        B.cyl(Vector((x, a.y, FLOOR + 0.12)), b - Vector((0, 0, 0.06)), 0.014, 6, "steel", C_STEEL, rust=0.6)
     # kicker lip at the front edge: a worn steel bar the belt throws items over, hazard-striped underneath
     lip = path.point(path.L, 0, 0)
     B.box(Vector((0, lip.y - 0.03, lip.z - 0.06)), (1.72, 0.05, 0.1), I3, "steel", C_WEAR, 0.15, rust=0.2)
     hazard(B, Vector((-0.86, lip.y - 0.004, lip.z - 0.28)), (1, 0, 0), (0, 0, 1), 1.72, 0.14, (0, 1, 0), pitch=0.1)
     B.box(Vector((0, lip.y - 0.03, lip.z - 0.22)), (1.72, 0.05, 0.22), I3, "metal", C_DARK, 0.2, rust=0.3)
+    for k in range(6):                                                      # kicker bar bolts, rust run down the plate
+        p = Vector((-0.75 + k * 0.3, lip.y - 0.004, lip.z - 0.08))
+        stud(B, p, (0, 1, 0), rust=0.4)
+        if k in (1, 4):
+            streak(B, p, (0, 1, 0), 0.05)
     status_light(B, path, 0.6, 1)
     B.to_object("Frame", coll)
     return coll

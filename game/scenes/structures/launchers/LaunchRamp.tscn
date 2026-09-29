@@ -23,7 +23,7 @@ script = ExtResource("3_r")
 axis = Vector3(1, 0, 0)
 speed = 14
 
-[node name="Beacon" parent="Model" index="4"]
+[node name="Beacon" parent="Model" index="3"]
 script = ExtResource("3_r")
 axis = Vector3(0, 1, 0)
 speed = 4
