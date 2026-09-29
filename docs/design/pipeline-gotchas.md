@@ -74,3 +74,12 @@
   WeightedNormal keeps the big faces flat-shaded. Vertex colours are per face, so glTF splits vertices at every
   face anyway: expect about 2 verts per tri.
 - Godot generates LODs and shadow meshes on import (`meshes/generate_lods=true`), so don't hand-author LODs.
+- **Budgets used in the 2026-09 detail pass**: items ≤ 700 tris, 1 node and ≤ 2 surfaces (hundreds spawn);
+  machines ≤ 8k; big decor/superstructures ≤ 15k; kit pieces lean (they tile hundreds of times). Skip the
+  chamfer on glow strips, sheet under ~3 cm and parts under ~8 cm, and make foliage, paper, cracks and stains
+  single flat polygons (the exported materials are double-sided).
+- **Glass in a mesh switches off that whole node's shadow** (the import script sets `cast_shadow` per
+  MeshInstance). Keep glass and field shells in their own nodes.
+- **Detail helpers are still per family** (`stud`, `decal`, `streak`, `bolt_circle`, `grille`, `lean_path`,
+  `band`, `lump`...). Promote them into salvage_lib when a third family needs one. Also open: a chamfer that
+  scales with box size (12 mm is invisible on 20 m superstructure members but still costs 44 tris per box).
