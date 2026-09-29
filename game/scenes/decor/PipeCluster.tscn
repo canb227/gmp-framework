@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://bgnlkdbwzpcfc"]
+[gd_scene format=3 uid="uid://bgnlkdbw0pcfc"]
 
 [ext_resource type="PackedScene" uid="uid://4ky21nq87i2x" path="res://game/assets/models/props/decor/pipe_cluster.glb" id="1_model"]
 
@@ -11,5 +11,5 @@ autoplay = "idle-loop"
 
 [node name="Collider0" type="Box3DBody" parent="."]
 body_type = 0
-box_size = Vector3(6, 2.8, 0.9959)
-position = Vector3(0, 1.4, 0.15205)
+box_size = Vector3(6, 2.8, 1.04539)
+position = Vector3(0, 1.4, 0.20322)

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bjxjxemgyrpxd"]
 
-[ext_resource type="PackedScene" uid="uid://bgtinfztmmoa3" path="res://game/assets/models/props/kit/kit_wall_damaged.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://bgtinf0tmmoa3" path="res://game/assets/models/props/kit/kit_wall_damaged.glb" id="1_model"]
 
 [node name="KitWallDamaged" type="Node3D"]
 

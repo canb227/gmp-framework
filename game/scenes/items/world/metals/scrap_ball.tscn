@@ -1,12 +1,12 @@
-[gd_scene format=3 uid="uid://bkhap7zrv8wga"]
+[gd_scene format=3 uid="uid://bkhap70rv8wga"]
 
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
-[ext_resource type="PackedScene" uid="uid://bgy7sre10sznd" path="res://game/assets/models/items/scrap_ball.glb" id="2_model"]
+[ext_resource type="PackedScene" uid="uid://bgy7sre10s0nd" path="res://game/assets/models/items/scrap_ball.glb" id="2_model"]
 
 [node name="scrap_ball" type="Box3DBody"]
 shape_type = 1
 sphere_radius = 0.36
-density = 3
+density = 3.0
 friction = 0.9
 rolling_resistance = 0.5
 restitution = 0.15

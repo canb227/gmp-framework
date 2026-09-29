@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
 [ext_resource type="Texture2D" uid="uid://bdfmedp6jsj5m" path="res://game/assets/icons/items/battery_cell.png" id="2_icon"]
-[ext_resource type="PackedScene" uid="uid://yzzxvmwvtoou" path="res://game/scenes/items/world/products/battery_cell.tscn" id="3_scene"]
+[ext_resource type="PackedScene" uid="uid://y00xvmwvtoou" path="res://game/scenes/items/world/products/battery_cell.tscn" id="3_scene"]
 
 [resource]
 script = ExtResource("1_fi")

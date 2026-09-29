@@ -1,0 +1,553 @@
+[gd_scene format=3 uid="uid://bmvvvouitl01o"]
+
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptTubeStraight.tscn" id="hall_53"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptTubeBend.tscn" id="hall_54"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptTubeJunction.tscn" id="hall_55"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptTubeReceiver.tscn" id="hall_56"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptTippingBucket.tscn" id="hall_57"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptTagGate.tscn" id="hall_58"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptBouncePad.tscn" id="hall_59"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptGravityInverter.tscn" id="hall_60"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptCounterweightElevator.tscn" id="hall_61"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptScrewElevator.tscn" id="hall_62"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptPlatformElevator.tscn" id="hall_63"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptHeatLamp.tscn" id="hall_64"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptCryoVent.tscn" id="hall_65"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptRailGun.tscn" id="hall_66"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptVortexFunnel.tscn" id="hall_67"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptAssemblyChamber.tscn" id="hall_68"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptTunnelFurnace.tscn" id="hall_74"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptMagmaBath.tscn" id="hall_75"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptImpactForge.tscn" id="hall_76"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptQuenchTank.tscn" id="hall_77"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptSpiralRadiator.tscn" id="hall_78"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptCounterflowExchanger.tscn" id="hall_79"]
+[ext_resource type="PackedScene" uid="uid://bu7yxskeusnvj" path="res://game/assets/models/props/display_plinth.glb" id="hall_207"]
+[ext_resource type="Script" uid="uid://de6ss1gh7mjqf" path="res://game/scripts/entities/Spinner.cs" id="hall_208"]
+[ext_resource type="PackedScene" uid="uid://bjudt0tlhenqv" path="res://game/assets/models/tools/tool_tether.glb" id="hall_71"]
+[ext_resource type="PackedScene" uid="uid://0507ikc0nj7x" path="res://game/assets/models/tools/tool_tag_painter.glb" id="hall_72"]
+[ext_resource type="PackedScene" uid="uid://be215qgjpxw1p" path="res://game/assets/models/tools/tool_blueprint_stamp.glb" id="hall_73"]
+[ext_resource type="Texture2D" uid="uid://c1etlsqa07tlx" path="res://game/assets/textures/floor_1/floor_1_diffuseOriginal.png" id="hall_52"]
+
+[sub_resource type="StandardMaterial3D" id="hall_mat_panel"]
+albedo_color = Color(0.78, 0.78, 0.76, 1)
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="hall_mat_frame"]
+albedo_color = Color(0.07, 0.075, 0.08, 1)
+metallic = 0.6
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="hall_mat_hazard"]
+albedo_color = Color(0.85, 0.62, 0.06, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="hall_mat_floor"]
+albedo_color = Color(0.42, 0.43, 0.45, 1)
+albedo_texture = ExtResource("hall_52")
+uv1_scale = Vector3(0.25, 0.25, 0.25)
+uv1_triplanar = true
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="hall_box_panel"]
+material = SubResource("hall_mat_panel")
+
+[sub_resource type="BoxMesh" id="hall_box_frame"]
+material = SubResource("hall_mat_frame")
+
+[sub_resource type="BoxMesh" id="hall_box_hazard"]
+material = SubResource("hall_mat_hazard")
+
+[sub_resource type="BoxMesh" id="hall_box_floor"]
+material = SubResource("hall_mat_floor")
+
+[sub_resource type="MultiMesh" id="hall_mm_0"]
+transform_format = 1
+instance_count = 1
+mesh = SubResource("hall_box_floor")
+buffer = PackedFloat32Array(80, 0, 0, 0, 0, 1, 0, -0.5, 0, 0, 60, -90)
+
+[sub_resource type="MultiMesh" id="hall_mm_1"]
+transform_format = 1
+instance_count = 98
+mesh = SubResource("hall_box_frame")
+buffer = PackedFloat32Array(80.1, 0, 0, 0, 0, 0.15, 0, 8.075, 0, 0, 0.5, -120, 80.1, 0, 0, 0, 0, 0.3, 0, 0.15, 0, 0, 0.5, -120, 0.2, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, -36, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, -32, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, -28, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, -24, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, -20, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, -16, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, -12, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, -8, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, -4, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, 0, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, 4, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, 8, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, 12, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, 16, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, 20, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, 24, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, 28, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, 32, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, 36, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.2, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.5, -120, 0.5, 0, 0, -40, 0, 0.15, 0, 8.075, 0, 0, 60.1, -90, 0.5, 0, 0, -40, 0, 0.3, 0, 0.15, 0, 0, 60.1, -90, 0.5, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.2, -120, 0.5, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.2, -116, 0.5, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.2, -112, 0.5, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.2, -108, 0.5, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.2, -104, 0.5, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.2, -100, 0.5, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.2, -96, 0.5, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.2, -92, 0.5, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.2, -88, 0.5, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.2, -84, 0.5, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.2, -80, 0.5, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.2, -76, 0.5, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.2, -72, 0.5, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.2, -68, 0.5, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.2, -64, 0.5, 0, 0, -40, 0, 8, 0, 4, 0, 0, 0.2, -60, 0.5, 0, 0, 40, 0, 0.15, 0, 8.075, 0, 0, 60.1, -90, 0.5, 0, 0, 40, 0, 0.3, 0, 0.15, 0, 0, 60.1, -90, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -120, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -116, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -112, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -108, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -104, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -100, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -96, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -92, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -88, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -84, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -80, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -76, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -72, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -68, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -64, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -60, 60.1, 0, 0, 0, 0, 0.15, 0, 8.075, 0, 0, 0.5, -92, 60.1, 0, 0, 0, 0, 0.3, 0, 0.15, 0, 0, 0.5, -92, 0.2, 0, 0, -30, 0, 8, 0, 4, 0, 0, 0.5, -92, 0.2, 0, 0, -26, 0, 8, 0, 4, 0, 0, 0.5, -92, 0.2, 0, 0, -22, 0, 8, 0, 4, 0, 0, 0.5, -92, 0.2, 0, 0, -18, 0, 8, 0, 4, 0, 0, 0.5, -92, 0.2, 0, 0, -14, 0, 8, 0, 4, 0, 0, 0.5, -92, 0.2, 0, 0, -10, 0, 8, 0, 4, 0, 0, 0.5, -92, 0.2, 0, 0, -6, 0, 8, 0, 4, 0, 0, 0.5, -92, 0.2, 0, 0, -2, 0, 8, 0, 4, 0, 0, 0.5, -92, 0.2, 0, 0, 2, 0, 8, 0, 4, 0, 0, 0.5, -92, 0.2, 0, 0, 6, 0, 8, 0, 4, 0, 0, 0.5, -92, 0.2, 0, 0, 10, 0, 8, 0, 4, 0, 0, 0.5, -92, 0.2, 0, 0, 14, 0, 8, 0, 4, 0, 0, 0.5, -92, 0.2, 0, 0, 18, 0, 8, 0, 4, 0, 0, 0.5, -92, 0.2, 0, 0, 22, 0, 8, 0, 4, 0, 0, 0.5, -92, 0.2, 0, 0, 26, 0, 8, 0, 4, 0, 0, 0.5, -92, 0.2, 0, 0, 30, 0, 8, 0, 4, 0, 0, 0.5, -92, 0.4, 0, 0, 0, 0, 0.15, 0, 4.075, 0, 0, 14.1, -113, 0.4, 0, 0, 0, 0, 0.3, 0, 0.15, 0, 0, 14.1, -113, 0.4, 0, 0, 0, 0, 4, 0, 2, 0, 0, 0.2, -120, 0.4, 0, 0, 0, 0, 4, 0, 2, 0, 0, 0.2, -116.5, 0.4, 0, 0, 0, 0, 4, 0, 2, 0, 0, 0.2, -113, 0.4, 0, 0, 0, 0, 4, 0, 2, 0, 0, 0.2, -109.5, 0.4, 0, 0, 0, 0, 4, 0, 2, 0, 0, 0.2, -106, 0.4, 0, 0, -5, 0, 0.15, 0, 4.075, 0, 0, 14.1, -85, 0.4, 0, 0, -5, 0, 0.3, 0, 0.15, 0, 0, 14.1, -85, 0.4, 0, 0, -5, 0, 4, 0, 2, 0, 0, 0.2, -92, 0.4, 0, 0, -5, 0, 4, 0, 2, 0, 0, 0.2, -88.5, 0.4, 0, 0, -5, 0, 4, 0, 2, 0, 0, 0.2, -85, 0.4, 0, 0, -5, 0, 4, 0, 2, 0, 0, 0.2, -81.5, 0.4, 0, 0, -5, 0, 4, 0, 2, 0, 0, 0.2, -78, 0.4, 0, 0, 13, 0, 0.15, 0, 4.075, 0, 0, 14.1, -85, 0.4, 0, 0, 13, 0, 0.3, 0, 0.15, 0, 0, 14.1, -85, 0.4, 0, 0, 13, 0, 4, 0, 2, 0, 0, 0.2, -92, 0.4, 0, 0, 13, 0, 4, 0, 2, 0, 0, 0.2, -88.5, 0.4, 0, 0, 13, 0, 4, 0, 2, 0, 0, 0.2, -85, 0.4, 0, 0, 13, 0, 4, 0, 2, 0, 0, 0.2, -81.5, 0.4, 0, 0, 13, 0, 4, 0, 2, 0, 0, 0.2, -78)
+
+[sub_resource type="MultiMesh" id="hall_mm_2"]
+transform_format = 1
+instance_count = 1
+mesh = SubResource("hall_box_hazard")
+buffer = PackedFloat32Array(80, 0, 0, 0, 0, 0.01, 0, 0.007, 0, 0, 0.4, -60.2)
+
+[sub_resource type="MultiMesh" id="hall_mm_3"]
+transform_format = 1
+instance_count = 7
+mesh = SubResource("hall_box_panel")
+buffer = PackedFloat32Array(80, 0, 0, 0, 0, 8, 0, 4, 0, 0, 0.4, -120, 0.4, 0, 0, -40, 0, 8, 0, 4, 0, 0, 60, -90, 0.4, 0, 0, 40, 0, 8, 0, 4, 0, 0, 60, -90, 60, 0, 0, 0, 0, 8, 0, 4, 0, 0, 0.4, -92, 0.3, 0, 0, 0, 0, 4, 0, 2, 0, 0, 14, -113, 0.3, 0, 0, -5, 0, 4, 0, 2, 0, 0, 14, -85, 0.3, 0, 0, 13, 0, 4, 0, 2, 0, 0, 14, -85)
+
+[sub_resource type="MultiMesh" id="hall_mm_4"]
+transform_format = 1
+instance_count = 20
+mesh = SubResource("hall_box_hazard")
+buffer = PackedFloat32Array(33, 0, 0, -22, 0, 0.01, 0, 0.007, 0, 0, 0.25, -67.625, 33, 0, 0, -22, 0, 0.01, 0, 0.007, 0, 0, 0.25, -90.375, 0.25, 0, 0, -38.375, 0, 0.01, 0, 0.007, 0, 0, 23, -79, 0.25, 0, 0, -5.625, 0, 0.01, 0, 0.007, 0, 0, 23, -79, 17, 0, 0, 4, 0, 0.01, 0, 0.007, 0, 0, 0.25, -67.625, 17, 0, 0, 4, 0, 0.01, 0, 0.007, 0, 0, 0.25, -90.375, 0.25, 0, 0, -4.375, 0, 0.01, 0, 0.007, 0, 0, 23, -79, 0.25, 0, 0, 12.375, 0, 0.01, 0, 0.007, 0, 0, 23, -79, 25, 0, 0, 26, 0, 0.01, 0, 0.007, 0, 0, 0.25, -67.625, 25, 0, 0, 26, 0, 0.01, 0, 0.007, 0, 0, 0.25, -90.375, 0.25, 0, 0, 13.625, 0, 0.01, 0, 0.007, 0, 0, 23, -79, 0.25, 0, 0, 38.375, 0, 0.01, 0, 0.007, 0, 0, 23, -79, 25, 0, 0, -16, 0, 0.01, 0, 0.007, 0, 0, 0.25, -97.625, 25, 0, 0, -16, 0, 0.01, 0, 0.007, 0, 0, 0.25, -118.375, 0.25, 0, 0, -28.375, 0, 0.01, 0, 0.007, 0, 0, 21, -108, 0.25, 0, 0, -3.625, 0, 0.01, 0, 0.007, 0, 0, 21, -108, 25, 0, 0, 16, 0, 0.01, 0, 0.007, 0, 0, 0.25, -97.625, 25, 0, 0, 16, 0, 0.01, 0, 0.007, 0, 0, 0.25, -118.375, 0.25, 0, 0, 3.625, 0, 0.01, 0, 0.007, 0, 0, 21, -108, 0.25, 0, 0, 28.375, 0, 0.01, 0, 0.007, 0, 0, 21, -108)
+
+[node name="ConceptLab" type="Node3D"]
+
+[node name="LabFloor" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(80, 1, 60)
+position = Vector3(0, -0.5, -90)
+
+[node name="Architecture" type="Node3D" parent="."]
+
+[node name="WallSouth2" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(80, 8, 0.4)
+position = Vector3(0, 4, -120)
+
+[node name="WallWest" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(0.4, 8, 60)
+position = Vector3(-40, 4, -90)
+
+[node name="WallEast2" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(0.4, 8, 60)
+position = Vector3(40, 4, -90)
+
+[node name="Spine" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(60, 8, 0.4)
+position = Vector3(0, 4, -92)
+
+[node name="PartitionThermal" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(0.3, 4, 14)
+position = Vector3(0, 2, -113)
+
+[node name="ThermalTitle" type="Label3D" parent="Architecture"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 7, -92.4)
+double_sided = false
+pixel_size = 0.025
+font_size = 128
+outline_size = 12
+text = "THERMAL PROCESSING"
+
+[node name="ThermalSubtitle" type="Label3D" parent="Architecture"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 5.8, -92.4)
+double_sided = false
+pixel_size = 0.018
+font_size = 64
+outline_size = 12
+text = "three heaters and three coolers, each a different physics puzzle"
+
+[node name="Partition" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(0.3, 4, 14)
+position = Vector3(-5, 2, -85)
+
+[node name="Partition2" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(0.3, 4, 14)
+position = Vector3(13, 2, -85)
+
+[node name="LabTitle" type="Label3D" parent="Architecture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.2, -91.6)
+double_sided = false
+pixel_size = 0.03
+font_size = 128
+outline_size = 12
+text = "CONCEPT LAB"
+
+[node name="LabSubtitle" type="Label3D" parent="Architecture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.8, -91.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 64
+outline_size = 12
+text = "proof-of-concept machines and tools  -  visual reference, rough behaviour only"
+
+[node name="Bays" type="Node3D" parent="."]
+
+[node name="Routing" type="Node3D" parent="Bays"]
+
+[node name="ConceptTubeStraight" parent="Bays/Routing" instance=ExtResource("hall_53")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -37, 1, -79)
+
+[node name="ConceptTubeStraightLabel" type="Label3D" parent="Bays/Routing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37, 2.7, -79)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Tube Straight"
+
+[node name="ConceptTubeBend" parent="Bays/Routing" instance=ExtResource("hall_54")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -33, 1, -79)
+
+[node name="ConceptTubeBendLabel" type="Label3D" parent="Bays/Routing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 2.7, -79)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Tube Bend"
+
+[node name="ConceptTubeJunction" parent="Bays/Routing" instance=ExtResource("hall_55")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -29, 1, -79)
+
+[node name="ConceptTubeJunctionLabel" type="Label3D" parent="Bays/Routing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, 2.7, -79)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Tube Junction"
+
+[node name="ConceptTubeReceiver" parent="Bays/Routing" instance=ExtResource("hall_56")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -25, 1, -79)
+
+[node name="ConceptTubeReceiverLabel" type="Label3D" parent="Bays/Routing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 2.7, -79)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Tube Receiver"
+
+[node name="ConceptTippingBucket" parent="Bays/Routing" instance=ExtResource("hall_57")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -21, 1, -79)
+
+[node name="ConceptTippingBucketLabel" type="Label3D" parent="Bays/Routing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 4.7, -79)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Tipping Bucket"
+
+[node name="ConceptTagGate" parent="Bays/Routing" instance=ExtResource("hall_58")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -17, 1, -79)
+
+[node name="ConceptTagGateLabel" type="Label3D" parent="Bays/Routing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 2.7, -79)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Tag Gate"
+
+[node name="ConceptBouncePad" parent="Bays/Routing" instance=ExtResource("hall_59")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -13, 1, -79)
+
+[node name="ConceptBouncePadLabel" type="Label3D" parent="Bays/Routing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 2.7, -79)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Bounce Pad"
+
+[node name="ConceptGravityInverter" parent="Bays/Routing" instance=ExtResource("hall_60")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -9, 1, -79)
+
+[node name="ConceptGravityInverterLabel" type="Label3D" parent="Bays/Routing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 2.7, -79)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Gravity Inverter"
+
+[node name="RoutingSign" type="Label3D" parent="Bays/Routing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 6.4, -89.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "TUBES & ROUTING"
+
+[node name="Elevators" type="Node3D" parent="Bays"]
+
+[node name="ConceptCounterweightElevator" parent="Bays/Elevators" instance=ExtResource("hall_61")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3, 1, -77)
+
+[node name="ConceptCounterweightElevatorLabel" type="Label3D" parent="Bays/Elevators"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 6.7, -77)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Counterweight Elevator"
+
+[node name="ConceptScrewElevator" parent="Bays/Elevators" instance=ExtResource("hall_62")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1, 1, -77)
+
+[node name="ConceptScrewElevatorLabel" type="Label3D" parent="Bays/Elevators"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 6.7, -77)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Screw Elevator"
+
+[node name="ConceptPlatformElevator" parent="Bays/Elevators" instance=ExtResource("hall_63")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 5, 1, -79)
+
+[node name="ConceptPlatformElevatorLabel" type="Label3D" parent="Bays/Elevators"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 6.7, -78)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Platform Elevator"
+
+[node name="ElevatorsSign" type="Label3D" parent="Bays/Elevators"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 6.4, -89.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "ELEVATORS"
+
+[node name="Thermal" type="Node3D" parent="Bays"]
+
+[node name="ConceptHeatLamp" parent="Bays/Thermal" instance=ExtResource("hall_64")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 15, 1, -75)
+
+[node name="ConceptHeatLampLabel" type="Label3D" parent="Bays/Thermal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 2.7, -75)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Heat Lamp"
+
+[node name="ConceptCryoVent" parent="Bays/Thermal" instance=ExtResource("hall_65")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 19, 1, -75)
+
+[node name="ConceptCryoVentLabel" type="Label3D" parent="Bays/Thermal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 2.7, -75)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Cryo Vent"
+
+[node name="ConceptRailGun" parent="Bays/Thermal" instance=ExtResource("hall_66")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 23, 1, -81)
+
+[node name="ConceptRailGunLabel" type="Label3D" parent="Bays/Thermal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 2.7, -78)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Rail Gun"
+
+[node name="ConceptVortexFunnel" parent="Bays/Thermal" instance=ExtResource("hall_67")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 29, 1, -77)
+
+[node name="ConceptVortexFunnelLabel" type="Label3D" parent="Bays/Thermal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28, 2.7, -76)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Vortex Funnel"
+
+[node name="ConceptAssemblyChamber" parent="Bays/Thermal" instance=ExtResource("hall_68")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 35, 1, -77)
+
+[node name="ConceptAssemblyChamberLabel" type="Label3D" parent="Bays/Thermal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35, 6.7, -77)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Assembly Chamber"
+
+[node name="ThermalSign" type="Label3D" parent="Bays/Thermal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 6.4, -89.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "THERMAL, LAUNCH & ASSEMBLY"
+
+[node name="Heaters" type="Node3D" parent="Bays"]
+
+[node name="ConceptTunnelFurnace" parent="Bays/Heaters" instance=ExtResource("hall_74")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -27, 1, -109)
+
+[node name="ConceptTunnelFurnaceLabel" type="Label3D" parent="Bays/Heaters"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27, 2.7, -108)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Tunnel Furnace"
+
+[node name="ConceptMagmaBath" parent="Bays/Heaters" instance=ExtResource("hall_75")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -21, 1, -109)
+
+[node name="ConceptMagmaBathLabel" type="Label3D" parent="Bays/Heaters"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 2.7, -108)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Magma Bath"
+
+[node name="ConceptImpactForge" parent="Bays/Heaters" instance=ExtResource("hall_76")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -17, 1, -107)
+
+[node name="ConceptImpactForgeLabel" type="Label3D" parent="Bays/Heaters"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 4.7, -107)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Impact Forge"
+
+[node name="HeatersSign" type="Label3D" parent="Bays/Heaters"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 6.4, -117.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "HEATERS"
+
+[node name="Coolers" type="Node3D" parent="Bays"]
+
+[node name="ConceptQuenchTank" parent="Bays/Coolers" instance=ExtResource("hall_77")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 5, 1, -109)
+
+[node name="ConceptQuenchTankLabel" type="Label3D" parent="Bays/Coolers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 2.7, -108)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Quench Tank"
+
+[node name="ConceptSpiralRadiator" parent="Bays/Coolers" instance=ExtResource("hall_78")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 9, 1, -107)
+
+[node name="ConceptSpiralRadiatorLabel" type="Label3D" parent="Bays/Coolers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 6.7, -107)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Spiral Radiator"
+
+[node name="ConceptCounterflowExchanger" parent="Bays/Coolers" instance=ExtResource("hall_79")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 15, 1, -109)
+
+[node name="ConceptCounterflowExchangerLabel" type="Label3D" parent="Bays/Coolers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 2.7, -108)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Counterflow Exchanger"
+
+[node name="CoolersSign" type="Label3D" parent="Bays/Coolers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 6.4, -117.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "COOLERS"
+
+[node name="Tools" type="Node3D" parent="."]
+
+[node name="TetherGunPlinth" parent="Tools" instance=ExtResource("hall_207")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1, -65.5)
+
+[node name="TetherGun" type="Node3D" parent="Tools"]
+transform = Transform3D(2.2, 0, 0, 0, 2.2, 0, 0, 0, 2.2, -6, 1.35, -65.5)
+script = ExtResource("hall_208")
+axis = Vector3(0, 1, 0)
+speed = 0.6
+
+[node name="Model" parent="Tools/TetherGun" instance=ExtResource("hall_71")]
+
+[node name="AnimationPlayer" parent="Tools/TetherGun/Model"]
+autoplay = "idle-loop"
+
+[node name="TetherGunLabel" type="Label3D" parent="Tools"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2.6, -65.5)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Tether Gun"
+
+[node name="TagPainterPlinth" parent="Tools" instance=ExtResource("hall_207")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -65.5)
+
+[node name="TagPainter" type="Node3D" parent="Tools"]
+transform = Transform3D(2.2, 0, 0, 0, 2.2, 0, 0, 0, 2.2, 0, 1.35, -65.5)
+script = ExtResource("hall_208")
+axis = Vector3(0, 1, 0)
+speed = 0.6
+
+[node name="Model" parent="Tools/TagPainter" instance=ExtResource("hall_72")]
+
+[node name="AnimationPlayer" parent="Tools/TagPainter/Model"]
+autoplay = "idle-loop"
+
+[node name="TagPainterLabel" type="Label3D" parent="Tools"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, -65.5)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Tag Painter"
+
+[node name="BlueprintStampPlinth" parent="Tools" instance=ExtResource("hall_207")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, -65.5)
+
+[node name="BlueprintStamp" type="Node3D" parent="Tools"]
+transform = Transform3D(2.2, 0, 0, 0, 2.2, 0, 0, 0, 2.2, 6, 1.35, -65.5)
+script = ExtResource("hall_208")
+axis = Vector3(0, 1, 0)
+speed = 0.6
+
+[node name="Model" parent="Tools/BlueprintStamp" instance=ExtResource("hall_73")]
+
+[node name="AnimationPlayer" parent="Tools/BlueprintStamp/Model"]
+autoplay = "idle-loop"
+
+[node name="BlueprintStampLabel" type="Label3D" parent="Tools"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.6, -65.5)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Blueprint Stamp"
+
+[node name="ToolsTitle" type="Label3D" parent="Tools"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, -65.5)
+billboard = 1
+pixel_size = 0.012
+font_size = 64
+outline_size = 12
+text = "Handheld tool concepts"
+
+[node name="BoxesFloor" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("hall_mm_0")
+
+[node name="BoxesFrame" type="MultiMeshInstance3D" parent="Architecture"]
+multimesh = SubResource("hall_mm_1")
+
+[node name="BoxesHazard" type="MultiMeshInstance3D" parent="Architecture"]
+multimesh = SubResource("hall_mm_2")
+
+[node name="BoxesPanel" type="MultiMeshInstance3D" parent="Architecture"]
+multimesh = SubResource("hall_mm_3")
+
+[node name="BoxesHazard" type="MultiMeshInstance3D" parent="Bays"]
+multimesh = SubResource("hall_mm_4")

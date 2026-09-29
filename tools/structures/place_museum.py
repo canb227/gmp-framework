@@ -14,7 +14,7 @@ structure's front (-Z) counter-clockwise: 0 faces -Z, 1 faces -X, 2 faces +Z, 3 
 """
 import os, re, sys, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from scenegen import REPO, f, glb_children, ensure_import, script_uid
+from scenegen import REPO, f, ff, glb_children, ensure_import, script_uid, new_uid
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "items"))
 import gen_items
 
@@ -59,6 +59,11 @@ def display_name(rel):
     return {"SpawnTube": "Spawn Tube (developer only)", "ItemVoid": "Item Void", "ItemSpawner": "Item Spawner"}.get(base, base)
 
 # ---------------------------------------------------------------------------- scene text
+def group_of(parent):
+    """Static boxes are batched per exhibit group (the section and its first sub-group), so each MultiMesh stays
+    small enough to be culled when off screen."""
+    return "/".join(parent.split("/")[:2])
+
 class Hall:
     def __init__(self, keep=None):
         """keep: {res path: (id, ext line)} of hall_ resources already in the museum. They keep their ids, since
@@ -71,6 +76,26 @@ class Hall:
         self.occupied = {}
         self.names = set()
         self.count = 0
+        self.batches = {}          # (node path, mat) -> instance transforms (12 floats each) for one MultiMesh
+
+    def batch(self, where, mat, cols, c, size):
+        """One box (basis columns cols, centre c, edge lengths size, in `where`'s frame) drawn by the MultiMesh
+        of `mat` boxes under node `where`: the museum's architecture costs one draw call per material per group
+        instead of a MeshInstance3D node per box."""
+        X, Y, Z = cols
+        buf = self.batches.setdefault((where, mat), [])
+        for r in range(3):
+            buf += [X[r] * size[0], Y[r] * size[1], Z[r] * size[2], c[r]]
+
+    def batch_nodes(self):
+        """MultiMesh sub_resources and MultiMeshInstance3D nodes for every batch."""
+        subs, nodes = [], []
+        for n, ((where, mat), buf) in enumerate(sorted(self.batches.items())):
+            i = f"hall_mm_{n}"
+            subs.append(f'[sub_resource type="MultiMesh" id="{i}"]\ntransform_format = 1\ninstance_count = {len(buf) // 12}\n'
+                        f'mesh = SubResource("hall_box_{mat}")\nbuffer = PackedFloat32Array({", ".join(f(v) for v in buf)})\n')
+            nodes += [f'[node name="Boxes{mat.capitalize()}" type="MultiMeshInstance3D" parent="{where}"]', f'multimesh = SubResource("{i}")', ""]
+        return subs, nodes
 
     def ext_id(self, res, kind="PackedScene"):
         if res not in self.ext_ids and res in self.keep:
@@ -148,18 +173,13 @@ class Hall:
 
     # --- architecture (colliding blocks and decor strips)
     def block(self, parent, name, lo, hi, mat="panel", solid=True):
-        """Axis-aligned box from world corner lo to hi: a static Box3DBody with a mesh, or (solid=False) mesh only."""
+        """Axis-aligned box from world corner lo to hi: a static Box3DBody (unless solid=False) plus its mesh in
+        the group's MultiMesh."""
         c = tuple((a + b) / 2 for a, b in zip(lo, hi)); s = tuple(abs(b - a) for a, b in zip(lo, hi))
-        name = self.uname(name)
-        scale = f"Transform3D({f(s[0])}, 0, 0, 0, {f(s[1])}, 0, 0, 0, {f(s[2])}, 0, 0, 0)"
         if solid:
-            self.node(f'[node name="{name}" type="Box3DBody" parent="{parent}"]', "body_type = 0", f"box_size = Vector3({f(s[0])}, {f(s[1])}, {f(s[2])})",
+            self.node(f'[node name="{self.uname(name)}" type="Box3DBody" parent="{parent}"]', "body_type = 0", f"box_size = Vector3({f(s[0])}, {f(s[1])}, {f(s[2])})",
                       f"position = Vector3({f(c[0])}, {f(c[1])}, {f(c[2])})")
-            self.node(f'[node name="Mesh" type="MeshInstance3D" parent="{parent}/{name}"]', f"transform = {scale}", f'mesh = SubResource("hall_box_{mat}")')
-        else:
-            self.node(f'[node name="{name}" type="MeshInstance3D" parent="{parent}"]',
-                      f"transform = Transform3D({f(s[0])}, 0, 0, 0, {f(s[1])}, 0, 0, 0, {f(s[2])}, {f(c[0])}, {f(c[1])}, {f(c[2])})",
-                      f'mesh = SubResource("hall_box_{mat}")')
+        self.batch(group_of(parent), mat, IDB, c, s)
 
     def wall(self, parent, name, a, b, y1, t=0.4, y0=0.0, posts=4.0):
         """Facility wall along a line from a to b (world x,z on the floor): white panels, dark cap and skirting,
@@ -266,7 +286,7 @@ def run(h, parent, rel, start, n, k=E):
         d = FWD[k]
         h.place(parent, rel, (i + d[0] * s, j, kk + d[2] * s), k, label=False)
 
-SLOW_SPAWNER = ("interval = 4.0",)
+SLOW_SPAWNER = ('itemWeights = Dictionary[String, float]({"iron_ore": 1.0})', "interval = 4.0")   # iron ore: set in the editor, kept here
 
 def demos(h):
     root = h.group("Demos")
@@ -651,7 +671,7 @@ def tumbler(h):
         h.node(f'[node name="{h.uname(name)}" type="Box3DCollisionShape" parent="{rb}"]', f"box_size = Vector3({f(size[0])}, {f(size[1])}, {f(size[2])})",
                f"transform = {xf(cols, c)}")
     def mesh(name, c, size, mat, cols=IDB):
-        h.node(f'[node name="{h.uname(name)}" type="MeshInstance3D" parent="{rb}"]', f"transform = {xf(cols, c, size)}", f'mesh = SubResource("hall_box_{mat}")')
+        h.batch(rb, mat, cols, c, size)                   # a MultiMesh on the room body, so it turns with it
     def slab(name, lo, hi, mat="panel", collide=True):
         c = tuple((a + b) / 2 for a, b in zip(lo, hi)); size = tuple(b - a for a, b in zip(lo, hi))
         if collide: shape(name + "Col", c, size)
@@ -719,14 +739,10 @@ def tumbler(h):
 # ---------------------------------------------------------------------------- rooms 2-4: shared helpers
 def rblock(h, parent, name, c, size, cols, mat="panel", solid=True, props=()):
     """Static box with an arbitrary basis (cols = its X, Y, Z axes), centre c, edge lengths size."""
-    name = h.uname(name)
     if solid:
-        h.node(f'[node name="{name}" type="Box3DBody" parent="{parent}"]', "body_type = 0",
+        h.node(f'[node name="{h.uname(name)}" type="Box3DBody" parent="{parent}"]', "body_type = 0",
                f"box_size = Vector3({f(size[0])}, {f(size[1])}, {f(size[2])})", f"transform = {xf(cols, c)}", *props)
-        h.node(f'[node name="Mesh" type="MeshInstance3D" parent="{parent}/{name}"]', f"transform = {xf(IDB, (0, 0, 0), size)}",
-               f'mesh = SubResource("hall_box_{mat}")')
-    else:
-        h.node(f'[node name="{name}" type="MeshInstance3D" parent="{parent}"]', f"transform = {xf(cols, c, size)}", f'mesh = SubResource("hall_box_{mat}")')
+    h.batch(group_of(parent), mat, cols, c, size)
 
 def inst(h, parent, name, res, cols, pos, *props):
     name = h.uname(name)
@@ -742,7 +758,7 @@ YAWC = {k: yaw_cols(90 * k) for k in range(4)}
 def spawner(h, parent, pos, k, items, interval, out):
     weights = ", ".join(f'"{i}": 1.0' for i in items)
     return inst(h, parent, "ItemSpawner", S + "ItemSpawner", YAWC[k], pos, f"itemWeights = Dictionary[String, float]({{{weights}}})",
-                f"interval = {f(interval)}", f"outputPoint = Vector3({f(out[0])}, {f(out[1])}, {f(out[2])})")
+                f"interval = {ff(interval)}", f"outputPoint = Vector3({f(out[0])}, {f(out[1])}, {f(out[2])})")
 
 def enclosure(h, parent, x0, x1, z0, z1, gap):
     """Low walls round a room plot with an entry gap (z0..z1 of the gap) in the east wall."""
@@ -782,7 +798,7 @@ def carousel(h):
     body = h.uname("Turntable")
     h.node(f'[node name="{body}" type="Box3DBody" parent="{g}"]', "body_type = 1", "shape_type = 1", "sphere_radius = 0.05",
            f"position = Vector3({f(cx)}, 0.6, {f(cz)})", f'script = ExtResource("{h.ext_id("res://game/scripts/entities/RotatingRoom.cs", "Script")}")',
-           "axis = Vector3(0, 1, 0)", "continuous = true", f"degreesPerSecond = {f(CAR_SPIN)}")
+           "axis = Vector3(0, 1, 0)", "continuous = true", f"degreesPerSecond = {ff(CAR_SPIN)}")
     tb = f"{g}/{body}"
     h.node(f'[node name="Disc" parent="{tb}" instance=ExtResource("{h.ext_id("res://game/assets/models/machines/rooms/turntable.glb", "PackedScene")}")]')
     for k in range(16):
@@ -1055,8 +1071,7 @@ def tar_pit(h):
     # the pit itself: a patch of real, very high-friction floor that bogs down anything crossing it
     h.node(f'[node name="TarPool" type="Box3DBody" parent="{g}"]', "body_type = 0", "box_size = Vector3(8, 0.04, 5)", "friction = 3.0",
            "position = Vector3(-135, 0.02, 27.5)")
-    h.node(f'[node name="Mesh" type="MeshInstance3D" parent="{g}/TarPool"]', "transform = Transform3D(8, 0, 0, 0, 0.04, 0, 0, 0, 5, 0, 0, 0)",
-           'mesh = SubResource("hall_box_tar")')
+    h.batch(group_of(g), "tar", IDB, (-135, 0.02, 27.5), (8, 0.04, 5))
     for (px, pz) in ((-137, 26.5), (-133.5, 28.8), (-135.5, 28.0)):
         frozen(h, tab, IT + "tar_blob.glb", (px, 0.36, pz))
     room_signs(h, g, -107, 44, "ROOM 6: THE TAR PIT",
@@ -1298,41 +1313,95 @@ roughness = 0.08
 material = SubResource("hall_mat_tar")
 """
 
+SECTIONS = ("StructureHall", "ConceptLab", "MaterialsWing", "PuzzleRooms", "LowerLevel")
+SECTION_DIR = os.path.join(REPO, "game", "scenes", "levels", "museum")
+
+def blocks_of(text):
+    """{id: block text} of the [sub_resource] blocks in text."""
+    return {m.group(1): m.group(0) for m in re.finditer(r'\[sub_resource [^\n]*id="([^"]+)"\]\n(?:[^\[\n][^\n]*\n)*', text)}
+
+def section_scene(h, name, nodes, subs):
+    """One wing as its own scene (game/scenes/levels/museum/<name>.tscn), so no single text scene gets huge and
+    each wing can be opened on its own. Paths are made relative to the wing's root."""
+    out = []
+    for line in nodes:
+        if line.startswith("[node "):
+            if line == f'[node name="{name}" type="Node3D" parent="."]':
+                line = f'[node name="{name}" type="Node3D"]'
+            else:
+                line = re.sub(r'parent="([^"]+)"', lambda m: 'parent="' + ("." if m.group(1) == name else m.group(1)[len(name) + 1:]) + '"', line)
+        out.append(line)
+    body = "\n".join(out)
+    need, todo = [], re.findall(r'SubResource\("([^"]+)"\)', body)
+    while todo:                                                    # sub_resources used, with their own dependencies
+        i = todo.pop()
+        if i not in need:
+            need.append(i); todo += re.findall(r'SubResource\("([^"]+)"\)', subs[i])
+    order = list(subs)
+    sub_text = "\n".join(subs[i] for i in sorted(need, key=order.index))
+    ids = set(re.findall(r'ExtResource\("([^"]+)"\)', body + sub_text))
+    ext = [l for l in h.ext if re.search(r'id="([^"]+)"\]$', l).group(1) in ids]
+    path = os.path.join(SECTION_DIR, name + ".tscn")
+    res = "res://" + os.path.relpath(path, REPO).replace(os.sep, "/")
+    old = open(path, encoding="utf-8").read() if os.path.exists(path) else ""
+    m = re.match(r'\[gd_scene[^\]]*uid="([^"]+)"', old)
+    uid = m.group(1) if m else new_uid(res)
+    os.makedirs(SECTION_DIR, exist_ok=True)
+    open(path, "w", newline="\n").write(f'[gd_scene format=3 uid="{uid}"]\n\n' + "\n".join(ext) + "\n\n" + sub_text + "\n" + body.rstrip("\n") + "\n")
+    return res, uid, os.path.getsize(path)
+
 def main():
     global LAB
     txt = open(MUSEUM, encoding="utf-8").read()
-    keep = {m.group(1): (m.group(2), m.group(0)) for m in re.finditer(r'\[ext_resource [^\n]*path="([^"]*)" id="(hall_[^"]*)"\]', txt)}
+    keep = {}
+    for t in [txt] + [open(os.path.join(SECTION_DIR, n + ".tscn"), encoding="utf-8").read() for n in SECTIONS
+                      if os.path.exists(os.path.join(SECTION_DIR, n + ".tscn"))]:     # ids stay stable across reruns
+        for m in re.finditer(r'\[ext_resource [^\n]*path="([^"]*)" id="(hall_\d+)"\]', t):
+            keep.setdefault(m.group(1), (m.group(2), m.group(0)))
     h = hall(keep)
     LAB = h
     lab()
     wing()
     puzzle_rooms()
     floor_tex = h.ext_id("res://game/assets/textures/floor_1/floor_1_diffuseOriginal.png", "Texture2D")
-    # remove earlier galleries / halls (new resources go where the old ones were)
+    mm_subs, mm_nodes = h.batch_nodes()
+    subs = blocks_of(SUBS.format(floor_tex=floor_tex) + "\n" + "\n".join(mm_subs))
+    # split the generated nodes into one scene per wing
+    per = {}
+    cur = None
+    for line in h.nodes + mm_nodes:
+        if line.startswith("[node "):
+            par = re.search(r'parent="([^"]+)"', line).group(1)
+            cur = re.search(r'name="([^"]+)"', line).group(1) if par == "." else par.split("/")[0]
+        per.setdefault(cur, []).append(line)
+    # remove earlier galleries / halls from the museum (the wings were written into it before they had scenes)
     old = re.search(r'\[ext_resource [^\n]*id="(sg|hall)_[^"]*"\]\n', txt)
     txt = txt if not old else txt[:old.start()] + "\0HALL_EXT\n" + txt[old.start():]
     txt = re.sub(r'\[ext_resource [^\n]*id="(sg|hall)_[^"]*"\]\n', "", txt)
     txt = re.sub(r'\[sub_resource [^\n]*id="hall_[^"]*"\]\n(?:[^\[\n][^\n]*\n)*\n?', "", txt)
-    for marker in ('\n[node name="StructureGallery"', '\n[node name="StructureHall"', '\n[node name="ConceptLab"', '\n[node name="MaterialsWing"', '\n[node name="PuzzleRooms"', '\n[node name="LowerLevel"'):
+    for marker in ('\n[node name="StructureGallery"',) + tuple(f'\n[node name="{s}"' for s in SECTIONS):
         cut = txt.find(marker)
         if cut >= 0:
             txt = txt[:cut].rstrip("\n") + "\n"
-    # hand-placed nodes may still use a hall_ resource the hall no longer needs
-    for res, (i, line) in keep.items():
-        if res not in h.ext_ids and f'ExtResource("{i}")' in txt:
-            h.ext.append(line); h.ext_ids[res] = i
+    root_ext, root_nodes = [], []
+    for name in SECTIONS:
+        res, uid, size = section_scene(h, name, per.pop(name), subs)
+        i = f"hall_{name}"
+        root_ext.append(f'[ext_resource type="PackedScene" uid="{uid}" path="{res}" id="{i}"]')
+        root_nodes += [f'[node name="{name}" parent="." instance=ExtResource("{i}")]', ""]
+        print(f"{name:14s} {size // 1024:5d} KB  {res}")
+    assert not per, f"nodes outside the wings: {list(per)}"
+    # hand-placed nodes in the museum may use hall_ resources: keep those lines (and their ids)
+    root_ext += [line for i, line in keep.values() if f'ExtResource("{i}")' in txt]
     if "\0HALL_EXT\n" in txt:
-        txt = txt.replace("\0HALL_EXT\n", "\n".join(h.ext) + "\n")
+        txt = txt.replace("\0HALL_EXT\n", "\n".join(root_ext) + "\n")
     else:
         last = [m.end() for m in re.finditer(r"\[ext_resource [^\n]*\]\n", txt)][-1]
-        txt = txt[:last] + "\n".join(h.ext) + "\n" + txt[last:]
-    first_node = txt.find("\n[node ")
-    first_sub = txt.find("\n[sub_resource ")
-    at = first_sub if 0 <= first_sub < first_node else first_node
-    txt = txt[:at + 1] + SUBS.format(floor_tex=floor_tex) + "\n" + txt[at + 1:]
-    txt = txt.rstrip("\n") + "\n\n" + "\n".join(h.nodes).rstrip("\n") + "\n"
+        txt = txt[:last] + "\n".join(root_ext) + "\n" + txt[last:]
+    txt = txt.rstrip("\n") + "\n\n" + "\n".join(root_nodes).rstrip("\n") + "\n"
     open(MUSEUM, "w", newline="\n").write(txt)
-    print(f"structure hall + concept lab: {h.count} structures placed, {len(h.occupied)} cells occupied, {len(h.nodes)} lines")
+    print(f"museum: {h.count} structures placed, {len(h.occupied)} cells occupied, {sum(len(b) // 12 for b in h.batches.values())} boxes "
+          f"in {len(h.batches)} MultiMeshes, ObjectMuseum.tscn {os.path.getsize(MUSEUM) // 1024} KB")
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://0bktr7204cx4"]
 
-[ext_resource type="PackedScene" uid="uid://ya24zxcxdd6n" path="res://game/assets/models/props/decor/collapsed_panel_wall.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://ya240xcxdd6n" path="res://game/assets/models/props/decor/collapsed_panel_wall.glb" id="1_model"]
 
 [node name="CollapsedPanelWall" type="Node3D"]
 
@@ -8,5 +8,5 @@
 
 [node name="Collider0" type="Box3DBody" parent="."]
 body_type = 0
-box_size = Vector3(6.50805, 5, 2.83106)
-position = Vector3(0.10402, 2.5, 1.18735)
+box_size = Vector3(6.43717, 5, 2.79579)
+position = Vector3(0.01859, 2.5, 1.19789)

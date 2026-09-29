@@ -8,5 +8,5 @@
 
 [node name="Collider0" type="Box3DBody" parent="."]
 body_type = 0
-box_size = Vector3(5.49114, 1.35921, 2.79842)
-position = Vector3(-0.04446, 0.6796, 0.24339)
+box_size = Vector3(5.67437, 1.33338, 2.81326)
+position = Vector3(0.05649, 0.66669, 0.25863)

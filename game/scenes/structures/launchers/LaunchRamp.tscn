@@ -21,12 +21,12 @@ instance_shader_parameters/belt_speed = 8
 [node name="Flywheel" parent="Model" index="2"]
 script = ExtResource("3_r")
 axis = Vector3(1, 0, 0)
-speed = 14
+speed = 14.0
 
-[node name="Beacon" parent="Model" index="4"]
+[node name="Beacon" parent="Model" index="3"]
 script = ExtResource("3_r")
 axis = Vector3(0, 1, 0)
-speed = 4
+speed = 4.0
 
 [node name="BeltTop0" type="Box3DCollisionShape" parent="."]
 box_size = Vector3(1.68, 0.04, 1.04261)

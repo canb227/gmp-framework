@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bjx00xttnxqh3"]
 
-[ext_resource type="PackedScene" uid="uid://bcncoazm065qj" path="res://game/assets/models/props/decor/overgrown_tree.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://bcncoa0m065qj" path="res://game/assets/models/props/decor/overgrown_tree.glb" id="1_model"]
 
 [node name="OvergrownTree" type="Node3D"]
 

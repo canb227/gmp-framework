@@ -10,7 +10,7 @@ TagInteractions.cs; most of them only log for now.
 """
 import os, sys, hashlib
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "structures"))
-from scenegen import REPO, new_uid, res_to_abs, ensure_import, script_uid, f
+from scenegen import REPO, new_uid, res_to_abs, ensure_import, script_uid, f, ff
 from gen_blueprints import icon_uid
 
 # ItemTags (append-only in ItemTags.cs)
@@ -248,7 +248,7 @@ def shape_text(shape):
 def physics_text(p):
     names = {"density": "density", "friction": "friction", "rolling": "rolling_resistance", "restitution": "restitution",
              "damping": "linear_damping", "gravity": "gravity_scale"}
-    return "\n".join(f"{names[k]} = {f(v)}" for k, v in p.items())
+    return "\n".join(f"{names[k]} = {ff(v)}" for k, v in p.items())
 
 def existing_uid(path):
     if os.path.exists(path):

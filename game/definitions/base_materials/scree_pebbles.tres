@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
 [ext_resource type="Texture2D" uid="uid://bj0a2rlvpsu4e" path="res://game/assets/icons/items/scree_pebbles.png" id="2_icon"]
-[ext_resource type="PackedScene" uid="uid://ba853ez6rv5mx" path="res://game/scenes/items/world/resources/scree_pebbles.tscn" id="3_scene"]
+[ext_resource type="PackedScene" uid="uid://ba853e06rv5mx" path="res://game/scenes/items/world/resources/scree_pebbles.tscn" id="3_scene"]
 
 [resource]
 script = ExtResource("1_fi")

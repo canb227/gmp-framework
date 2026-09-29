@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://bfwpmz8fsx834"]
+[gd_scene format=3 uid="uid://bfwpm08fsx834"]
 
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
 [ext_resource type="PackedScene" uid="uid://52hngffsjg53" path="res://game/assets/models/items/quicksilver.glb" id="2_model"]
@@ -6,10 +6,10 @@
 [node name="quicksilver" type="Box3DBody"]
 shape_type = 1
 sphere_radius = 0.28
-density = 13
+density = 13.0
 friction = 0.05
-rolling_resistance = 0
-restitution = 0
+rolling_resistance = 0.0
+restitution = 0.0
 script = ExtResource("1_item")
 itemID = "quicksilver"
 canBePickTarget = true

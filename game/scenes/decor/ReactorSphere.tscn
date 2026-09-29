@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://5ov53o1z3gcc"]
+[gd_scene format=3 uid="uid://5ov53o103gcc"]
 
-[ext_resource type="PackedScene" uid="uid://y0gvu0t16zjk" path="res://game/assets/models/props/decor/reactor_sphere.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://y0gvu0t160jk" path="res://game/assets/models/props/decor/reactor_sphere.glb" id="1_model"]
 
 [node name="ReactorSphere" type="Node3D"]
 

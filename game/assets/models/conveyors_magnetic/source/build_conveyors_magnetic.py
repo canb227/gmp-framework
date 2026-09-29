@@ -23,6 +23,44 @@ globals().update({k: v for k, v in _S.items() if not k.startswith("__") and k no
 HERE = _HERE
 OUT_DIR = os.path.dirname(HERE)
 
+# ---------- lean rules for these many-times-placed pieces ----------
+SHARP_BELOW = 0.035                            # boxes thinner than this stay sharp: a < 7 mm chamfer only costs tris
+FOLD = {"tape": "rubber", "wood": "rubber"}    # look-alike surfaces share one material (one draw call fewer)
+
+class Builder(Builder):
+    def box(self, center, size, basis=I3, mat="metal", c=C_FRAME, var=0.18, rust=0.0, bevel=None):
+        if bevel is None and min(size) < SHARP_BELOW:
+            bevel = 0
+        return super().box(center, size, basis, mat, c, var, rust, bevel)
+    def to_object(self, name, coll, material_keys=None):
+        fold = {MI[a]: MI[b] for a, b in FOLD.items()}
+        for f in self.bm.faces:
+            f.material_index = fold.get(f.material_index, f.material_index)
+        return super().to_object(name, coll, material_keys)
+
+def mirror(src_name, dst_name):
+    """mirror_collection plus the weighted normals the copies would otherwise lose."""
+    dst = mirror_collection(bpy.data.collections[src_name], dst_name)
+    for ob in dst.objects:
+        weighted_normals(ob)
+    return dst
+
+def stud(B, p, n, r=0.011, h=0.01, mat="steel", c=C_STEEL, rust=0.3):
+    """Bolt head standing on a surface along n: six sides and a top, no hidden bottom (16 tris)."""
+    n = Vector(n).normalized()
+    u = n.cross(ZV if abs(n.z) < 0.9 else Vector((1, 0, 0))).normalized(); w = n.cross(u)
+    rim = [(u * math.cos(k / 6 * math.tau) + w * math.sin(k / 6 * math.tau)) * r for k in range(6)]
+    v0 = [B.bm.verts.new(p + d) for d in rim]; v1 = [B.bm.verts.new(p + d + n * h) for d in rim]
+    fs = [B.quad([v0[k], v0[(k + 1) % 6], v1[(k + 1) % 6], v1[k]], mat) for k in range(6)] + [B.quad(v1, mat)]
+    B.paint(fs, c, 0.15, rust)
+    return fs
+
+def band(B, center, axis, r, width, seg, mat, c, var=0.1):
+    """Outer skin of a ring() only: for windings wrapped on a cylinder, whose inner face could never be seen."""
+    R = rot_to(axis); ax = Vector(axis).normalized()
+    pts = lambda d: [center + ax * d + R @ Vector((math.cos(a) * r, math.sin(a) * r, 0)) for a in [k / seg * math.tau for k in range(seg)]]
+    return B.tube_rings([pts(-width / 2), pts(width / 2)], mat, c, var, 0.0, cap=False, smooth=True)
+
 def coil(B, G, path, s, side):
     """An electromagnet module on the stringer: dark yoke, copper winding, cyan pole cap (in Glow)."""
     bas = frame_basis(path, s); _, t, sd, up = path.frame(s)
@@ -30,7 +68,10 @@ def coil(B, G, path, s, side):
     B.box(c - up * 0.1, (0.13, 0.16, 0.06), bas, "metal", C_DARK, 0.2, rust=0.3)
     B.cyl(c - up * 0.07, c + up * 0.12, 0.06, 12, "copper", C_COPPER, 0.15)
     for k in range(5):
-        ring(B, c + up * (-0.05 + k * 0.035), up, 0.058, 0.064, 0.008, 12, "copper", (0.45, 0.2, 0.08), 0.1)
+        band(B, c + up * (-0.05 + k * 0.035), up, 0.064, 0.008, 12, "copper", (0.45, 0.2, 0.08), 0.1)
+    for dx in (-0.045, 0.045):                                              # yoke bolted to the stringer
+        for dy in (-0.06, 0.06):
+            stud(B, c - up * 0.07 + sd * dx + t * dy, up, 0.009, 0.006, rust=0.3)
     B.cyl(c + up * 0.12, c + up * 0.15, 0.07, 12, "metal", C_DARK, 0.15)
     G.cyl(c + up * 0.15, c + up * 0.157, 0.045, 12, "cyan", C_CYAN, 0.05)
     B.box(c + up * 0.02 + t * 0.075, (0.1, 0.02, 0.1), bas, "tape", C_TAPE, 0.25)
@@ -60,6 +101,11 @@ def power_box(B, G, path, s, side):
     G.box(c + sd * side * 0.04 + up * 0.03, (0.004, 0.06, 0.025), bas, "cyan", C_CYAN, 0.05)
     B.box(c + sd * side * 0.04 - up * 0.03, (0.004, 0.06, 0.025), bas, "glow", C_AMBER, 0.05)
     hazard(B, c + sd * side * 0.0355 - t * 0.17 - up * 0.1, t, up, 0.34, 0.03, sd * side, pitch=0.06)
+    for dt in (-0.15, 0.15):
+        for do in (-0.07, 0.08):
+            stud(B, c + sd * side * 0.035 + t * dt + up * do, sd * side, 0.008, 0.006, rust=0.3)
+    # armoured feed running along the stringer to the coils
+    B.pipe([c + up * 0.1 - t * 0.12, c + up * 0.14 - t * 0.2 - sd * side * 0.01, path.point(max(0.0, s - 0.45), side * 0.93, 0.02)], 0.011, 6, "rubber", C_BLACK)
 
 def build_straight():
     rng = random.Random(701); random.seed(701)
@@ -90,7 +136,7 @@ def build_turn():
     return coll
 
 def build_turn_left():
-    return mirror_collection(bpy.data.collections["ConveyorMag_TurnRight"], "ConveyorMag_TurnLeft")
+    return mirror("ConveyorMag_TurnRight", "ConveyorMag_TurnLeft")
 
 PIECES = [
     (build_straight, "conveyor_mag_straight.glb"),

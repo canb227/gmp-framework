@@ -31,6 +31,69 @@ for _ns in (L, _G):                                                            #
 I3 = Matrix.Identity(3)
 ZV = Vector((0, 0, 1))
 C_WEAR = L["C_WEAR"]
+
+# ---------- detail and shading ----------
+BEVEL = 0.012            # default edge chamfer on Builder.box (m); capped at 20% of the box's thinnest side
+EDGE_WEAR = 0.35         # how far chamfers are blended toward C_WEAR (worn, lighter edges)
+_CORNER = [(sx, sy, sz) for sx in (-1, 1) for sy in (-1, 1) for sz in (-1, 1)]
+
+def _wear(c, k=None):
+    k = EDGE_WEAR if k is None else k
+    return tuple(a + (b - a) * k for a, b in zip(c, C_WEAR))
+
+class Builder(L["Builder"]):
+    """The conveyor Builder with chamfered boxes: every box gets 45-degree edge chamfers (26 faces, 24 verts)
+    painted a little worn. With the weighted normals applied at to_object the big faces still shade flat and the
+    chamfers catch the light, which reads as machined metal instead of CG cubes."""
+    bevel = BEVEL
+
+    def box(self, center, size, basis=Matrix.Identity(3), mat="metal", c=C_FRAME, var=0.18, rust=0.0, bevel=None):
+        w = min(self.bevel if bevel is None else bevel, 0.2 * min(size))
+        if w < 0.002:
+            return super().box(center, size, basis, mat, c, var, rust)
+        h = [s / 2 for s in size]
+        # P[corner][axis]: the corner's vertex on the face normal to `axis` (full extent on that axis, inset on the others)
+        P = {}
+        for cr in _CORNER:
+            for a in range(3):
+                loc = Vector([cr[k] * (h[k] if k == a else h[k] - w) for k in range(3)])
+                P[cr, a] = self.bm.verts.new(center + basis @ loc)
+        main, edge = [], []
+        loop = [(-1, -1), (1, -1), (1, 1), (-1, 1)]
+        for a in range(3):
+            b, d = [k for k in range(3) if k != a]
+            for s in (-1, 1):
+                vs = []
+                for sb, sd in loop:
+                    cr = [0, 0, 0]; cr[a], cr[b], cr[d] = s, sb, sd
+                    vs.append(P[tuple(cr), a])
+                main.append(self.quad(vs, mat))
+            for sb, sd in loop:                          # chamfer strips along axis a
+                lo = [0, 0, 0]; lo[a], lo[b], lo[d] = -1, sb, sd
+                hi = list(lo); hi[a] = 1
+                lo, hi = tuple(lo), tuple(hi)
+                edge.append(self.quad([P[lo, b], P[hi, b], P[hi, d], P[lo, d]], mat))
+        for cr in _CORNER:
+            f = self.bm.faces.new([P[cr, 0], P[cr, 1], P[cr, 2]]); f.material_index = MI[mat]; edge.append(f)
+        fs = main + edge
+        bmesh.ops.recalc_face_normals(self.bm, faces=fs)
+        for f in fs:
+            f.smooth = True                              # weighted normals keep the big faces flat
+        seed = random.random() * 50
+        self.paint(main, c, var, rust, seed)
+        self.paint(edge, _wear(c), var * 0.6, rust * 0.5, seed)
+        return main
+
+    def to_object(self, name, coll, material_keys=None):
+        ob = super().to_object(name, coll, material_keys or MAT_ORDER)
+        weighted_normals(ob)
+        return ob
+
+def weighted_normals(ob):
+    """Face-area weighted normals (applied on export): big faces shade flat, chamfers and small faces blend."""
+    if ob.type == 'MESH' and not any(m.type == 'WEIGHTED_NORMAL' for m in ob.modifiers):
+        m = ob.modifiers.new("WeightedNormal", 'WEIGHTED_NORMAL')
+        m.mode = 'FACE_AREA'; m.weight = 50; m.keep_sharp = True; m.thresh = 0.01
 C_VIOLET = (0.62, 0.4, 1.0)                  # antigravity
 C_LAMP = (1.0, 0.97, 0.9)                    # facility light strips
 C_FACILITY = (0.78, 0.78, 0.76)              # clean facility panel (advanced tier)
@@ -162,6 +225,8 @@ def mirror_collection(src, dst_name, axis=0):
             bm.to_mesh(me); bm.free()
             set_active_colors(me)
             nb = bpy.data.objects.new(ob.name.split(".")[0].split("__")[-1], me)
+            if any(m.type == 'WEIGHTED_NORMAL' for m in ob.modifiers):
+                weighted_normals(nb)
         else:
             nb = bpy.data.objects.new(ob.name.split(".")[0].split("__")[-1], None)
             nb.empty_display_type = 'PLAIN_AXES'; nb.empty_display_size = 0.2
@@ -266,7 +331,71 @@ def unroll_cycles(coll, length):
             fc.update()
 
 # ---------- export ----------
+SPECIAL_MATS = ("M_ConvBelt", "M_PropGlass", "M_Field")       # swapped or shadowless in Godot: keep their nodes apart
+EXPORT_KEEP = set()                                            # extra node names a family wants exported as-is
+_SCENE_REFS = None
+
+def scene_refs():
+    """Model node names the Godot scenes or scripts address (belts, spinners, fields, arm joints)."""
+    global _SCENE_REFS
+    if _SCENE_REFS is None:
+        import re
+        names = set()
+        for root, _, files in os.walk(os.path.normpath(os.path.join(MODELS, "..", ".."))):
+            for fn in files:
+                if fn.endswith((".tscn", ".cs")):
+                    t = open(os.path.join(root, fn), encoding="utf-8", errors="ignore").read()
+                    for m in re.finditer(r'\[node name="([^"]+)" parent="(Model[^"]*)"', t):
+                        names.update((m.group(2) + "/" + m.group(1)).split("/")[1:])
+                    for m in re.finditer(r'"Model/([A-Za-z0-9_/]+)"', t):
+                        names.update(m.group(1).split("/"))
+        _SCENE_REFS = names - {"AnimationPlayer"}
+    return _SCENE_REFS
+
+def merge_static(coll, name="Body"):
+    """Join every mesh node nothing needs by name into one (fewer nodes and draw calls in Godot). Kept apart:
+    animated nodes and their parents and children, nodes the scenes address, nodes with belt, glass or field
+    materials, and names in EXPORT_KEEP."""
+    keep = scene_refs() | EXPORT_KEEP
+    obs = list(coll.objects)
+    def moving(ob):
+        while ob is not None:
+            if ob.animation_data and ob.animation_data.action:
+                return True
+            ob = ob.parent
+        return False
+    def special(ob):                                           # Builder meshes carry every material slot: check the used ones
+        mats = ob.data.materials
+        return any(mats[i] and mats[i].name.startswith(SPECIAL_MATS) for i in {p.material_index for p in ob.data.polygons} if i < len(mats))
+    cands = [ob for ob in obs if ob.type == 'MESH' and ob.parent is None and not ob.children and not moving(ob)
+             and ob.name not in keep and not special(ob)]
+    if len(cands) < 2:
+        return
+    view = bpy.context.view_layer
+    for ob in cands:
+        if ob.modifiers:
+            with bpy.context.temp_override(object=ob, active_object=ob):
+                for m in list(ob.modifiers):
+                    bpy.ops.object.modifier_apply(modifier=m.name)
+    target = cands[0]
+    with bpy.context.temp_override(active_object=target, object=target, selected_objects=cands, selected_editable_objects=cands):
+        bpy.ops.object.join()
+    target.name = name if name not in [o.name for o in coll.objects if o is not target] else name + "Merged"
+    # drop unused material slots so each merged node carries only the surfaces it draws
+    me = target.data
+    used = sorted({p.material_index for p in me.polygons})
+    if len(used) < len(me.materials):
+        remap = {old: new for new, old in enumerate(used)}
+        mats = [me.materials[i] for i in used]
+        idx = [remap[p.material_index] for p in me.polygons]
+        me.materials.clear()
+        for m in mats:
+            me.materials.append(m)
+        me.polygons.foreach_set("material_index", idx)
+        me.update()
+
 def export_glb(coll, path):
+    merge_static(coll)
     bpy.ops.object.select_all(action='DESELECT')
     for ob in coll.objects:
         ob.select_set(True)

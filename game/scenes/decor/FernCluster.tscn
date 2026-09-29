@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://3ghse881i8px"]
 
-[ext_resource type="PackedScene" uid="uid://7lom2bizjtrq" path="res://game/assets/models/props/decor/fern_cluster.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://7lom2bi0jtrq" path="res://game/assets/models/props/decor/fern_cluster.glb" id="1_model"]
 
 [node name="FernCluster" type="Node3D"]
 

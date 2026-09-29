@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://z5wrqqhx80zz"]
+[gd_scene format=3 uid="uid://05wrqqhx8000"]
 
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
 [ext_resource type="PackedScene" uid="uid://3o84j2g04la5" path="res://game/assets/models/items/ballast_shot.glb" id="2_model"]
@@ -6,7 +6,7 @@
 [node name="ballast_shot" type="Box3DBody"]
 shape_type = 1
 sphere_radius = 0.35
-density = 20
+density = 20.0
 friction = 0.4
 rolling_resistance = 0.02
 script = ExtResource("1_item")

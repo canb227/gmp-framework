@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://51o0p2ojp0ce"]
 
-[ext_resource type="PackedScene" uid="uid://bazqarcszo33e" path="res://game/assets/models/props/decor/arcology_spire.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://ba0qarcs0o33e" path="res://game/assets/models/props/decor/arcology_spire.glb" id="1_model"]
 
 [node name="ArcologySpire" type="Node3D"]
 

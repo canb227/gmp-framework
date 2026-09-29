@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://23bd1h5yz1p0"]
+[gd_scene format=3 uid="uid://23bd1h5y01p0"]
 
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
 [ext_resource type="PackedScene" uid="uid://bja6worxch5fb" path="res://game/assets/models/items/chalk_nodule.glb" id="2_model"]

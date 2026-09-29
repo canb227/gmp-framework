@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" uid="uid://4504fd45hmmz" path="res://game/assets/models/machines/concepts/concept_spiral_radiator.glb" id="1_r"]
+[ext_resource type="PackedScene" uid="uid://4504fd45hmm0" path="res://game/assets/models/machines/concepts/concept_spiral_radiator.glb" id="1_r"]
 [ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
 
 [node name="ConceptSpiralRadiator" type="Box3DBody"]

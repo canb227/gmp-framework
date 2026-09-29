@@ -1,13 +1,25 @@
 # Pipeline gotchas (each one cost real time)
 
 ## Godot files
-- **UIDs use a base-35 alphabet**: `a-z` then `0-8`, with **no 9**. `scenegen.uid_text` does this now. A uid
-  containing 9 gets reassigned by Godot, and every reference to it goes stale.
+- **UIDs use a base-34 alphabet: `a-y` then `0-8`, never `z` or `9`** (Godot's off-by-one, kept for
+  compatibility; see `core/io/resource_uid.cpp`). Godot reads `z` as `0`, then rewrites every uid holding a `z`
+  in every file it saves, and a human had to clean that up once. `scenegen.uid_text` is right now. Generators must
+  also **reuse a file's existing uid** instead of re-deriving it (gen_decor, gen_items and place_museum do).
+- **Every generated asset needs its sidecar**: each `.glb`/`.png` needs a `.import` (`ensure_import` /
+  `icon_uid`), and each new `.cs`/`.gd`/`.gdshader` needs a `.uid`. Models placed straight into the museum
+  never went through `ensure_import`, so six room glbs had none. Check before handing off:
+  `for f in $(git ls-files 'game/*.glb'); do [ -f $f.import ] || echo $f; done`.
 - **Keep ext_resource ids stable** when regenerating a scene someone has edited by hand. `place_museum.py` keeps
   existing `hall_` ids, because hand-placed nodes (e.g. `SpawnerConveyorLine`) reference them.
 - **Godot adds `unique_id=` to nodes** on save. Regenerated nodes lose them, which is harmless.
 - **Transform3D text is row-major** in .tscn: `Transform3D(xx, xy, xz, yx, ...)` gives rows, not columns. Use
   the `xf(cols, pos)` helper in `place_museum.py`.
+- **Write float properties with a decimal point** (`scenegen.ff`: `40.0`, not `40`). A C# `[Export] float/double`
+  set from an integer literal in a .tscn silently doesn't take, and Godot drops it on the next save: the
+  Carousel's `degreesPerSecond = 40` and spawner intervals `6`, `3`, `2` never applied until this was fixed.
+- **Hand edits inside generated wings are lost on regeneration.** Port them into the generator (e.g. the Structure Hall
+  demo spawners were set to `iron_ore` in the editor, and `SLOW_SPAWNER` carries it now). Compare an editor-saved
+  scene semantically (node by node), not by text diff: Godot reorders properties and drops defaults on save.
 - **Typed dictionaries** in scenes: `itemWeights = Dictionary[String, float]({"a": 1.0})`.
 - **Label3D** text needs `\n` escaped as `\\n` in the file. Wrapping needs `autowrap_mode = 3` plus `width` in
   pixels (metres ÷ `pixel_size`). With yaw 0 a label faces +Z, and yaw 1 faces +X.
@@ -35,7 +47,8 @@
 ## Review renders (`tools/structures/view_hall.py`)
 - The viewer must clear animation data on imported objects, or keyframes snap parts back to the model origin.
 - `ROOM_ANGLE=<deg>` shows the Tumbler turned. `top`, `lab` and `wing` are preset views, or pass `cam:target`.
-- Whole-museum renders now take more than 10 minutes. Run them in the background.
+- The viewer reads the wing scenes and their MultiMeshes, importing each .glb once and copying it, so a
+  wing renders in about 30 s (it used to re-import every instance and took 10+ minutes).
 - Billboard labels come out mirrored in these renders but face the camera in Godot.
 
 ## Environment
@@ -50,3 +63,35 @@
   prop whose bounds would make a bad collider (a tree canopy, a catwalk, a hollow tower) needs hand-set boxes in `CUSTOM`/`KIT`.
 - A Box3DBody's own shape is always centred on its origin, so colliders offset from the root are separate
   child bodies.
+
+## Performance and scene size
+- **Godot warns when a text scene gets large** (FileSystem > On Save > Warn on Saving Large Text Resources);
+  ObjectMuseum.tscn hit 790 KB with ~1,800 MeshInstance3D boxes. The fixes, in place_museum.py:
+  - **Batch boxes into MultiMeshes** (`Hall.batch`): one MultiMeshInstance3D per material per exhibit group.
+    The tscn stores 12 floats per box, and the draw costs one call per MultiMesh. A MultiMesh buffer is row-major 3x4
+    (`basis row, origin` x3), the same order as Transform3D text.
+  - **Colliders don't need meshes**: a static Box3DBody alone collides, and its look comes from the MultiMesh.
+  - **Split big generated levels into sub-scenes** (one per wing), instanced from the level. Keep
+    NodePaths relative (`../Body`) so they survive the split.
+  - Boxes on a moving body go in a MultiMesh *under that body* so they move with it.
+  - Don't embed ArrayMesh data in a level `.tscn` (TestFacility.tscn is 39 MB from 128 inline ArrayMeshes).
+    Instance a .glb or save the mesh as a binary `.res`.
+- **Models (salvage_lib)**: static parts are merged into one `Body` node on export (`merge_static`). Nodes stay
+  separate if they animate, if a scene addresses them (names are found by scanning `game/**/*.tscn|cs`
+  for `parent="Model/..."`), if they use belt/glass/field materials, or if they're listed in `EXPORT_KEEP`.
+  Each material left on a node is one draw call. **After a model rebuild, rerun the scene generators**:
+  `index=` overrides on model children are computed from the glb's node order.
+- **Realism for cheap**: `Builder.box` chamfers edges (`BEVEL`, 12 mm by default; `bevel=0` for faces that butt
+  against neighbours, like kit seams). Chamfers are painted toward `C_WEAR` for worn edges. Face-area
+  WeightedNormal keeps the big faces flat-shaded. Vertex colours are per face, so glTF splits vertices at every
+  face anyway: expect about 2 verts per tri.
+- Godot generates LODs and shadow meshes on import (`meshes/generate_lods=true`), so don't hand-author LODs.
+- **Budgets used in the 2026-09 detail pass**: items ≤ 700 tris, 1 node and ≤ 2 surfaces (hundreds spawn);
+  machines ≤ 8k; big decor/superstructures ≤ 15k; kit pieces lean (they tile hundreds of times). Skip the
+  chamfer on glow strips, sheet under ~3 cm and parts under ~8 cm, and make foliage, paper, cracks and stains
+  single flat polygons (the exported materials are double-sided).
+- **Glass in a mesh switches off that whole node's shadow** (the import script sets `cast_shadow` per
+  MeshInstance). Keep glass and field shells in their own nodes.
+- **Detail helpers are still per family** (`stud`, `decal`, `streak`, `bolt_circle`, `grille`, `lean_path`,
+  `band`, `lump`...). Promote them into salvage_lib when a third family needs one. Also open: a chamfer that
+  scales with box size (12 mm is invisible on 20 m superstructure members but still costs 44 tris per box).

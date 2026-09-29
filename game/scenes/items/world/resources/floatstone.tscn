@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bgu76bc7qopp8"]
 
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
-[ext_resource type="PackedScene" uid="uid://150bhrxn7snz" path="res://game/assets/models/items/floatstone.glb" id="2_model"]
+[ext_resource type="PackedScene" uid="uid://150bhrxn7sn0" path="res://game/assets/models/items/floatstone.glb" id="2_model"]
 
 [node name="floatstone" type="Box3DBody"]
 shape_type = 1

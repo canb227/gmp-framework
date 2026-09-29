@@ -24,6 +24,58 @@ globals().update({k: v for k, v in _S.items() if not k.startswith("__") and k no
 HERE = _HERE
 OUT_DIR = os.path.dirname(HERE)
 
+# ---------- lean rules for these many-times-placed pieces ----------
+SHARP_BELOW = 0.035                            # boxes thinner than this stay sharp: a < 7 mm chamfer only costs tris
+FOLD = {"tape": "rubber", "wood": "rubber"}    # look-alike surfaces share one material (one draw call fewer)
+
+class Builder(Builder):
+    def box(self, center, size, basis=I3, mat="metal", c=C_FRAME, var=0.18, rust=0.0, bevel=None):
+        if bevel is None and min(size) < SHARP_BELOW:
+            bevel = 0
+        return super().box(center, size, basis, mat, c, var, rust, bevel)
+    def to_object(self, name, coll, material_keys=None):
+        fold = {MI[a]: MI[b] for a, b in FOLD.items()}
+        for f in self.bm.faces:
+            f.material_index = fold.get(f.material_index, f.material_index)
+        return super().to_object(name, coll, material_keys)
+
+def stud(B, p, n, r=0.011, h=0.01, mat="steel", c=C_STEEL, rust=0.3):
+    """Bolt head standing on a surface along n: six sides and a top, no hidden bottom (16 tris)."""
+    n = Vector(n).normalized()
+    u = n.cross(ZV if abs(n.z) < 0.9 else Vector((1, 0, 0))).normalized(); w = n.cross(u)
+    rim = [(u * math.cos(k / 6 * math.tau) + w * math.sin(k / 6 * math.tau)) * r for k in range(6)]
+    v0 = [B.bm.verts.new(p + d) for d in rim]; v1 = [B.bm.verts.new(p + d + n * h) for d in rim]
+    fs = [B.quad([v0[k], v0[(k + 1) % 6], v1[(k + 1) % 6], v1[k]], mat) for k in range(6)] + [B.quad(v1, mat)]
+    B.paint(fs, c, 0.15, rust)
+    return fs
+
+def decal(B, pts, n, mat="panel", c=C_DARK, var=0.1):
+    """Flat painted shape (one n-gon) facing n, e.g. a flow arrow on a guard."""
+    f = B.quad([B.bm.verts.new(Vector(p)) for p in pts], mat)
+    if f.normal.dot(Vector(n)) < 0:
+        f.normal_flip()
+    B.paint([f], c, var)
+    return f
+
+def streak(B, p, n, length=0.14, w=0.011, c=C_RUST):
+    """Rust run washed down a surface (facing n) from a bolt at p: one tapering painted quad."""
+    n = Vector(n).normalized(); dn = -ZV + n * n.z
+    if dn.length < 1e-3:
+        return
+    dn.normalize(); u = n.cross(dn)
+    p = p + n * 0.0015
+    return decal(B, [p + u * w, p + dn * length + u * w * 0.2, p + dn * length - u * w * 0.2, p - u * w], n, "steel", c, 0.3)
+
+def louvre(B, c, n, w, h, slats=4, col=C_DARK):
+    """Vent on a face centred at c facing n: dark recess with angled slats (sharp boxes, cheap)."""
+    R = facing_basis(n)
+    B.box(c, (w, h, 0.01), R, "metal", (0.02, 0.02, 0.02), 0.05)
+    for k in range(slats):
+        y = -h / 2 + h * (k + 0.5) / slats
+        B.box(c + R @ Vector((0, y, 0.008)), (w - 0.02, 0.012, 0.012), R @ Matrix.Rotation(-0.5, 3, 'X'), "metal", col, 0.1)
+
+EXPORT_KEEP.update({"Pusher"})                          # slides in the scene: keep it its own node
+
 PUSH_STROKE = 1.45           # pusher travel toward +X
 PUSHER_REST_X = -0.78
 DECK_Z = 1.0                 # basket floor level (bottom of the top cell)
@@ -50,6 +102,13 @@ def build_filter():
     B.box(Vector((0, 0, 0.72)), (1.84, 1.84, 0.5), I3, "metal", C_FRAME, 0.2, rust=0.3)
     for n in (Vector((0, 1, 0)), Vector((0, -1, 0)), Vector((1, 0, 0)), Vector((-1, 0, 0))):
         panel_face(B, n * 0.925 + Vector((0, 0, 0.72)), n, 1.6, 0.42, C_WHITE)
+        u = facing_basis(n) @ Vector((1, 0, 0))
+        for du in (-0.76, 0.76):                                                # panel screws
+            for dz in (-0.17, 0.13):
+                stud(B, n * 0.943 + u * du + Vector((0, 0, 0.72 + dz)), n, 0.009, 0.005, rust=0.2)
+    for n in (Vector((0, -1, 0)), Vector((-1, 0, 0))):                           # cooling vents (away from the display)
+        u = facing_basis(n) @ Vector((1, 0, 0))
+        louvre(B, n * 0.943 + u * 0.45 + Vector((0, 0, 0.7)), n, 0.4, 0.2, 4)
     # front display: what the filter is holding
     B.box(Vector((0.3, 0.945, 0.72)), (0.6, 0.012, 0.28), I3, "metal", (0.02, 0.03, 0.03), 0.05)
     for k in range(3):
@@ -71,9 +130,14 @@ def build_filter():
     B.box(cam, (0.22, 0.18, 0.16), I3, "panel", C_WHITE, 0.3)
     B.cyl(cam + Vector((0, 0.0, -0.08)), cam + Vector((0, 0.0, -0.1)), 0.05, 12, "metal", C_DARK, 0.1)
     B.cyl(cam + Vector((0, 0.0, -0.1)), cam + Vector((0, 0.0, -0.105)), 0.03, 12, "cyan", C_CYAN, 0.05)
+    B.box(cam + Vector((0, 0.07, 0.06)), (0.08, 0.04, 0.06), I3, "steel", C_STEEL, 0.2, rust=0.4)      # clamp to the arch
+    B.pipe([cam + Vector((0.11, 0.02, 0.02)), Vector((0.4, -0.58, 0.45)), Vector((0.86, -0.56, 0.45))], 0.01, 5, "metal", C_BLACK)
     # deck + basket: open-top salvaged crate on the housing, wire-grille walls, scan tray floor
     B.box(Vector((0, 0, DECK_Z)), (1.9, 1.9, 0.06), I3, "metal", C_DARK, 0.2, rust=0.3)
     B.box(Vector((0, 0, DECK_Z + 0.035)), (1.5, 1.5, 0.01), I3, "steel", C_WEAR, 0.15, rust=0.2)
+    for k in range(4):                                                           # tray screws
+        a = k / 4 * math.tau + math.pi / 4
+        stud(B, Vector((math.cos(a) * 0.98, math.sin(a) * 0.98, DECK_Z + 0.04)), ZV, 0.012, 0.006, rust=0.3)
     for (a, b) in (((-0.74, -0.74), (0.74, -0.74)), ((0.74, -0.74), (0.74, 0.74)), ((0.74, 0.74), (-0.74, 0.74)), ((-0.74, 0.74), (-0.74, -0.74))):
         B.cyl(Vector((a[0], a[1], DECK_Z + 0.045)), Vector((b[0], b[1], DECK_Z + 0.045)), 0.012, 6, "cyan", C_CYAN, 0.05)
     for n, u in ((Vector((1, 0, 0)), Vector((0, 1, 0))), (Vector((-1, 0, 0)), Vector((0, 1, 0))),
@@ -109,8 +173,9 @@ def beam(B, l, w=0.12, col=(0.3, 0.3, 0.3), panel=True):
     B.box(Vector((0, 0, l / 2)), (w, w, l), I3, "steel", col, 0.25, rust=0.5)
     if panel:
         B.box(Vector((w / 2 + 0.008, 0, l / 2)), (0.016, w * 0.9, l * 0.7), I3, "panel", C_WHITE, 0.3)
-        for z in (l * 0.2, l * 0.8):
-            B.cyl(Vector((w / 2 + 0.016, 0, z)), Vector((w / 2 + 0.026, 0, z)), 0.012, 6, "steel", C_STEEL, rust=0.4)
+        for z in (l * 0.2, l * 0.5, l * 0.8):
+            for dy in (-w * 0.3, w * 0.3):
+                stud(B, Vector((w / 2 + 0.016, dy, z)), (1, 0, 0), 0.01, 0.007, rust=0.4)
 
 def joint(B, r=0.1, w=0.26, col=C_DARK):
     B.cyl(Vector((-w / 2, 0, 0)), Vector((w / 2, 0, 0)), r, 14, "metal", col, 0.2, rust=0.3)
@@ -128,9 +193,11 @@ def build_arm():
         panel_face(B, n * 0.6 + Vector((0, 0, -0.52)), n, 1.0, 0.7, C_WHITE)
     for (x, y) in ((-0.85, -0.85), (0.85, -0.85), (-0.85, 0.85), (0.85, 0.85)):
         B.box(Vector((x, y, -0.9)), (0.16, 0.16, 0.08), I3, "steel", C_STEEL, 0.2, rust=0.5)
-        B.cyl(Vector((x, y, -0.86)), Vector((x, y, -0.83)), 0.03, 6, "steel", C_STEEL, rust=0.4)
+        stud(B, Vector((x, y, -0.86)), ZV, 0.03, 0.03, rust=0.4)
         B.cyl(Vector((x * 0.8, y * 0.8, -0.9)), Vector((x * 0.55, y * 0.55, -0.3)), 0.025, 6, "steel", C_STEEL, rust=0.5)
     ring(B, Vector((0, 0, -0.04)), (0, 0, 1), 0.45, 0.58, 0.08, 32, "metal", C_DARK, 0.2, rust=0.3)
+    for n in (Vector((1, 0, 0)), Vector((-1, 0, 0))):                            # motor vents on the pedestal flanks
+        louvre(B, n * 0.623 + Vector((0, 0.2, -0.45)), n, 0.36, 0.2, 4)
     hazard(B, Vector((-0.6, 0.601, -0.94)), (1, 0, 0), (0, 0, 1), 1.2, 0.06, (0, 1, 0), pitch=0.08)
     B.box(Vector((0.35, 0.61, -0.3)), (0.3, 0.012, 0.18), I3, "metal", (0.02, 0.03, 0.03), 0.05)
     B.box(Vector((0.3, 0.618, -0.28)), (0.05, 0.004, 0.03), I3, "glow", C_AMBER, 0.05)
@@ -141,6 +208,9 @@ def build_arm():
     T = Builder()
     T.cyl(Vector((0, 0, 0.0)), Vector((0, 0, 0.08)), 0.44, 28, "metal", C_DARK, 0.2, rust=0.3)
     T.cyl(Vector((0, 0, 0.08)), Vector((0, 0, 0.1)), 0.4, 28, "panel", C_WHITE, 0.3)
+    for k in range(12):                                                          # slewing-ring bolts
+        a = (k + 0.5) / 12 * math.tau
+        stud(T, Vector((math.cos(a) * 0.42, math.sin(a) * 0.42, 0.08)), ZV, 0.012, 0.01, rust=0.3)
     for sx_ in (-1, 1):
         T.box(Vector((sx_ * 0.2, 0, 0.28)), (0.06, 0.3, 0.4), I3, "steel", (0.3, 0.3, 0.3), 0.25, rust=0.5)
     T.box(Vector((0, -0.28, 0.25)), (0.32, 0.2, 0.3), I3, "metal", C_BLUE, 0.25, rust=0.15)                   # shoulder motor

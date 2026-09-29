@@ -26,6 +26,69 @@ globals().update({k: v for k, v in _S.items() if not k.startswith("__") and k no
 HERE = _HERE
 OUT_DIR = os.path.dirname(HERE)
 
+# ---------- lean rules for these many-times-placed pieces ----------
+SHARP_BELOW = 0.035                            # boxes thinner than this stay sharp: a < 7 mm chamfer only costs tris
+FOLD = {"tape": "rubber", "wood": "rubber"}    # look-alike surfaces share one material (one draw call fewer)
+
+class Builder(Builder):
+    def box(self, center, size, basis=I3, mat="metal", c=C_FRAME, var=0.18, rust=0.0, bevel=None):
+        if bevel is None and min(size) < SHARP_BELOW:
+            bevel = 0
+        return super().box(center, size, basis, mat, c, var, rust, bevel)
+    def to_object(self, name, coll, material_keys=None):
+        fold = {MI[a]: MI[b] for a, b in FOLD.items()}
+        for f in self.bm.faces:
+            f.material_index = fold.get(f.material_index, f.material_index)
+        return super().to_object(name, coll, material_keys)
+
+def stud(B, p, n, r=0.011, h=0.01, mat="steel", c=C_STEEL, rust=0.3):
+    """Bolt head standing on a surface along n: six sides and a top, no hidden bottom (16 tris)."""
+    n = Vector(n).normalized()
+    u = n.cross(ZV if abs(n.z) < 0.9 else Vector((1, 0, 0))).normalized(); w = n.cross(u)
+    rim = [(u * math.cos(k / 6 * math.tau) + w * math.sin(k / 6 * math.tau)) * r for k in range(6)]
+    v0 = [B.bm.verts.new(p + d) for d in rim]; v1 = [B.bm.verts.new(p + d + n * h) for d in rim]
+    fs = [B.quad([v0[k], v0[(k + 1) % 6], v1[(k + 1) % 6], v1[k]], mat) for k in range(6)] + [B.quad(v1, mat)]
+    B.paint(fs, c, 0.15, rust)
+    return fs
+
+def decal(B, pts, n, mat="panel", c=C_DARK, var=0.1):
+    """Flat painted shape (one n-gon) facing n, e.g. a flow arrow on a guard."""
+    f = B.quad([B.bm.verts.new(Vector(p)) for p in pts], mat)
+    if f.normal.dot(Vector(n)) < 0:
+        f.normal_flip()
+    B.paint([f], c, var)
+    return f
+
+def streak(B, p, n, length=0.14, w=0.011, c=C_RUST):
+    """Rust run washed down a surface (facing n) from a bolt at p: one tapering painted quad."""
+    n = Vector(n).normalized(); dn = -ZV + n * n.z
+    if dn.length < 1e-3:
+        return
+    dn.normalize(); u = n.cross(dn)
+    p = p + n * 0.0015
+    return decal(B, [p + u * w, p + dn * length + u * w * 0.2, p + dn * length - u * w * 0.2, p - u * w], n, "steel", c, 0.3)
+
+def band(B, center, axis, r, width, seg, mat, c, var=0.1):
+    """Outer skin of a ring() only: a band wrapped on a cylinder, whose inner face could never be seen."""
+    R = rot_to(axis); ax = Vector(axis).normalized()
+    pts = lambda d: [center + ax * d + R @ Vector((math.cos(a) * r, math.sin(a) * r, 0)) for a in [k / seg * math.tau for k in range(seg)]]
+    return B.tube_rings([pts(-width / 2), pts(width / 2)], mat, c, var, 0.0, cap=False, smooth=True)
+
+def bolt_circle(B, center, n, r, k, br=0.012, h=0.008, mat="steel", c=C_STEEL, rust=0.3):
+    """k bolt heads evenly round a circle of radius r on a face (centre, normal n)."""
+    R = facing_basis(n)
+    for j in range(k):
+        a = (j + 0.5) / k * math.tau
+        stud(B, center + R @ Vector((math.cos(a) * r, math.sin(a) * r, 0)), n, br, h, mat, c, rust)
+
+def louvre(B, c, n, w, h, slats=4, col=C_DARK):
+    """Vent on a face centred at c facing n: dark recess with angled slats (sharp boxes, cheap)."""
+    R = facing_basis(n)
+    B.box(c, (w, h, 0.01), R, "metal", (0.02, 0.02, 0.02), 0.05)
+    for k in range(slats):
+        y = -h / 2 + h * (k + 0.5) / slats
+        B.box(c + R @ Vector((0, y, 0.008)), (w - 0.02, 0.012, 0.012), R @ Matrix.Rotation(-0.5, 3, 'X'), "metal", col, 0.1)
+
 RAM_STROKE = 0.5
 RAM_REST_Z = -0.15           # platen underside at rest
 LONG = Path(4.0, straight_fn, 1)   # belt over two cells along +Y
@@ -65,6 +128,11 @@ def build_press():
         hazard(B, Vector((sx_ * 0.999, 1.6 if sx_ > 0 else 0.4, -0.95)), (0, -sx_, 0), (0, 0, 1), 1.2, 0.12, (sx_, 0, 0), pitch=0.1)
         for y in (0.45, 1.55):
             B.box(Vector((x, y, 0.0)), (0.13, 0.1, 1.98), I3, "metal", C_DARK, 0.2, rust=0.3)
+            for z in (-0.55, 0.0, 0.55):                                           # tie-bolts through the column
+                p = Vector((sx_ * 0.995, y, z))
+                stud(B, p, (sx_, 0, 0), 0.016, 0.012, rust=0.5)
+                if z > 0:
+                    streak(B, p, (sx_, 0, 0), 0.22)
         # bed rails under the platen, beside the belt
         B.box(Vector((sx_ * 0.87, 1.0, BELT_TOP - 0.05)), (0.05, 1.2, 0.2), I3, "steel", C_WEAR, 0.15, rust=0.3)
     # crown with the hydraulic cylinder
@@ -72,7 +140,9 @@ def build_press():
     for n in (Vector((0, 1, 0)), Vector((0, -1, 0))):
         panel_face(B, Vector((0, 1.0, 0.72)) + n * 0.63, n, 1.7, 0.36, C_WHITE)
     B.cyl(Vector((0, 1.0, 0.2)), Vector((0, 1.0, 0.95)), 0.26, 20, "steel", (0.3, 0.3, 0.3), 0.2, rust=0.4)
-    ring(B, Vector((0, 1.0, 0.3)), (0, 0, 1), 0.26, 0.3, 0.06, 20, "metal", C_DARK, 0.2)
+    band(B, Vector((0, 1.0, 0.3)), (0, 0, 1), 0.3, 0.06, 20, "metal", C_DARK, 0.2)
+    ring(B, Vector((0, 1.0, 0.96)), (0, 0, 1), 0.26, 0.36, 0.02, 20, "metal", C_DARK, 0.2)          # cylinder flange
+    bolt_circle(B, Vector((0, 1.0, 0.97)), ZV, 0.32, 8, 0.014, 0.01, rust=0.4)
     # hydraulic pump and hoses on the crown, gauges and warning lamp
     pm = Vector((-0.5, 1.2, 0.97))
     B.box(pm, (0.5, 0.4, 0.06), I3, "metal", C_BLUE, 0.25, rust=0.2)
@@ -127,8 +197,10 @@ def build_extruder():
     B.cyl(Vector((0, y0 + 0.15, 0.68)), Vector((0, y1 - 0.25, 0.68)), 0.27, 24, "steel", (0.3, 0.3, 0.3), 0.2, rust=0.4)
     for k in range(4):
         yy = y0 + 0.45 + k * 0.5
-        ring(B, Vector((0, yy, 0.68)), (0, 1, 0), 0.27, 0.31, 0.16, 24, "metal", C_DARK, 0.15, rust=0.2)
-        ring(B, Vector((0, yy, 0.68)), (0, 1, 0), 0.31, 0.315, 0.1, 24, "molten", C_MOLTEN, 0.05)
+        band(B, Vector((0, yy, 0.68)), (0, 1, 0), 0.31, 0.16, 24, "metal", C_DARK, 0.15)
+        band(B, Vector((0, yy, 0.68)), (0, 1, 0), 0.315, 0.1, 24, "molten", C_MOLTEN, 0.05)
+    ring(B, Vector((0, y1 - 0.27, 0.68)), (0, 1, 0), 0.2, 0.31, 0.05, 24, "metal", C_DARK, 0.15)     # barrel end flange
+    bolt_circle(B, Vector((0, y1 - 0.245, 0.68)), (0, 1, 0), 0.285, 8, 0.012, 0.01, rust=0.4)
     for sx_ in (-1, 1):
         B.box(Vector((sx_ * 0.3, 1.0, 0.5)), (0.08, 2.0, 0.2), I3, "metal", C_DARK, 0.2)                     # barrel saddles
     # gearbox at the back end of the barrel
@@ -136,6 +208,11 @@ def build_extruder():
     B.box(gbx, (0.6, 0.3, 0.55), I3, "metal", C_BLUE, 0.25, rust=0.2)
     B.box(gbx + Vector((0, -0.155, 0.1)), (0.3, 0.01, 0.14), I3, "panel", C_WHITE, 0.3)
     B.box(gbx + Vector((0.08, -0.162, 0.13)), (0.04, 0.004, 0.02), I3, "glow", C_AMBER, 0.05)
+    for dx in (-0.26, 0.26):                                                       # gearbox cover screws
+        for dz in (-0.22, 0.22):
+            stud(B, gbx + Vector((dx, -0.15, dz)), (0, -1, 0), 0.012, 0.008, rust=0.3)
+    for sx_ in (-1, 1):                                                            # vents in the roof beside the barrel
+        louvre(B, Vector((sx_ * 0.66, 1.4, 0.415)), ZV, 0.4, 0.5, 5)
     # die plate at the exit: glowing orifices
     dp = Vector((0, y1, -0.35))
     B.box(dp, (1.8, 0.1, 0.9), I3, "metal", C_DARK, 0.2, rust=0.3)
@@ -145,7 +222,8 @@ def build_extruder():
             B.cyl(c, c + Vector((0, 0.01, 0)), 0.07, 12, "steel", C_STEEL, 0.15)
             B.cyl(c + Vector((0, 0.01, 0)), c + Vector((0, 0.014, 0)), 0.045, 12, "molten", C_MOLTEN, 0.05)
     for (x, z) in ((-0.8, -0.72), (0.8, -0.72), (-0.8, 0.02), (0.8, 0.02)):
-        B.cyl(Vector((x, y1 + 0.05, z)), Vector((x, y1 + 0.07, z)), 0.03, 6, "steel", C_STEEL, rust=0.4)
+        stud(B, Vector((x, y1 + 0.05, z)), (0, 1, 0), 0.03, 0.02, rust=0.4)
+        streak(B, Vector((x, y1 + 0.05, z - 0.03)), (0, 1, 0), 0.12)
     # pull roller stand
     for sx_ in (-1, 1):
         B.box(Vector((sx_ * 0.88, y1 + 0.35, -0.3)), (0.08, 0.2, 1.0), I3, "steel", C_STEEL, 0.2, rust=0.5)
@@ -179,6 +257,9 @@ def build_polisher():
         for sx_ in (-1, 1):
             B.box(Vector((sx_ * 0.94, y, -0.2)), (0.1, 0.1, 1.6), I3, "metal", C_FRAME, 0.2, rust=0.3)
         B.box(Vector((0, y, 0.55)), (1.98, 0.1, 0.1), I3, "metal", C_FRAME, 0.2, rust=0.3)
+        for sx_ in (-1, 1):                                                        # portal corner bolts
+            for dz in (-0.03, 0.03):
+                stud(B, Vector((sx_ * 0.94, y - 0.05, 0.55 + dz)), (0, -1, 0), 0.011, 0.007, rust=0.3)
     B.box(Vector((0, 1.0, 0.64)), (1.96, y1 - y0, 0.08), I3, "metal", C_DARK, 0.2, rust=0.3)
     panel_face(B, Vector((0, 1.0, 0.69)), (0, 0, 1), 1.8, 2.0, C_WHITE)
     for k, (ya, yb) in enumerate(((y0 + 0.05, 0.95), (1.05, y1 - 0.05))):
@@ -206,6 +287,9 @@ def build_polisher():
     ex = Vector((2.4, 2.4, 0.0))
     B.cyl(ex + Vector((0, 0, -0.05)), ex + Vector((0, 0, 0.75)), 0.4, 24, "steel", (0.3, 0.3, 0.3), 0.2, rust=0.45)
     ring(B, ex + Vector((0, 0, 0.75)), (0, 0, 1), 0.3, 0.42, 0.06, 24, "metal", C_DARK, 0.2)
+    for z in (0.12, 0.45):                                                         # drum stiffening hoops
+        band(B, ex + Vector((0, 0, z)), (0, 0, 1), 0.415, 0.04, 24, "metal", C_DARK, 0.2)
+    louvre(B, Vector((2.92, 2.3, -0.55)), (1, 0, 0), 0.6, 0.3, 5)                   # motor bay vent
     B.pipe([ex + Vector((-0.3, 0, 0.55)), Vector((1.4, 2.0, 0.75)), Vector((0.5, 1.6, 0.75)), Vector((0.3, 1.5, 0.7))], 0.1, 10, "metal", (0.12, 0.12, 0.12))
     # polish fluid tank (glass) and control panel
     tk = Vector((2.45, 0.1, 0.0))

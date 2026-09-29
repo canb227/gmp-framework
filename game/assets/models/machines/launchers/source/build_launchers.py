@@ -28,6 +28,83 @@ HERE = _HERE
 OUT_DIR = os.path.dirname(HERE)
 _ADV = os.path.normpath(os.path.join(_HERE, "..", "..", "..", "conveyors_advanced", "source", "build_conveyors_advanced.py"))
 
+# ---------- lean rules for these many-times-placed pieces ----------
+SHARP_BELOW = 0.035                            # boxes thinner than this stay sharp: a < 7 mm chamfer only costs tris
+FOLD = {"tape": "rubber", "wood": "rubber"}    # look-alike surfaces share one material (one draw call fewer)
+
+class Builder(Builder):
+    def box(self, center, size, basis=I3, mat="metal", c=C_FRAME, var=0.18, rust=0.0, bevel=None):
+        if bevel is None and min(size) < SHARP_BELOW:
+            bevel = 0
+        return super().box(center, size, basis, mat, c, var, rust, bevel)
+    def to_object(self, name, coll, material_keys=None):
+        fold = {MI[a]: MI[b] for a, b in FOLD.items()}
+        for f in self.bm.faces:
+            f.material_index = fold.get(f.material_index, f.material_index)
+        return super().to_object(name, coll, material_keys)
+
+def lean_path(path, straight, max_per_m=None):
+    """The same path, but its default sampling leaves out the stations inside the straight spans [(s0, s1)]:
+    a straight run needs no rings in its middle. Explicit per_m (sagging cables) still samples uniformly, at
+    most max_per_m stations per metre when given."""
+    lp = Path(path.L, path.fn, path.stations)
+    uniform = lp.samples
+    def samples(s0, s1, per_m=None):
+        if per_m is not None:
+            return uniform(s0, s1, min(per_m, max_per_m or per_m))
+        ss = uniform(s0, s1)
+        lo, hi = min(s0, s1), max(s0, s1)
+        ss = [lo, hi] + [s for s in ss if not any(a + 1e-6 < s < b - 1e-6 for a, b in straight)]
+        ss += [e for a, b in straight for e in (a, b) if lo + 1e-4 < e < hi - 1e-4]
+        out = []
+        for s in sorted(ss):
+            if not out or s - out[-1] > 1e-4:
+                out.append(s)
+        return out[::-1] if s0 > s1 else out
+    lp.samples = samples
+    return lp
+
+def lean_bend_up(max_per_m=None, **kw):
+    path, flat, ls = bend_up_path(**kw)
+    return lean_path(path, [(0.0, flat), (path.L - ls, path.L)], max_per_m), flat, ls
+
+def stud(B, p, n, r=0.011, h=0.01, mat="steel", c=C_STEEL, rust=0.3):
+    """Bolt head standing on a surface along n: six sides and a top, no hidden bottom (16 tris)."""
+    n = Vector(n).normalized()
+    u = n.cross(ZV if abs(n.z) < 0.9 else Vector((1, 0, 0))).normalized(); w = n.cross(u)
+    rim = [(u * math.cos(k / 6 * math.tau) + w * math.sin(k / 6 * math.tau)) * r for k in range(6)]
+    v0 = [B.bm.verts.new(p + d) for d in rim]; v1 = [B.bm.verts.new(p + d + n * h) for d in rim]
+    fs = [B.quad([v0[k], v0[(k + 1) % 6], v1[(k + 1) % 6], v1[k]], mat) for k in range(6)] + [B.quad(v1, mat)]
+    B.paint(fs, c, 0.15, rust)
+    return fs
+
+def decal(B, pts, n, mat="panel", c=C_DARK, var=0.1):
+    """Flat painted shape (one n-gon) facing n, e.g. a flow arrow on a guard."""
+    f = B.quad([B.bm.verts.new(Vector(p)) for p in pts], mat)
+    if f.normal.dot(Vector(n)) < 0:
+        f.normal_flip()
+    B.paint([f], c, var)
+    return f
+
+def streak(B, p, n, length=0.14, w=0.011, c=C_RUST):
+    """Rust run washed down a surface (facing n) from a bolt at p: one tapering painted quad."""
+    n = Vector(n).normalized(); dn = -ZV + n * n.z
+    if dn.length < 1e-3:
+        return
+    dn.normalize(); u = n.cross(dn)
+    p = p + n * 0.0015
+    return decal(B, [p + u * w, p + dn * length + u * w * 0.2, p + dn * length - u * w * 0.2, p - u * w], n, "steel", c, 0.3)
+
+def foot(B, c, size, rust=0.7, bolts=2):
+    """Floor plate with anchor bolts (c = centre of the plate's underside)."""
+    B.box(c + Vector((0, 0, size[2] / 2)), size, I3, "steel", C_STEEL, 0.25, rust=rust)
+    ax = 0 if size[0] >= size[1] else 1
+    for k in range(bolts):
+        d = Vector((0, 0, 0)); d[ax] = (k / (bolts - 1) - 0.5) * (size[ax] - 0.05) if bolts > 1 else 0
+        stud(B, c + d + Vector((0, 0, size[2])), ZV, 0.01, 0.008, rust=rust)
+
+EXPORT_KEEP.update({"Barrel", "Arm", "Winch"})             # posed / animated by the scenes: keep them apart
+
 RAMP = dict(total_y=5.8, rise=3.0, R=1.5, th=math.radians(35.0))
 CANNON_ELEV = math.radians(40.0)
 CANNON_TRUNNION = Vector((0.0, 0.35, 0.1))
@@ -48,7 +125,7 @@ def pitch_len(L):
 def build_ramp():
     rng = random.Random(401); random.seed(401)
     coll = clear_collection("Launcher_Ramp")
-    path, flat, ls = bend_up_path(**RAMP)
+    path, flat, ls = lean_bend_up(6, **RAMP)             # cable sag needs no more than 6 stations / m
     build_belt(path, "Belt", coll, pitch_len(path.L))
     B = Builder()
     for side in (-1, 1):
@@ -63,7 +140,7 @@ def build_ramp():
             top = path.point(s, x, -0.13)
             B.cyl(Vector((x, top.y, FLOOR + 0.01)), top + Vector((0, 0, 0.03)), 0.028, 8, "steel", C_STEEL, rust=0.55)
             B.cyl(top - Vector((0, 0, 0.03)), top + Vector((0, 0, 0.05)), 0.04, 8, "steel", (0.22, 0.22, 0.22), rust=0.4)
-            B.box(Vector((x - side * 0.01, top.y, FLOOR + 0.005)), (0.06, 0.14, 0.01), I3, "steel", C_STEEL, rust=0.7)
+            foot(B, Vector((x - side * 0.01, top.y, FLOOR)), (0.06, 0.16, 0.012))
             tops.append(top)
         for a, b in zip(tops, tops[1:]):
             B.cyl(Vector((x, a.y, FLOOR + 0.3)), b - Vector((0, 0, 0.15)), 0.018, 6, "steel", C_STEEL, rust=0.6)
@@ -83,17 +160,31 @@ def build_ramp():
     bas = frame_basis(path, path.L)
     B.box(lip - t * 0.04 + up * 0.03, (1.72, 0.06, 0.08), bas, "steel", C_WEAR, 0.15, rust=0.2)
     B.box(lip - t * 0.03 - up * 0.2, (1.72, 0.05, 0.36), bas, "metal", C_DARK, 0.2, rust=0.3)
+    for k in range(6):                                                              # lip bolts with rust runs
+        p = lip - t * 0.01 + up * 0.03 + Vector((-0.75 + k * 0.3, 0, 0))
+        stud(B, p, t, 0.013, 0.009, rust=0.5)
+        if k % 2 == 0:
+            streak(B, lip - t * 0.004 - up * 0.04 + Vector((-0.75 + k * 0.3, 0, 0)), t, 0.2)
     # drive: gearmotor on the floor under the incline, V-belt up to the head drum, flywheel alongside
     m = Vector((0.2, 3.3, -0.78))
     B.box(m, (0.5, 0.45, 0.4), I3, "metal", C_BLUE, 0.25, rust=0.15)
     B.box(m + Vector((0, 0, 0.24)), (0.3, 0.3, 0.08), I3, "panel", C_WHITE, 0.3)
     B.box(m + Vector((0.05, 0.1, 0.285)), (0.05, 0.05, 0.012), I3, "glow", C_AMBER, 0.05)
     B.box(Vector((0, 3.3, -0.985)), (1.2, 0.7, 0.03), I3, "steel", C_STEEL, 0.25, rust=0.7)
+    for dx, dy in ((-0.55, -0.3), (0.55, -0.3), (-0.55, 0.3), (0.55, 0.3)):             # skid anchor bolts
+        stud(B, Vector((dx, 3.3 + dy, -0.97)), ZV, 0.013, 0.01, rust=0.6)
+    for k in range(4):                                                              # motor cooling fins
+        for sy in (-1, 1):
+            B.box(m + Vector((-0.05 + k * 0.08 - 0.06, sy * 0.235, -0.02)), (0.02, 0.02, 0.32), I3, "metal", C_BLUE, 0.2, rust=0.2)
     hazard(B, Vector((-0.6, 2.95 - 0.001, -0.97)), (1, 0, 0), (0, 0, 1), 1.2, 0.03, (0, -1, 0), pitch=0.08)
     fw = Vector((-0.45, 3.3, -0.55))
     B.cyl(Vector((-0.2, 3.3, -0.55)), Vector((-0.05, 3.3, -0.55)), 0.06, 10, "steel", C_STEEL, rust=0.3)
     B.cyl(fw + Vector((0.1, 0, -0.44)), fw + Vector((0.1, 0, 0.0)), 0.05, 8, "metal", C_DARK, rust=0.3)     # bearing stand
     B.pipe([m + Vector((-0.26, 0.1, 0.1)), path.point(path.L * 0.72, -0.5, -0.2), path.point(path.L * 0.74, -0.2, -0.15)], 0.016, 6)
+    # warning beacon on the right side of the lip: its base belongs to the frame, the reflector spins (Beacon)
+    top = path.point(path.L - 0.2, 0.93, GUARD_TOP)
+    B.cyl(top, top + Vector((0, 0, 0.05)), 0.06, 12, "metal", C_DARK)
+    B.cyl(top + Vector((0, 0, 0.05)), top + Vector((0, 0, 0.17)), 0.05, 12, "glow", C_AMBER, 0.05)
     finish(B, "Frame", coll)
     F = Builder()
     ring(F, Vector((0, 0, 0)), (1, 0, 0), 0.26, 0.34, 0.07, 24, "steel", (0.26, 0.26, 0.27), 0.2, rust=0.5)
@@ -103,15 +194,8 @@ def build_ramp():
         F.box(Vector((0, math.cos(a), math.sin(a))) * 0.17, (0.03, 0.2, 0.05), Matrix.Rotation(a, 3, 'X'), "steel", (0.26, 0.26, 0.27), 0.2, rust=0.4)
     F.box(Vector((0.04, 0, 0.3)), (0.02, 0.08, 0.03), I3, "panel", C_YELLOW, 0.2)
     node(F, "Flywheel", coll, fw)
-    # warning beacon on the right side of the lip
-    top = path.point(path.L - 0.2, 0.93, GUARD_TOP)
-    Bb = Builder()
-    Bb.cyl(top, top + Vector((0, 0, 0.05)), 0.06, 12, "metal", C_DARK)
-    Bb.cyl(top + Vector((0, 0, 0.05)), top + Vector((0, 0, 0.17)), 0.05, 12, "glow", C_AMBER, 0.05)
     B2 = Builder()
     B2.box(Vector((0, 0.02, 0)), (0.06, 0.01, 0.08), I3, "steel", (0.8, 0.8, 0.8), 0.05)
-    # merge the beacon base into its own small node so Frame stays one object
-    node(Bb, "BeaconBase", coll)
     node(B2, "Beacon", coll, top + Vector((0, 0, 0.11)))
     return coll
 
@@ -146,6 +230,13 @@ def build_cannon():
         B.box(Vector((x, CANNON_TRUNNION.y, (0.1 + CANNON_TRUNNION.z) / 2)), (0.1, 0.5, CANNON_TRUNNION.z + 0.3), I3, "metal", C_DARK, 0.1)
         B.cyl(Vector((sx_ * 0.87, CANNON_TRUNNION.y, CANNON_TRUNNION.z)), Vector((sx_ * 0.99, CANNON_TRUNNION.y, CANNON_TRUNNION.z)), 0.12, 16, "steel", C_STEEL, 0.1)
         ring(B, Vector((sx_ * 0.99, CANNON_TRUNNION.y, CANNON_TRUNNION.z)), (1, 0, 0), 0.05, 0.09, 0.01, 16, "cyan", C_CYAN, 0.05)
+        for k in range(6):                                                                       # bearing cap bolts
+            a = (k + 0.5) / 6 * math.tau
+            stud(B, Vector((sx_ * 0.99, CANNON_TRUNNION.y + math.cos(a) * 0.105, CANNON_TRUNNION.z + math.sin(a) * 0.105)),
+                 (sx_, 0, 0), 0.009, 0.006, "metal", C_DARK)
+    for sx_ in (-1, 1):                                                                          # housing lid bolts
+        for k in range(6):
+            stud(B, Vector((sx_ * 0.9, 0.5 + k * 0.22, 0.1)), ZV, 0.012, 0.007, "metal", (0.3, 0.3, 0.32))
     for k in range(3):                                                                           # capacitor cans
         c = Vector((0.55 - k * 0.3, 2.55, -0.62))
         B.cyl(c - Vector((0, 0, 0.37)), c + Vector((0, 0, 0.25)), 0.12, 14, "panel", C_FACILITY, 0.1)
@@ -186,6 +277,9 @@ def build_cannon():
                Matrix.Rotation(-a + math.pi / 2, 3, 'Y'), "metal", (0.02, 0.02, 0.02), 0.05)
     ring(Br, Vector((0, y1 - 0.02, 0)), (0, 1, 0), r_in, r_in + 0.03, 0.02, 32, "cyan", C_CYAN, 0.05)
     Br.cyl(Vector((0, y0 - 0.02, 0)), Vector((0, y0, 0)), r_out, 32, "metal", C_DARK, 0.1)               # breech plug
+    for k in range(10):
+        a = k / 10 * math.tau
+        stud(Br, Vector((math.cos(a) * 0.74, y0 - 0.02, math.sin(a) * 0.74)), (0, -1, 0), 0.02, 0.012, "metal", (0.3, 0.3, 0.32))
     for sx_ in (-1, 1):
         Br.cyl(Vector((sx_ * r_out, 0, 0)), Vector((sx_ * 0.87, 0, 0)), 0.1, 12, "metal", C_DARK, 0.1)   # trunnion pins
     barrel = node(Br, "Barrel", coll, CANNON_TRUNNION)
@@ -204,6 +298,13 @@ def build_catapult():
     for sx_ in (-1, 1):
         x = sx_ * 0.82
         B.box(Vector((x, P.y, FLOOR + 0.05)), (0.14, 2.8, 0.1), I3, "steel", C_STEEL, 0.25, rust=0.7)
+        for fy in (P.y - 1.3, P.y - 0.5, P.y + 0.5, P.y + 1.3):                                  # skid anchor bolts
+            stud(B, Vector((x, fy, FLOOR + 0.1)), ZV, 0.016, 0.012, rust=0.6)
+        B.box(Vector((x, P.y, P.z - 0.2)), (0.03, 0.34, 0.2), I3, "steel", C_STEEL, 0.25, rust=0.6)       # apex gusset
+        for dy in (-0.1, 0.1):
+            p = Vector((x + sx_ * 0.016, P.y + dy, P.z - 0.22))
+            stud(B, p, (sx_, 0, 0), 0.012, 0.008, rust=0.5)
+            streak(B, p, (sx_, 0, 0), 0.15)
         for (fy, fz) in ((P.y - 1.25, FLOOR + 0.1), (P.y + 1.25, FLOOR + 0.1)):
             B.cyl(Vector((x, fy, fz)), Vector((x, P.y, P.z + 0.05)), 0.045, 10, "steel", C_STEEL, 0.2, rust=0.55)
         B.cyl(Vector((x, P.y - 0.7, -0.5)), Vector((x, P.y + 0.7, -0.5)), 0.03, 8, "steel", C_STEEL, rust=0.6)
@@ -234,7 +335,7 @@ def build_catapult():
     for k in range(5):
         y = -0.2 - k * 0.5
         for sx_ in (-1, 1):
-            A.cyl(Vector((sx_ * 0.08, y, 0.04)), Vector((sx_ * 0.09, y, 0.04)), 0.012, 6, "steel", C_STEEL, rust=0.4)
+            stud(A, Vector((sx_ * 0.08, y, 0.04)), (sx_, 0, 0), 0.012, 0.01, rust=0.4)
     A.box(Vector((0, 0.45, 0)), (0.16, 0.9, 0.14), I3, "steel", (0.3, 0.3, 0.3), 0.25, rust=0.6)            # short end
     A.cyl(Vector((-0.12, 0, 0)), Vector((0.12, 0, 0)), 0.1, 12, "metal", C_DARK, rust=0.3)                   # hub
     # bucket: a salvaged facility crate cut open, low lip at the back so items roll in
@@ -244,6 +345,9 @@ def build_catapult():
         A.box(bc + Vector((sx_ * 0.63, 0, 0.06)), (0.04, 1.1, 0.34), I3, "panel", C_WHITE, 0.3)
         hazard(A, bc + Vector((sx_ * 0.651, -0.55 * sx_, 0.12)), (0, sx_, 0), (0, 0, 1), 1.1, 0.08, (sx_, 0, 0), pitch=0.08)
     A.box(bc + Vector((0, 0.53, 0.1)), (1.3, 0.04, 0.42), I3, "panel", C_WHITE, 0.3)                          # arm-side wall
+    for sx_ in (-1, 1):                                                                           # rivet rows on the side walls
+        for k in range(4):
+            stud(A, bc + Vector((sx_ * 0.65, -0.39 + k * 0.26, -0.06)), (sx_, 0, 0), 0.01, 0.006, rust=0.4)
     A.box(bc + Vector((0, -0.53, -0.06)), (1.3, 0.04, 0.1), I3, "steel", C_WEAR, 0.15, rust=0.2)              # low back lip
     for (x, y) in ((-0.63, -0.53), (0.63, -0.53), (-0.63, 0.53), (0.63, 0.53)):
         A.box(bc + Vector((x, y, 0.03)), (0.07, 0.07, 0.36), I3, "metal", C_FRAME, 0.2, rust=0.3)

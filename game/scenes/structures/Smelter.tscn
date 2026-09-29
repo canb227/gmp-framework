@@ -21,12 +21,12 @@ tags = Array[int]([3])
 [node name="Fan" parent="Model" index="1"]
 script = ExtResource("3_r")
 axis = Vector3(0, 0, 1)
-speed = 6
+speed = 6.0
 
 [node name="Beacon" parent="Model" index="2"]
 script = ExtResource("3_r")
 axis = Vector3(0, 1, 0)
-speed = 4
+speed = 4.0
 
 [node name="Housing" type="Box3DCollisionShape" parent="."]
 box_size = Vector3(3.96, 1.94, 3.96)

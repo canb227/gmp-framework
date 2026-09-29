@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" uid="uid://bexy0xh6x5gbz" path="res://game/assets/models/machines/concepts/concept_bounce_pad.glb" id="1_r"]
+[ext_resource type="PackedScene" uid="uid://bexy0xh6x5gb0" path="res://game/assets/models/machines/concepts/concept_bounce_pad.glb" id="1_r"]
 [ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
 
 [node name="ConceptBouncePad" type="Box3DBody"]

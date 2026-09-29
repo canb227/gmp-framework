@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bkftu8pnykp84"]
 
-[ext_resource type="PackedScene" uid="uid://8ezjn5lof2qe" path="res://game/assets/models/props/kit/kit_floor_cracked.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://8e0jn5lof2qe" path="res://game/assets/models/props/kit/kit_floor_cracked.glb" id="1_model"]
 
 [node name="KitFloorCracked" type="Node3D"]
 

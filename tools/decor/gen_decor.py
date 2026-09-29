@@ -103,7 +103,10 @@ def write_folder(folder, out, models):
             lo[1] = max(lo[1], 0.0)
             boxes = [(tuple((lo[k] + hi[k]) / 2 for k in range(3)), tuple(hi[k] - lo[k] for k in range(3)))]
         scene_res = "res://" + os.path.relpath(os.path.join(out, pascal(name) + ".tscn"), REPO).replace(os.sep, "/")
-        lines = [f'[gd_scene format=3 uid="{new_uid(scene_res)}"]', "",
+        dst = os.path.join(out, pascal(name) + ".tscn")
+        old = open(dst, encoding="utf-8").readline() if os.path.exists(dst) else ""
+        suid = old.split('uid="', 1)[1].split('"', 1)[0] if 'uid="' in old else new_uid(scene_res)   # keep uids stable
+        lines = [f'[gd_scene format=3 uid="{suid}"]', "",
                  f'[ext_resource type="PackedScene" uid="{uid}" path="{res}" id="1_model"]', "",
                  f'[node name="{pascal(name)}" type="Node3D"]', "",
                  '[node name="Model" parent="." instance=ExtResource("1_model")]', ""]

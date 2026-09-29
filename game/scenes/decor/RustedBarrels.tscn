@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://y7wv0fu3qo0p"]
 
-[ext_resource type="PackedScene" uid="uid://bjljtdywok8hz" path="res://game/assets/models/props/decor/rusted_barrels.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://bjljtdywok8h0" path="res://game/assets/models/props/decor/rusted_barrels.glb" id="1_model"]
 
 [node name="RustedBarrels" type="Node3D"]
 
@@ -8,5 +8,5 @@
 
 [node name="Collider0" type="Box3DBody" parent="."]
 body_type = 0
-box_size = Vector3(3.37, 1.1, 2.31835)
-position = Vector3(0.815, 0.55, 0.19083)
+box_size = Vector3(3.37, 1.115, 2.33165)
+position = Vector3(0.815, 0.5575, 0.20226)

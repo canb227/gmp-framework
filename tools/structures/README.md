@@ -59,7 +59,11 @@ machines and smelter work through Grinder.cs with empty recipe tables until ingo
 
 ## Object Museum: Structure Hall
 
-`python3 tools/structures/place_museum.py` (re-runnable) builds the Structure Hall onto `ObjectMuseum.tscn`: a
+`python3 tools/structures/place_museum.py` (re-runnable) writes every generated wing as its own scene in
+`game/scenes/levels/museum/` (`StructureHall`, `ConceptLab`, `MaterialsWing`, `PuzzleRooms`, `LowerLevel`) and
+instances them from `ObjectMuseum.tscn`, leaving the museum's hand-placed nodes alone. Walls, floors, trims and
+stripes are batched: one `MultiMeshInstance3D` per material per exhibit group, with static `Box3DBody` colliders
+(no mesh) for the solid ones. The Structure Hall is a
 new walled floor east of the original museum (x 40..136, z -60..60) entered through a wide gap in its west
 wall. One of every new structure stands in signed category bays (north: conveyors, magnetic conveyors,
 launchers; south: chutes, powered chutes; east: sorting, fields, processing, utilities), each exhibit with a
@@ -68,7 +72,8 @@ chute tower, catapult, field projectors and a magnetic tunnel. Lines that can ru
 (conveyors, Grinder-based machines, the ramp) have slow item spawners; the rest are static displays. The
 spawn tube in the utilities bay sits on an item void and drops into it.
 
-`python3 tools/structures/view_hall.py <out.png> [top | camera:target]` renders the hall for review.
+`python3 tools/structures/view_hall.py <out.png> [top | camera:target]` renders the wing scenes for review
+(`VIEW_SECTION=StructureHall,ConceptLab` limits the wings; each model is imported once, so a wing takes well under a minute).
 
 ## Concept Lab
 

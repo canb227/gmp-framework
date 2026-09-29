@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bljdxkefk3c7d"]
 
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
-[ext_resource type="PackedScene" uid="uid://bi00tyrxffsxz" path="res://game/assets/models/items/aerogel_tile.glb" id="2_model"]
+[ext_resource type="PackedScene" uid="uid://bi00tyrxffsx0" path="res://game/assets/models/items/aerogel_tile.glb" id="2_model"]
 
 [node name="aerogel_tile" type="Box3DBody"]
 shape_type = 0

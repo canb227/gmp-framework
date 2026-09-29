@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://bipfzb0pcghwl"]
+[gd_scene format=3 uid="uid://bipf0b0pcghwl"]
 
 [ext_resource type="PackedScene" uid="uid://82cbx4il7bi3" path="res://game/assets/models/props/decor/tipped_barriers.glb" id="1_model"]
 
@@ -8,5 +8,5 @@
 
 [node name="Collider0" type="Box3DBody" parent="."]
 body_type = 0
-box_size = Vector3(3.63666, 0.625, 2.04409)
-position = Vector3(0.02036, 0.3125, 0.26431)
+box_size = Vector3(3.62858, 0.625, 1.90816)
+position = Vector3(0.0187, 0.3125, 0.18301)

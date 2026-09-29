@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bhcqqfsoh257n"]
 
-[ext_resource type="PackedScene" uid="uid://bf62wqwztqvzt" path="res://game/assets/models/props/kit/kit_doorway.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://bf62wqw0tqv0t" path="res://game/assets/models/props/kit/kit_doorway.glb" id="1_model"]
 
 [node name="KitDoorway" type="Node3D"]
 

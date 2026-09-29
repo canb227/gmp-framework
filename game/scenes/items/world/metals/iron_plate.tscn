@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://bgutrt7n5vgoj"]
 
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
-[ext_resource type="PackedScene" uid="uid://ba5xi2fkzaggj" path="res://game/assets/models/items/iron_plate.glb" id="2_model"]
+[ext_resource type="PackedScene" uid="uid://ba5xi2fk0aggj" path="res://game/assets/models/items/iron_plate.glb" id="2_model"]
 
 [node name="iron_plate" type="Box3DBody"]
 shape_type = 0
 box_size = Vector3(0.8, 0.08, 0.8)
-density = 7
+density = 7.0
 friction = 0.35
 script = ExtResource("1_item")
 itemID = "iron_plate"

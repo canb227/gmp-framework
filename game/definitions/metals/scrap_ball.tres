@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
 [ext_resource type="Texture2D" uid="uid://3unk615o2jxa" path="res://game/assets/icons/items/scrap_ball.png" id="2_icon"]
-[ext_resource type="PackedScene" uid="uid://bkhap7zrv8wga" path="res://game/scenes/items/world/metals/scrap_ball.tscn" id="3_scene"]
+[ext_resource type="PackedScene" uid="uid://bkhap70rv8wga" path="res://game/scenes/items/world/metals/scrap_ball.tscn" id="3_scene"]
 
 [resource]
 script = ExtResource("1_fi")
