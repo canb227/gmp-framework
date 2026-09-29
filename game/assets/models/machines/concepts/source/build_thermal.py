@@ -56,6 +56,13 @@ def belt_run(coll, B, rng, p0, p1, name="Belt", guards=True, sides=(-1, 1), cabl
         build_cable(B, path)
     return path
 
+def plain_side(B, path, side):
+    """Just the stringer and underside lip of build_side, for a belt edge nobody can see the fasteners on."""
+    x0, x1 = sorted((side * STR_X[0], side * STR_X[1]))
+    B.sweep(path, 0, path.L, x0, x1, STR_O[0], STR_O[1], "metal", C_FRAME, 0.2, rust=0.25)
+    lx0, lx1 = sorted((side * LIP_X[0], side * LIP_X[1]))
+    B.sweep(path, 0, path.L, lx0, lx1, LIP_O[0], LIP_O[1], "steel", C_WEAR, 0.12, rust=0.05)
+
 def dial(B, c, n, r=0.1):
     """Round gauge face on a housing, facing n."""
     n = Vector(n)
@@ -84,14 +91,29 @@ def build_tunnel_furnace():
         B.box(Vector((sx * 0.93, 1.0, (top - 0.95) / 2)), (0.1, y1 - y0, top + 0.95), I3, "metal", C_FRAME, 0.2, rust=0.3)
         B.box(Vector((sx * 0.87, 1.0, -0.2)), (0.02, y1 - y0 - 0.1, 1.1), I3, "metal", C_REFRACTORY, 0.25)
         panel_face(B, Vector((sx * 0.985, 1.0, -0.05)), (sx, 0, 0), y1 - y0 - 0.2, 1.3, C_WHITE)
-        for k in range(4):                                                   # glowing inspection slits
+        for k in range(4):                                                   # glowing inspection slits, louvred hoods over them
             B.box(Vector((sx * 0.99, 0.0 + k * 0.7, 0.45)), (0.01, 0.4, 0.04), I3, "molten", C_MOLTEN, 0.05)
+            B.box(Vector((sx * 0.995, 0.0 + k * 0.7, 0.49)), (0.012, 0.46, 0.03), I3, "metal", C_DARK, 0.15)
+        for k in range(5):                                                   # panel bolts and the soot above each slit
+            y = y0 + 0.2 + k * (y1 - y0 - 0.4) / 4
+            for z in (-0.62, 0.52):
+                stud(B, Vector((sx * 1.003, y, z)), (sx, 0, 0), 0.012, 0.008)
+        for k in range(4):
+            decal(B, Vector((sx * 1.004, 0.0 + k * 0.7, 0.6)), (sx, 0, 0), 0.36, 0.14, "panel", (0.12, 0.11, 0.1), 0.3)
+        grille(B, Vector((sx * 1.004, 1.0, -0.4)), (sx, 0, 0), 1.2, 0.2, 5)        # burner air intakes
+        B.pipe([Vector((sx * 0.8, y0 + 0.15, top + 0.175)), Vector((sx * 0.8, y1 - 0.15, top + 0.175))], 0.03, 8, "copper", C_COPPER)  # gas main
+        for y in (0.2, 1.0, 1.8):                                            # valves on the main
+            B.cyl(Vector((sx * 0.8, y, top + 0.17)), Vector((sx * 0.8, y, top + 0.23)), 0.035, 8, "metal", C_DARK)
+            B.box(Vector((sx * 0.8, y, top + 0.235)), (0.12, 0.02, 0.01), I3, "panel", (0.8, 0.1, 0.06), 0.1)
         hazard(B, Vector((sx * 0.99, y0 + 0.1 if sx < 0 else y1 - 0.1, -0.95)), (0, -sx, 0) if sx > 0 else (0, 1, 0), (0, 0, 1),
                y1 - y0 - 0.2, 0.08, (sx, 0, 0), pitch=0.1)
     B.box(Vector((0, 1.0, top + 0.07)), (1.98, y1 - y0, 0.14), I3, "metal", C_DARK, 0.15)                  # roof
     B.box(Vector((0, 1.0, top + 0.19)), (1.3, y1 - y0 - 0.4, 0.1), I3, "panel", C_WHITE, 0.3)
     for k in range(6):                                                       # roof louvres
         B.box(Vector((0, 0.1 + k * 0.36, top + 0.245)), (1.1, 0.12, 0.02), Matrix.Rotation(0.5, 3, 'X'), "metal", C_DARK, 0.1)
+    for sx in (-1, 1):                                                       # roof edge bolts, flue stack at the back
+        bolt_row(B, Vector((sx * 0.94, y0 + 0.1, top + 0.14)), Vector((sx * 0.94, y1 - 0.1, top + 0.14)), 9, (0, 0, 1), 0.013, 0.01)
+
     B.box(Vector((0, 1.0, top - 0.02)), (1.72, y1 - y0 - 0.1, 0.04), I3, "metal", C_REFRACTORY, 0.25)
     for y, n in ((y0, -1), (y1, 1)):                                         # mouth frames
         B.box(Vector((0, y, 0.48)), (1.98, 0.14, 0.4), I3, "metal", C_DARK, 0.15)
@@ -99,19 +121,24 @@ def build_tunnel_furnace():
         B.box(Vector((0, y + n * 0.072, 0.56)), (0.5, 0.004, 0.08), I3, "glow", C_AMBER, 0.05)
     dial(B, Vector((0.99, 2.1, 0.3)), (1, 0, 0))
     B.box(Vector((0.99, 1.4, 0.3)), (0.02, 0.4, 0.2), I3, "metal", C_BLUE, 0.2)
+    warn_plate(B, Vector((1.004, 1.4, 0.07)), (1, 0, 0), 0.16)
+    warn_plate(B, Vector((-1.004, 0.7, 0.07)), (-1, 0, 0), 0.16)
     finish(B, "Frame", coll)
     needle(coll, "Gauge", Vector((0.99, 2.1, 0.3)), (1, 0, 0), 0, 1.4, 120)
     for name, y, poses in (("CurtainIn", y0 - 0.02, [(0.0, 0, 0), (-0.14, 0, 0)]), ("CurtainOut", y1 + 0.02, [(0.1, 0, 0), (-0.03, 0, 0)])):
         Cu = Builder()                                                       # chain curtains keeping the heat in
+        Cu.box(Vector((0, 0, 0.02)), (1.7, 0.05, 0.05), I3, "copper", C_COPPER, 0.15)                     # hanging bar
         for k in range(9):
             x = -0.72 + k * 0.18
             Cu.box(Vector((x, 0, -0.5)), (0.15, 0.012, 1.0), I3, "rubber", (0.12, 0.1, 0.09), 0.15)
-            Cu.box(Vector((x, 0, -0.97)), (0.15, 0.02, 0.04), I3, "copper", C_COPPER, 0.15)
+            Cu.box(Vector((x, 0, -0.97)), (0.15, 0.02, 0.04), I3, "copper", C_COPPER, 0.15, bevel=0)
         cu = node(Cu, name, coll, Vector((0, y, 0.28)))
         cycle(cu, "rotation_euler", poses, 60)
     El = Builder()                                                           # heating elements across the ceiling
     for k in range(7):
         El.cyl(Vector((-0.82, -0.3 + k * 0.43, 0)), Vector((0.82, -0.3 + k * 0.43, 0)), 0.035, 8, "molten", C_MOLTEN, 0.05)
+        for x in (-0.55, 0.0, 0.55):                                         # ceramic hangers
+            El.box(Vector((x, -0.3 + k * 0.43, 0.05)), (0.03, 0.03, 0.08), I3, "molten", (0.75, 0.3, 0.1), 0.1)
     el = node(El, "Elements", coll, Vector((0, 0, top - 0.12)))
     cycle(el, "scale", [Vector((1, 1, 1)), Vector((1, 1.02, 1.35))], 40)
     H = Builder()
@@ -137,12 +164,33 @@ def build_magma_bath():
     for (x, y) in ((-0.9, -0.9), (2.9, -0.9), (2.9, 2.9), (-0.9, 2.9)):
         B.box(Vector((x, y, 0.3)), (0.1, 0.1, 1.3), I3, "metal", C_DARK, 0.15)                              # lamp posts
         B.cyl(Vector((x, y, 0.95)), Vector((x, y, 0.98)), 0.06, 10, "glow", C_AMBER, 0.05)
+        B.cyl(Vector((x, y, 0.93)), Vector((x, y, 0.95)), 0.075, 10, "metal", C_DARK, 0.15)
+        for k in range(4):                                                   # lamp cage
+            a = k / 4 * math.tau + 0.785
+            B.cyl(Vector((x + math.cos(a) * 0.07, y + math.sin(a) * 0.07, 0.94)), Vector((x + math.cos(a) * 0.07, y + math.sin(a) * 0.07, 0.995)), 0.006, 4, "steel", C_STEEL)
+    for (a, b, n) in (((-0.95, -0.95), (2.95, -0.95), (0, -1, 0)), ((-0.95, -0.95), (-0.95, 2.95), (-1, 0, 0))):
+        p0, p1 = Vector((a[0], a[1], -0.31)), Vector((b[0], b[1], -0.31))    # rust run down the side panels
+        for k in range(1, 7):
+            streak(B, p0.lerp(p1, k / 7) + Vector(n) * 0.024, n, 0.04, 0.3, mat="panel")
+    for (lo_, hi_) in (((-0.95, -0.95), (2.95, -0.83)), ((-0.95, -0.95), (-0.83, 2.95)), ((2.83, -0.95), (2.95, 2.95)),
+                       ((-0.95, 2.83), (1.5, 2.95)), ((2.5, 2.83), (2.95, 2.95))):   # rim caps (not over the weir notch)
+        c = Vector(((lo_[0] + hi_[0]) / 2, (lo_[1] + hi_[1]) / 2, rim + 0.02))
+        B.box(c, (hi_[0] - lo_[0] + 0.02, hi_[1] - lo_[1] + 0.02, 0.04), I3, "steel", (0.3, 0.29, 0.28), 0.2, rust=0.6)
+        long = Vector((1, 0, 0)) if hi_[0] - lo_[0] > 1 else Vector((0, 1, 0))
+        n = max(2, int((hi_[0] - lo_[0] + hi_[1] - lo_[1]) / 0.45))
+        bolt_row(B, c - long * ((hi_[0] - lo_[0] + hi_[1] - lo_[1]) / 2 - 0.15) + Vector((0, 0, 0.02)),
+                 c + long * ((hi_[0] - lo_[0] + hi_[1] - lo_[1]) / 2 - 0.15) + Vector((0, 0, 0.02)), n, (0, 0, 1), 0.014, 0.01)
+    B.pipe([Vector((-0.4, -0.99, -0.965)), Vector((2.6, -0.99, -0.965))], 0.022, 8, "copper", C_COPPER)   # gas main to the burners
+    for k in range(6):
+        B.pipe([Vector((-0.2 + k * 0.5, -0.99, -0.965)), Vector((-0.2 + k * 0.5, -0.99, -0.9))], 0.014, 6, "copper", C_COPPER)
+    warn_plate(B, Vector((-0.5, -0.973, -0.55)), (0, -1, 0), 0.2)
+    warn_plate(B, Vector((-0.973, 0.2, -0.55)), (-1, 0, 0), 0.2)
     for (a, b) in (((-0.95, -0.95), (2.95, -0.95)), ((-0.95, -0.95), (-0.95, 2.95))):
         hazard(B, Vector((a[0], a[1] - 0.001, rim - 0.12)) if a[1] == b[1] else Vector((a[0] - 0.001, a[1], rim - 0.12)),
                (1, 0, 0) if a[1] == b[1] else (0, 1, 0), (0, 0, 1), 3.9, 0.1, (0, -1, 0) if a[1] == b[1] else (-1, 0, 0), pitch=0.12)
     B.box(Vector((cx, cy, lvl)), (3.66, 3.66, 0.04), I3, "molten", C_MOLTEN, 0.08)                          # the melt
     for k in range(6):                                                       # burner grilles round the base
-        B.box(Vector((-0.2 + k * 0.5, -0.96, -0.85)), (0.3, 0.01, 0.12), I3, "molten", C_MOLTEN, 0.05)
+        B.box(Vector((-0.2 + k * 0.5, -0.975, -0.85)), (0.3, 0.01, 0.12), I3, "molten", C_MOLTEN, 0.05)
     # weir spout at the front notch and the dredge port on the right
     B.box(Vector((2.0, 2.93, -0.45)), (0.9, 0.3, 0.04), Matrix.Rotation(math.radians(-30), 3, 'X'), "steel", L["C_WEAR"], 0.15)
     for sx in (1.5, 2.5):
@@ -168,6 +216,8 @@ def build_magma_bath():
              [Vector((0.01, 0.01, 0.01)), Vector((0.01, 0.01, 0.01)), Vector((1, 1, 1.6)), Vector((0.01, 0.01, 0.01)), Vector((0.01, 0.01, 0.01))])
     Dr = Builder()                                                           # dredge wheel sweeping sinkers out the port
     Dr.cyl(Vector((0, -0.85, 0)), Vector((0, 0.85, 0)), 0.06, 10, "steel", C_STEEL)
+    for y in (-0.8, 0.8):                                                    # end discs
+        Dr.cyl(Vector((0, y - 0.02, 0)), Vector((0, y + 0.02, 0)), 0.22, 12, "steel", (0.28, 0.27, 0.26), 0.2, rust=0.6)
     for k in range(6):
         a = k / 6 * math.tau
         Dr.box(Vector((math.cos(a) * 0.2, 0, math.sin(a) * 0.2)), (0.4, 1.6, 0.04), Matrix.Rotation(-a, 3, 'Y'), "steel", (0.3, 0.3, 0.31), 0.2, rust=0.5)
@@ -192,6 +242,14 @@ def build_impact_forge():
     B.box(Vector((0, -0.9, 1.0)), (1.72, 0.1, 3.98), I3, "metal", C_DARK, 0.2)                             # armoured back
     for k in range(5):
         B.box(Vector((0, -0.84, 0.2 + k * 0.55)), (1.72, 0.04, 0.08), I3, "steel", (0.3, 0.3, 0.31), 0.2, rust=0.4)
+        bolt_row(B, Vector((-0.78, -0.82, 0.2 + k * 0.55)), Vector((0.78, -0.82, 0.2 + k * 0.55)), 7, (0, 1, 0), 0.013, 0.01)
+    for k in range(4):                                                       # dents and scorch round the impact zone
+        a = k / 4 * math.tau + 0.4
+        decal(B, Vector((math.cos(a) * 0.55, -0.849, 1.5 + math.sin(a) * 0.55)), (0, 1, 0), 0.22, 0.18, "metal", (0.03, 0.028, 0.026), 0.3)
+    for sx in (-1, 1):                                                       # back plate: vents and seams outside
+        grille(B, Vector((sx * 0.45, -0.951, 2.2)), (0, -1, 0), 0.5, 0.4, 5)
+        seam(B, Vector((sx * 0.3, -0.951, -0.95)), Vector((sx * 0.3, -0.951, 2.9)), (0, -1, 0))
+    warn_plate(B, Vector((0.5, -0.952, 1.2)), (0, -1, 0), 0.22)
     B.box(Vector((0, -0.4, 2.93)), (1.98, 1.1, 0.12), I3, "metal", C_DARK, 0.15)                           # roof over the anvil
     B.box(Vector((0, 0.9, 2.93)), (1.98, 0.14, 0.12), I3, "metal", C_DARK, 0.15)                           # window header
     hazard(B, Vector((-0.9, 0.971, 2.88)), (1, 0, 0), (0, 0, 1), 1.8, 0.1, (0, 1, 0), pitch=0.12)
@@ -210,6 +268,14 @@ def build_impact_forge():
         B.box(Vector((sx * 0.8, 0.95, -0.6)), (0.1, 0.1, 0.5), I3, "panel", C_YELLOW, 0.2)
     B.box(Vector((0, 0, -0.97)), (1.98, 1.98, 0.06), I3, "steel", C_STEEL, 0.25, rust=0.6)
     B.box(Vector((0.97, -0.5, 1.4)), (0.04, 0.3, 1.6), I3, "metal", C_BLUE, 0.2)                           # heat meter housing
+    for z in (0.62, 2.18):
+        stud(B, Vector((0.99, -0.62, z)), (1, 0, 0), 0.01, 0.006)
+        stud(B, Vector((0.99, -0.38, z)), (1, 0, 0), 0.01, 0.006)
+    cable(B, [Vector((0.99, -0.5, 0.58)), Vector((1.0, -0.5, 0.3)), Vector((1.0, -0.85, 0.1)), Vector((0.99, -0.87, -0.95))], 0.014, clips=(2,))
+    for sx in (-1, 1):                                                       # hydraulic dampers behind the anvil
+        for z in (0.95, 2.05):
+            B.cyl(Vector((sx * 0.55, -0.85, z)), Vector((sx * 0.55, -0.62, z)), 0.06, 10, "metal", C_DARK, 0.15)
+            ring(B, Vector((sx * 0.55, -0.8, z)), (0, 1, 0), 0.06, 0.075, 0.04, 10, "metal", C_BLUE, 0.2)
     finish(B, "Frame", coll); finish(G, "Glass", coll)
     Me = Builder()
     for k in range(10):
@@ -224,6 +290,8 @@ def build_impact_forge():
         ring(An, tilt @ Vector((0, 0.12 + (0.6 - r) * 0.01, 0)), tilt @ Vector((0, 1, 0)), r - 0.03, r, 0.01, 28, "panel", C_YELLOW, 0.2)
     for (x, z) in ((-0.55, -0.55), (0.55, -0.55), (0.55, 0.55), (-0.55, 0.55)):                             # damper rams
         An.cyl(tilt @ Vector((x, -0.11, z)), tilt @ Vector((x, -0.3, z)), 0.07, 10, "steel", C_STEEL)
+    for (x, z) in ((-0.68, -0.68), (0.68, -0.68), (0.68, 0.68), (-0.68, 0.68), (0, -0.68), (0, 0.68), (-0.68, 0), (0.68, 0)):
+        stud(An, tilt @ Vector((x, 0.11, z)), tilt @ Vector((0, 1, 0)), 0.02, 0.012)                    # face plate bolts
     anvil = node(An, "Anvil", coll, Vector((0, -0.45, 1.5)))
     fr = (1, 30, 33, 60, 91)
     keys(anvil, fr, "location", [Vector((0, -0.45, 1.5)), Vector((0, -0.45, 1.5)), Vector((0, -0.6, 1.49)), Vector((0, -0.45, 1.5)), Vector((0, -0.45, 1.5))])
@@ -251,7 +319,7 @@ def build_quench_tank():
     for sx in (-1, 1):                                                       # tank sides, running on beside the lift
         B.box(Vector((sx * 0.92, 0.45, -0.38)), (0.1, 2.8, 1.24), I3, "metal", C_FRAME, 0.2, rust=0.3)
         panel_face(B, Vector((sx * 0.975, 0.45, -0.4)), (sx, 0, 0), 2.6, 1.0, C_WHITE)
-        G.box(Vector((sx * 0.975, 0.0, -0.35)), (0.004, 1.2, 0.5), I3, "glass", (0.55, 0.9, 1.0), 0.02)    # sight glass
+        G.box(Vector((sx * 0.995, 0.0, -0.35)), (0.004, 1.2, 0.5), I3, "glass", (0.55, 0.9, 1.0), 0.02)    # sight glass
     B.box(Vector((0, -0.92, -0.38)), (1.94, 0.1, 1.24), I3, "metal", C_FRAME, 0.2, rust=0.3)              # back wall
     panel_face(B, Vector((0, -0.975, -0.4)), (0, -1, 0), 1.7, 1.0, C_WHITE)
     B.box(Vector((0, -0.4, -0.95)), (1.84, 1.1, 0.1), I3, "steel", C_STEEL, 0.2, rust=0.5)                 # tank floor
@@ -264,12 +332,30 @@ def build_quench_tank():
     for (x, y) in ((-0.9, -0.9), (0.9, -0.9), (0.9, 0.9), (-0.9, 0.9)):
         B.box(Vector((x, y, 0.4)), (0.08, 0.08, 1.1), I3, "metal", C_FRAME, 0.2, rust=0.3)
     hazard(B, Vector((-0.9, -0.941, 0.8)), (1, 0, 0), (0, 0, 1), 1.8, 0.1, (0, -1, 0), pitch=0.1)
+    for sx in (-1, 1):                                                       # tank side: bolt rows, tide mark, rust runs
+        bolt_row(B, Vector((sx * 0.97, -0.8, 0.17)), Vector((sx * 0.97, 1.7, 0.17)), 9, (sx, 0, 0), 0.013, 0.01)
+        bolt_row(B, Vector((sx * 0.97, -0.8, -0.95)), Vector((sx * 0.97, 1.7, -0.95)), 9, (sx, 0, 0), 0.013, 0.01)
+        decal(B, Vector((sx * 0.9935, 0.45, -0.08)), (sx, 0, 0), 2.5, 0.05, "panel", (0.35, 0.3, 0.24), 0.3)
+        for y in (-0.5, 0.6, 1.4):
+            streak(B, Vector((sx * 0.9935, y, 0.08)), (sx, 0, 0), 0.03, 0.4, mat="panel")
+        for z in (-0.61, -0.09):                                             # sight glass frame
+            B.box(Vector((sx * 0.997, 0.0, z)), (0.012, 1.26, 0.03), I3, "metal", C_DARK, 0.15)
+    bolt_row(B, Vector((-0.8, -0.97, 0.17)), Vector((0.8, -0.97, 0.17)), 6, (0, -1, 0), 0.013, 0.01)
+    # drain valve with a handwheel at the back
+    B.cyl(Vector((0.6, -0.97, -0.8)), Vector((0.6, -1.0, -0.8)), 0.07, 10, "metal", C_DARK, 0.15)
+    B.pipe([Vector((0.6, -0.99, -0.8)), Vector((0.6, -0.99, -0.93))], 0.03, 8, "steel", C_STEEL)
+    ring(B, Vector((0.6, -0.99, -0.8)), (0, 1, 0), 0.05, 0.065, 0.012, 10, "panel", (0.8, 0.1, 0.06), 0.1)
+    warn_plate(B, Vector((-0.4, -0.993, -0.2)), (0, -1, 0), 0.2)
     # the drip-dry run: deflector down from the lift's head onto a short output belt
     B.box(Vector((0, 2.05, -0.3)), (1.6, 0.9, 0.04), Matrix.Rotation(math.radians(-58), 3, 'X'), "steel", L["C_WEAR"], 0.15)
     for sx in (-1, 1):
         B.box(Vector((sx * 0.9, 2.45, -0.3)), (0.06, 1.1, 0.9), I3, "panel", C_WHITE, 0.3)
     belt_run(coll, B, rng, (0, 2.0, BELT_TOP), (0, 3.0, BELT_TOP), guards=False, cable=False)
     B.box(Vector((0.97, 2.4, 0.25)), (0.06, 0.5, 0.5), I3, "metal", C_BLUE, 0.2)                          # dryer fan housing
+    ring(B, Vector((0.93, 2.4, 0.25)), (1, 0, 0), 0.17, 0.2, 0.02, 16, "metal", C_DARK, 0.15)
+    for (dy, dz) in ((-0.2, -0.2), (0.2, -0.2), (0.2, 0.2), (-0.2, 0.2)):
+        stud(B, Vector((0.94, 2.4 + dy, 0.25 + dz)), (-1, 0, 0), 0.011, 0.008)
+    cable(B, [Vector((1.0, 2.6, 0.45)), Vector((1.0, 2.8, 0.6)), Vector((0.98, 2.95, -0.2)), Vector((0.97, 2.95, -0.8))], 0.013, clips=(2,))
     finish(B, "Frame", coll)
     lift = line_path(lift0, lift1)
     build_belt(lift, "Lift", coll, lift.L)
@@ -300,21 +386,33 @@ SR_R0, SR_R1 = 0.3, 0.86
 def build_spiral_radiator():
     random.seed(1241)
     coll = clear_collection("Concept_SpiralRadiator")
-    B = Builder()
+    B, G = Builder(), Builder()
     for (x, y) in ((-0.92, -0.92), (0.92, -0.92), (0.92, 0.92), (-0.92, 0.92)):
         B.box(Vector((x, y, 2.0)), (0.1, 0.1, 5.98), I3, "metal", C_FRAME, 0.2, rust=0.3)
     for z in (-0.95, 1.3, 3.6):
         for sx in (-1, 1):
             B.box(Vector((sx * 0.92, 0, z)), (0.08, 1.84, 0.08), I3, "metal", C_FRAME, 0.2, rust=0.3)
+            if z > 0:
+                gusset(B, Vector((sx * 0.92, -0.87, z - 0.04)), (0, 1, 0), (0, 0, -1), 0.18)
         B.box(Vector((0, -0.92, z)), (1.84, 0.08, 0.08), I3, "metal", C_FRAME, 0.2, rust=0.3)
-    B.box(Vector((0, 0, -0.97)), (1.98, 1.98, 0.06), I3, "steel", C_STEEL, 0.25, rust=0.6)
-    B.cyl(Vector((0, 0, -1)), Vector((0, 0, 4.7)), SR_R0 - 0.02, 20, "metal", C_DARK, 0.15)                 # chilled core
-    for k in range(34):                                                      # radiator fins down the core
-        z = -0.7 + k * 0.16
-        ring(B, Vector((0, 0, z)), (0, 0, 1), SR_R0 - 0.02, SR_R0 + 0.005, 0.02, 20, "copper", C_COPPER, 0.15)
-    helix(B, SR_BOT, SR_TOP, -SR_TURNS, SR_R0, SR_R1, 0.03, 180, "steel", (0.5, 0.52, 0.55))              # the slide
-    helix(B, SR_BOT, SR_TOP, -SR_TURNS, SR_R1 - 0.03, SR_R1 + 0.02, 0.16, 180, "panel", C_WHITE)          # outer lip
-    helix(B, SR_BOT + 0.031, SR_TOP + 0.031, -SR_TURNS, SR_R0 + 0.02, SR_R0 + 0.05, 0.004, 180, "cyan", C_CYAN)
+    slab(B, Vector((0, 0, -0.97)), (1.98, 1.98, 0.06), I3, "steel", C_STEEL, 0.25, rust=0.6)
+    for (x, y) in ((-0.92, -0.92), (0.92, -0.92), (0.92, 0.92), (-0.92, 0.92)):
+        stud(B, Vector((x * 0.9, y * 0.9, -0.94)), (0, 0, 1), 0.018, 0.014)
+    B.cyl(Vector((0, 0, -0.94)), Vector((0, 0, 4.7)), SR_R0 - 0.02, 16, "metal", C_DARK, 0.15)               # chilled core
+    B.cyl(Vector((0, 0, -0.94)), Vector((0, 0, -0.9)), SR_R0 + 0.1, 16, "metal", C_DARK, 0.15)
+    bolt_circle(B, Vector((0, 0, -0.9)), (0, 0, 1), SR_R0 + 0.06, 8, 0.013, 0.01)
+    for k in range(17):                                                      # radiator fins down the core
+        z = -0.7 + k * 0.32
+        ring(B, Vector((0, 0, z)), (0, 0, 1), SR_R0 - 0.02, SR_R0 + 0.005, 0.03, 16, "copper", C_COPPER, 0.15)
+    helix(B, SR_BOT, SR_TOP, -SR_TURNS, SR_R0, SR_R1, 0.03, 100, "steel", (0.5, 0.52, 0.55))              # the slide
+    helix(B, SR_BOT, SR_TOP, -SR_TURNS, SR_R1 - 0.03, SR_R1 + 0.02, 0.16, 100, "panel", C_WHITE)          # outer lip
+    helix(B, SR_BOT + 0.031, SR_TOP + 0.031, -SR_TURNS, SR_R0 + 0.02, SR_R0 + 0.05, 0.004, 100, "cyan", C_CYAN)
+    for k in range(12):                                                      # struts under the slide to the core
+        t = (k + 0.5) / 12
+        a = -t * SR_TURNS * math.tau
+        z = SR_BOT + (SR_TOP - SR_BOT) * t
+        d = Vector((math.cos(a), math.sin(a), 0))
+        B.cyl(d * (SR_R0 - 0.02) + Vector((0, 0, z - 0.35)), d * (SR_R1 - 0.1) + Vector((0, 0, z - 0.01)), 0.018, 6, "steel", C_STEEL, rust=0.3)
     for k in range(20):                                                      # outer radiator fins, open at the front mouth
         a = k / 20 * math.tau
         if abs(math.atan2(math.sin(a - math.pi / 2), math.cos(a - math.pi / 2))) < 0.5:
@@ -324,13 +422,25 @@ def build_spiral_radiator():
     B.box(Vector((0.3, 0.5, -0.87)), (1.2, 1.0, 0.04), I3, "steel", L["C_WEAR"], 0.15)
     B.box(Vector((0.62, 0.62, -0.72)), (0.04, 0.9, 0.3), Matrix.Rotation(math.radians(30), 3, 'Z'), "panel", C_YELLOW, 0.2)
     hazard(B, Vector((-0.9, 0.971, -0.95)), (1, 0, 0), (0, 0, 1), 1.8, 0.08, (0, 1, 0), pitch=0.1)
+    B.box(Vector((0.72, -0.97, 0.1)), (0.3, 0.04, 0.4), I3, "panel", C_WHITE, 0.3)                          # coolant pump
+    B.cyl(Vector((0.72, -0.99, 0.2)), Vector((0.72, -0.995, 0.2)), 0.08, 12, "metal", C_DARK)
+    B.box(Vector((0.8, -0.992, 0.0)), (0.06, 0.004, 0.04), I3, "cyan", C_CYAN, 0.05)
+    warn_plate(B, Vector((0.64, -0.99, -0.01)), (0, -1, 0), 0.1)
+    cable(B, [Vector((0.7, -0.96, 0.25)), Vector((0.84, -0.84, 0.5)), Vector((0.84, -0.84, 4.6))], 0.014, clips=(1,))
     # feed hopper on top, over the slide's head at the back
     B.tube_rings([quad_ring(0, -0.55, 4.98, 0.42, 0.42), quad_ring(0, -0.55, 4.45, 0.26, 0.26)], "steel", (0.35, 0.35, 0.36), 0.2, 0.5, cap=False)
     B.tube_rings([quad_ring(0, -0.55, 4.43, 0.26, 0.26), quad_ring(0, -0.55, 4.96, 0.44, 0.44)], "steel", (0.35, 0.35, 0.36), 0.2, 0.5, cap=False)
     B.box(Vector((0, 0.4, 4.8)), (1.84, 0.9, 0.12), I3, "panel", C_FACILITY, 0.1)                         # cap with the fan
     B.cyl(Vector((0, 0.4, 4.86)), Vector((0, 0.4, 4.9)), 0.38, 24, "metal", C_DARK)
-    B.pipe([Vector((-0.8, -0.8, 4.7)), Vector((-0.8, -0.8, -0.7))], 0.05, 8, "glass", (0.55, 0.9, 1.0))    # coolant riser
-    finish(B, "Frame", coll)
+    bolt_circle(B, Vector((0, 0.4, 4.9)), (0, 0, 1), 0.33, 8, 0.012, 0.008)
+    for sx in (-1, 1):
+        grille(B, Vector((sx * 0.5, 0.851, 4.8)), (0, 1, 0), 0.6, 0.08, 2)
+    G.pipe([Vector((-0.8, -0.8, 4.7)), Vector((-0.8, -0.8, -0.7))], 0.05, 8, "glass", (0.55, 0.9, 1.0))    # coolant riser
+    for z in (-0.72, 4.72):                                                  # riser end fittings and clips to the post
+        B.cyl(Vector((-0.8, -0.8, z - 0.03)), Vector((-0.8, -0.8, z + 0.03)), 0.065, 8, "steel", C_STEEL)
+    for z in (0.3, 2.0, 3.6):
+        B.box(Vector((-0.86, -0.86, z)), (0.12, 0.12, 0.04), Matrix.Rotation(0.785, 3, 'Z'), "steel", C_STEEL, 0.2, rust=0.3)
+    finish(B, "Frame", coll); finish(G, "Glass", coll)
     Fn = Builder()
     for k in range(6):
         a = k / 6 * math.tau
@@ -361,18 +471,27 @@ def build_counterflow_exchanger():
     belt_run(coll, B, rng, (0, -1, BELT_TOP), (0, 3, BELT_TOP), name="BeltA", sides=(-1,))       # hot lane, toward +Y
     belt_run(coll, B, rng, (2, 3, BELT_TOP), (2, -1, BELT_TOP), name="BeltB", sides=(-1,))       # cold lane, toward -Y
     pa, pb = line_path((0, -1, BELT_TOP), (0, 3, BELT_TOP)), line_path((2, 3, BELT_TOP), (2, -1, BELT_TOP))
-    build_side(B, pa, 1, rng, guards=False); build_side(B, pb, 1, rng, guards=False)
+    for path in (pa, pb):                                                    # inner stringers: hidden by the heat wall,
+        plain_side(B, path, 1)                                               # so no fasteners on them
     # the copper heat wall between the lanes
     B.box(Vector((1.0, 1.0, -0.35)), (0.12, 3.9, 1.1), I3, "copper", C_COPPER, 0.15, rust=0.15)
     for k in range(32):
         y = -0.85 + k * 0.12
-        B.box(Vector((1.0, y, -0.3)), (0.22, 0.02, 0.95), I3, "copper", (0.85, 0.45, 0.2), 0.15)
+        B.box(Vector((1.0, y, -0.3)), (0.22, 0.02, 0.95), I3, "copper", (0.85, 0.45, 0.2), 0.15, bevel=0)
     B.box(Vector((1.0, 1.0, 0.28)), (0.3, 3.96, 0.12), I3, "metal", C_DARK, 0.15)                           # manifold
-    B.cyl(Vector((1.0, -0.98, 0.42)), Vector((1.0, 2.98, 0.42)), 0.08, 12, "glass", (0.55, 0.9, 1.0))
+    bolt_row(B, Vector((0.87, -0.85, 0.34)), Vector((0.87, 2.85, 0.34)), 12, (0, 0, 1), 0.012, 0.01)
+    bolt_row(B, Vector((1.13, -0.85, 0.34)), Vector((1.13, 2.85, 0.34)), 12, (0, 0, 1), 0.012, 0.01)
+    G.cyl(Vector((1.0, -0.98, 0.42)), Vector((1.0, 2.98, 0.42)), 0.08, 12, "glass", (0.55, 0.9, 1.0))
+    for y in (-0.9, 0.3, 1.7, 2.9):                                          # pipe saddles
+        B.box(Vector((1.0, y, 0.37)), (0.2, 0.05, 0.06), I3, "steel", C_STEEL, 0.2, rust=0.3)
+        ring(B, Vector((1.0, y, 0.42)), (0, 1, 0), 0.08, 0.095, 0.04, 12, "steel", C_STEEL)
     for y in (-0.7, 1.0, 2.7):                                               # canopy arches over both lanes
         B.box(Vector((1.0, y, 0.75)), (3.9, 0.1, 0.08), I3, "metal", C_DARK, 0.15)
         for x in (-0.95, 2.95):
             B.box(Vector((x, y, -0.1)), (0.08, 0.1, 1.7), I3, "metal", C_DARK, 0.15)
+            gusset(B, Vector((x - math.copysign(0.04, x), y, 0.71)), (-math.copysign(1, x), 0, 0), (0, 0, -1), 0.2, col=C_DARK)
+        for x in (0.0, 1.0, 2.0):
+            stud(B, Vector((x, y, 0.79)), (0, 0, 1), 0.013, 0.01)
     G.box(Vector((1.0, 1.0, 0.78)), (3.8, 3.9, 0.02), I3, "glass", (0.55, 0.9, 1.0), 0.02)
     for x in (-0.94, 2.94):
         G.box(Vector((x, 1.0, 0.1)), (0.02, 3.9, 1.3), I3, "glass", (0.55, 0.9, 1.0), 0.02)
@@ -380,6 +499,8 @@ def build_counterflow_exchanger():
     for (x, y, c) in ((0, -0.99, C_MOLTEN), (0, 2.99, C_CYAN), (2, 2.99, C_CYAN), (2, -0.99, C_MOLTEN)):
         B.box(Vector((x, y, 0.62)), (1.2, 0.1, 0.18), I3, "metal", C_DARK, 0.15)
         B.box(Vector((x, y + (0.051 if y > 0 else -0.051), 0.62)), (0.9, 0.004, 0.08), I3, "molten" if c == C_MOLTEN else "cyan", c, 0.05)
+    warn_plate(B, Vector((1.0, -0.951, -0.2)), (0, -1, 0), 0.1)
+    warn_plate(B, Vector((1.0, 2.951, -0.2)), (0, 1, 0), 0.1)
     finish(B, "Frame", coll); finish(G, "Glass", coll)
     for name, x, sgn, mat, col in (("ChevronsA", 0.88, 1, "molten", C_MOLTEN), ("ChevronsB", 1.12, -1, "cyan", C_CYAN)):
         Ch = Builder()

@@ -1353,7 +1353,11 @@ def section_scene(h, name, nodes, subs):
 def main():
     global LAB
     txt = open(MUSEUM, encoding="utf-8").read()
-    keep = {m.group(1): (m.group(2), m.group(0)) for m in re.finditer(r'\[ext_resource [^\n]*path="([^"]*)" id="(hall_[^"]*)"\]', txt)}
+    keep = {}
+    for t in [txt] + [open(os.path.join(SECTION_DIR, n + ".tscn"), encoding="utf-8").read() for n in SECTIONS
+                      if os.path.exists(os.path.join(SECTION_DIR, n + ".tscn"))]:     # ids stay stable across reruns
+        for m in re.finditer(r'\[ext_resource [^\n]*path="([^"]*)" id="(hall_\d+)"\]', t):
+            keep.setdefault(m.group(1), (m.group(2), m.group(0)))
     h = hall(keep)
     LAB = h
     lab()
