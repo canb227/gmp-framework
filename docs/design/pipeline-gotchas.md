@@ -35,7 +35,8 @@
 ## Review renders (`tools/structures/view_hall.py`)
 - The viewer must clear animation data on imported objects, or keyframes snap parts back to the model origin.
 - `ROOM_ANGLE=<deg>` shows the Tumbler turned. `top`, `lab` and `wing` are preset views, or pass `cam:target`.
-- Whole-museum renders now take more than 10 minutes. Run them in the background.
+- The viewer reads the wing scenes and their MultiMeshes, importing each .glb once and copying it, so a
+  wing renders in about 30 s (it used to re-import every instance and took 10+ minutes).
 - Billboard labels come out mirrored in these renders but face the camera in Godot.
 
 ## Environment
@@ -50,3 +51,26 @@
   prop whose bounds would make a bad collider (a tree canopy, a catwalk, a hollow tower) needs hand-set boxes in `CUSTOM`/`KIT`.
 - A Box3DBody's own shape is always centred on its origin, so colliders offset from the root are separate
   child bodies.
+
+## Performance and scene size
+- **Godot warns when a text scene gets large** (FileSystem > On Save > Warn on Saving Large Text Resources);
+  ObjectMuseum.tscn hit 790 KB with ~1,800 MeshInstance3D boxes. The fixes, in place_museum.py:
+  - **Batch boxes into MultiMeshes** (`Hall.batch`): one MultiMeshInstance3D per material per exhibit group.
+    The tscn stores 12 floats per box, and the draw costs one call per MultiMesh. A MultiMesh buffer is row-major 3x4
+    (`basis row, origin` x3), the same order as Transform3D text.
+  - **Colliders don't need meshes**: a static Box3DBody alone collides, and its look comes from the MultiMesh.
+  - **Split big generated levels into sub-scenes** (one per wing), instanced from the level. Keep
+    NodePaths relative (`../Body`) so they survive the split.
+  - Boxes on a moving body go in a MultiMesh *under that body* so they move with it.
+  - Don't embed ArrayMesh data in a level `.tscn` (TestFacility.tscn is 39 MB from 128 inline ArrayMeshes).
+    Instance a .glb or save the mesh as a binary `.res`.
+- **Models (salvage_lib)**: static parts are merged into one `Body` node on export (`merge_static`). Nodes stay
+  separate if they animate, if a scene addresses them (names are found by scanning `game/**/*.tscn|cs`
+  for `parent="Model/..."`), if they use belt/glass/field materials, or if they're listed in `EXPORT_KEEP`.
+  Each material left on a node is one draw call. **After a model rebuild, rerun the scene generators**:
+  `index=` overrides on model children are computed from the glb's node order.
+- **Realism for cheap**: `Builder.box` chamfers edges (`BEVEL`, 12 mm by default; `bevel=0` for faces that butt
+  against neighbours, like kit seams). Chamfers are painted toward `C_WEAR` for worn edges. Face-area
+  WeightedNormal keeps the big faces flat-shaded. Vertex colours are per face, so glTF splits vertices at every
+  face anyway: expect about 2 verts per tri.
+- Godot generates LODs and shadow meshes on import (`meshes/generate_lods=true`), so don't hand-author LODs.

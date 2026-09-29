@@ -12,7 +12,8 @@ Where things are generated:
 - Models: `tools/blender/run.py` (families listed in its `FAMILIES`; needs `pip install bpy==4.5.14`).
 - Structure scenes: `tools/structures/gen_scenes.py`, which also checks that colliders stay inside their cells.
 - Items: `tools/items/gen_items.py`, which is the source of truth for item physics, tags and text.
-- Object Museum wings and rooms: `tools/structures/place_museum.py`.
+- Object Museum wings and rooms: `tools/structures/place_museum.py` (one scene per wing in `game/scenes/levels/museum/`,
+  instanced by `ObjectMuseum.tscn`; architecture boxes are MultiMeshes).
 - Review renders without Godot: `tools/structures/view_hall.py`.
 
 No Godot editor or .NET is available in the cloud container, so C# and scenes can't be run there. Say so
