@@ -11,11 +11,9 @@ public static class GameBootstrap
     public const string PlayerScene = "res://game/scenes/player/FactoryPlayer.tscn";
     public static readonly string[] StartingBlueprints =
     [
-        "blueprint_test_block", "blueprint_conveyor", "blueprint_conveyor_slope", "blueprint_conveyor_turn",
-        "blueprint_item_void", "blueprint_grinder", "blueprint_item_spawner",
-        "blueprint_test_block_2x1x1", "blueprint_smelter",
+        "blueprint_conveyor", "blueprint_conveyor_slope", "blueprint_conveyor_turn", "blueprint_smelter", "blueprint_scrap_grabber", "blueprint_conveyor_loader", "scrap_ball", "scrap_ingot",
     ];
-    public const int StartingBlueprintCount = 3;
+    public const int StartingBlueprintCount = 99;
 
     /// <summary>Host spawns the selected level for everyone.</summary>
     public static void Preload(GameInfo gameInfo)
@@ -37,14 +35,14 @@ public static class GameBootstrap
         Vector3 spawnPos = PickSpawnPosition();
         ulong pid = GameWorld.SpawnScene(PlayerScene, spawnPos, default, default, GMPObject.serializer.Serialize(init));
         FactoryPlayer player = GameWorld.syncedObjs[pid] as FactoryPlayer;
-        player.inventory.AddItem("magnet_rod", 1);
+        //player.inventory.AddItem("magnet_rod", 1);
         foreach (string blueprint in StartingBlueprints)
         {
             player.inventory.AddItem(blueprint, StartingBlueprintCount);
         }
-        player.inventory.AddItem("magnet_rod", 1);
+        //player.inventory.AddItem("magnet_rod", 1);
         player.UpdateEquippedItem();
-        BlueprintCommands.Ensure(); // the other structure blueprints: "blueprints <set>" in the console
+       // BlueprintCommands.Ensure(); // the other structure blueprints: "blueprints <set>" in the console
     }
 
     /// <summary>Group for spawn markers placed in level scenes (e.g. a Marker3D named PlayerStart).</summary>

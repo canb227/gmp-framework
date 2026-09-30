@@ -63,8 +63,9 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             camera.Current = true;
             Input.MouseMode = Input.MouseModeEnum.Captured;
             playerNameLabel.Hide();
-            body.Hide();
-            head.Hide();
+            body.GetNode<MeshInstance3D>("m").CastShadow=GeometryInstance3D.ShadowCastingSetting.ShadowsOnly;
+            //body.Hide();
+            head.GetNode<MeshInstance3D>("head").CastShadow = GeometryInstance3D.ShadowCastingSetting.ShadowsOnly;
             SubscribeGrabClaims();
             // Replicate every local inventory change (pickups, drops, drag-and-drop, bootstrap seed).
             inventory.InventoryChanged += SyncInventory;
@@ -171,7 +172,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         ApplyMovement(delta);
         if (distanceSinceStepSound > distancePerStepSound)
         {
-            AudioManager.playRandomSound(this.GetPath(), ["res://game/assets/audio/impacts/footstep_concrete_000.ogg", "res://game/assets/audio/impacts/footstep_concrete_001.ogg", "res://game/assets/audio/impacts/footstep_concrete_002.ogg", "res://game/assets/audio/impacts/footstep_concrete_003.ogg", "res://game/assets/audio/impacts/footstep_concrete_004.ogg"],-45);
+            //AudioManager.playRandomSound(this.GetPath(), ["res://game/assets/audio/impacts/footstep_concrete_000.ogg", "res://game/assets/audio/impacts/footstep_concrete_001.ogg", "res://game/assets/audio/impacts/footstep_concrete_002.ogg", "res://game/assets/audio/impacts/footstep_concrete_003.ogg", "res://game/assets/audio/impacts/footstep_concrete_004.ogg"],-45);
             distanceSinceStepSound = 0;
         }
     }
@@ -202,7 +203,11 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         }
         cachedVel = Velocity;
         Velocity = Call("move_and_slide", [Velocity, delta]).AsVector3();
-        distanceSinceStepSound += (Velocity.Length() * delta);
+        if (IsOnFloor())
+        {
+            distanceSinceStepSound += (Velocity.Length() * delta);
+        }
+
     }
 
     // ---- state sync -------------------------------------------------------

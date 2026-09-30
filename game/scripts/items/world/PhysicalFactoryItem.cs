@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public partial class PhysicalFactoryItem : GMPOBox3DBody
+public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
 {
 
     [Export]
@@ -168,5 +168,20 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody
         }
         GameWorld.RemoveLocal(id);
     }
+
+    public void onInteract(ulong playerID)
+    {
+        if (canBePickedUp)
+        {
+            FactoryPlayer player = (FactoryPlayer)GameWorld.syncedObjs[playerID];
+            if (player.inventory.HasRoomFor(itemID))
+            {
+                // Arbitrated by the item's authority so two players can't both pick it up.
+                RequestPickup((FactoryPlayer)GameWorld.syncedObjs[playerID]);
+            }
+
+        }
+    }
+
 }
 

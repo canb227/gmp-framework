@@ -12,7 +12,7 @@ using System.Linq;
 /// with <see cref="handle"/> a pivot node that tilts between <see cref="pushedAngle"/> and <see cref="pulledAngle"/>.
 /// </para>
 /// </summary>
-public partial class Lever : Node3D
+public partial class Lever : Node3D,Interactable
 {
     [Export] public string displayName = "Lever";
     /// <summary>Pivot that tilts about its local X axis to show the state.</summary>
@@ -74,5 +74,9 @@ public partial class Lever : Node3D
             handleTween.TweenProperty(handle, "rotation_degrees:x", pulled ? pulledAngle : pushedAngle, 0.25)
                 .SetTrans(Tween.TransitionType.Back).SetEase(Tween.EaseType.Out);
         }
+    }
+    public void onInteract(ulong playerID)
+    {
+        OnPressed();
     }
 }

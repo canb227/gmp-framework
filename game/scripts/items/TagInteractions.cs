@@ -90,12 +90,12 @@ public static class TagInteractions
     static void ReportReaction(PhysicalFactoryItem self, PhysicalFactoryItem other, string effect)
     {
         reactions++;
-        Logging.Log($"TAG REACTION: {self.itemID} touched {other.itemID}: {effect}", "TagInteractions");
+        //Logging.Log($"TAG REACTION: {self.itemID} touched {other.itemID}: {effect}", "TagInteractions");
     }
 
     static void ReportTemperatureContact(PhysicalFactoryItem self, PhysicalFactoryItem other, string mine, string theirs)
     {
         temperatureContacts++;
-        Logging.Log($"TAG TEST: {self.itemID} ({mine}) touched {other.itemID} ({theirs})", "TagInteractions");
+       // Logging.Log($"TAG TEST: {self.itemID} ({mine}) touched {other.itemID} ({theirs})", "TagInteractions");
     }
 }

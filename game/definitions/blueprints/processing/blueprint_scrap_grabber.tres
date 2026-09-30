@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BlueprintItem" format=3 uid="uid://byiut3whraoyt"]
+
+[ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_bp"]
+[ext_resource type="Texture2D" uid="uid://3i5tgwhbnyx6" path="res://game/assets/icons/blueprints/blueprint_scrap_grabber.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://e450hsdm0ju3" path="res://game/scenes/structures/BlueprintGhost.tscn" id="3_ghost"]
+[ext_resource type="PackedScene" uid="uid://c3fnr4grkilbx" path="res://game/scenes/structures/processing/ScrapArm.tscn" id="4_b8abr"]
+
+[resource]
+script = ExtResource("1_bp")
+structureScene = ExtResource("4_b8abr")
+itemID = "blueprint_scrap_grabber"
+displayName = "Blueprint: Scrap Grabber Arm"
+description = "A grabber arm bodged together from ruin salvage: oil drum, wheel hub, scaffold pipe and a taped-on camera. Picks items off a neighbouring belt."
+icon = ExtResource("2_icon")
+inHandScene = ExtResource("3_ghost")
+maxStackSize = 999

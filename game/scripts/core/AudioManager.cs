@@ -114,6 +114,10 @@ public partial class AudioManager : Node
             {
 
                 AudioStreamPlayer3D stream = streamPool[i].stream;
+                if (stream.IsQueuedForDeletion() || !stream.IsInsideTree())
+                {
+                    return false;
+                }
                 streamPool[i] = (true, streamPool[i].stream);
 
                 stream.GlobalPosition = target;

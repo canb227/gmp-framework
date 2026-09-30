@@ -25,29 +25,11 @@ public partial class FactoryPlayer
     void HandleInteractionInput(InputEvent @event)
     {
         if (!@event.IsActionPressed("interact")) return;
-
-        if (pickTarget is PhysicalFactoryItem item)
+        
+        if (pickTarget is Interactable i)
         {
-            Logging.Log($"You just pressed interact on {item.Name}!", "Player");
-            if (item.canBePickedUp && inventory.HasRoomFor(item.itemID))
-            {
-                // Arbitrated by the item's authority so two players can't both pick it up.
-                item.RequestPickup(this);
-            }
-        }
-        if (pickTarget is BasicButton button)
-        {
-            Logging.Log($"You just pressed interact on {button.Name}!", "Player");
-            button.OnPressed();
-        }
-        if (pickTarget is Lever lever)
-        {
-            lever.OnPressed();
-        }
-        if (pickTarget is Structure structure && inventory.HasRoomFor(structure.blueprintItemID))
-        {
-            // Arbitrated by the host so two players can't both take the blueprint back.
-            BuildGrid.RequestDeconstruct(this, structure);
+            Logging.Log($"You just pressed interact on {pickTarget.Name}!", "Player");
+            i.onInteract(id);
         }
     }
 

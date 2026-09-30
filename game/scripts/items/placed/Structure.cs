@@ -1,6 +1,7 @@
 using Godot;
 using PolyType;
 using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>Spawn-time state of a placed structure: where it sits on the build grid.</summary>
 [GenerateShape]
@@ -12,7 +13,7 @@ public partial record struct StructureState
 }
 
 
-public partial class Structure : GMPOBox3DBody
+public partial class Structure : GMPOBox3DBody, Interactable
 {
     /// <summary>Cells this structure occupies, relative to its anchor cell before rotation. Always includes (0,0,0).</summary>
     [Export]
@@ -32,6 +33,9 @@ public partial class Structure : GMPOBox3DBody
     [Export]
     public Godot.Collections.Array<ItemTags> tags;
 
+    [Export]
+    public bool interactable = true;
+
     public string displayName => ItemInfo.Fetch(blueprintItemID)?.displayName ?? Name;
 
     /// <summary>Height of a conveyor belt's top above the floor of its cell.</summary>
@@ -40,6 +44,9 @@ public partial class Structure : GMPOBox3DBody
     public Vector3I anchor { get; private set; }
     public int quarterTurns { get; private set; }
     bool hasPlacement;
+
+    [Export]
+    public Godot.Collections.Array<Vector3I> occupiedCells;
 
     /// <summary>
     /// True on the peer that runs this structure's machine logic: it has been spawned or registered as part
@@ -59,6 +66,26 @@ public partial class Structure : GMPOBox3DBody
         }
     }
 
+    public void onInteract(ulong playerID)
+    {
+        if (!interactable)
+        {
+            Logging.Log("this structure has interact disabled.", "Structure");
+            return;
+        }
+        FactoryPlayer player = (FactoryPlayer)GameWorld.syncedObjs[playerID];
+        bool invCheck = player.inventory.HasRoomFor(blueprintItemID);
+    //    Logging.Log($"invcheck: {invCheck}", "Structure");
+        if (invCheck)
+        {
+           // Logging.Log("requesting deconstruct", "Structure");
+            // Arbitrated by the item's authority so two players can't both pick it up.
+            BuildGrid.RequestDeconstruct(player,this);
+            return;
+        }
+        Logging.Log("interaction failed i dunno", "Structure");
+    }
+
     public Structure()
     {
         priority = -1; // never sends state updates
@@ -68,6 +95,19 @@ public partial class Structure : GMPOBox3DBody
     public Transform3D PlacementTransform(Vector3I anchor, int quarterTurns)
     {
         Basis basis = BuildGrid.QuarterTurnBasis(quarterTurns);
+        return new Transform3D(basis, BuildGrid.CellToWorld(anchor) + basis * placementOffset);
+    }
+
+    /// <summary>
+    /// The grid pose nearest to <paramref name="global"/> for a structure with <paramref name="placementOffset"/>:
+    /// yaw rounded to a quarter turn, anchor the cell holding the offset-adjusted origin. Static so the editor
+    /// snap plugin can use it on nodes whose Structure script isn't instanced in the editor.
+    /// </summary>
+    public static Transform3D NearestGridTransform(Transform3D global, Vector3 placementOffset, out Vector3I anchor, out int quarterTurns)
+    {
+        quarterTurns = Mathf.PosMod(Mathf.RoundToInt(global.Basis.GetEuler().Y / (Mathf.Pi / 2)), 4);
+        Basis basis = BuildGrid.QuarterTurnBasis(quarterTurns);
+        anchor = BuildGrid.WorldToCell(global.Origin - basis * placementOffset);
         return new Transform3D(basis, BuildGrid.CellToWorld(anchor) + basis * placementOffset);
     }
 
@@ -98,16 +138,22 @@ public partial class Structure : GMPOBox3DBody
         if (!hasPlacement)
         {
             // Placed by hand in a level rather than built: derive the cell from where it stands.
-            quarterTurns = Mathf.PosMod(Mathf.RoundToInt(GlobalRotation.Y / (Mathf.Pi / 2)), 4);
-            anchor = BuildGrid.WorldToCell(GlobalPosition - BuildGrid.QuarterTurnBasis(quarterTurns) * placementOffset);
+            Transform3D snapped = NearestGridTransform(GlobalTransform, placementOffset, out Vector3I a, out int q);
+            anchor = a;
+            quarterTurns = q;
             if (!isGridAligned)
             {
-                Logging.Warn($"{Name} is placed off the build grid (nearest: cell {anchor}, {quarterTurns} quarter turns); snap it in the editor", "Structure");
+                Logging.Warn($"{GetPath()} is placed off the build grid at {GlobalPosition}, yaw {Mathf.RadToDeg(GlobalRotation.Y):0.#}°. "
+                    + $"Move it to global position {snapped.Origin}, yaw {q * 90}° (cell {anchor}), or use Project > Tools > Snap Structures To Build Grid", "Structure");
             }
         }
-        if (!BuildGrid.Occupy(this))
+        if (!BuildGrid.Occupy(this, out List<Vector3I> placedIn))
         {
             Logging.Warn($"{Name} overlaps an occupied cell at {anchor}; it is not registered in the build grid", "Structure");
+        }
+        else
+        {
+            this.occupiedCells = new Godot.Collections.Array<Vector3I>(placedIn);
         }
     }
 

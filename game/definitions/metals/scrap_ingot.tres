@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ItemInfo" format=3]
+[gd_resource type="Resource" script_class="ItemInfo" format=3 uid="uid://fvesdqk4ku3q"]
 
 [ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
 [ext_resource type="Texture2D" uid="uid://45n7i210238s" path="res://game/assets/icons/items/scrap_ingot.png" id="2_icon"]
@@ -11,4 +11,4 @@ droppedScene = ExtResource("3_scene")
 displayName = "Scrap Ingot"
 description = "A cheap mixed-metal ingot. Every one comes out a different weight, depending on what went into the bale."
 icon = ExtResource("2_icon")
-maxStackSize = 1
+maxStackSize = 999

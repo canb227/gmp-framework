@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_bp"]
 [ext_resource type="Texture2D" uid="uid://bnk6fca4yqh6n" path="res://game/assets/icons/blueprints/blueprint_conveyor.png" id="2_icon"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/BlueprintGhost.tscn" id="3_ghost"]
+[ext_resource type="PackedScene" uid="uid://e450hsdm0ju3" path="res://game/scenes/structures/BlueprintGhost.tscn" id="3_ghost"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/Conveyor.tscn" id="4_struct"]
 
 [resource]
@@ -13,4 +13,4 @@ displayName = "Blueprint: Conveyor"
 description = "A straight conveyor belt."
 icon = ExtResource("2_icon")
 inHandScene = ExtResource("3_ghost")
-maxStackSize = 10
+maxStackSize = 999

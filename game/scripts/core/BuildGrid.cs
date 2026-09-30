@@ -31,6 +31,14 @@ public partial class BuildGrid : Node3D
 
     private MeshInstance3D _highlightMeshInstance;
 
+
+    public static readonly Vector3I[] neighbors8 =
+    {
+    new(-1, 0, -1), new(0, 0, -1), new(1, 0, -1),
+    new(-1, 0,  0),                new(1, 0,  0),
+    new(-1, 0,  1), new(0, 0,  1), new(1, 0,  1),
+};
+
     public override void _Ready()
     {
         instance = this;
@@ -351,14 +359,18 @@ public partial class BuildGrid : Node3D
     }
 
     /// <summary>Registers every cell of <paramref name="structure"/>. Fails (registering nothing) if any is taken.</summary>
-    public static bool Occupy(Structure structure)
+    public static bool Occupy(Structure structure, out List<Vector3I> placedIn)
     {
+        
         if (!CanPlace(structure.anchor, structure.cellOffsets, structure.quarterTurns))
         {
+            placedIn = null;
             return false;
         }
+        placedIn = new();
         foreach (Vector3I cell in FootprintCells(structure.anchor, structure.cellOffsets, structure.quarterTurns))
         {
+            placedIn.Add(cell);
             cells[cell] = structure;
         }
         return true;

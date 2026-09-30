@@ -133,6 +133,7 @@ public class Inventory
     /// <summary>True if at least one more of <paramref name="itemID"/> fits (a free slot or a stack with space).</summary>
     public bool HasRoomFor(string itemID)
     {
+
         ItemInfo item = ItemInfo.Fetch(itemID);
         if (item == null) return false;
         foreach (InventorySlot slot in slots)

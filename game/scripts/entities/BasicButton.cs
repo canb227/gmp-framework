@@ -9,7 +9,7 @@ using System.Linq;
 /// (level props aren't GMPObjects): simultaneous presses within <see cref="pressCooldown"/> count once,
 /// and every peer applies the same accepted presses.
 /// </summary>
-public partial class BasicButton : Node3D
+public partial class BasicButton : Node3D, Interactable
 {
     [Export] public string displayName;
     [Export] public AnimationPlayer animator;
@@ -36,6 +36,11 @@ public partial class BasicButton : Node3D
     public void OnPressed()
     {
         RPCManager.RPCTo(Lobby.hostID, this, nameof(_RequestPress), []);
+    }
+
+    public void onInteract(ulong playerID)
+    {
+        OnPressed();
     }
 
     // Runs on the host. First press wins; presses inside the cooldown are dropped.

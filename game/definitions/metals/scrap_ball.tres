@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ItemInfo" format=3]
+[gd_resource type="Resource" script_class="ItemInfo" format=3 uid="uid://bbfghtki3mmni"]
 
 [ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
 [ext_resource type="Texture2D" uid="uid://3unk615o2jxa" path="res://game/assets/icons/items/scrap_ball.png" id="2_icon"]
@@ -11,4 +11,4 @@ droppedScene = ExtResource("3_scene")
 displayName = "Scrap Ball"
 description = "A crushed bale of mixed metal. Lumpy, so it rolls in lurches and bounces off in odd directions. Weakly ferrous."
 icon = ExtResource("2_icon")
-maxStackSize = 1
+maxStackSize = 999

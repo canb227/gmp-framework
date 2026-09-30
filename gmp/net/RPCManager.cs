@@ -232,11 +232,15 @@ public partial class RPCManager : Node
         try
         {
             object[] callArgs = DeserializeArgs(rpc.args, method.GetParameters());
-            method.Invoke(target, callArgs);
+            if (!target.IsQueuedForDeletion())
+            {
+                method.Invoke(target, callArgs);
+            }
+
         }
         catch (TargetInvocationException e)
         {
-            Logging.Error($"RPC {target.GetType().Name}.{rpc.MethodName} threw: {e.InnerException}", "RPCManager");
+            Logging.Warn($"RPC {target.GetType().Name}.{rpc.MethodName} threw: {e.InnerException}", "RPCManager");
         }
         catch (Exception e) when (e is ArgumentException || e is TargetParameterCountException)
         {

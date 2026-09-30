@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://bo34hju0lbyq8"]
+
+[ext_resource type="Script" uid="uid://2hv3ihf3typ2" path="res://game/scripts/items/placed/ItemSource.cs" id="1_w2syi"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_7qi08"]
+
+[node name="DevScrapSource" type="Box3DBody" unique_id=867740511 node_paths=PackedStringArray("spawnLocation")]
+body_type = 0
+shape_type = 3
+script = ExtResource("1_w2syi")
+itemWeights = Dictionary[String, float]({
+"scrap_ball": 1.0
+})
+itemCounts = Dictionary[String, int]({
+"scrap_ball": -1
+})
+spawnLocation = NodePath("Marker3D")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=345566677]
+mesh = SubResource("CylinderMesh_7qi08")
+
+[node name="Marker3D" type="Marker3D" parent="." unique_id=324003752]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4948945, 0)
