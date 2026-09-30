@@ -3,17 +3,17 @@
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_item"]
 [ext_resource type="PackedScene" uid="uid://bgy7sre10s0nd" path="res://game/assets/models/items/scrap_ball.glb" id="2_model"]
 
-[node name="scrap_ball" type="Box3DBody"]
+[node name="scrap_ball" type="Box3DBody" unique_id=1636194786]
 shape_type = 1
-sphere_radius = 0.36
-density = 3.0
+sphere_radius = 0.22
+density = 5.0
 friction = 0.9
-rolling_resistance = 0.5
-restitution = 0.15
+rolling_resistance = 0.2
 script = ExtResource("1_item")
 itemID = "scrap_ball"
 canBePickTarget = true
 canBeGrabbed = true
 tags = Array[int]([3, 22])
 
-[node name="Model" parent="." instance=ExtResource("2_model")]
+[node name="Model" parent="." unique_id=124815417 instance=ExtResource("2_model")]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, 0, 0)
