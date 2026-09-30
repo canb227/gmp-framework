@@ -25,6 +25,8 @@ public partial class Lever : Node3D,Interactable
     [Export] public double toggleCooldown = 0.5;
 
     public bool pulled { get; private set; }
+    /// <summary>Raised on every peer with the new state each time a flip takes effect.</summary>
+    public event System.Action<bool> Toggled;
     /// <summary>Number of flips that took effect (used by the headless multiplayer test).</summary>
     public int acceptedToggles;
 
@@ -57,6 +59,15 @@ public partial class Lever : Node3D,Interactable
         RPCManager.RPC(this, nameof(_ApplyToggle), [!pulled]);
     }
 
+    /// <summary>Host only: puts the lever in <paramref name="nowPulled"/> for everyone (no-op if it's already there).</summary>
+    public void SetFromHost(bool nowPulled)
+    {
+        if (Lobby.isHost && nowPulled != pulled)
+        {
+            RPCManager.RPC(this, nameof(_ApplyToggle), [nowPulled]);
+        }
+    }
+
     // Carries the new state rather than "flip", so every peer ends up on the host's state.
     [RPC(requireAuthority = true)]
     private void _ApplyToggle(bool nowPulled)
@@ -67,6 +78,7 @@ public partial class Lever : Node3D,Interactable
         {
             spawner.spawning = pulled;
         }
+        Toggled?.Invoke(pulled);
         if (handle != null)
         {
             handleTween?.Kill();

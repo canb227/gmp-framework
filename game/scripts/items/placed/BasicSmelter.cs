@@ -26,6 +26,9 @@ public partial class BasicSmelter : Structure
     /// <summary>Input itemID → output itemID.</summary>
     [Export] public Godot.Collections.Dictionary<string, string> recipes = new();
 
+    /// <summary>Raised with the id of each input item the smelter takes in (only on the peer running its machine logic).</summary>
+    public event Action<ulong> Consumed;
+
     public bool currentlyProcessing = false;
     public string itemInSmelter;
 
@@ -50,6 +53,7 @@ public partial class BasicSmelter : Structure
                 currentlyProcessing = true;
                 processTimeRemaining = processTime;
                 GameWorld.DespawnObject(selected.id);
+                Consumed?.Invoke(selected.id);
             }
             else
             {

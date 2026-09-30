@@ -14,6 +14,7 @@ public static class GameResources
         new LevelInfo ("FactoryMap","res://game/scenes/levels/FactoryMap.tscn"),
         new LevelInfo ("TestFacility","res://game/scenes/levels/test_facility.scn"),
         new LevelInfo ("DevArea","res://game/scenes/levels/dev_area.tscn"),
+        new LevelInfo ("PhysicsTestbed","res://dev/physics_testbed/PhysicsTestbed.tscn"),
     };
 
 }

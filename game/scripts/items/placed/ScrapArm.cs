@@ -22,6 +22,13 @@ public partial class ScrapArm : Structure
     [Export]
     public Node3D dropDestination;
 
+    /// <summary>When off the arm stops taking items from its source (its timer is held).</summary>
+    [Export]
+    public bool running = true;
+
+    /// <summary>Raised with the new object's id each time the arm spawns an item (only on the peer running its machine logic).</summary>
+    public event Action<ulong> ItemSpawned;
+
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -35,7 +42,7 @@ public partial class ScrapArm : Structure
 
     public override void _PhysicsProcess(double delta)
     {
-        if (runsMachineLogic && linkedSource!=null)
+        if (runsMachineLogic && running && linkedSource!=null)
         {
             timer += delta;
             if (timer>timePerOperation)
@@ -45,7 +52,7 @@ public partial class ScrapArm : Structure
                 string itemID = linkedSource.GetItem();
                 if (itemID != null)
                 {
-                    ItemInfo.SpawnInWorld(itemID, dropDestination.GlobalPosition);
+                    ItemSpawned?.Invoke(ItemInfo.SpawnInWorld(itemID, dropDestination.GlobalPosition));
                 }
             }
         }

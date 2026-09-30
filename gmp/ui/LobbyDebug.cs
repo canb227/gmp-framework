@@ -616,6 +616,7 @@ public partial class LobbyDebug : Control
     //          -- --name B --join 127.0.0.1:2272 --port 9101 --auto
     //   Test:  -- --lan --name A --host 2272 --test --expect-peers 3 --test-timeout 30
     //          -- --lan --name A --host 2272 --test-game [--test-game-seconds 8] --expect-peers 3
+    //   Level: -- --lan --name A --host 2272 --level 4   (host starts GameResources.LevelsList[4] at once)
     //   Steam: -- --steam --name A --host
     //          -- --steam --name B --join <steamid>
     private void HandleCmdline()
@@ -623,6 +624,7 @@ public partial class LobbyDebug : Control
         string[] args = OS.GetCmdlineUserArgs();
         string name = null, host = null, join = null, port = null;
         bool hostFlag = false, auto = false;
+        int level = -1;
         for (int i = 0; i < args.Length; i++)
         {
             switch (args[i])
@@ -648,6 +650,10 @@ public partial class LobbyDebug : Control
                 case "--test-game-seconds":
                     string gs = Next(args, ref i);
                     if (gs != null) double.TryParse(gs, out _testGameSeconds);
+                    break;
+                case "--level":
+                    string lv = Next(args, ref i);
+                    if (lv != null && int.TryParse(lv, out int li) && li >= 0 && li < GameResources.LevelsList.Count) level = li;
                     break;
             }
         }
@@ -686,6 +692,15 @@ public partial class LobbyDebug : Control
                     JoinHost(parts[0], jp, listen);
                 }
             }
+        }
+
+        // --level <index> (host): select that level and start the game straight away.
+        if (level >= 0 && Lobby.isHost)
+        {
+            _levelSelect.Select(level);
+            _levelSelect_ItemSelected(level);
+            Log($"--level: starting {GameResources.LevelsList[level].levelName}");
+            Lobby.SendStartGame();
         }
 
         if (_testMode)

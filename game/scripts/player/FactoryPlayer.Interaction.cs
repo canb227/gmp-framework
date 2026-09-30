@@ -81,6 +81,14 @@ public partial class FactoryPlayer
             hoverInfoBelow.Show();
             hoverInfoBelow.Text = lever.pulled ? "Press F to push." : "Press F to pull.";
         }
+        else if (hit is TestbedButton testbedButton)
+        {
+            pickTarget = testbedButton;
+            hoverInfoName.Show();
+            hoverInfoName.Text = testbedButton.displayName;
+            hoverInfoBelow.Show();
+            hoverInfoBelow.Text = testbedButton.prompt;
+        }
         else if (BuildGrid.FindStructure(hit) is Structure structure)
         {
             pickTarget = structure;
