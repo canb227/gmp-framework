@@ -61,6 +61,7 @@ public partial class GameWorld
     /// <summary>Overload of <see cref="SpawnScene(string, Vector3, Vector3, GMPOInitData, byte[], NodePath)"/> taking an already-loaded <see cref="PackedScene"/>.</summary>
     public static ulong SpawnScene(PackedScene pck, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null, NodePath parent = null)
     {
+       // Logging.Log($"guh1 {parent}", "GameWorld");
         Node node = pck.Instantiate();
         initData = initDataNormalizer(initData);
         if (node is GMPObject rootGmpo)
@@ -70,18 +71,20 @@ public partial class GameWorld
         }
         Dictionary<string, GMPOInitData> childInit = childGMPORegisterGenerator(node, initData);
         node.Free();
-        RPCManager.RPC(instance, nameof(_SpawnScene), [pck.ResourcePath, position, rotation, initData, initState, childInit,parent]);
+        // NodePath is a native-handle wrapper that MessagePack serializes as empty; send it as a string.
+        RPCManager.RPC(instance, nameof(_SpawnScene), [pck.ResourcePath, position, rotation, initData, initState, childInit, parent?.ToString()]);
         return initData.id;
     }
 
 
 
     [RPC]
-    private void _SpawnScene(string scenePath, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null, NodePath parent = null)
+    private void _SpawnScene(string scenePath, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null, string parent = null)
     {
+       // Logging.Log($"guh2 {parent}", "GameWorld");
         Node node = ResourceLoader.Load<PackedScene>(scenePath).Instantiate();
         Node parentNode = null;
-        if (parent != null && parent != "")
+        if (!string.IsNullOrEmpty(parent))
         {
             parentNode = GetNode(parent);
         }
@@ -103,7 +106,7 @@ public partial class GameWorld
     private void _SpawnInternal(Node node, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null, Node parent = null)
     {
         node.Name = node.GetType().ToString() + initData.id.ToString();
-
+        //Logging.Log($"guhfinal {parent}", "GameWorld");
         if (b3droot == null)
         {
             Logging.Error("attempted to spawn with no b3droot!", "GameWorld");

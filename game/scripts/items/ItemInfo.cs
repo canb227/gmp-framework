@@ -45,14 +45,15 @@ public partial class ItemInfo : Resource
     /// Spawns <paramref name="itemID"/> in the world for every peer: its <see cref="droppedScene"/>, or a labelled
     /// <c>DefaultDroppedBox</c> if it has none. Returns the new object's id.
     /// </summary>
-    public static ulong SpawnInWorld(string itemID, Vector3 position, Vector3 rotation = default)
+    public static ulong SpawnInWorld(string itemID, Vector3 position, Vector3 rotation = default, NodePath parentPath = default)
     {
+        //Logging.Log($"guh0 {parentPath}", "GameWorld");
         ItemInfo item = Fetch(itemID);
         if (item?.droppedScene != null)
         {
-            return GameWorld.SpawnScene(item.droppedScene, position, rotation);
+            return GameWorld.SpawnScene(item.droppedScene, position, rotation, parent: parentPath);
         }
-        ulong id = GameWorld.SpawnScene(DefaultDroppedScene, position, rotation);
+        ulong id = GameWorld.SpawnScene(DefaultDroppedScene, position, rotation, parent: parentPath);
         (GameWorld.syncedObjs[id] as DefaultDroppedBox).boxInit(itemID);
         return id;
     }

@@ -1,9 +1,9 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dk5bvebmy1rxj"]
 
 [ext_resource type="PackedScene" path="res://dev/physics_testbed/PhysicsTestSegment.tscn" id="1_segment"]
-[ext_resource type="Script" path="res://dev/physics_testbed/PhysicsTestbedHud.cs" id="2_hud"]
-[ext_resource type="Script" path="res://dev/physics_testbed/PhysicsTestbedMaster.cs" id="3_master"]
-[ext_resource type="Script" path="res://dev/physics_testbed/TestbedButton.cs" id="4_button"]
+[ext_resource type="Script" uid="uid://cnogwt77e8kqd" path="res://dev/physics_testbed/PhysicsTestbedHud.cs" id="2_hud"]
+[ext_resource type="Script" uid="uid://xhbiut2lb2vk" path="res://dev/physics_testbed/PhysicsTestbedMaster.cs" id="3_master"]
+[ext_resource type="Script" uid="uid://o17b074fndto" path="res://dev/physics_testbed/TestbedButton.cs" id="4_button"]
 
 [sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
 
@@ -31,166 +31,162 @@ albedo_color = Color(0.1, 0.8, 0.2, 1)
 emission_enabled = true
 emission = Color(0.02, 0.5, 0.05, 1)
 
+[sub_resource type="BoxMesh" id="BoxMesh_on"]
+material = SubResource("Mat_on")
+size = Vector3(0.5, 0.5, 0.5)
+
 [sub_resource type="StandardMaterial3D" id="Mat_off"]
 albedo_color = Color(0.85, 0.15, 0.1, 1)
 emission_enabled = true
 emission = Color(0.6, 0.05, 0.02, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_off"]
+material = SubResource("Mat_off")
+size = Vector3(0.5, 0.5, 0.5)
 
 [sub_resource type="StandardMaterial3D" id="Mat_delete"]
 albedo_color = Color(0.95, 0.75, 0.1, 1)
 emission_enabled = true
 emission = Color(0.6, 0.45, 0.02, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_on"]
-material = SubResource("Mat_on")
-size = Vector3(0.5, 0.5, 0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_off"]
-material = SubResource("Mat_off")
-size = Vector3(0.5, 0.5, 0.5)
-
 [sub_resource type="BoxMesh" id="BoxMesh_delete"]
 material = SubResource("Mat_delete")
 size = Vector3(0.5, 0.5, 0.5)
 
-[node name="PhysicsTestbed" type="Node3D"]
+[node name="PhysicsTestbed" type="Node3D" unique_id=721722167]
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=326825975]
 environment = SubResource("Env_1")
 
-[node name="Sun" type="DirectionalLight3D" parent="."]
-rotation = Vector3(-0.9, 0.6, 0)
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=124298761]
+transform = Transform3D(0.8253356, -0.44229966, 0.3509874, 0, 0.62161, 0.7833269, -0.5646425, -0.6465076, 0.51303685, 0, 0, 0)
 shadow_enabled = true
 
-[node name="Floor" type="Box3DBody" parent="."]
+[node name="Floor" type="Box3DBody" parent="." unique_id=2024436595]
 body_type = 0
 box_size = Vector3(170, 1, 60)
 debug_visualize = false
-position = Vector3(65, -0.5, -10)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65, -0.5, -10)
 
-[node name="Mesh" type="MeshInstance3D" parent="Floor"]
+[node name="Mesh" type="MeshInstance3D" parent="Floor" unique_id=758959291]
 mesh = SubResource("BoxMesh_floor")
 
-[node name="PlayerStart" type="Marker3D" parent="." groups=["player_spawn"]]
-position = Vector3(64, 0, 8)
+[node name="PlayerStart" type="Marker3D" parent="." unique_id=1673523195 groups=["player_spawn"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 64, 0, 8)
 
-[node name="Hud" type="CanvasLayer" parent="."]
+[node name="Hud" type="CanvasLayer" parent="." unique_id=1831651169]
 script = ExtResource("2_hud")
 
-[node name="Master" type="Node3D" parent="."]
-position = Vector3(64, 0, 4)
+[node name="Master" type="Node3D" parent="." unique_id=175169886]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 64, 0, 4)
 script = ExtResource("3_master")
 
-[node name="Pedestal1" type="Box3DBody" parent="Master"]
+[node name="Pedestal1" type="Box3DBody" parent="Master" unique_id=1041145964]
 body_type = 0
 box_size = Vector3(0.4, 1.05, 0.4)
 debug_visualize = false
-position = Vector3(-2.5, 0.525, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.525, 0)
 
-[node name="Mesh" type="MeshInstance3D" parent="Master/Pedestal1"]
+[node name="Mesh" type="MeshInstance3D" parent="Master/Pedestal1" unique_id=1717645533]
 mesh = SubResource("BoxMesh_pedestal")
 
-[node name="OnButton" type="Box3DBody" parent="Master" node_paths=PackedStringArray("master")]
+[node name="OnButton" type="Box3DBody" parent="Master" unique_id=1541565233 node_paths=PackedStringArray("master")]
 body_type = 0
 box_size = Vector3(0.5, 0.5, 0.5)
 debug_visualize = false
-position = Vector3(-2.5, 1.3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 1.3, 0)
 script = ExtResource("4_button")
 action = 2
 master = NodePath("..")
 
-[node name="Mesh" type="MeshInstance3D" parent="Master/OnButton"]
+[node name="Mesh" type="MeshInstance3D" parent="Master/OnButton" unique_id=304870367]
 mesh = SubResource("BoxMesh_on")
 
-[node name="Label1" type="Label3D" parent="Master"]
-position = Vector3(-2.5, 1.9, 0)
+[node name="Label1" type="Label3D" parent="Master" unique_id=1745863680]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 1.9, 0)
 billboard = 1
 text = "ALL SPAWNERS ON"
-font_size = 32
 outline_size = 8
 
-[node name="Pedestal2" type="Box3DBody" parent="Master"]
+[node name="Pedestal2" type="Box3DBody" parent="Master" unique_id=1907844186]
 body_type = 0
 box_size = Vector3(0.4, 1.05, 0.4)
 debug_visualize = false
-position = Vector3(0, 0.525, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.525, 0)
 
-[node name="Mesh" type="MeshInstance3D" parent="Master/Pedestal2"]
+[node name="Mesh" type="MeshInstance3D" parent="Master/Pedestal2" unique_id=857957198]
 mesh = SubResource("BoxMesh_pedestal")
 
-[node name="OffButton" type="Box3DBody" parent="Master" node_paths=PackedStringArray("master")]
+[node name="OffButton" type="Box3DBody" parent="Master" unique_id=637547807 node_paths=PackedStringArray("master")]
 body_type = 0
 box_size = Vector3(0.5, 0.5, 0.5)
 debug_visualize = false
-position = Vector3(0, 1.3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
 script = ExtResource("4_button")
 action = 3
 master = NodePath("..")
 
-[node name="Mesh" type="MeshInstance3D" parent="Master/OffButton"]
+[node name="Mesh" type="MeshInstance3D" parent="Master/OffButton" unique_id=495930904]
 mesh = SubResource("BoxMesh_off")
 
-[node name="Label2" type="Label3D" parent="Master"]
-position = Vector3(0, 1.9, 0)
+[node name="Label2" type="Label3D" parent="Master" unique_id=491766959]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
 billboard = 1
 text = "ALL SPAWNERS OFF"
-font_size = 32
 outline_size = 8
 
-[node name="Pedestal3" type="Box3DBody" parent="Master"]
+[node name="Pedestal3" type="Box3DBody" parent="Master" unique_id=137994260]
 body_type = 0
 box_size = Vector3(0.4, 1.05, 0.4)
 debug_visualize = false
-position = Vector3(2.5, 0.525, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.525, 0)
 
-[node name="Mesh" type="MeshInstance3D" parent="Master/Pedestal3"]
+[node name="Mesh" type="MeshInstance3D" parent="Master/Pedestal3" unique_id=888677726]
 mesh = SubResource("BoxMesh_pedestal")
 
-[node name="DeleteButton" type="Box3DBody" parent="Master" node_paths=PackedStringArray("master")]
+[node name="DeleteButton" type="Box3DBody" parent="Master" unique_id=1163415697 node_paths=PackedStringArray("master")]
 body_type = 0
 box_size = Vector3(0.5, 0.5, 0.5)
 debug_visualize = false
-position = Vector3(2.5, 1.3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 1.3, 0)
 script = ExtResource("4_button")
 action = 4
 master = NodePath("..")
 
-[node name="Mesh" type="MeshInstance3D" parent="Master/DeleteButton"]
+[node name="Mesh" type="MeshInstance3D" parent="Master/DeleteButton" unique_id=1222284613]
 mesh = SubResource("BoxMesh_delete")
 
-[node name="Label3" type="Label3D" parent="Master"]
-position = Vector3(2.5, 1.9, 0)
+[node name="Label3" type="Label3D" parent="Master" unique_id=1368975297]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 1.9, 0)
 billboard = 1
 text = "DELETE ALL SCRAP"
-font_size = 32
 outline_size = 8
 
-[node name="Segment1" parent="." instance=ExtResource("1_segment")]
-position = Vector3(0, 0, 0)
+[node name="Segment1" parent="." unique_id=127473793 instance=ExtResource("1_segment")]
 
-[node name="Segment2" parent="." instance=ExtResource("1_segment")]
-position = Vector3(14, 0, 0)
+[node name="Segment2" parent="." unique_id=957399440 instance=ExtResource("1_segment")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, 0)
 
-[node name="Segment3" parent="." instance=ExtResource("1_segment")]
-position = Vector3(28, 0, 0)
+[node name="Segment3" parent="." unique_id=1330174064 instance=ExtResource("1_segment")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28, 0, 0)
 
-[node name="Segment4" parent="." instance=ExtResource("1_segment")]
-position = Vector3(42, 0, 0)
+[node name="Segment4" parent="." unique_id=1369742401 instance=ExtResource("1_segment")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 0, 0)
 
-[node name="Segment5" parent="." instance=ExtResource("1_segment")]
-position = Vector3(56, 0, 0)
+[node name="Segment5" parent="." unique_id=1021613413 instance=ExtResource("1_segment")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56, 0, 0)
 
-[node name="Segment6" parent="." instance=ExtResource("1_segment")]
-position = Vector3(70, 0, 0)
+[node name="Segment6" parent="." unique_id=989668240 instance=ExtResource("1_segment")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, 0)
 
-[node name="Segment7" parent="." instance=ExtResource("1_segment")]
-position = Vector3(84, 0, 0)
+[node name="Segment7" parent="." unique_id=2142009717 instance=ExtResource("1_segment")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 84, 0, 0)
 
-[node name="Segment8" parent="." instance=ExtResource("1_segment")]
-position = Vector3(98, 0, 0)
+[node name="Segment8" parent="." unique_id=1350586154 instance=ExtResource("1_segment")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 98, 0, 0)
 
-[node name="Segment9" parent="." instance=ExtResource("1_segment")]
-position = Vector3(112, 0, 0)
+[node name="Segment9" parent="." unique_id=915490837 instance=ExtResource("1_segment")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 112, 0, 0)
 
-[node name="Segment10" parent="." instance=ExtResource("1_segment")]
-position = Vector3(126, 0, 0)
+[node name="Segment10" parent="." unique_id=1456664301 instance=ExtResource("1_segment")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 126, 0, 0)

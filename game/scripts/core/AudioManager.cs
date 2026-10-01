@@ -82,10 +82,11 @@ public partial class AudioManager : Node
             if (streamPool[i].inUse == false)
             {
 
-                AudioStreamPlayer3D stream = streamPool[i].stream;
-                streamPool[i] = (true, streamPool[i].stream);
-                
-                stream.Reparent(GetNodeOrNull(target), false);
+                AudioStreamPlayer3D stream = new();
+
+                GetNodeOrNull(target).AddChild(stream);
+
+
                 stream.ResetPhysicsInterpolation();
                 stream.Stream = sound;
                 stream.VolumeDb = volumeAdjust;
