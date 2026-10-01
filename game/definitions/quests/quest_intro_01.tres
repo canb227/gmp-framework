@@ -7,6 +7,6 @@ script = ExtResource("1_qau4b")
 questID = "quest_intro_01"
 questName = "Weclome Again!"
 itemSubmissionObjectives = Dictionary[String, int]({
-"scrap_ball": 3
+"scrap_ball": 100
 })
 metadata/_custom_type_script = "uid://crybn2gwdne7r"

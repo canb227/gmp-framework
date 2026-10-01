@@ -20,6 +20,17 @@ public partial class BlueprintItem : ItemInfo
     [Export]
     public PackedScene alternateStructureScene;
 
+    /// <summary>Item id paid to buy one of these in the shop (e.g. "scrap_ball"). Empty means free.</summary>
+    [Export]
+    public string costItemID = "";
+
+    /// <summary>How many <see cref="costItemID"/> one of these costs (e.g. 2).</summary>
+    [Export]
+    public int costAmount = 0;
+
+    /// <summary>True when buying this takes something (<see cref="costItemID"/> set and <see cref="costAmount"/> above 0).</summary>
+    public bool HasCost => !string.IsNullOrEmpty(costItemID) && costAmount > 0;
+
     /// <summary>The scene for the chosen form; the main one when there is no alternate.</summary>
     public PackedScene StructureScene(bool alternate) => alternate && alternateStructureScene != null ? alternateStructureScene : structureScene;
 }

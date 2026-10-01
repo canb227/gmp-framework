@@ -1,8 +1,13 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class Store : Structure
 {
+
+
+    List<ItemInfo> itemsForSale = new List<ItemInfo>();
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -13,8 +18,12 @@ public partial class Store : Structure
     {
     }
 
+    /// <summary>Opens the shop screen for the interacting player (interact only runs on that player's own peer).</summary>
     public override void onInteract(ulong playerID)
     {
-        //open the store UI for the player
+        if (GameWorld.syncedObjs.TryGetValue(playerID, out GMPObject obj) && obj is FactoryPlayer player)
+        {
+            player.OpenShop();
+        }
     }
 }

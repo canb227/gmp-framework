@@ -1,0 +1,417 @@
+using Godot;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+/// <summary>
+/// Shop terminal UI (ShopUI.tscn): a catalogue of purchasable structure blueprints on the left; selecting one
+/// shows its details on the right, with a purchase widget at the bottom (unit cost vs. how many of the cost item
+/// the player holds, an order-quantity selector, and a Purchase button that raises <see cref="PurchaseRequested"/>).
+/// Laid out for a fixed 2560x1440 screen so it can later be rendered in a SubViewport on an in-world display.
+/// What's on sale is the static <see cref="availableItemIDs"/> list, empty at start and grown through
+/// <see cref="AddAvailableItem"/> (e.g. by quest rewards); every open shop rebuilds when it changes.
+/// Purely a view: it never changes the inventory itself.
+/// </summary>
+public partial class ShopUI : Control
+{
+    /// <summary>Raised by the Purchase button: (blueprint item id, quantity). Handlers take payment and deliver.</summary>
+    public event Action<string, int> PurchaseRequested;
+    /// <summary>Raised by the Exit button.</summary>
+    public event Action CloseRequested;
+
+    /// <summary>
+    /// Blueprint item ids on sale, in the order they were added. Shared by every shop; starts empty. Change it
+    /// through <see cref="AddAvailableItem"/> / <see cref="ClearAvailableItems"/> so open shops refresh.
+    /// </summary>
+    public static readonly List<string> availableItemIDs = new();
+    /// <summary>Raised whenever <see cref="availableItemIDs"/> changes.</summary>
+    public static event Action AvailableItemsChanged;
+
+    [Export] public int maxOrder = 99;
+    static readonly Color Accent = new(1f, 0.55f, 0.05f);
+    static readonly Color Shortfall = new(0.95f, 0.27f, 0.2f);
+    static readonly Color Dim = new(0.5f, 0.5f, 0.53f);
+
+    private Inventory inventory;
+    private readonly ButtonGroup rowGroup = new();
+    private readonly List<(BlueprintItem item, Button row, Label costLabel)> rows = new();
+    private BlueprintItem selected;
+    private int quantity = 1;
+
+    private VBoxContainer itemList;
+    private Label listCount, emptyDetail, detailCategory, detailName, detailStats, detailDescription;
+    private Label costName, costEach, costTotal, costHave, freeLabel, quantityLabel;
+    private Control detailContent, costRow;
+    private TextureRect detailIcon, costIcon;
+    private Button minusButton, plusButton, maxButton, purchaseButton, closeButton;
+
+    public override void _Ready()
+    {
+        itemList = GetNode<VBoxContainer>("%ItemList");
+        listCount = GetNode<Label>("%ListCount");
+        emptyDetail = GetNode<Label>("%EmptyDetail");
+        detailContent = GetNode<Control>("%DetailContent");
+        detailIcon = GetNode<TextureRect>("%DetailIcon");
+        detailCategory = GetNode<Label>("%DetailCategory");
+        detailName = GetNode<Label>("%DetailName");
+        detailStats = GetNode<Label>("%DetailStats");
+        detailDescription = GetNode<Label>("%DetailDescription");
+        costRow = GetNode<Control>("%CostRow");
+        costIcon = GetNode<TextureRect>("%CostIcon");
+        costName = GetNode<Label>("%CostName");
+        costEach = GetNode<Label>("%CostEach");
+        costTotal = GetNode<Label>("%CostTotal");
+        costHave = GetNode<Label>("%CostHave");
+        freeLabel = GetNode<Label>("%FreeLabel");
+        quantityLabel = GetNode<Label>("%Quantity");
+        minusButton = GetNode<Button>("%MinusButton");
+        plusButton = GetNode<Button>("%PlusButton");
+        maxButton = GetNode<Button>("%MaxButton");
+        purchaseButton = GetNode<Button>("%PurchaseButton");
+        closeButton = GetNode<Button>("%CloseButton");
+
+        minusButton.Pressed += () => SetQuantity(quantity - 1);
+        plusButton.Pressed += () => SetQuantity(quantity + 1);
+        maxButton.Pressed += () => SetQuantity(MaxAffordable());
+        purchaseButton.Pressed += OnPurchasePressed;
+        closeButton.Pressed += () => CloseRequested?.Invoke();
+
+        AvailableItemsChanged += OnAvailableItemsChanged;
+        BuildCatalogue();
+    }
+
+    public override void _ExitTree()
+    {
+        if (fittingToViewport)
+        {
+            GetViewport().SizeChanged -= Refit;
+            fittingToViewport = false;
+        }
+        AvailableItemsChanged -= OnAvailableItemsChanged;
+        SetInventory(null);
+    }
+
+    /// <summary>Shows the shop against <paramref name="playerInventory"/> (whose counts the cost widget reads).</summary>
+    public void Open(Inventory playerInventory)
+    {
+        SetInventory(playerInventory);
+        Visible = true;
+    }
+
+    public void Close()
+    {
+        SetInventory(null);
+        Visible = false;
+    }
+
+    /// <summary>
+    /// For use as a screen overlay: scales the fixed 2560x1440 layout to fit the window (letterboxed, centred) and
+    /// keeps it fitted on resize. Not needed when the shop is rendered in its own 2560x1440 SubViewport.
+    /// </summary>
+    public void FitToViewport()
+    {
+        if (!fittingToViewport)
+        {
+            fittingToViewport = true;
+            GetViewport().SizeChanged += Refit;
+        }
+        Refit();
+    }
+
+    private bool fittingToViewport;
+
+    private void Refit()
+    {
+        Vector2 design = CustomMinimumSize;
+        Vector2 window = GetViewport().GetVisibleRect().Size;
+        float scale = Mathf.Min(window.X / design.X, window.Y / design.Y);
+        SetAnchorsPreset(LayoutPreset.TopLeft);
+        Size = design;
+        Scale = new Vector2(scale, scale);
+        Position = (window - design * scale) / 2f;
+    }
+
+    private void SetInventory(Inventory playerInventory)
+    {
+        if (inventory != null)
+        {
+            inventory.InventoryChanged -= RefreshCosts;
+        }
+        inventory = playerInventory;
+        if (inventory != null)
+        {
+            inventory.InventoryChanged += RefreshCosts;
+        }
+        RefreshCosts();
+    }
+
+    // ---- stock -----------------------------------------------------------------
+
+    /// <summary>
+    /// Puts <paramref name="itemID"/> on sale in every shop. It must be a <see cref="BlueprintItem"/>; returns false
+    /// (and changes nothing) for unknown or non-blueprint ids and for ids already on sale.
+    /// </summary>
+    public static bool AddAvailableItem(string itemID)
+    {
+        if (availableItemIDs.Contains(itemID))
+        {
+            return false;
+        }
+        if (ItemInfo.Fetch(itemID) is not BlueprintItem)
+        {
+            Logging.Log($"can't stock '{itemID}': not a blueprint item", "ShopUI");
+            return false;
+        }
+        availableItemIDs.Add(itemID);
+        AvailableItemsChanged?.Invoke();
+        return true;
+    }
+
+    /// <summary>Takes everything off sale (e.g. when a new game starts; the list is static, so it outlives one).</summary>
+    public static void ClearAvailableItems()
+    {
+        availableItemIDs.Clear();
+        AvailableItemsChanged?.Invoke();
+    }
+
+    // ---- catalogue -------------------------------------------------------------
+
+    /// <summary>Rebuilds the list from <see cref="availableItemIDs"/>, keeping the selection if it's still on sale.</summary>
+    private void BuildCatalogue()
+    {
+        foreach (Node child in itemList.GetChildren())
+        {
+            itemList.RemoveChild(child);
+            child.QueueFree();
+        }
+        rows.Clear();
+
+        // Grouped by definition folder, groups in order of first appearance, items in the order they were added.
+        List<BlueprintItem> stock = availableItemIDs.Select(id => ItemInfo.Fetch(id) as BlueprintItem).Where(i => i != null).ToList();
+        bool first = true;
+        foreach (var group in stock.GroupBy(CategoryOf))
+        {
+            AddCategoryHeader(group.Key, first);
+            first = false;
+            foreach (BlueprintItem item in group)
+            {
+                AddRow(item);
+            }
+        }
+        if (stock.Count == 0)
+        {
+            itemList.AddChild(new Label { Text = "NO STOCK AVAILABLE", ThemeTypeVariation = "ShopDim" });
+        }
+        listCount.Text = $"{rows.Count} ENTRIES";
+        emptyDetail.Text = stock.Count == 0 ? "NO STOCK AVAILABLE" : "SELECT AN ENTRY FROM THE CATALOGUE";
+
+        Select(stock.Contains(selected) ? selected : stock.FirstOrDefault());
+    }
+
+    private void OnAvailableItemsChanged()
+    {
+        BuildCatalogue();
+    }
+
+    /// <summary>The blueprint's definition folder, e.g. "chutes" (top-level blueprints are "general").</summary>
+    private static string CategoryOf(BlueprintItem item)
+    {
+        string folder = item.ResourcePath.GetBaseDir().TrimSuffix("/").GetFile();
+        return folder == "blueprints" ? "general" : folder;
+    }
+
+    private void AddCategoryHeader(string category, bool first)
+    {
+        if (!first)
+        {
+            itemList.AddChild(new Control { CustomMinimumSize = new Vector2(0, 16) });
+        }
+        itemList.AddChild(new Label
+        {
+            Text = "// " + category.Replace('_', ' ').ToUpperInvariant(),
+            ThemeTypeVariation = "ShopDim",
+        });
+    }
+
+    private void AddRow(BlueprintItem item)
+    {
+        Button row = new()
+        {
+            ToggleMode = true,
+            ButtonGroup = rowGroup,
+            ThemeTypeVariation = "ShopRow",
+            CustomMinimumSize = new Vector2(0, 104),
+            FocusMode = FocusModeEnum.None,
+        };
+        row.Pressed += () => Select(item);
+
+        // Buttons don't lay out children, so a full-rect margin container holds the row contents.
+        MarginContainer margin = new() { MouseFilter = MouseFilterEnum.Ignore };
+        margin.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        margin.AddThemeConstantOverride("margin_left", 26);
+        margin.AddThemeConstantOverride("margin_right", 20);
+        HBoxContainer line = new() { MouseFilter = MouseFilterEnum.Ignore };
+        line.AddThemeConstantOverride("separation", 24);
+
+        line.AddChild(Icon(item.icon, 80));
+        line.AddChild(new Label
+        {
+            Text = ShopName(item),
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            VerticalAlignment = VerticalAlignment.Center,
+            TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis,
+            MouseFilter = MouseFilterEnum.Ignore,
+        });
+        Label costLabel = new()
+        {
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            CustomMinimumSize = new Vector2(80, 0),
+            MouseFilter = MouseFilterEnum.Ignore,
+        };
+        if (item.HasCost)
+        {
+            line.AddChild(Icon(ItemInfo.Fetch(item.costItemID)?.icon, 44));
+        }
+        line.AddChild(costLabel);
+
+        margin.AddChild(line);
+        row.AddChild(margin);
+        itemList.AddChild(row);
+        rows.Add((item, row, costLabel));
+    }
+
+    /// <summary>Display name without the "Blueprint: " prefix every entry here would share.</summary>
+    private static string ShopName(BlueprintItem item)
+    {
+        string name = item.displayName ?? item.itemID;
+        return name.StartsWith("Blueprint: ") ? name.Substring("Blueprint: ".Length) : name;
+    }
+
+    private static TextureRect Icon(Texture2D texture, int size) => new()
+    {
+        Texture = texture,
+        CustomMinimumSize = new Vector2(size, size),
+        ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+        StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
+        SizeFlagsVertical = SizeFlags.ShrinkCenter,
+        MouseFilter = MouseFilterEnum.Ignore,
+    };
+
+    // ---- detail + purchase -----------------------------------------------------
+
+    private void Select(BlueprintItem item)
+    {
+        if (item != selected)
+        {
+            quantity = 1;
+        }
+        selected = item;
+        detailContent.Visible = item != null;
+        emptyDetail.Visible = item == null;
+        foreach (var (rowItem, row, _) in rows)
+        {
+            if (rowItem == item)
+            {
+                row.SetPressedNoSignal(true);
+            }
+        }
+        if (item == null)
+        {
+            return;
+        }
+
+        detailIcon.Texture = item.icon;
+        detailCategory.Text = $"BLUEPRINT  //  {CategoryOf(item).Replace('_', ' ').ToUpperInvariant()}";
+        detailName.Text = ShopName(item);
+        string alternate = item.alternateStructureScene != null ? "  //  2 FORMS" : "";
+        detailStats.Text = $"ID {item.itemID}  //  STACKS TO {item.maxStackSize}{alternate}";
+        detailDescription.Text = string.IsNullOrEmpty(item.description) ? "No specification on file." : item.description;
+
+        RefreshCosts();
+    }
+
+    private int HeldCount(string itemID)
+    {
+        if (inventory == null || string.IsNullOrEmpty(itemID))
+        {
+            return 0;
+        }
+        return inventory.slots.Where(s => !s.IsEmpty && s.itemID == itemID).Sum(s => s.Count);
+    }
+
+    private int MaxAffordable()
+    {
+        if (selected == null)
+        {
+            return 1;
+        }
+        if (!selected.HasCost)
+        {
+            return Math.Max(1, selected.maxStackSize);
+        }
+        return Math.Clamp(HeldCount(selected.costItemID) / selected.costAmount, 1, maxOrder);
+    }
+
+    private void SetQuantity(int value)
+    {
+        quantity = Math.Clamp(value, 1, maxOrder);
+        RefreshCosts();
+    }
+
+    /// <summary>Re-reads held counts into the catalogue cost column and the purchase widget.</summary>
+    private void RefreshCosts()
+    {
+        if (detailContent == null)
+        {
+            return; // before _Ready
+        }
+
+        foreach (var (item, _, costLabel) in rows)
+        {
+            costLabel.Text = item.HasCost ? $"×{item.costAmount}" : "FREE";
+            bool short1 = item.HasCost && HeldCount(item.costItemID) < item.costAmount;
+            costLabel.AddThemeColorOverride("font_color", !item.HasCost ? Dim : short1 ? Shortfall : Accent);
+        }
+
+        if (selected == null)
+        {
+            return;
+        }
+
+        quantityLabel.Text = quantity.ToString();
+        minusButton.Disabled = quantity <= 1;
+        plusButton.Disabled = quantity >= maxOrder;
+
+        costRow.Visible = selected.HasCost;
+        freeLabel.Visible = !selected.HasCost;
+        bool affordable = true;
+        if (selected.HasCost)
+        {
+            ItemInfo costItem = ItemInfo.Fetch(selected.costItemID);
+            int total = selected.costAmount * quantity;
+            int held = HeldCount(selected.costItemID);
+            affordable = held >= total;
+
+            costIcon.Texture = costItem?.icon;
+            costName.Text = costItem?.displayName ?? selected.costItemID;
+            costEach.Text = $"{selected.costAmount} PER UNIT";
+            costTotal.Text = total.ToString();
+            costHave.Text = held.ToString();
+            costHave.AddThemeColorOverride("font_color", affordable ? Accent : Shortfall);
+        }
+
+        purchaseButton.Disabled = !affordable;
+        purchaseButton.Text = affordable
+            ? $"PURCHASE  ×{quantity}"
+            : $"INSUFFICIENT {(ItemInfo.Fetch(selected.costItemID)?.displayName ?? selected.costItemID).ToUpperInvariant()}";
+    }
+
+    private void OnPurchasePressed()
+    {
+        if (selected != null)
+        {
+            PurchaseRequested?.Invoke(selected.itemID, quantity);
+        }
+    }
+}

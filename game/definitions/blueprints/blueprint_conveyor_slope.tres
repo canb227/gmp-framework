@@ -10,6 +10,8 @@
 script = ExtResource("1_bp")
 structureScene = ExtResource("4_struct")
 alternateStructureScene = ExtResource("5_alt")
+costItemID = "scrap_ball"
+costAmount = 2
 itemID = "blueprint_conveyor_slope"
 displayName = "Blueprint: Slanted Conveyor"
 description = "Climbs one cell over two. Press T while placing to make it carry items downhill instead."

@@ -100,7 +100,11 @@ public partial class ProgressManager : Node
                 currentQuests.TryAdd(unlockQuestID, unlocked);
             }
         }
-        
+        foreach (var unlockItemID in quest.onCompleteUnlockedItems)
+        {
+            ShopUI.AddAvailableItem(unlockItemID);
+        }
+
         QuestStateUpdated?.Invoke();
     }
 

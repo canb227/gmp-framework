@@ -94,6 +94,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     {
         if (!isLocal) return;
 
+        if (HandleShopInput(@event)) return;
         if (HandleMouseAndMenuInput(@event)) return;
         HandleScrollWheel(@event);
         if (!hud.isOpen && currentInHandItem != null && currentInHandItem.HandleInput(@event)) return;
@@ -183,12 +184,13 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         {
             Velocity += gravity * (float)delta;
         }
-        else if (Input.IsActionJustPressed("jump"))
+        else if (Input.IsActionJustPressed("jump") && !isShopOpen)
         {
             Velocity = Velocity + JumpVector;
         }
 
-        Vector2 inputDir = Input.GetVector("left", "right", "forward", "backward");
+        // No walking while a menu has the keyboard.
+        Vector2 inputDir = isShopOpen ? Vector2.Zero : Input.GetVector("left", "right", "forward", "backward");
         Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
         if (direction != Vector3.Zero)
         {

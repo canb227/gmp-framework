@@ -1,0 +1,197 @@
+[gd_resource type="Theme" format=3 uid="uid://b17cv234kc15v"]
+
+[sub_resource type="StyleBoxFlat" id="btn_disabled"]
+content_margin_left = 24.0
+content_margin_top = 14.0
+content_margin_right = 24.0
+content_margin_bottom = 14.0
+bg_color = Color(0.045, 0.045, 0.05, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.16, 0.16, 0.17, 1)
+
+[sub_resource type="StyleBoxEmpty" id="empty"]
+
+[sub_resource type="StyleBoxFlat" id="btn_hover"]
+content_margin_left = 24.0
+content_margin_top = 14.0
+content_margin_right = 24.0
+content_margin_bottom = 14.0
+bg_color = Color(0.11, 0.1, 0.09, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.55, 0.05, 1)
+
+[sub_resource type="StyleBoxFlat" id="btn_pressed"]
+content_margin_left = 24.0
+content_margin_top = 14.0
+content_margin_right = 24.0
+content_margin_bottom = 14.0
+bg_color = Color(0.3, 0.16, 0.02, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.55, 0.05, 1)
+
+[sub_resource type="StyleBoxFlat" id="btn_normal"]
+content_margin_left = 24.0
+content_margin_top = 14.0
+content_margin_right = 24.0
+content_margin_bottom = 14.0
+bg_color = Color(0.075, 0.075, 0.085, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.28, 0.28, 0.3, 1)
+
+[sub_resource type="StyleBoxLine" id="separator"]
+color = Color(0.2, 0.2, 0.22, 1)
+thickness = 2
+
+[sub_resource type="StyleBoxFlat" id="panel"]
+content_margin_left = 32.0
+content_margin_top = 28.0
+content_margin_right = 32.0
+content_margin_bottom = 28.0
+bg_color = Color(0.03, 0.03, 0.035, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.17, 0.17, 0.19, 1)
+
+[sub_resource type="StyleBoxFlat" id="well"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0.06, 0.06, 0.07, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.22, 0.22, 0.24, 1)
+
+[sub_resource type="StyleBoxFlat" id="primary_disabled"]
+content_margin_left = 32.0
+content_margin_top = 22.0
+content_margin_right = 32.0
+content_margin_bottom = 22.0
+bg_color = Color(0.1, 0.075, 0.05, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.17, 0.05, 1)
+
+[sub_resource type="StyleBoxFlat" id="primary_hover"]
+content_margin_left = 32.0
+content_margin_top = 22.0
+content_margin_right = 32.0
+content_margin_bottom = 22.0
+bg_color = Color(1, 0.66, 0.25, 1)
+
+[sub_resource type="StyleBoxFlat" id="primary_normal"]
+content_margin_left = 32.0
+content_margin_top = 22.0
+content_margin_right = 32.0
+content_margin_bottom = 22.0
+bg_color = Color(1, 0.55, 0.05, 1)
+
+[sub_resource type="StyleBoxFlat" id="primary_pressed"]
+content_margin_left = 32.0
+content_margin_top = 22.0
+content_margin_right = 32.0
+content_margin_bottom = 22.0
+bg_color = Color(0.78, 0.41, 0.02, 1)
+
+[sub_resource type="StyleBoxFlat" id="row_hover"]
+content_margin_left = 20.0
+content_margin_top = 12.0
+content_margin_right = 20.0
+content_margin_bottom = 12.0
+bg_color = Color(0.09, 0.09, 0.1, 1)
+border_width_left = 6
+border_color = Color(0.4, 0.4, 0.42, 1)
+
+[sub_resource type="StyleBoxFlat" id="row_selected"]
+content_margin_left = 20.0
+content_margin_top = 12.0
+content_margin_right = 20.0
+content_margin_bottom = 12.0
+bg_color = Color(0.14, 0.1, 0.05, 1)
+border_width_left = 6
+border_color = Color(1, 0.55, 0.05, 1)
+
+[sub_resource type="StyleBoxFlat" id="row_normal"]
+content_margin_left = 20.0
+content_margin_top = 12.0
+content_margin_right = 20.0
+content_margin_bottom = 12.0
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 6
+border_color = Color(0, 0, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="scroll_grabber"]
+bg_color = Color(0.32, 0.32, 0.34, 1)
+
+[sub_resource type="StyleBoxFlat" id="scroll_grabber_hl"]
+bg_color = Color(1, 0.55, 0.05, 1)
+
+[sub_resource type="StyleBoxFlat" id="scroll_track"]
+content_margin_left = 6.0
+content_margin_right = 6.0
+bg_color = Color(0.06, 0.06, 0.07, 1)
+
+[resource]
+default_font_size = 30
+Button/colors/font_color = Color(0.88, 0.88, 0.9, 1)
+Button/colors/font_disabled_color = Color(0.32, 0.32, 0.34, 1)
+Button/colors/font_focus_color = Color(0.88, 0.88, 0.9, 1)
+Button/colors/font_hover_color = Color(1, 1, 1, 1)
+Button/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
+Button/styles/disabled = SubResource("btn_disabled")
+Button/styles/focus = SubResource("empty")
+Button/styles/hover = SubResource("btn_hover")
+Button/styles/hover_pressed = SubResource("btn_pressed")
+Button/styles/normal = SubResource("btn_normal")
+Button/styles/pressed = SubResource("btn_pressed")
+HSeparator/constants/separation = 24
+HSeparator/styles/separator = SubResource("separator")
+Label/colors/font_color = Color(0.88, 0.88, 0.9, 1)
+PanelContainer/styles/panel = SubResource("panel")
+ShopDim/base_type = &"Label"
+ShopDim/colors/font_color = Color(0.5, 0.5, 0.53, 1)
+ShopDim/font_sizes/font_size = 22
+ShopIconWell/base_type = &"PanelContainer"
+ShopIconWell/styles/panel = SubResource("well")
+ShopPrimary/base_type = &"Button"
+ShopPrimary/colors/font_color = Color(0.04, 0.03, 0.02, 1)
+ShopPrimary/colors/font_disabled_color = Color(0.45, 0.3, 0.15, 1)
+ShopPrimary/colors/font_focus_color = Color(0.04, 0.03, 0.02, 1)
+ShopPrimary/colors/font_hover_color = Color(0.04, 0.03, 0.02, 1)
+ShopPrimary/colors/font_pressed_color = Color(0.04, 0.03, 0.02, 1)
+ShopPrimary/font_sizes/font_size = 36
+ShopPrimary/styles/disabled = SubResource("primary_disabled")
+ShopPrimary/styles/hover = SubResource("primary_hover")
+ShopPrimary/styles/normal = SubResource("primary_normal")
+ShopPrimary/styles/pressed = SubResource("primary_pressed")
+ShopRow/base_type = &"Button"
+ShopRow/styles/hover = SubResource("row_hover")
+ShopRow/styles/hover_pressed = SubResource("row_selected")
+ShopRow/styles/normal = SubResource("row_normal")
+ShopRow/styles/pressed = SubResource("row_selected")
+ShopTitle/base_type = &"Label"
+ShopTitle/colors/font_color = Color(1, 1, 1, 1)
+ShopTitle/font_sizes/font_size = 52
+VScrollBar/styles/grabber = SubResource("scroll_grabber")
+VScrollBar/styles/grabber_highlight = SubResource("scroll_grabber_hl")
+VScrollBar/styles/grabber_pressed = SubResource("scroll_grabber_hl")
+VScrollBar/styles/scroll = SubResource("scroll_track")

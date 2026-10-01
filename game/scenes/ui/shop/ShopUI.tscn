@@ -1,0 +1,363 @@
+[gd_scene format=3 uid="uid://cije5gh0u3xvq"]
+
+[ext_resource type="Theme" path="res://game/scenes/ui/shop/shop_theme.tres" id="1_theme"]
+[ext_resource type="Script" uid="uid://dyk6e1h888ir6" path="res://game/scripts/ui/ShopUI.cs" id="2_script"]
+[ext_resource type="Shader" uid="uid://b7kcy5nv6urww" path="res://game/scenes/ui/shop/screen_overlay.gdshader" id="3_overlay"]
+
+[sub_resource type="ShaderMaterial" id="overlay_mat"]
+shader = ExtResource("3_overlay")
+shader_parameter/line_count = 720.0
+shader_parameter/line_strength = 0.07
+shader_parameter/vignette_strength = 0.45
+shader_parameter/band_strength = 0.03
+shader_parameter/band_speed = 0.08
+
+[node name="ShopUI" type="Control" unique_id=1330785046]
+custom_minimum_size = Vector2(2560, 1440)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("2_script")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1025136609]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.012, 0.012, 0.016, 1)
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=87486827]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_top = 52
+theme_override_constants/margin_right = 64
+theme_override_constants/margin_bottom = 56
+
+[node name="Root" type="VBoxContainer" parent="Margin" unique_id=733333312]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Header" type="HBoxContainer" parent="Margin/Root" unique_id=1298918107]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="HeaderText" type="VBoxContainer" parent="Margin/Root/Header" unique_id=473211771]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="Kicker" type="Label" parent="Margin/Root/Header/HeaderText" unique_id=895178471]
+layout_mode = 2
+theme_type_variation = &"ShopDim"
+text = "FABRICATION SUPPLY  //  TERMINAL 07"
+
+[node name="Title" type="Label" parent="Margin/Root/Header/HeaderText" unique_id=1156500220]
+layout_mode = 2
+theme_type_variation = &"ShopTitle"
+text = "STRUCTURE REQUISITION"
+
+[node name="Status" type="Label" parent="Margin/Root/Header" unique_id=789119107]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 8
+theme_type_variation = &"ShopDim"
+text = "● LINK ONLINE"
+horizontal_alignment = 2
+
+[node name="CloseButton" type="Button" parent="Margin/Root/Header" unique_id=330998107]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_vertical = 8
+text = "EXIT"
+
+[node name="HeaderRule" type="HSeparator" parent="Margin/Root" unique_id=1161961304]
+layout_mode = 2
+
+[node name="Body" type="HBoxContainer" parent="Margin/Root" unique_id=352096171]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 32
+
+[node name="ListPanel" type="PanelContainer" parent="Margin/Root/Body" unique_id=257559311]
+custom_minimum_size = Vector2(1000, 0)
+layout_mode = 2
+
+[node name="ListColumn" type="VBoxContainer" parent="Margin/Root/Body/ListPanel" unique_id=508990303]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ListHeader" type="HBoxContainer" parent="Margin/Root/Body/ListPanel/ListColumn" unique_id=376602693]
+layout_mode = 2
+
+[node name="ListTitle" type="Label" parent="Margin/Root/Body/ListPanel/ListColumn/ListHeader" unique_id=1247972379]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ShopDim"
+text = "CATALOGUE"
+
+[node name="ListCount" type="Label" parent="Margin/Root/Body/ListPanel/ListColumn/ListHeader" unique_id=686443514]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopDim"
+text = "0 ENTRIES"
+
+[node name="ListColumns" type="HBoxContainer" parent="Margin/Root/Body/ListPanel/ListColumn" unique_id=1702806576]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ItemColumn" type="Label" parent="Margin/Root/Body/ListPanel/ListColumn/ListColumns" unique_id=1186587674]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ShopDim"
+theme_override_colors/font_color = Color(0.34, 0.34, 0.37, 1)
+text = "      ITEM"
+
+[node name="CostColumn" type="Label" parent="Margin/Root/Body/ListPanel/ListColumn/ListColumns" unique_id=1373570376]
+layout_mode = 2
+theme_type_variation = &"ShopDim"
+theme_override_colors/font_color = Color(0.34, 0.34, 0.37, 1)
+text = "UNIT COST   "
+
+[node name="Scroll" type="ScrollContainer" parent="Margin/Root/Body/ListPanel/ListColumn" unique_id=1565208044]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="ItemList" type="VBoxContainer" parent="Margin/Root/Body/ListPanel/ListColumn/Scroll" unique_id=1229032727]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="DetailPanel" type="PanelContainer" parent="Margin/Root/Body" unique_id=1554147184]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EmptyDetail" type="Label" parent="Margin/Root/Body/DetailPanel" unique_id=499309803]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"ShopDim"
+text = "SELECT AN ENTRY FROM THE CATALOGUE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DetailContent" type="VBoxContainer" parent="Margin/Root/Body/DetailPanel" unique_id=716246455]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Top" type="HBoxContainer" parent="Margin/Root/Body/DetailPanel/DetailContent" unique_id=114485465]
+layout_mode = 2
+theme_override_constants/separation = 36
+
+[node name="IconWell" type="PanelContainer" parent="Margin/Root/Body/DetailPanel/DetailContent/Top" unique_id=1138090657]
+layout_mode = 2
+theme_type_variation = &"ShopIconWell"
+
+[node name="DetailIcon" type="TextureRect" parent="Margin/Root/Body/DetailPanel/DetailContent/Top/IconWell" unique_id=586025082]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(256, 256)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TopText" type="VBoxContainer" parent="Margin/Root/Body/DetailPanel/DetailContent/Top" unique_id=333258974]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 8
+
+[node name="DetailCategory" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/Top/TopText" unique_id=450329100]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopDim"
+theme_override_colors/font_color = Color(1, 0.55, 0.05, 1)
+text = "BLUEPRINT  //  CONVEYORS"
+
+[node name="DetailName" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/Top/TopText" unique_id=1034142751]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopTitle"
+text = "Item Name"
+autowrap_mode = 2
+
+[node name="DetailStats" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/Top/TopText" unique_id=669016181]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopDim"
+text = "ID item_id  //  STACKS TO 10"
+
+[node name="DescriptionHeader" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent" unique_id=858590704]
+layout_mode = 2
+theme_type_variation = &"ShopDim"
+text = "SPECIFICATION"
+
+[node name="DetailDescription" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent" unique_id=1485504028]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+text = "Description."
+autowrap_mode = 3
+
+[node name="PurchaseRule" type="HSeparator" parent="Margin/Root/Body/DetailPanel/DetailContent" unique_id=1753913822]
+layout_mode = 2
+
+[node name="PurchaseWidget" type="VBoxContainer" parent="Margin/Root/Body/DetailPanel/DetailContent" unique_id=266489573]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="PurchaseHeader" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget" unique_id=615055274]
+layout_mode = 2
+theme_type_variation = &"ShopDim"
+text = "REQUISITION"
+
+[node name="CostRow" type="PanelContainer" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget" unique_id=1082897718]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopIconWell"
+
+[node name="CostLine" type="HBoxContainer" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow" unique_id=1976328014]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="CostIcon" type="TextureRect" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine" unique_id=558242588]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CostNameColumn" type="VBoxContainer" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine" unique_id=1896288990]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 0
+
+[node name="CostName" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine/CostNameColumn" unique_id=357928952]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Scrap Ball"
+
+[node name="CostEach" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine/CostNameColumn" unique_id=95226198]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopDim"
+text = "2 PER UNIT"
+
+[node name="TotalColumn" type="VBoxContainer" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine" unique_id=1713516949]
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 0
+
+[node name="TotalHeader" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine/TotalColumn" unique_id=1882420194]
+layout_mode = 2
+theme_type_variation = &"ShopDim"
+text = "REQUIRED"
+horizontal_alignment = 2
+
+[node name="CostTotal" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine/TotalColumn" unique_id=1353938383]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 44
+text = "2"
+horizontal_alignment = 2
+
+[node name="HaveColumn" type="VBoxContainer" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine" unique_id=2146833576]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 0
+
+[node name="HaveHeader" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine/HaveColumn" unique_id=987846268]
+layout_mode = 2
+theme_type_variation = &"ShopDim"
+text = "IN INVENTORY"
+horizontal_alignment = 2
+
+[node name="CostHave" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine/HaveColumn" unique_id=1809372417]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 44
+text = "0"
+horizontal_alignment = 2
+
+[node name="FreeLabel" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget" unique_id=609388241]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"ShopDim"
+text = "NO MATERIALS REQUIRED"
+
+[node name="OrderRow" type="HBoxContainer" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget" unique_id=401704150]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="OrderLabel" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/OrderRow" unique_id=1595405873]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ShopDim"
+text = "ORDER QUANTITY"
+
+[node name="MinusButton" type="Button" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/OrderRow" unique_id=903627843]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "−"
+
+[node name="QuantityWell" type="PanelContainer" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/OrderRow" unique_id=455472206]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_type_variation = &"ShopIconWell"
+
+[node name="Quantity" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/OrderRow/QuantityWell" unique_id=2065233701]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 44
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlusButton" type="Button" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/OrderRow" unique_id=1168978185]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "+"
+
+[node name="MaxButton" type="Button" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/OrderRow" unique_id=1053820156]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 88)
+layout_mode = 2
+text = "MAX"
+
+[node name="PurchaseButton" type="Button" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget" unique_id=862638509]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+theme_type_variation = &"ShopPrimary"
+text = "PURCHASE  ×1"
+
+[node name="ScreenOverlay" type="ColorRect" parent="." unique_id=119556649]
+material = SubResource("overlay_mat")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
