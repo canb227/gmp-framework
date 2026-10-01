@@ -77,6 +77,10 @@ public partial class ItemInfo : Resource
                 itemID + ".tres"
             );
 
+            if (itemID.StartsWith("quest"))
+            {
+                return null;
+            }
             // Some props (e.g. spawner test items) have no definition.
             item = ResourceLoader.Load<ItemInfo>(path);
 

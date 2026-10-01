@@ -2,45 +2,49 @@
 
 [ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://gmp/ui/theme/menu_theme.tres" id="1_6wm6r"]
 
-[node name="PlayerRow1" type="PanelContainer" unique_id=1324399783]
+[node name="PlayerRow1" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 104)
 theme = ExtResource("1_6wm6r")
 theme_type_variation = &"FieldRow"
 
-[node name="PlayerRow1Box" type="HBoxContainer" parent="." unique_id=1350526303]
+[node name="PlayerRow1Box" type="HBoxContainer" parent="."]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 24
 
-[node name="Avatar" type="PanelContainer" parent="PlayerRow1Box" unique_id=1439833235]
-custom_minimum_size = Vector2(40, 40)
+[node name="Avatar" type="PanelContainer" parent="PlayerRow1Box"]
+custom_minimum_size = Vector2(72, 72)
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"AvatarBox"
 
-[node name="AvatarCenter" type="CenterContainer" parent="PlayerRow1Box/Avatar" unique_id=94948960]
+[node name="AvatarCenter" type="CenterContainer" parent="PlayerRow1Box/Avatar"]
 layout_mode = 2
 
-[node name="AvatarLabel" type="Label" parent="PlayerRow1Box/Avatar/AvatarCenter" unique_id=1845306709]
+[node name="AvatarLabel" type="Label" parent="PlayerRow1Box/Avatar/AvatarCenter"]
 layout_mode = 2
-theme_type_variation = &"FieldLabel"
-theme_override_font_sizes/font_size = 14
-text = "P1"
+theme_override_colors/font_color = Color(1, 0.55, 0.05, 1)
+theme_override_font_sizes/font_size = 30
+text = "P"
 
-[node name="NameLabel" type="Label" parent="PlayerRow1Box" unique_id=163651624]
+[node name="NameLabel" type="Label" parent="PlayerRow1Box"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Player One"
 vertical_alignment = 1
+text_overrun_behavior = 3
 
-[node name="PeerIDLabel" type="Label" parent="PlayerRow1Box" unique_id=158487903]
+[node name="PeerIDLabel" type="Label" parent="PlayerRow1Box"]
 layout_mode = 2
+theme_type_variation = &"DimLabel"
 text = "PEERID"
+vertical_alignment = 1
 
-[node name="Badge" type="PanelContainer" parent="PlayerRow1Box" unique_id=1170136558]
+[node name="Badge" type="PanelContainer" parent="PlayerRow1Box"]
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"BadgeRow"
 
-[node name="BadgeLabel" type="Label" parent="PlayerRow1Box/Badge" unique_id=2030765847]
+[node name="BadgeLabel" type="Label" parent="PlayerRow1Box/Badge"]
 layout_mode = 2
 theme_type_variation = &"BadgeLabel"
 text = "HOST"

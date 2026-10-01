@@ -1,10 +1,13 @@
 [gd_scene format=3 uid="uid://d2yprb5hy7dhy"]
 
 [ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://gmp/ui/theme/menu_theme.tres" id="1_theme"]
-[ext_resource type="Texture2D" uid="uid://bmckesaf77x8c" path="res://gmp/ui/theme/bg_gradient.tres" id="2_bg"]
 [ext_resource type="Script" uid="uid://bb2px1c1v2u4r" path="res://gmp/ui/OptionsMenu.cs" id="3_om"]
+[ext_resource type="Shader" uid="uid://b7kcy5nv6urww" path="res://gmp/ui/theme/screen_overlay.gdshader" id="4_overlay"]
 
-[node name="OptionsMenu" type="Control" unique_id=2052952133]
+[sub_resource type="ShaderMaterial" id="overlay_mat"]
+shader = ExtResource("4_overlay")
+
+[node name="OptionsMenu" type="Control"]
 process_mode = 3
 layout_mode = 3
 anchors_preset = 15
@@ -15,17 +18,16 @@ grow_vertical = 2
 theme = ExtResource("1_theme")
 script = ExtResource("3_om")
 
-[node name="Background" type="TextureRect" parent="." unique_id=2001475670]
+[node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_bg")
-expand_mode = 1
+color = Color(0.012, 0.012, 0.016, 1)
 
-[node name="CenterContainer" type="CenterContainer" parent="." unique_id=85860329]
+[node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -33,44 +35,54 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MainPanel" type="PanelContainer" parent="CenterContainer" unique_id=807598534]
-custom_minimum_size = Vector2(720, 560)
+[node name="MainPanel" type="PanelContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(1500, 1080)
 layout_mode = 2
 
-[node name="Content" type="VBoxContainer" parent="CenterContainer/MainPanel" unique_id=1696036299]
+[node name="Content" type="VBoxContainer" parent="CenterContainer/MainPanel"]
 layout_mode = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 28
 
-[node name="TitleLabel" type="Label" parent="CenterContainer/MainPanel/Content" unique_id=895927986]
+[node name="Header" type="VBoxContainer" parent="CenterContainer/MainPanel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Kicker" type="Label" parent="CenterContainer/MainPanel/Content/Header"]
+layout_mode = 2
+theme_type_variation = &"DimLabel"
+text = "SYSTEM CONFIGURATION  //  LOCAL"
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/MainPanel/Content/Header"]
 layout_mode = 2
 theme_type_variation = &"TitleLabel"
-text = "Options"
+text = "OPTIONS"
 
-[node name="Tabs" type="TabContainer" parent="CenterContainer/MainPanel/Content" unique_id=1309170197]
+[node name="Tabs" type="TabContainer" parent="CenterContainer/MainPanel/Content"]
 layout_mode = 2
 size_flags_vertical = 3
 current_tab = 0
 
-[node name="Video" type="VBoxContainer" parent="CenterContainer/MainPanel/Content/Tabs" unique_id=1854756774]
+[node name="VIDEO" type="VBoxContainer" parent="CenterContainer/MainPanel/Content/Tabs"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 16
 metadata/_tab_index = 0
 
-[node name="ResolutionRow" type="PanelContainer" parent="CenterContainer/MainPanel/Content/Tabs/Video" unique_id=1894877048]
+[node name="ResolutionRow" type="PanelContainer" parent="CenterContainer/MainPanel/Content/Tabs/VIDEO"]
 layout_mode = 2
 theme_type_variation = &"FieldRow"
 
-[node name="ResolutionRowBox" type="HBoxContainer" parent="CenterContainer/MainPanel/Content/Tabs/Video/ResolutionRow" unique_id=1561338609]
+[node name="ResolutionRowBox" type="HBoxContainer" parent="CenterContainer/MainPanel/Content/Tabs/VIDEO/ResolutionRow"]
 layout_mode = 2
 
-[node name="ResolutionLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Video/ResolutionRow/ResolutionRowBox" unique_id=1971277230]
+[node name="ResolutionLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/VIDEO/ResolutionRow/ResolutionRowBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"FieldLabel"
-text = "Resolution"
+text = "RESOLUTION"
+vertical_alignment = 1
 
-[node name="ResolutionOptionButton" type="OptionButton" parent="CenterContainer/MainPanel/Content/Tabs/Video/ResolutionRow/ResolutionRowBox" unique_id=1569886382]
-custom_minimum_size = Vector2(220, 0)
+[node name="ResolutionOptionButton" type="OptionButton" parent="CenterContainer/MainPanel/Content/Tabs/VIDEO/ResolutionRow/ResolutionRowBox"]
+custom_minimum_size = Vector2(420, 0)
 layout_mode = 2
 selected = 1
 item_count = 4
@@ -83,169 +95,197 @@ popup/item_2/id = 2
 popup/item_3/text = "3840 x 2160"
 popup/item_3/id = 3
 
-[node name="FullscreenRow" type="PanelContainer" parent="CenterContainer/MainPanel/Content/Tabs/Video" unique_id=1824374031]
+[node name="FullscreenRow" type="PanelContainer" parent="CenterContainer/MainPanel/Content/Tabs/VIDEO"]
 layout_mode = 2
 theme_type_variation = &"FieldRow"
 
-[node name="FullscreenRowBox" type="HBoxContainer" parent="CenterContainer/MainPanel/Content/Tabs/Video/FullscreenRow" unique_id=608625234]
+[node name="FullscreenRowBox" type="HBoxContainer" parent="CenterContainer/MainPanel/Content/Tabs/VIDEO/FullscreenRow"]
 layout_mode = 2
 
-[node name="FullscreenLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Video/FullscreenRow/FullscreenRowBox" unique_id=863524778]
+[node name="FullscreenLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/VIDEO/FullscreenRow/FullscreenRowBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"FieldLabel"
-text = "Fullscreen"
+text = "FULLSCREEN"
+vertical_alignment = 1
 
-[node name="FullscreenCheckButton" type="CheckButton" parent="CenterContainer/MainPanel/Content/Tabs/Video/FullscreenRow/FullscreenRowBox" unique_id=452989761]
+[node name="FullscreenCheckButton" type="CheckButton" parent="CenterContainer/MainPanel/Content/Tabs/VIDEO/FullscreenRow/FullscreenRowBox"]
 layout_mode = 2
 
-[node name="Input" type="MarginContainer" parent="CenterContainer/MainPanel/Content/Tabs" unique_id=1220653410]
+[node name="INPUT" type="MarginContainer" parent="CenterContainer/MainPanel/Content/Tabs"]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="Scroll" type="ScrollContainer" parent="CenterContainer/MainPanel/Content/Tabs/Input" unique_id=1722784533]
+[node name="Scroll" type="ScrollContainer" parent="CenterContainer/MainPanel/Content/Tabs/INPUT"]
 layout_mode = 2
 horizontal_scroll_mode = 0
 
-[node name="Grid" type="GridContainer" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll" unique_id=139985165]
+[node name="Grid" type="GridContainer" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 columns = 3
 
-[node name="HeaderAction" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1279012889]
+[node name="HeaderAction" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
 layout_mode = 2
+size_flags_horizontal = 3
 theme_type_variation = &"HeaderLabel"
 text = "ACTION"
 
-[node name="HeaderPrimary" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=490085839]
+[node name="HeaderPrimary" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
 layout_mode = 2
+size_flags_horizontal = 3
 theme_type_variation = &"HeaderLabel"
 text = "PRIMARY"
 
-[node name="HeaderSecondary" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=2140996405]
+[node name="HeaderSecondary" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
 layout_mode = 2
+size_flags_horizontal = 3
 theme_type_variation = &"HeaderLabel"
 text = "SECONDARY"
 
-[node name="MoveForwardLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1059812843]
+[node name="MoveForwardLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 1
-text = "Move Forward"
+text = "MOVE FORWARD"
+vertical_alignment = 1
 
-[node name="MoveForwardPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1197562171]
-custom_minimum_size = Vector2(150, 0)
+[node name="MoveForwardPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 2
-text = "Unbound"
+text = "UNBOUND"
 
-[node name="MoveForwardSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1335232489]
-custom_minimum_size = Vector2(150, 0)
+[node name="MoveForwardSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 2
-text = "Unbound"
+text = "UNBOUND"
 
-[node name="MoveBackLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1791800609]
+[node name="MoveBackLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 1
-text = "Move Back"
+text = "MOVE BACK"
+vertical_alignment = 1
 
-[node name="MoveBackPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1984054401]
-custom_minimum_size = Vector2(150, 0)
+[node name="MoveBackPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 2
-text = "Unbound"
+text = "UNBOUND"
 
-[node name="MoveBackSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=54367679]
-custom_minimum_size = Vector2(150, 0)
+[node name="MoveBackSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 2
-text = "Unbound"
+text = "UNBOUND"
 
-[node name="MoveLeftLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1830479834]
+[node name="MoveLeftLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 1
-text = "Move Left"
+text = "MOVE LEFT"
+vertical_alignment = 1
 
-[node name="MoveLeftPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1562361434]
-custom_minimum_size = Vector2(150, 0)
+[node name="MoveLeftPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 2
-text = "Unbound"
+text = "UNBOUND"
 
-[node name="MoveLeftSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1395083213]
-custom_minimum_size = Vector2(150, 0)
+[node name="MoveLeftSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 2
-text = "Unbound"
+text = "UNBOUND"
 
-[node name="MoveRightLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1683992581]
+[node name="MoveRightLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 1
-text = "Move Right"
+text = "MOVE RIGHT"
+vertical_alignment = 1
 
-[node name="MoveRightPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=310009977]
-custom_minimum_size = Vector2(150, 0)
+[node name="MoveRightPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 2
-text = "Unbound"
+text = "UNBOUND"
 
-[node name="MoveRightSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1082567576]
-custom_minimum_size = Vector2(150, 0)
+[node name="MoveRightSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 2
-text = "Unbound"
+text = "UNBOUND"
 
-[node name="JumpLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=468615293]
+[node name="JumpLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 1
-text = "Jump"
+text = "JUMP"
+vertical_alignment = 1
 
-[node name="JumpPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=496041034]
-custom_minimum_size = Vector2(150, 0)
+[node name="JumpPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 2
-text = "Unbound"
+text = "UNBOUND"
 
-[node name="JumpSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=268675223]
-custom_minimum_size = Vector2(150, 0)
+[node name="JumpSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 2
-text = "Unbound"
+text = "UNBOUND"
 
-[node name="InteractLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=158976186]
+[node name="InteractLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 1
-text = "Interact"
+text = "INTERACT"
+vertical_alignment = 1
 
-[node name="InteractPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=651597377]
-custom_minimum_size = Vector2(150, 0)
+[node name="InteractPrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 2
-text = "Unbound"
+text = "UNBOUND"
 
-[node name="InteractSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1653946337]
-custom_minimum_size = Vector2(150, 0)
+[node name="InteractSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 2
-text = "Unbound"
+text = "UNBOUND"
 
-[node name="PauseLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=541326945]
+[node name="PauseLabel" type="Label" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 1
-text = "Pause"
+text = "PAUSE"
+vertical_alignment = 1
 
-[node name="PausePrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=2015026167]
-custom_minimum_size = Vector2(150, 0)
+[node name="PausePrimary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 2
-text = "Unbound"
+text = "UNBOUND"
 
-[node name="PauseSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/Input/Scroll/Grid" unique_id=1732160112]
-custom_minimum_size = Vector2(150, 0)
+[node name="PauseSecondary" type="Button" parent="CenterContainer/MainPanel/Content/Tabs/INPUT/Scroll/Grid"]
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 2
-text = "Unbound"
+text = "UNBOUND"
 
-[node name="Other" type="VBoxContainer" parent="CenterContainer/MainPanel/Content/Tabs" unique_id=902751384]
+[node name="OTHER" type="VBoxContainer" parent="CenterContainer/MainPanel/Content/Tabs"]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 
-[node name="Footer" type="HBoxContainer" parent="CenterContainer/MainPanel/Content" unique_id=1477851929]
+[node name="Footer" type="HBoxContainer" parent="CenterContainer/MainPanel/Content"]
 layout_mode = 2
 
-[node name="Spacer" type="Control" parent="CenterContainer/MainPanel/Content/Footer" unique_id=1793783504]
+[node name="Spacer" type="Control" parent="CenterContainer/MainPanel/Content/Footer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="BackButton" type="Button" parent="CenterContainer/MainPanel/Content/Footer" unique_id=1339156614]
-custom_minimum_size = Vector2(140, 44)
+[node name="BackButton" type="Button" parent="CenterContainer/MainPanel/Content/Footer"]
+custom_minimum_size = Vector2(280, 96)
 layout_mode = 2
-text = "Back"
+text = "BACK"
+
+[node name="ScreenOverlay" type="ColorRect" parent="."]
+material = SubResource("overlay_mat")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

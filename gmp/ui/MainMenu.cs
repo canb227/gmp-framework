@@ -18,6 +18,7 @@ public partial class MainMenu : Control
 
     public override void _Ready()
     {
+        HiResUI.Fill(this);
         Button("StartSteamButton").Pressed += () => OpenLobby(LobbyMode.Steam);
         Button("StartLANButton").Pressed += () => OpenLobby(LobbyMode.Lan);
         Button("OptionsButton").Pressed += () => Open(OptionsScene);
@@ -31,7 +32,7 @@ public partial class MainMenu : Control
     
 
     private Button Button(string name) =>
-        GetNode<Button>($"CenterContainer/VBoxContainer/ButtonList/{name}");
+        GetNode<Button>($"%{name}");
 
     private void Open(string path) => GetTree().ChangeSceneToFile(path);
 

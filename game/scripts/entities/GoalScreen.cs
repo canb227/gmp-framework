@@ -4,36 +4,33 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// Placeholder wall screen listing the current quests from <see cref="ProgressManager"/>: one row per item
-/// objective (quest name, item icon + name, a "turned in / required" bar), up to <see cref="maxRows"/> rows,
-/// filled in quest order. Redraws on <see cref="ProgressManager.QuestStateUpdated"/>. Local display only.
-/// The scene holds a single template row (<see cref="rowTemplate"/>, laid out in the editor); the rest are
-/// duplicates of it stepped down by <see cref="rowSpacing"/>.
+/// Wall screen listing the current quests from <see cref="ProgressManager"/>: one row per item objective (quest
+/// name, item icon + name, "turned in / required" and a progress bar), up to <see cref="maxRows"/> rows, filled in
+/// quest order. Redraws on <see cref="ProgressManager.QuestStateUpdated"/>. Local display only.
+/// The screen is a Control UI rendered in the UIViewport SubViewport and shown on the Display quad. It holds one
+/// template row (%RowTemplate, laid out in the editor); the other rows are duplicates of it.
 /// </summary>
 public partial class GoalScreen : Node3D
 {
     public const int maxRows = 4;
 
-    /// <summary>Template row with children Icon, QuestLabel, ItemLabel, BarFill and CountLabel.</summary>
-    [Export] public Node3D rowTemplate;
-    [Export] public float rowSpacing = 0.56f;
-    /// <summary>Shown instead of the rows when there are no current objectives.</summary>
-    [Export] public Label3D emptyLabel;
-    /// <summary>Left edge and full width (in row space) the unit-wide BarFill quad grows across.</summary>
-    [Export] public float barLeft = -0.8f;
-    [Export] public float barWidth = 1.8f;
-
-    private readonly List<Node3D> rows = new();
+    private readonly List<Control> rows = new();
+    private Control emptyLabel;
+    private Label activeCount;
 
     public override void _Ready()
     {
+        Control rowTemplate = GetNode<Control>("%RowTemplate");
+        Control rowContainer = GetNode<Control>("%Rows");
+        emptyLabel = GetNode<Control>("%EmptyLabel");
+        activeCount = GetNode<Label>("%ActiveCount");
+
         rows.Add(rowTemplate);
         for (int i = 1; i < maxRows; i++)
         {
-            Node3D row = (Node3D)rowTemplate.Duplicate();
+            Control row = (Control)rowTemplate.Duplicate();
             row.Name = $"Row{i}";
-            row.Position = rowTemplate.Position + Vector3.Down * rowSpacing * i;
-            rowTemplate.GetParent().AddChild(row);
+            rowContainer.AddChild(row);
             rows.Add(row);
         }
         ProgressManager.QuestStateUpdated += ProgressManager_QuestStateUpdated;
@@ -75,30 +72,30 @@ public partial class GoalScreen : Node3D
 
     public void Refresh()
     {
-        List<Objective> objectives = CurrentObjectives().Take(maxRows).ToList();
+        List<Objective> all = CurrentObjectives().ToList();
+        List<Objective> shown = all.Take(maxRows).ToList();
         for (int i = 0; i < rows.Count; i++)
         {
-            rows[i].Visible = i < objectives.Count;
-            if (i < objectives.Count)
+            rows[i].Visible = i < shown.Count;
+            if (i < shown.Count)
             {
-                FillRow(rows[i], objectives[i]);
+                FillRow(rows[i], shown[i]);
             }
         }
-        emptyLabel.Visible = objectives.Count == 0;
+        emptyLabel.Visible = shown.Count == 0;
+        activeCount.Text = all.Count > maxRows
+            ? $"{maxRows} OF {all.Count} OBJECTIVES"
+            : $"{all.Count} OBJECTIVE{(all.Count == 1 ? "" : "S")}";
     }
 
-    private void FillRow(Node3D row, Objective objective)
+    private static void FillRow(Control row, Objective objective)
     {
         ItemInfo item = ItemInfo.Fetch(objective.itemID);
-        row.GetNode<Sprite3D>("Icon").Texture = item?.icon;
-        row.GetNode<Label3D>("QuestLabel").Text = (objective.questName ?? "").ToUpperInvariant();
-        row.GetNode<Label3D>("ItemLabel").Text = item?.displayName ?? objective.itemID;
-        row.GetNode<Label3D>("CountLabel").Text = $"{objective.turnedIn} / {objective.required}";
-
-        MeshInstance3D barFill = row.GetNode<MeshInstance3D>("BarFill");
-        float fraction = objective.required > 0 ? Math.Clamp((float)objective.turnedIn / objective.required, 0f, 1f) : 0f;
-        barFill.Visible = fraction > 0f;
-        barFill.Scale = new Vector3(barWidth * fraction, 1f, 1f);
-        barFill.Position = new Vector3(barLeft + barWidth * fraction * 0.5f, barFill.Position.Y, barFill.Position.Z);
+        row.GetNode<TextureRect>("Line/IconWell/Icon").Texture = item?.icon;
+        row.GetNode<Label>("Line/Info/QuestLabel").Text = (objective.questName ?? "").ToUpperInvariant();
+        row.GetNode<Label>("Line/Info/NameRow/ItemLabel").Text = item?.displayName ?? objective.itemID;
+        row.GetNode<Label>("Line/Info/NameRow/CountLabel").Text = $"{objective.turnedIn} / {objective.required}";
+        row.GetNode<ProgressBar>("Line/Info/Bar").Value =
+            objective.required > 0 ? Math.Clamp((double)objective.turnedIn / objective.required, 0, 1) : 0;
     }
 }

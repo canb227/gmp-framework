@@ -2,7 +2,7 @@
 
 [ext_resource type="Theme" path="res://game/scenes/ui/shop/shop_theme.tres" id="1_theme"]
 [ext_resource type="Script" uid="uid://dyk6e1h888ir6" path="res://game/scripts/ui/ShopUI.cs" id="2_script"]
-[ext_resource type="Shader" uid="uid://b7kcy5nv6urww" path="res://game/scenes/ui/shop/screen_overlay.gdshader" id="3_overlay"]
+[ext_resource type="Shader" uid="uid://b7kcy5nv6urww" path="res://gmp/ui/theme/screen_overlay.gdshader" id="3_overlay"]
 
 [sub_resource type="ShaderMaterial" id="overlay_mat"]
 shader = ExtResource("3_overlay")

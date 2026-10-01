@@ -4,13 +4,15 @@ using System.Linq;
 using Vec2 = System.Numerics.Vector2;
 
 /// <summary>
-/// "debugui quests" window: every quest in <see cref="ProgressManager.currentQuests"/> with its text, objective
-/// progress bars and rewards, plus a Complete button (<see cref="ProgressManager.CompleteQuest"/>), and the
-/// completed quest ids. Local only, like ProgressManager itself. Driven from Console._Process.
+/// "debugui quests" window: the quests in <see cref="ProgressManager.currentQuests"/> with their text, objective
+/// progress bars and rewards, each with a Complete button (<see cref="ProgressManager.CompleteQuest"/>), and the
+/// completed quest ids. "Show all quests" lists every defined quest instead, tagged active / completed / locked.
+/// Local only, like ProgressManager itself. Driven from Console._Process.
 /// </summary>
 public static class QuestsDebug
 {
     public static bool displayQuestsDebugInfo = false;
+    private static bool showAllQuests = false;
 
     public static void Process()
     {
@@ -30,22 +32,31 @@ public static class QuestsDebug
             return;
         }
 
+        ImGui.Checkbox("Show all quests", ref showAllQuests);
         ImGui.Text($"Current: {progress.currentQuests.Count} | Completed: {progress.completedQuests.Count} | Defined: {ProgressManager.allQuests.Count}");
         ImGui.Separator();
 
+        if (showAllQuests)
+        {
+            RenderAllQuests(progress);
+        }
+        else
+        {
+            RenderCurrentAndCompleted(progress);
+        }
+
+        ImGui.End();
+    }
+
+    private static void RenderCurrentAndCompleted(ProgressManager progress)
+    {
         // Copy: Complete changes currentQuests mid-loop.
         foreach (var (questID, quest) in progress.currentQuests.ToList())
         {
             ImGui.PushID(questID);
-            bool open = ImGui.CollapsingHeader($"{quest.questName ?? questID}###{questID}", ImGuiTreeNodeFlags.DefaultOpen);
-            ImGui.SameLine(ImGui.GetContentRegionAvail().X - 60);
-            if (ImGui.SmallButton("Complete"))
+            if (ImGui.CollapsingHeader($"{quest.questName ?? questID}###{questID}", ImGuiTreeNodeFlags.DefaultOpen))
             {
-                progress.CompleteQuest(questID);
-            }
-            if (open)
-            {
-                RenderQuest(questID, quest);
+                RenderQuest(progress, questID, quest, active: true);
             }
             ImGui.PopID();
         }
@@ -61,12 +72,38 @@ public static class QuestsDebug
                 ImGui.BulletText(questID);
             }
         }
-
-        ImGui.End();
     }
 
-    private static void RenderQuest(string questID, Quest quest)
+    private static void RenderAllQuests(ProgressManager progress)
     {
+        foreach (var (questID, quest) in ProgressManager.allQuests.OrderBy(kv => kv.Key).ToList())
+        {
+            bool active = progress.currentQuests.ContainsKey(questID);
+            string status = active ? "ACTIVE" : progress.completedQuests.Contains(questID) ? "COMPLETED" : "LOCKED";
+            ImGui.PushID(questID);
+            if (ImGui.CollapsingHeader($"{quest.questName ?? questID}  [{status}]###{questID}"))
+            {
+                RenderQuest(progress, questID, quest, active);
+            }
+            ImGui.PopID();
+        }
+        if (ProgressManager.allQuests.Count == 0)
+        {
+            ImGui.TextDisabled("No quests defined.");
+        }
+    }
+
+    /// <summary>One quest's details; the Complete button only works on <paramref name="active"/> (current) quests.</summary>
+    private static void RenderQuest(ProgressManager progress, string questID, Quest quest, bool active)
+    {
+        ImGui.Indent();
+        ImGui.BeginDisabled(!active);
+        if (ImGui.Button("Complete quest"))
+        {
+            progress.CompleteQuest(questID);
+        }
+        ImGui.EndDisabled();
+        ImGui.SameLine();
         ImGui.TextDisabled($"{questID} | active: {quest.isActive}");
         if (!string.IsNullOrEmpty(quest.questText))
         {
@@ -93,5 +130,7 @@ public static class QuestsDebug
         {
             ImGui.TextDisabled("Unlocks quests: " + string.Join(", ", quest.onCompleteUnlockQuests));
         }
+        ImGui.Unindent();
+        ImGui.Spacing();
     }
 }

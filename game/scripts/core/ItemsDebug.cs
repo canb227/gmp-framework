@@ -15,7 +15,7 @@ public static class ItemsDebug
 {
     public static bool displayItemsDebugInfo = false;
 
-    const string DefinitionsRoot = "res://game/definitions";
+    const string DefinitionsRoot = "res://game/definitions/";
 
     // (category folder, itemID), sorted; built on first open and on Refresh.
     private static List<(string category, string itemID)> entries;
@@ -72,7 +72,7 @@ public static class ItemsDebug
         {
             // Exported builds list "x.tres.remap" instead of "x.tres".
             string name = file.TrimSuffix(".remap");
-            if (name.EndsWith(".tres"))
+            if (name.EndsWith(".tres") || !name.StartsWith("quest_"))
             {
                 found.Add((category, name.TrimSuffix(".tres")));
             }

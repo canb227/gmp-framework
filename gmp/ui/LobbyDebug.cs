@@ -123,6 +123,7 @@ public partial class LobbyDebug : Control
 
     public override void _Ready()
     {
+        HiResUI.Fill(this);
         _mode = NextMode;
         BuildIdentity();
 
@@ -176,8 +177,8 @@ public partial class LobbyDebug : Control
         {
             _levelSelect.AddItem(item.levelName);
         }
-        _levelSelect.Select(0);
-        _levelSelect_ItemSelected(0);
+        _levelSelect.Select(2);
+        _levelSelect_ItemSelected(2);
         ProcessMode = ProcessModeEnum.Always;
         Log($"lobby ready ({_mode}) as {_selfName} ({ShortId(_selfId)})");
 
@@ -390,7 +391,7 @@ public partial class LobbyDebug : Control
         if (_mode == LobbyMode.Steam)
         {
             _titleLabel.Text = "Lobby Debug (Steam)";
-            _joinButton.Text = "Join ID:";
+            _joinButton.Text = "JOIN ID:";
             _joinInput.Text = "";
             _joinInput.PlaceholderText = "HOST STEAMID";
             _portInput.Visible = false;
@@ -398,7 +399,7 @@ public partial class LobbyDebug : Control
         else
         {
             _titleLabel.Text = "Lobby Debug (LAN)";
-            _joinButton.Text = "Join to:";
+            _joinButton.Text = "JOIN TO:";
             _joinInput.PlaceholderText = "IP ADDRESS";
             _portInput.Visible = true;
         }
@@ -460,6 +461,7 @@ public partial class LobbyDebug : Control
 
     private void OnStartGamePressed()
     {
+        _startButton.Disabled = true;
         Lobby.SendStartGame();
     }
 
@@ -487,6 +489,7 @@ public partial class LobbyDebug : Control
         _lobbyIdValue.Text = ShortId(_selfId);
         Log($"hosting ({_mode}) as {_selfName}" + (_mode == LobbyMode.Steam ? "" : $" on port {port}"));
         RefreshRoster();
+        _startButton.Disabled = false;
     }
 
     private void StartJoin()
@@ -528,6 +531,7 @@ public partial class LobbyDebug : Control
         _stateValue.Text = "Connected";
         _hostValue.Text = ShortId(hostID);
         _lobbyIdValue.Text = ShortId(hostID);
+
         Log($"connected to host {ShortId(hostID)}");
     }
 
@@ -607,7 +611,7 @@ public partial class LobbyDebug : Control
 
     private void Log(string line)
     {
-        _logText?.AppendText($"\n[color=#8c93a3][{Time.GetTimeStringFromSystem()}][/color] {line}");
+        _logText?.AppendText($"\n[color=#7f7f87][{Time.GetTimeStringFromSystem()}][/color] {line}");
         Logging.Log(line, "LobbyDebug");
     }
 

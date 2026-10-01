@@ -1,10 +1,18 @@
 [gd_scene format=3 uid="uid://c4wi7x65uwkcn"]
 
 [ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://gmp/ui/theme/menu_theme.tres" id="1_obikm"]
-[ext_resource type="Texture2D" uid="uid://bmckesaf77x8c" path="res://gmp/ui/theme/bg_gradient.tres" id="2_m06ut"]
 [ext_resource type="Script" uid="uid://bptl0ywrqcw21" path="res://gmp/ui/LobbyDebug.cs" id="2_qsy4g"]
+[ext_resource type="Shader" uid="uid://b7kcy5nv6urww" path="res://gmp/ui/theme/screen_overlay.gdshader" id="3_overlay"]
 
-[node name="LobbyDebug" type="Control" unique_id=1453070762]
+[sub_resource type="ShaderMaterial" id="overlay_mat"]
+shader = ExtResource("3_overlay")
+shader_parameter/line_count = 720.0
+shader_parameter/line_strength = 0.07
+shader_parameter/vignette_strength = 0.45
+shader_parameter/band_strength = 0.03
+shader_parameter/band_speed = 0.08
+
+[node name="LobbyDebug" type="Control" unique_id=55028055]
 process_mode = 3
 layout_mode = 3
 anchors_preset = 15
@@ -15,358 +23,370 @@ grow_vertical = 2
 theme = ExtResource("1_obikm")
 script = ExtResource("2_qsy4g")
 
-[node name="Background" type="TextureRect" parent="." unique_id=163298624]
+[node name="Background" type="ColorRect" parent="." unique_id=663352882]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_m06ut")
-expand_mode = 1
+color = Color(0.012, 0.012, 0.016, 1)
 
-[node name="Margin" type="MarginContainer" parent="." unique_id=660073422]
+[node name="Margin" type="MarginContainer" parent="." unique_id=2125433218]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 20
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_top = 52
+theme_override_constants/margin_right = 64
+theme_override_constants/margin_bottom = 56
 
-[node name="RootVBox" type="VBoxContainer" parent="Margin" unique_id=774033708]
+[node name="RootVBox" type="VBoxContainer" parent="Margin" unique_id=1886454304]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 24
 
-[node name="TopBar" type="HBoxContainer" parent="Margin/RootVBox" unique_id=629680956]
+[node name="TopBar" type="HBoxContainer" parent="Margin/RootVBox" unique_id=1987207282]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 20
 
-[node name="BackButton" type="Button" parent="Margin/RootVBox/TopBar" unique_id=681925987]
+[node name="BackButton" type="Button" parent="Margin/RootVBox/TopBar" unique_id=2116955495]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(120, 44)
+custom_minimum_size = Vector2(200, 96)
 layout_mode = 2
-text = "Back"
+text = "BACK"
 
-[node name="TitleLabel" type="Label" parent="Margin/RootVBox/TopBar" unique_id=86905750]
+[node name="TitleBlock" type="VBoxContainer" parent="Margin/RootVBox/TopBar" unique_id=1625400898]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 0
+
+[node name="TitleLabel" type="Label" parent="Margin/RootVBox/TopBar/TitleBlock" unique_id=1125397890]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"TitleLabel"
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 48
 text = "Lobby Debug (LAN)"
+uppercase = true
 
-[node name="HostButton" type="Button" parent="Margin/RootVBox/TopBar" unique_id=857151282]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(120, 44)
+[node name="TopSpacer" type="Control" parent="Margin/RootVBox/TopBar" unique_id=1139723520]
+custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
-text = "Host"
 
-[node name="JoinButton" type="Button" parent="Margin/RootVBox/TopBar" unique_id=421896091]
+[node name="HostButton" type="Button" parent="Margin/RootVBox/TopBar" unique_id=188159228]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(120, 44)
+custom_minimum_size = Vector2(220, 96)
 layout_mode = 2
-text = "Join to:"
+text = "HOST"
 
-[node name="JoinInput" type="LineEdit" parent="Margin/RootVBox/TopBar" unique_id=576542965]
+[node name="JoinButton" type="Button" parent="Margin/RootVBox/TopBar" unique_id=1661852851]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 96)
+layout_mode = 2
+text = "JOIN TO:"
+
+[node name="JoinInput" type="LineEdit" parent="Margin/RootVBox/TopBar" unique_id=1949389822]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "127.0.0.1"
 placeholder_text = "IP ADDRESS"
 
-[node name="PortInput" type="LineEdit" parent="Margin/RootVBox/TopBar" unique_id=277396227]
+[node name="PortInput" type="LineEdit" parent="Margin/RootVBox/TopBar" unique_id=1400239644]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
-size_flags_horizontal = 3
 text = "2272"
 placeholder_text = "PORT"
 
-[node name="Body" type="HBoxContainer" parent="Margin/RootVBox" unique_id=343561735]
+[node name="TopRule" type="HSeparator" parent="Margin/RootVBox" unique_id=665827445]
+layout_mode = 2
+
+[node name="Body" type="HBoxContainer" parent="Margin/RootVBox" unique_id=2106369706]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 20
+theme_override_constants/separation = 32
 
-[node name="LeftPanel" type="PanelContainer" parent="Margin/RootVBox/Body" unique_id=1411362941]
-custom_minimum_size = Vector2(280, 0)
+[node name="LeftPanel" type="PanelContainer" parent="Margin/RootVBox/Body" unique_id=126224365]
+custom_minimum_size = Vector2(620, 0)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="LeftContent" type="VBoxContainer" parent="Margin/RootVBox/Body/LeftPanel" unique_id=1139684681]
+[node name="LeftContent" type="VBoxContainer" parent="Margin/RootVBox/Body/LeftPanel" unique_id=1342895945]
 layout_mode = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 32
 
-[node name="ConnectionSection" type="VBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent" unique_id=2113889565]
+[node name="ConnectionSection" type="VBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent" unique_id=694344279]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 12
 
-[node name="ConnectionSectionLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection" unique_id=1131107209]
+[node name="ConnectionSectionLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection" unique_id=1952509426]
 layout_mode = 2
 theme_type_variation = &"SectionLabel"
-text = "Connection Status"
+text = "CONNECTION"
 
-[node name="StateRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection" unique_id=2134435878]
+[node name="StateRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection" unique_id=652305401]
 layout_mode = 2
 
-[node name="StateLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/StateRow" unique_id=1052784714]
+[node name="StateLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/StateRow" unique_id=289667938]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"FieldLabel"
-text = "State"
+text = "STATE"
 
-[node name="StateValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/StateRow" unique_id=132876743]
+[node name="StateValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/StateRow" unique_id=911733693]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Disconnected"
 horizontal_alignment = 2
 
-[node name="PeerRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection" unique_id=2135782612]
+[node name="PeerRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection" unique_id=239576958]
 layout_mode = 2
 
-[node name="PeerLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/PeerRow" unique_id=1704203877]
+[node name="PeerLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/PeerRow" unique_id=1749456755]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"FieldLabel"
-text = "Peer ID"
+text = "PEER ID"
 
-[node name="PeerValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/PeerRow" unique_id=2145583002]
+[node name="PeerValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/PeerRow" unique_id=2000396099]
 unique_name_in_owner = true
 layout_mode = 2
 text = "-"
 horizontal_alignment = 2
 
-[node name="PingRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection" unique_id=467475120]
+[node name="PingRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection" unique_id=264135937]
 layout_mode = 2
 
-[node name="PingLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/PingRow" unique_id=1063647297]
+[node name="PingLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/PingRow" unique_id=1249700270]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"FieldLabel"
-text = "Ping"
+text = "PING"
 
-[node name="PingValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/PingRow" unique_id=49009120]
+[node name="PingValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/ConnectionSection/PingRow" unique_id=2057569762]
 unique_name_in_owner = true
 layout_mode = 2
 text = "-- ms"
 horizontal_alignment = 2
 
-[node name="LobbySection" type="VBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent" unique_id=214468739]
+[node name="LobbySection" type="VBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent" unique_id=449826792]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 12
 
-[node name="LobbySectionLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection" unique_id=757260239]
+[node name="LobbySectionLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection" unique_id=275656907]
 layout_mode = 2
 theme_type_variation = &"SectionLabel"
-text = "Lobby State"
+text = "LOBBY"
 
-[node name="LobbyIdRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection" unique_id=394689639]
+[node name="LobbyIdRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection" unique_id=1293843001]
 layout_mode = 2
 
-[node name="LobbyIdLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/LobbyIdRow" unique_id=622204714]
+[node name="LobbyIdLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/LobbyIdRow" unique_id=1008536823]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"FieldLabel"
-text = "Lobby ID"
+text = "LOBBY ID"
 
-[node name="LobbyIdValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/LobbyIdRow" unique_id=559599018]
+[node name="LobbyIdValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/LobbyIdRow" unique_id=1303091826]
 unique_name_in_owner = true
 layout_mode = 2
 text = "-"
 horizontal_alignment = 2
 
-[node name="HostRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection" unique_id=481415040]
+[node name="HostRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection" unique_id=1677731392]
 layout_mode = 2
 
-[node name="HostLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/HostRow" unique_id=1097835548]
+[node name="HostLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/HostRow" unique_id=1123085077]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"FieldLabel"
-text = "Host"
+text = "HOST"
 
-[node name="HostValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/HostRow" unique_id=981329650]
+[node name="HostValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/HostRow" unique_id=744706809]
 unique_name_in_owner = true
 layout_mode = 2
 text = "-"
 horizontal_alignment = 2
 
-[node name="PlayersRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection" unique_id=927098813]
+[node name="PlayersRow" type="HBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection" unique_id=871304796]
 layout_mode = 2
 
-[node name="PlayersLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/PlayersRow" unique_id=1346881339]
+[node name="PlayersLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/PlayersRow" unique_id=1435585438]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"FieldLabel"
-text = "Players"
+text = "PLAYERS"
 
-[node name="PlayersValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/PlayersRow" unique_id=1891108625]
+[node name="PlayersValue" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/LobbySection/PlayersRow" unique_id=858366521]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0 / 6"
 horizontal_alignment = 2
 
-[node name="EventLogSection" type="VBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent" unique_id=942222988]
+[node name="EventLogSection" type="VBoxContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent" unique_id=1178443833]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 8
+theme_override_constants/separation = 12
 
-[node name="EventLogSectionLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/EventLogSection" unique_id=1997676795]
+[node name="EventLogSectionLabel" type="Label" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/EventLogSection" unique_id=1945357140]
 layout_mode = 2
 theme_type_variation = &"SectionLabel"
-text = "Event Log"
+text = "EVENT LOG"
 
-[node name="LogPanel" type="PanelContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/EventLogSection" unique_id=638298084]
+[node name="LogPanel" type="PanelContainer" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/EventLogSection" unique_id=210349801]
 layout_mode = 2
 size_flags_vertical = 3
 theme_type_variation = &"FieldRow"
 
-[node name="LogText" type="RichTextLabel" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/EventLogSection/LogPanel" unique_id=612888536]
+[node name="LogText" type="RichTextLabel" parent="Margin/RootVBox/Body/LeftPanel/LeftContent/EventLogSection/LogPanel" unique_id=1799710440]
 layout_mode = 2
+theme_override_font_sizes/normal_font_size = 22
 bbcode_enabled = true
-text = "[color=#8c93a3][00:00:01][/color] Debug console ready.
-[color=#8c93a3][00:00:02][/color] Waiting for connection..."
+text = "[color=#7f7f87][00:00:01][/color] Debug console ready.
+[color=#7f7f87][00:00:02][/color] Waiting for connection..."
 scroll_following = true
 
-[node name="CenterColumn" type="VBoxContainer" parent="Margin/RootVBox/Body" unique_id=158109887]
+[node name="CenterColumn" type="VBoxContainer" parent="Margin/RootVBox/Body" unique_id=2056080080]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 20
+theme_override_constants/separation = 32
 
-[node name="PlayerSection" type="VBoxContainer" parent="Margin/RootVBox/Body/CenterColumn" unique_id=447547705]
+[node name="PlayerSection" type="VBoxContainer" parent="Margin/RootVBox/Body/CenterColumn" unique_id=509824508]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 12
 
-[node name="PlayerSectionLabel" type="Label" parent="Margin/RootVBox/Body/CenterColumn/PlayerSection" unique_id=784712413]
+[node name="PlayerSectionLabel" type="Label" parent="Margin/RootVBox/Body/CenterColumn/PlayerSection" unique_id=368089220]
 layout_mode = 2
 theme_type_variation = &"SectionLabel"
-text = "Players in Lobby"
+text = "PLAYERS IN LOBBY"
 
-[node name="PlayerListPanel" type="PanelContainer" parent="Margin/RootVBox/Body/CenterColumn/PlayerSection" unique_id=765981848]
-custom_minimum_size = Vector2(0, 266.7)
+[node name="PlayerListPanel" type="PanelContainer" parent="Margin/RootVBox/Body/CenterColumn/PlayerSection" unique_id=391168215]
+custom_minimum_size = Vector2(0, 520)
 layout_mode = 2
-theme_type_variation = &"FieldRow"
 
-[node name="PlayerScroll" type="ScrollContainer" parent="Margin/RootVBox/Body/CenterColumn/PlayerSection/PlayerListPanel" unique_id=771222624]
+[node name="PlayerScroll" type="ScrollContainer" parent="Margin/RootVBox/Body/CenterColumn/PlayerSection/PlayerListPanel" unique_id=1664749514]
 layout_mode = 2
 horizontal_scroll_mode = 0
 
-[node name="PlayerRows" type="VBoxContainer" parent="Margin/RootVBox/Body/CenterColumn/PlayerSection/PlayerListPanel/PlayerScroll" unique_id=1314020153]
+[node name="PlayerRows" type="VBoxContainer" parent="Margin/RootVBox/Body/CenterColumn/PlayerSection/PlayerListPanel/PlayerScroll" unique_id=555261255]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
-
-[node name="ChatSection" type="VBoxContainer" parent="Margin/RootVBox/Body/CenterColumn" unique_id=1850287500]
-layout_mode = 2
-size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="ChatSectionLabel" type="Label" parent="Margin/RootVBox/Body/CenterColumn/ChatSection" unique_id=645136613]
+[node name="ChatSection" type="VBoxContainer" parent="Margin/RootVBox/Body/CenterColumn" unique_id=932558111]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="ChatSectionLabel" type="Label" parent="Margin/RootVBox/Body/CenterColumn/ChatSection" unique_id=1206955238]
 layout_mode = 2
 theme_type_variation = &"SectionLabel"
-text = "Chat"
+text = "CHAT"
 
-[node name="ChatPanel" type="PanelContainer" parent="Margin/RootVBox/Body/CenterColumn/ChatSection" unique_id=1038171385]
+[node name="ChatPanel" type="PanelContainer" parent="Margin/RootVBox/Body/CenterColumn/ChatSection" unique_id=1650610553]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ChatVBox" type="VBoxContainer" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel" unique_id=467269461]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ChatOutputPanel" type="PanelContainer" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox" unique_id=47145276]
 layout_mode = 2
 size_flags_vertical = 3
 theme_type_variation = &"FieldRow"
 
-[node name="ChatVBox" type="VBoxContainer" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel" unique_id=2074398044]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="ChatOutputPanel" type="PanelContainer" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox" unique_id=1239316085]
-layout_mode = 2
-size_flags_vertical = 3
-theme_type_variation = &"FieldRow"
-
-[node name="ChatLog" type="RichTextLabel" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox/ChatOutputPanel" unique_id=2084823531]
+[node name="ChatLog" type="RichTextLabel" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox/ChatOutputPanel" unique_id=868297658]
 layout_mode = 2
 bbcode_enabled = true
-text = "[color=#4dc7d1]System:[/color] Welcome to the lobby chat."
+text = "[color=#ff8c0d]System:[/color] Welcome to the lobby chat."
 scroll_following = true
 
-[node name="ChatInputRow" type="HBoxContainer" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox" unique_id=497785088]
+[node name="ChatInputRow" type="HBoxContainer" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox" unique_id=375692377]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 16
 
-[node name="ChatInput" type="LineEdit" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox/ChatInputRow" unique_id=730195066]
+[node name="ChatInput" type="LineEdit" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox/ChatInputRow" unique_id=1306646184]
 layout_mode = 2
 size_flags_horizontal = 3
-placeholder_text = "Type a message..."
+placeholder_text = "TYPE A MESSAGE..."
 
-[node name="SendButton" type="Button" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox/ChatInputRow" unique_id=1274863021]
-custom_minimum_size = Vector2(90, 0)
+[node name="SendButton" type="Button" parent="Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox/ChatInputRow" unique_id=1543165871]
+custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
-text = "Send"
+text = "SEND"
 
-[node name="RightPanel" type="PanelContainer" parent="Margin/RootVBox/Body" unique_id=1215748450]
-custom_minimum_size = Vector2(280, 0)
+[node name="RightPanel" type="PanelContainer" parent="Margin/RootVBox/Body" unique_id=718161323]
+custom_minimum_size = Vector2(620, 0)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="RightContent" type="VBoxContainer" parent="Margin/RootVBox/Body/RightPanel" unique_id=752996146]
+[node name="RightContent" type="VBoxContainer" parent="Margin/RootVBox/Body/RightPanel" unique_id=1118110457]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 20
 
-[node name="RightSectionLabel" type="Label" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=315311543]
+[node name="RightSectionLabel" type="Label" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=1090370500]
 layout_mode = 2
 theme_type_variation = &"SectionLabel"
-text = "Game Config"
+text = "GAME CONFIG"
 
-[node name="LevelRow" type="PanelContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=202358077]
+[node name="LevelRow" type="PanelContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=387674968]
 layout_mode = 2
 theme_type_variation = &"FieldRow"
 
-[node name="LevelBox" type="HBoxContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent/LevelRow" unique_id=648985837]
+[node name="LevelBox" type="VBoxContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent/LevelRow" unique_id=680552682]
 layout_mode = 2
+theme_override_constants/separation = 10
 
-[node name="LevelLabel" type="Label" parent="Margin/RootVBox/Body/RightPanel/RightContent/LevelRow/LevelBox" unique_id=689831008]
+[node name="LevelLabel" type="Label" parent="Margin/RootVBox/Body/RightPanel/RightContent/LevelRow/LevelBox" unique_id=675176104]
 layout_mode = 2
-size_flags_horizontal = 3
 theme_type_variation = &"FieldLabel"
-text = "Level"
+text = "LEVEL"
 
-[node name="LevelOption" type="OptionButton" parent="Margin/RootVBox/Body/RightPanel/RightContent/LevelRow/LevelBox" unique_id=1264684750]
+[node name="LevelOption" type="OptionButton" parent="Margin/RootVBox/Body/RightPanel/RightContent/LevelRow/LevelBox" unique_id=163095404]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(140, 0)
 layout_mode = 2
 
-[node name="MaxPlayersRow" type="PanelContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=783397737]
+[node name="MaxPlayersRow" type="PanelContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=960546095]
+visible = false
 layout_mode = 2
 theme_type_variation = &"FieldRow"
 
-[node name="MaxPlayersBox" type="HBoxContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent/MaxPlayersRow" unique_id=1185025293]
+[node name="MaxPlayersBox" type="HBoxContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent/MaxPlayersRow" unique_id=275057578]
 layout_mode = 2
 
-[node name="MaxPlayersLabel" type="Label" parent="Margin/RootVBox/Body/RightPanel/RightContent/MaxPlayersRow/MaxPlayersBox" unique_id=595575327]
+[node name="MaxPlayersLabel" type="Label" parent="Margin/RootVBox/Body/RightPanel/RightContent/MaxPlayersRow/MaxPlayersBox" unique_id=1582813444]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"FieldLabel"
-text = "Max Players"
+text = "MAX PLAYERS"
+vertical_alignment = 1
 
-[node name="MaxPlayersSpin" type="SpinBox" parent="Margin/RootVBox/Body/RightPanel/RightContent/MaxPlayersRow/MaxPlayersBox" unique_id=596689598]
-custom_minimum_size = Vector2(90, 0)
+[node name="MaxPlayersSpin" type="SpinBox" parent="Margin/RootVBox/Body/RightPanel/RightContent/MaxPlayersRow/MaxPlayersBox" unique_id=1528574621]
+custom_minimum_size = Vector2(180, 0)
 layout_mode = 2
 min_value = 1.0
 max_value = 16.0
 value = 6.0
 
-[node name="GameModeRow" type="PanelContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=977210171]
+[node name="GameModeRow" type="PanelContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=2025722158]
+visible = false
 layout_mode = 2
 theme_type_variation = &"FieldRow"
 
-[node name="GameModeBox" type="HBoxContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent/GameModeRow" unique_id=678162969]
+[node name="GameModeBox" type="VBoxContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent/GameModeRow" unique_id=98586196]
 layout_mode = 2
+theme_override_constants/separation = 10
 
-[node name="GameModeLabel" type="Label" parent="Margin/RootVBox/Body/RightPanel/RightContent/GameModeRow/GameModeBox" unique_id=2005589454]
+[node name="GameModeLabel" type="Label" parent="Margin/RootVBox/Body/RightPanel/RightContent/GameModeRow/GameModeBox" unique_id=1251437070]
 layout_mode = 2
-size_flags_horizontal = 3
 theme_type_variation = &"FieldLabel"
-text = "Game Mode"
+text = "GAME MODE"
 
-[node name="GameModeOption" type="OptionButton" parent="Margin/RootVBox/Body/RightPanel/RightContent/GameModeRow/GameModeBox" unique_id=814696334]
-custom_minimum_size = Vector2(140, 0)
+[node name="GameModeOption" type="OptionButton" parent="Margin/RootVBox/Body/RightPanel/RightContent/GameModeRow/GameModeBox" unique_id=245266338]
 layout_mode = 2
 selected = 0
 item_count = 3
@@ -377,13 +397,24 @@ popup/item_1/id = 1
 popup/item_2/text = "Sandbox"
 popup/item_2/id = 2
 
-[node name="RightSpacer" type="Control" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=915854622]
+[node name="RightSpacer" type="Control" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=977028262]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="StartGameButton" type="Button" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=840826104]
+[node name="StartGameButton" type="Button" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=1829162451]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 50)
+custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 theme_type_variation = &"PrimaryButton"
-text = "Start Game"
+disabled = true
+text = "START GAME"
+
+[node name="ScreenOverlay" type="ColorRect" parent="." unique_id=456116839]
+material = SubResource("overlay_mat")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

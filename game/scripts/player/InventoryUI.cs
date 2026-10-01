@@ -30,20 +30,24 @@ public partial class InventoryUI : Control
 
     public override void _Ready()
     {
+        HiResUI.Fill(this);
         player = GetParent<FactoryPlayer>();
         inventory = player.inventory;
         inventoryScreen = GetNode<Control>("InventoryScreen");
         heldItemName = GetNode<Label>("%HeldItemName");
 
+        // Terminal-style slot wells (see gmp/ui/theme/menu_theme.tres); the active hotbar slot gets the orange accent.
         normalStyle = new StyleBoxFlat();
-        normalStyle.BgColor = new Color(0.15f, 0.15f, 0.15f, 0.8f);
-        normalStyle.SetCornerRadiusAll(4);
+        normalStyle.BgColor = new Color(0.035f, 0.035f, 0.04f, 0.82f);
+        normalStyle.BorderColor = new Color(0.24f, 0.24f, 0.26f, 0.9f);
+        normalStyle.SetBorderWidthAll(2);
+        normalStyle.SetContentMarginAll(12);
 
         activeStyle = new StyleBoxFlat();
-        activeStyle.BgColor = new Color(0.3f, 0.3f, 0.1f, 0.9f);
-        activeStyle.BorderColor = new Color(1f, 0.85f, 0.2f, 1f);
-        activeStyle.SetBorderWidthAll(2);
-        activeStyle.SetCornerRadiusAll(4);
+        activeStyle.BgColor = new Color(0.16f, 0.1f, 0.03f, 0.9f);
+        activeStyle.BorderColor = new Color(1f, 0.55f, 0.05f, 1f);
+        activeStyle.SetBorderWidthAll(3);
+        activeStyle.SetContentMarginAll(12);
 
         var hotbarSlots = GetNode("HotbarAnchor/HotbarCenter/HotbarSlots");
         for (int i = 0; i < Inventory.HotbarSlots; i++)
@@ -179,8 +183,9 @@ public partial class InventoryUI : Control
                 UpdateTooltip();
             }
 
-            Vector2 desiredPos = GetGlobalMousePosition() + new Vector2(16, 16);
-            Vector2 viewportSize = GetViewportRect().Size;
+            // In this (scaled, see HiResUI) control's own space.
+            Vector2 desiredPos = GetLocalMousePosition() + new Vector2(28, 28);
+            Vector2 viewportSize = Size;
             Vector2 tooltipSize = itemTooltip.Size;
 
             desiredPos.X = Mathf.Clamp(desiredPos.X, 0, Mathf.Max(0, viewportSize.X - tooltipSize.X));
@@ -206,7 +211,7 @@ public partial class InventoryUI : Control
 
         var preview = new TextureRect();
         preview.Texture = ItemInfo.Fetch(slot.itemID).icon;
-        preview.CustomMinimumSize = new Vector2(48, 48);
+        preview.CustomMinimumSize = new Vector2(96, 96) * Scale;
         preview.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
         preview.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
         SetDragPreview(preview);
@@ -302,13 +307,16 @@ public partial class InventoryUI : Control
         Input.MouseMode = Input.MouseModeEnum.Captured;
     }
 
+    /// <summary>The slot under <paramref name="position"/> (in this control's local space), or -1.</summary>
     int GetSlotIndexAtPosition(Vector2 position)
     {
+        // Compare in each slot's own space: the HUD is scaled (HiResUI), which global rects don't account for.
+        Vector2 canvasPoint = GetGlobalTransform() * position;
         for (int i = 0; i < Inventory.TotalSlots; i++)
         {
             if (slotPanels[i] == null) continue;
-            Rect2 rect = slotPanels[i].GetGlobalRect();
-            if (rect.HasPoint(position + GetGlobalRect().Position))
+            Vector2 local = slotPanels[i].GetGlobalTransform().AffineInverse() * canvasPoint;
+            if (new Rect2(Vector2.Zero, slotPanels[i].Size).HasPoint(local))
                 return i;
         }
         return -1;
