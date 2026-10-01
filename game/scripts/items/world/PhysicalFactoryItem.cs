@@ -74,7 +74,7 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
         awakePriority = priority; // Init has resolved the scene/spawn priority by now
         // Level items can settle while the level loads, before this point, and Box3D won't report it again.
         if (authority == Lobby.selfPeerID && !Call("is_awake").AsBool()) OnFellAsleep();
-        ApplyCentralForce(new Vector3(Random.Shared.Next(1,10), Random.Shared.Next(1,10), Random.Shared.Next(1,10)));
+        ApplyCentralForce(new Vector3(Random.Shared.Next(-5,5), Random.Shared.Next(-5,5), Random.Shared.Next(5,5)));
     }
 
     public override void OnAuthorityChanged()

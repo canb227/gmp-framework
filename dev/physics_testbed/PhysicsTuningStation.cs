@@ -42,10 +42,11 @@ public partial class PhysicsTuningStation : Node3D
 
     static readonly Param[] parameters =
     [
-        new(Group.Items, "Density", 0.1f, 30f, 0.1f, false, b => b.density, (b, v) => b.density = v),
-        new(Group.Items, "Friction", 0f, 2f, 0.01f, false, b => b.friction, (b, v) => b.friction = v),
-        new(Group.Items, "Restitution", 0f, 1f, 0.01f, false, b => b.restitution, (b, v) => b.restitution = v),
-        new(Group.Items, "Rolling resistance", 0f, 1f, 0.01f, false, b => b.rollingResistance, (b, v) => b.rollingResistance = v),
+        new(Group.Items, "Density", 0.1f, 30f, 0.1f, false, b => ReadShaped(b, "density", b.density), (b, v) => { b.density = v; SetShapes(b, "density", v); }),
+        new(Group.Items, "Friction", 0f, 2f, 0.01f, false, b => ReadShaped(b, "friction", b.friction), (b, v) => { b.friction = v; SetShapes(b, "friction", v); }),
+        new(Group.Items, "Restitution", 0f, 1f, 0.01f, false, b => ReadShaped(b, "restitution", b.restitution), (b, v) => { b.restitution = v; SetShapes(b, "restitution", v); }),
+        new(Group.Items, "Rolling resistance", 0f, 1f, 0.01f, false, b => ReadShaped(b, "rolling_resistance", b.rollingResistance),
+            (b, v) => { b.rollingResistance = v; SetShapes(b, "rolling_resistance", v); }),
         new(Group.Items, "Linear damping", 0f, 5f, 0.01f, false, b => b.linearDamping, (b, v) => b.linearDamping = v),
         new(Group.Items, "Angular damping", 0f, 5f, 0.01f, false, b => b.angularDamping, (b, v) => b.angularDamping = v),
         new(Group.Items, "Gravity scale", 0f, 3f, 0.01f, false, b => b.gravityScale, (b, v) => b.gravityScale = v),
@@ -144,6 +145,47 @@ public partial class PhysicsTuningStation : Node3D
     }
 
     float Value(string label) => values[Array.FindIndex(parameters, p => p.label == label)];
+
+    // ---- item shapes -----------------------------------------------------
+
+    /// <summary>
+    /// The Box3DCollisionShape children of <paramref name="body"/> (through plain nodes, not into nested bodies). Once a
+    /// body has any, they replace its own shape and each carries its own density, friction, restitution and rolling
+    /// resistance, so the item params set those on every shape as well as on the body.
+    /// </summary>
+    static IEnumerable<Node3D> ItemShapes(Node body)
+    {
+        foreach (Node child in body.GetChildren())
+        {
+            if (child.IsClass("Box3DBody"))
+            {
+                continue;
+            }
+            if (child is Node3D shape && shape.GetClass() == "Box3DCollisionShape")
+            {
+                yield return shape;
+            }
+            foreach (Node3D nested in ItemShapes(child))
+            {
+                yield return nested;
+            }
+        }
+    }
+
+    /// <summary>The value the item actually simulates with: its first child shape's, or the body's own without any.</summary>
+    static float ReadShaped(GMPOBox3DBody body, string property, float own)
+    {
+        Node3D first = ItemShapes(body).FirstOrDefault();
+        return first != null ? first.Get(property).AsSingle() : own;
+    }
+
+    static void SetShapes(GMPOBox3DBody body, string property, float value)
+    {
+        foreach (Node3D shape in ItemShapes(body))
+        {
+            shape.Set(property, value);
+        }
+    }
 
     // ---- measurement -----------------------------------------------------
 
