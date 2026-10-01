@@ -17,3 +17,18 @@ tags = Array[int]([3, 22])
 
 [node name="Model" parent="." unique_id=124815417 instance=ExtResource("2_model")]
 transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, 0, 0)
+
+[node name="Box3DCollisionShape" type="Box3DCollisionShape" parent="." unique_id=89592072]
+shape_type = 1
+sphere_radius = 0.2
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05757925, 0, 0)
+
+[node name="Box3DCollisionShape2" type="Box3DCollisionShape" parent="." unique_id=1266138380]
+shape_type = 1
+sphere_radius = 0.2
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.073511906, 0, 0)
+
+[node name="Box3DCollisionShape3" type="Box3DCollisionShape" parent="." unique_id=449975751]
+shape_type = 1
+sphere_radius = 0.2
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.027023427, -0.012262464, -0.05036644)
