@@ -92,6 +92,7 @@ public partial class ItemInfo : Resource
         if (dir == null)
             return null;
 
+
         dir.ListDirBegin();
 
         while (true)

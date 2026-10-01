@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="Quest" format=3 uid="uid://bycn4rpwf3qm"]
+
+[ext_resource type="Script" uid="uid://crybn2gwdne7r" path="res://game/scripts/core/progress/Quest.cs" id="1_qau4b"]
+
+[resource]
+script = ExtResource("1_qau4b")
+questID = "quest_intro_01"
+questName = "Weclome Again!"
+itemSubmissionObjectives = Dictionary[String, int]({
+"scrap_ball": 3
+})
+metadata/_custom_type_script = "uid://crybn2gwdne7r"

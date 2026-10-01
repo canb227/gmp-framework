@@ -16,6 +16,27 @@ public partial class Console : Node
         LimboConsole.RegisterCommand(new Callable(this,"debugui"));
         LimboConsole.AddArgumentAutocompleteSource("debugui", 0, new Callable(this,"GetDebuguiOptions"));
 
+        // Keep debug windows (perf) drawing while the tree is paused, e.g. during world load.
+        ProcessMode = ProcessModeEnum.Always;
+
+        // "-- --debugui perf,graphics" opens those windows at startup.
+        string[] args = OS.GetCmdlineUserArgs();
+        int flag = Array.IndexOf(args, "--debugui");
+        if (flag >= 0 && flag + 1 < args.Length)
+        {
+            foreach (string name in args[flag + 1].Split(','))
+            {
+                debugui(name);
+            }
+        }
+    }
+
+    public override void _Process(double delta)
+    {
+        PerfDebug.Process(delta);
+        GraphicsDebug.Process(this, delta);
+        ItemsDebug.Process(this, delta);
+        QuestsDebug.Process();
     }
 
     public void debugui(string which)
@@ -40,6 +61,18 @@ public partial class Console : Node
             case "player":
                 FactoryPlayer.displayPlayerDebugInfo = !FactoryPlayer.displayPlayerDebugInfo;
                 break;
+            case "perf":
+                PerfDebug.displayPerfDebugInfo = !PerfDebug.displayPerfDebugInfo;
+                break;
+            case "graphics":
+                GraphicsDebug.displayGraphicsDebugInfo = !GraphicsDebug.displayGraphicsDebugInfo;
+                break;
+            case "items":
+                ItemsDebug.displayItemsDebugInfo = !ItemsDebug.displayItemsDebugInfo;
+                break;
+            case "quests":
+                QuestsDebug.displayQuestsDebugInfo = !QuestsDebug.displayQuestsDebugInfo;
+                break;
             case "reset":
                 foreach (string name in GetDebuguiOptions())
                 {
@@ -59,6 +92,10 @@ public partial class Console : Node
             "grid",
             "gridhighlight",
             "player",
+            "perf",
+            "graphics",
+            "items",
+            "quests",
             "reset",
         };
     }

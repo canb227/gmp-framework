@@ -27,6 +27,12 @@ public partial class Structure : GMPOBox3DBody, Interactable
     [Export]
     public string blueprintItemID;
     /// <summary>Direction arrow drawn above this structure's placement preview (not the built structure); see <see cref="FlowArrowMesh"/>.</summary>
+    /// 
+
+    //Press {interact} to:
+    [Export]
+    public string interactionText = "deconstruct!";
+
     [Export]
     public FlowArrow flowArrow = FlowArrow.None;
     /// <summary>Tags of the structure itself; its first material tag is how it sounds when struck (<see cref="ImpactSounds"/>).</summary>
@@ -66,7 +72,7 @@ public partial class Structure : GMPOBox3DBody, Interactable
         }
     }
 
-    public void onInteract(ulong playerID)
+    public virtual void onInteract(ulong playerID)
     {
         if (!interactable)
         {

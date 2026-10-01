@@ -110,4 +110,8 @@ In console:
 \"debugui player\"
 \"debugui grid\"
 \"debugui gridhighlight\"
+\"debugui perf\" for FPS / performance
+\"debugui graphics\" for environment / lighting tweaks
+\"debugui items\" to browse / spawn item definitions
+\"debugui quests\" to view / complete current quests
 \"debugui reset\" to reset windows"

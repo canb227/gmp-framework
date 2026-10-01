@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="Quest" format=3 uid="uid://bf6dne5enjqcm"]
+
+[ext_resource type="Script" uid="uid://crybn2gwdne7r" path="res://game/scripts/core/progress/Quest.cs" id="1_qvoka"]
+
+[resource]
+script = ExtResource("1_qvoka")
+questID = "quest_intro_00"
+questName = "Welcome!"
+questText = "To the Jungle!"
+itemSubmissionObjectives = Dictionary[String, int]({
+"scrap_ball": 5
+})
+itemSubmissionProgress = Dictionary[String, int]({
+"scrap_ball": 0
+})
+onCompleteUnlockQuests = Array[String](["quest_intro_01"])
+metadata/_custom_type_script = "uid://crybn2gwdne7r"

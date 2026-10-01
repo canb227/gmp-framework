@@ -259,7 +259,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     {
         var cell = BuildGrid.WorldToCell(GlobalPosition);
 
-        ImGui.Begin("debugui player");
+        ImGui.Begin("debugui player", ref displayPlayerDebugInfo);
         ImGui.Text($"Peer ID: {controllingPeerID} | Team: {team} | Human: {isHuman}");
         ImGui.Text($"Position: {GlobalPosition} | Velocity: {cachedVel}");
         ImGui.Text($"Grid Cell: ({cell.X}, {cell.Y}, {cell.Z})");

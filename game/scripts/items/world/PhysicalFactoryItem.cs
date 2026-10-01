@@ -22,6 +22,10 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
 
     [Export]
     public bool canBeInteractedWith;
+
+    [Export]
+    public string interactionText = " pick up!";
+
     [Export]
     public Godot.Collections.Array<ItemTags> tags;
 

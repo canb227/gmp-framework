@@ -114,7 +114,7 @@ public partial class Lobby : Node
 
     private void renderLobbyDebugInfo()
     {
-        ImGui.Begin("debugui lobby");
+        ImGui.Begin("debugui lobby", ref displayLobbyDebugInfo);
         ImGui.Text($"Network mode: {network?.GetType()}");
         ImGui.Text($"My Peer ID: {Lobby.selfPeerID}");
         ImGui.Text($"Lobby Host: {hostID} | Lobby Members: {members?.Count}");

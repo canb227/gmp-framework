@@ -59,7 +59,7 @@ public partial class FactoryPlayer
             if (item.canBePickedUp)
             {
                 hoverInfoBelow.Show();
-                hoverInfoBelow.Text = "Press F to pickup!";
+                hoverInfoBelow.Text = "Press F to " + item.interactionText;
             }
             else
             {
@@ -95,7 +95,7 @@ public partial class FactoryPlayer
             hoverInfoName.Show();
             hoverInfoName.Text = structure.displayName;
             hoverInfoBelow.Show();
-            hoverInfoBelow.Text = "Press F to deconstruct.";
+            hoverInfoBelow.Text = "Press F to " + structure.interactionText;
         }
         else
         {

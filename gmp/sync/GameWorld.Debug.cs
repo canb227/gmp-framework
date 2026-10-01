@@ -11,7 +11,7 @@ public partial class GameWorld
     {
         if (displaySyncedObjectDebugInfo)
         {
-            ImGui.Begin("Synced Objects");
+            ImGui.Begin("debugui syncedobjects", ref displaySyncedObjectDebugInfo);
             ImGui.Text($"Synced Objects: {syncedObjs.Count}");
             ImGui.Text($"Synced Objects with Auth: {syncedObjs.Count(o => o.Value.authority == Lobby.selfPeerID)}");
             foreach (var kvp in syncedObjs.OrderByDescending(e => e.Value.priorityAccumulator).ToList())

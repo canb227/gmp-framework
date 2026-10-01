@@ -1,8 +1,8 @@
-[gd_resource type="Resource" script_class="BlueprintItem" format=3]
+[gd_resource type="Resource" script_class="BlueprintItem" format=3 uid="uid://enjgh3l14ukd"]
 
 [ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_bp"]
 [ext_resource type="Texture2D" uid="uid://c7urs25c1qcy1" path="res://game/assets/icons/blueprints/blueprint_item_void.png" id="2_icon"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/BlueprintGhost.tscn" id="3_ghost"]
+[ext_resource type="PackedScene" uid="uid://e450hsdm0ju3" path="res://game/scenes/structures/BlueprintGhost.tscn" id="3_ghost"]
 [ext_resource type="PackedScene" uid="uid://bywvnipt62y5r" path="res://game/scenes/structures/ItemVoid.tscn" id="4_struct"]
 
 [resource]

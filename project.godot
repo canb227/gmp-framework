@@ -26,6 +26,7 @@ RpcManager="*uid://cisvc3rton0m"
 Console="*uid://dle03qiwu8337"
 BuildGrid="*res://game/scripts/core/BuildGrid.cs"
 AudioManager="*uid://bqyfqwjdjhwfa"
+ProgressManager="*uid://yyd2313sfhhb"
 
 [display]
 
@@ -40,7 +41,7 @@ project/assembly_name="GMPFramework"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/Imposter/plugin.cfg", "res://addons/imgui-godot/plugin.cfg", "res://addons/limbo_console/plugin.cfg", "res://addons/sky_3d/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
+enabled=PackedStringArray("res://addons/Imposter/plugin.cfg", "res://addons/imgui-godot/plugin.cfg", "res://addons/limbo_console/plugin.cfg", "res://addons/sky_3d/plugin.cfg", "res://addons/structure_snap/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
 
 [global_group]
 

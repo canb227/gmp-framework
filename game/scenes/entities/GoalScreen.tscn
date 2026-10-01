@@ -1,0 +1,139 @@
+[gd_scene format=3 uid="uid://1xxnu441im5p"]
+
+[ext_resource type="Script" uid="uid://dvqn0bq2fknsx" path="res://game/scripts/entities/GoalScreen.cs" id="1_goal"]
+[ext_resource type="Texture2D" uid="uid://bcuuuj3u01vt5" path="res://game/assets/icons/items/coal.png" id="2_icon"]
+
+[sub_resource type="StandardMaterial3D" id="mat_frame"]
+albedo_color = Color(0.88, 0.88, 0.9, 1)
+metallic = 0.8
+roughness = 0.35
+
+[sub_resource type="BoxMesh" id="frame_h_mesh"]
+material = SubResource("mat_frame")
+size = Vector3(3.4, 0.08, 0.12)
+
+[sub_resource type="BoxMesh" id="frame_v_mesh"]
+material = SubResource("mat_frame")
+size = Vector3(0.08, 2.64, 0.12)
+
+[sub_resource type="BoxMesh" id="back_mesh"]
+material = SubResource("mat_frame")
+size = Vector3(3.4, 2.8, 0.04)
+
+[sub_resource type="StandardMaterial3D" id="mat_screen"]
+albedo_color = Color(0.01, 0.01, 0.012, 1)
+roughness = 0.15
+
+[sub_resource type="BoxMesh" id="screen_mesh"]
+material = SubResource("mat_screen")
+size = Vector3(3.24, 2.64, 0.06)
+
+[sub_resource type="StandardMaterial3D" id="mat_bar_bg"]
+shading_mode = 0
+albedo_color = Color(0.13, 0.13, 0.14, 1)
+
+[sub_resource type="QuadMesh" id="divider_mesh"]
+material = SubResource("mat_bar_bg")
+size = Vector2(3.1, 0.008)
+
+[sub_resource type="QuadMesh" id="bar_bg_mesh"]
+material = SubResource("mat_bar_bg")
+size = Vector2(2.49, 0.13)
+
+[sub_resource type="StandardMaterial3D" id="mat_bar_fill"]
+shading_mode = 0
+albedo_color = Color(1, 0.55, 0.05, 1)
+
+[sub_resource type="QuadMesh" id="bar_fill_mesh"]
+material = SubResource("mat_bar_fill")
+size = Vector2(1, 0.09)
+
+[node name="GoalScreen" type="Box3DBody" unique_id=961476960 node_paths=PackedStringArray("rowTemplate", "emptyLabel")]
+body_type = 0
+box_size = Vector3(3.4, 2.8, 0.14)
+script = ExtResource("1_goal")
+rowTemplate = NodePath("Row0")
+emptyLabel = NodePath("EmptyLabel")
+barLeft = -0.95
+barWidth = 2.45
+
+[node name="FrameTop" type="MeshInstance3D" parent="." unique_id=2122860892]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.36, 0)
+mesh = SubResource("frame_h_mesh")
+
+[node name="FrameBottom" type="MeshInstance3D" parent="." unique_id=281178227]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.36, 0)
+mesh = SubResource("frame_h_mesh")
+
+[node name="FrameLeft" type="MeshInstance3D" parent="." unique_id=1650355731]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.66, 0, 0)
+mesh = SubResource("frame_v_mesh")
+
+[node name="FrameRight" type="MeshInstance3D" parent="." unique_id=1938214509]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.66, 0, 0)
+mesh = SubResource("frame_v_mesh")
+
+[node name="Back" type="MeshInstance3D" parent="." unique_id=774922130]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.05)
+mesh = SubResource("back_mesh")
+
+[node name="Screen" type="MeshInstance3D" parent="." unique_id=1891236861]
+mesh = SubResource("screen_mesh")
+
+[node name="TitleLabel" type="Label3D" parent="." unique_id=1214064164]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1.16, 0.035)
+modulate = Color(0.55, 0.55, 0.58, 1)
+text = "CURRENT GOALS"
+font_size = 18
+outline_size = 0
+horizontal_alignment = 0
+
+[node name="Divider" type="MeshInstance3D" parent="." unique_id=1954146614]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.04, 0.035)
+mesh = SubResource("divider_mesh")
+
+[node name="EmptyLabel" type="Label3D" parent="." unique_id=118203381]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.035)
+visible = false
+modulate = Color(0.55, 0.55, 0.58, 1)
+text = "NO ACTIVE GOALS"
+font_size = 28
+outline_size = 0
+
+[node name="Row0" type="Node3D" parent="." unique_id=716669093]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+
+[node name="Icon" type="Sprite3D" parent="Row0" unique_id=1147974778]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3, 0, 0.035)
+pixel_size = 0.0035
+texture = ExtResource("2_icon")
+
+[node name="QuestLabel" type="Label3D" parent="Row0" unique_id=1281708351]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 0.17, 0.035)
+modulate = Color(0.55, 0.55, 0.58, 1)
+text = "QUEST NAME"
+font_size = 14
+outline_size = 0
+horizontal_alignment = 0
+
+[node name="ItemLabel" type="Label3D" parent="Row0" unique_id=499696117]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 0.03, 0.035)
+text = "Coal"
+font_size = 20
+outline_size = 0
+horizontal_alignment = 0
+
+[node name="CountLabel" type="Label3D" parent="Row0" unique_id=1656090389]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.03, 0.035)
+text = "8 / 20"
+font_size = 20
+outline_size = 0
+horizontal_alignment = 2
+
+[node name="BarBackground" type="MeshInstance3D" parent="Row0" unique_id=502518142]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.275, -0.16, 0.035)
+mesh = SubResource("bar_bg_mesh")
+
+[node name="BarFill" type="MeshInstance3D" parent="Row0" unique_id=1378002500]
+transform = Transform3D(0.98, 0, 0, 0, 1, 0, 0, 0, 1, -0.46, -0.16, 0.04)
+mesh = SubResource("bar_fill_mesh")
