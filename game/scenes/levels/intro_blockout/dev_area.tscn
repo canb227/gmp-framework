@@ -1,0 +1,72 @@
+[gd_scene format=4 uid="uid://xv4gtujbywwp"]
+
+[ext_resource type="PackedScene" uid="uid://bo34hju0lbyq8" path="res://game/scenes/entities/devScrapSource.tscn" id="1_u7xt8"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vchc8"]
+
+[sub_resource type="Sky" id="Sky_pet1e"]
+sky_material = SubResource("ProceduralSkyMaterial_vchc8")
+
+[sub_resource type="Environment" id="Environment_jwgd3"]
+background_mode = 2
+sky = SubResource("Sky_pet1e")
+ssr_enabled = true
+ssao_enabled = true
+ssil_enabled = true
+sdfgi_enabled = true
+glow_enabled = true
+volumetric_fog_density = 0.01
+
+[sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_m0rhe"]
+
+[sub_resource type="Compositor" id="Compositor_7n7at"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_lks06"]
+_surfaces = [{
+"aabb": AABB(-50, -0.5, -50, 100, 1, 100),
+"attribute_data": PackedByteArray("AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/"),
+"format": 34359738391,
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 36,
+"vertex_data": PackedByteArray("AABIwgAAAL8AAEhCAABIwgAAAL8AAEjCAABIwgAAAD8AAEjCAABIQgAAAL8AAEjCAABIwgAAAL8AAEjCAABIwgAAAL8AAEhCAABIwgAAAD8AAEjCAABIwgAAAL8AAEjCAABIQgAAAL8AAEjCAABIwgAAAD8AAEjCAABIwgAAAD8AAEhCAABIwgAAAL8AAEhCAABIwgAAAL8AAEhCAABIwgAAAD8AAEhCAABIQgAAAD8AAEhCAABIQgAAAD8AAEhCAABIwgAAAD8AAEhCAABIwgAAAD8AAEjCAABIwgAAAL8AAEhCAABIQgAAAL8AAEhCAABIQgAAAL8AAEjCAABIQgAAAD8AAEhCAABIQgAAAL8AAEhCAABIwgAAAL8AAEhCAABIQgAAAL8AAEjCAABIQgAAAL8AAEhCAABIQgAAAD8AAEhCAABIQgAAAL8AAEjCAABIQgAAAD8AAEjCAABIwgAAAD8AAEjCAABIwgAAAD8AAEjCAABIQgAAAD8AAEjCAABIQgAAAD8AAEhCAABIQgAAAD8AAEhCAABIQgAAAD8AAEjCAABIQgAAAL8AAEjCAAD/f/9//n8AAP9//3/+fwAA/3//f/5//38AAP//AAD/fwAA//8AAP9/AAD//wAA/////wAA/z//////AAD/P/////8AAP8/AAD/f/9//n8AAP9//3/+fwAA/3//f/5//3//fwAA/z//f/9/AAD/P/9//38AAP8//3//////AAD/f/////8AAP9//////wAA/38AAP//AAD/fwAA//8AAP9/AAD//wAA/3//fwAA/z//f/9/AAD/P/9//38AAP8/////f/9//n////9//3/+f////3//f/5//////wAA/z//////AAD/P/////8AAP8//3//////AAD/f/////8AAP9//////wAA////f/9//n////9//3/+f////3//f/5/")
+}]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_jhkrf"]
+_surfaces = [{
+"aabb": AABB(-50, -0.5, -50, 100, 1, 100),
+"attribute_data": PackedByteArray("AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/"),
+"format": 34359738391,
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 36,
+"vertex_data": PackedByteArray("AABIwgAAAL8AAEhCAABIwgAAAL8AAEjCAABIwgAAAD8AAEjCAABIQgAAAL8AAEjCAABIwgAAAL8AAEjCAABIwgAAAL8AAEhCAABIwgAAAD8AAEjCAABIwgAAAL8AAEjCAABIQgAAAL8AAEjCAABIwgAAAD8AAEjCAABIwgAAAD8AAEhCAABIwgAAAL8AAEhCAABIwgAAAL8AAEhCAABIwgAAAD8AAEhCAABIQgAAAD8AAEhCAABIQgAAAD8AAEhCAABIwgAAAD8AAEhCAABIwgAAAD8AAEjCAABIwgAAAL8AAEhCAABIQgAAAL8AAEhCAABIQgAAAL8AAEjCAABIQgAAAD8AAEhCAABIQgAAAL8AAEhCAABIwgAAAL8AAEhCAABIQgAAAL8AAEjCAABIQgAAAL8AAEhCAABIQgAAAD8AAEhCAABIQgAAAL8AAEjCAABIQgAAAD8AAEjCAABIwgAAAD8AAEjCAABIwgAAAD8AAEjCAABIQgAAAD8AAEjCAABIQgAAAD8AAEhCAABIQgAAAD8AAEhCAABIQgAAAD8AAEjCAABIQgAAAL8AAEjCAAD/f/9//n8AAP9//3/+fwAA/3//f/5//38AAP//AAD/fwAA//8AAP9/AAD//wAA/////wAA/z//////AAD/P/////8AAP8/AAD/f/9//n8AAP9//3/+fwAA/3//f/5//3//fwAA/z//f/9/AAD/P/9//38AAP8//3//////AAD/f/////8AAP9//////wAA/38AAP//AAD/fwAA//8AAP9/AAD//wAA/3//fwAA/z//f/9/AAD/P/9//38AAP8/////f/9//n////9//3/+f////3//f/5//////wAA/z//////AAD/P/////8AAP8//3//////AAD/f/////8AAP9//////wAA////f/9//n////9//3/+f////3//f/5/")
+}]
+
+[node name="DevArea" type="Node3D" unique_id=393419204]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=958168580]
+environment = SubResource("Environment_jwgd3")
+camera_attributes = SubResource("CameraAttributesPhysical_m0rhe")
+compositor = SubResource("Compositor_7n7at")
+
+[node name="spawn" type="Marker3D" parent="." unique_id=1666538504 groups=["player_spawn"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+gizmo_extents = 10.0
+
+[node name="DevScrapSource" parent="." unique_id=867740511 instance=ExtResource("1_u7xt8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -17)
+
+[node name="Box3DBody" type="Box3DBody" parent="." unique_id=1597530614]
+body_type = 0
+shape_type = 7
+collision_mesh = SubResource("ArrayMesh_lks06")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1449409735]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, -0.5, 0)
+size = Vector3(100, 1, 100)
+
+[node name="CSGBakedMeshInstance3D" type="MeshInstance3D" parent="." unique_id=679638169]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+mesh = SubResource("ArrayMesh_jhkrf")
