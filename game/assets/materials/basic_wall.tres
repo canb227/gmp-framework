@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://ctbxjr88ky54x" path="res://game/assets/textures/wall_basic_1/wall_basic_1_smoothness.png" id="4_ytcd7"]
 
 [resource]
+specular_mode = 2
 albedo_texture = ExtResource("1_pvmib")
 metallic_specular = 0.01
 roughness_texture = ExtResource("4_ytcd7")

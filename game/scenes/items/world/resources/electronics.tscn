@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://bbar65lo2cmrc"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_opj7x"]
+[ext_resource type="Texture2D" uid="uid://c06b1j8wdtii5" path="res://game/assets/textures/circuit_board.jpeg" id="2_dcq51"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c5vbb"]
+albedo_texture = ExtResource("2_dcq51")
+uv1_scale = Vector3(2.34, 2, 2.34)
+uv1_offset = Vector3(0.26, -0.005, 0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_pet1e"]
+material = SubResource("StandardMaterial3D_c5vbb")
+size = Vector3(1, 0.1, 0.75)
+
+[node name="copper_ore" type="Box3DBody" unique_id=126599523]
+box_size = Vector3(1, 0.1, 0.75)
+sphere_radius = 0.42
+density = 5.0
+friction = 0.8
+rolling_resistance = 0.6
+script = ExtResource("1_opj7x")
+itemID = "copper_ore"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([4])
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=140295804]
+mesh = SubResource("BoxMesh_pet1e")

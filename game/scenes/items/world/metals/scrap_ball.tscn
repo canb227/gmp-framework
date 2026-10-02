@@ -8,6 +8,7 @@ shape_type = 1
 sphere_radius = 0.22
 density = 5.0
 friction = 0.9
+restitution = 0.1
 rolling_resistance = 0.2
 script = ExtResource("1_item")
 itemID = "scrap_ball"
