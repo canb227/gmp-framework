@@ -10,4 +10,4 @@ metallic_specular = 0.01
 roughness_texture = ExtResource("3_5xkpx")
 normal_enabled = true
 normal_texture = ExtResource("2_rky0f")
-uv1_scale = Vector3(9, 2, 1)
+uv1_scale = Vector3(7.99, 2.987, 7.99)

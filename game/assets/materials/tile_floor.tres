@@ -8,7 +8,7 @@
 
 [resource]
 albedo_texture = ExtResource("1_iub64")
-metallic_specular = 0.02
+metallic_specular = 0.01
 roughness_texture = ExtResource("5_gjryw")
 normal_enabled = true
 normal_texture = ExtResource("4_4pxxc")
@@ -16,3 +16,4 @@ ao_enabled = true
 ao_texture = ExtResource("2_56c67")
 heightmap_enabled = true
 heightmap_texture = ExtResource("3_32l1k")
+uv1_scale = Vector3(17.87, 9.498, 9.498)

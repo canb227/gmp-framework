@@ -1,0 +1,12 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://bosg7vc1hulq8"]
+
+[ext_resource type="Texture2D" uid="uid://6t6w8ma5o3rr" path="res://gmp/ui/theme/toggle_off.svg" id="1_6sxjr"]
+
+[resource]
+resource_name = "M_ConvMetal"
+cull_mode = 2
+vertex_color_use_as_albedo = true
+albedo_color = Color(0.6706895, 0.6706895, 0.6706895, 1)
+albedo_texture = ExtResource("1_6sxjr")
+metallic = 0.8
+roughness = 0.45
