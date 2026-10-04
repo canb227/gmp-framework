@@ -175,12 +175,12 @@ public partial class FactoryPlayer
         if (pull.Length() > grabMaxPullSpeed) pull = pull.Normalized() * grabMaxPullSpeed;
         Vector3 wantedVelocity = targetVelocity + pull;
 
-        Vector3 velocity = grabTarget.Call("get_linear_velocity").AsVector3();
+        Vector3 velocity = grabTarget.GetLinearVelocity();
         // Correct at most 90% of the velocity difference per tick, whatever the gain: this keeps the loop stable.
         float response = Mathf.Min(grabVelocityGain, 0.9f / dt);
         Vector3 accel = (wantedVelocity - velocity) * response - grabGravity;
 
-        float mass = grabTarget.Call("get_mass").AsSingle();
+        float mass = grabTarget.GetMass();
         Vector3 force = accel * mass;
         if (force.Length() > grabStrength) force = force.Normalized() * grabStrength;
         grabTarget.ApplyCentralForce(force);
@@ -197,10 +197,10 @@ public partial class FactoryPlayer
     // Removes a fraction of the held item's spin each tick (an angular impulse of I * delta-omega).
     void DampGrabSpin(float dt)
     {
-        Vector3 spin = grabTarget.Call("get_angular_velocity").AsVector3();
+        Vector3 spin = grabTarget.GetAngularVelocity();
         if (spin.LengthSquared() < 1e-6f) return;
-        Basis inertia = grabTarget.Call("get_inertia_tensor").AsBasis();
+        Basis inertia = grabTarget.GetInertiaTensor();
         Vector3 deltaSpin = -spin * Mathf.Min(1f, grabSpinDamping * dt);
-        grabTarget.Call("apply_angular_impulse", [inertia * deltaSpin]);
+        grabTarget.ApplyAngularImpulse(inertia * deltaSpin);
     }
 }

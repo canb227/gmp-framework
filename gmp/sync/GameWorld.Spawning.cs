@@ -131,7 +131,7 @@ public partial class GameWorld
             }
             if (node is GMPOBox3DBody box)
             {
-                box.Call("teleport", [new Transform3D(Basis.FromEuler(rotation), position)]);
+                box.Teleport(new Transform3D(Basis.FromEuler(rotation), position));
             }
             else if (node is Node3D n)
             {

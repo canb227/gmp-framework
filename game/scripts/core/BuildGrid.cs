@@ -94,7 +94,14 @@ public partial class BuildGrid : Node3D
         {
             _meshInstance.Visible = false;
         }
+    }
 
+    /// <summary>
+    /// Runs from <c>_PhysicsProcess</c>, not <c>_Process</c>: a world raycast waits for any Box3D step running on
+    /// the async step thread, which in a render frame would stall the frame.
+    /// </summary>
+    private void UpdateHighlight()
+    {
         if (highlightLookedAtCell)
         {
             UpdateHighlightedCell();
@@ -134,7 +141,7 @@ public partial class BuildGrid : Node3D
         Vector3 from = camera.GlobalPosition;
         Vector3 to = from + -camera.GlobalTransform.Basis.Z * range;
         var ray = GameWorld.Raycast(from, to);
-        if (!ray["hit"].AsBool())
+        if (!ray.hit)
         {
             cell = default;
             return false;
@@ -143,7 +150,7 @@ public partial class BuildGrid : Node3D
         // Nudge off the surface along its normal before flooring, so a hit that lands exactly on a
         // cell boundary (e.g. a floor at a grid line) resolves to the cell above the surface rather
         // than the one buried inside it.
-        cell = WorldToCell(ray["position"].AsVector3() + ray["normal"].AsVector3() * HighlightEdgeNudge);
+        cell = WorldToCell(ray.position + ray.normal * HighlightEdgeNudge);
         return true;
     }
 
@@ -165,8 +172,8 @@ public partial class BuildGrid : Node3D
         anchor = default;
         direction = direction.Normalized();
         var ray = GameWorld.Raycast(from, from + direction * range);
-        bool hit = ray["hit"].AsBool();
-        float hitDistance = hit ? from.DistanceTo(ray["position"].AsVector3()) : range;
+        bool hit = ray.hit;
+        float hitDistance = hit ? from.DistanceTo(ray.position) : range;
 
         Vector3I target, normal;
         if (TryFindOccupiedCellAlongRay(from, direction, hitDistance, out Vector3I entered, out normal))
@@ -177,8 +184,8 @@ public partial class BuildGrid : Node3D
         else if (hit)
         {
             // Otherwise the cell on the open side of the surface that was hit.
-            normal = DominantAxis(ray["normal"].AsVector3());
-            target = WorldToCell(ray["position"].AsVector3() + (Vector3)normal * HighlightEdgeNudge);
+            normal = DominantAxis(ray.normal);
+            target = WorldToCell(ray.position + (Vector3)normal * HighlightEdgeNudge);
         }
         else
         {

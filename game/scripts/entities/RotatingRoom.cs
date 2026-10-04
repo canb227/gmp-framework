@@ -73,7 +73,7 @@ public partial class RotatingRoom : Node3D
         }
         float error = Mathf.Wrap(target - CurrentAngle(), -Mathf.Pi, Mathf.Pi);
         Vector3 worldAxis = (GlobalBasis * localAxis).Normalized();
-        Call("set_angular_velocity", worldAxis * (rate + error * Correction));
+        Call(Box3DNames.setAngularVelocity, worldAxis * (rate + error * Correction));
     }
 
     /// <summary>The room's current turn about its axis, relative to where it started (radians, -pi..pi).</summary>

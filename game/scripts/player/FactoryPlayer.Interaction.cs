@@ -47,8 +47,8 @@ public partial class FactoryPlayer
     /// <summary>Refreshes <see cref="pickTarget"/> and the hover labels. Runs each physics tick on the local player.</summary>
     void UpdatePickTarget()
     {
-        Dictionary ray = GameWorld.Raycast(camera.GlobalPosition, camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * pickRange);
-        Node hit = ray["hit"].AsBool() ? (Node)ray["collider"].AsGodotObject() : null;
+        RayHit ray = GameWorld.Raycast(camera.GlobalPosition, camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * pickRange);
+        Node hit = ray.collider;
 
         if (hit is PhysicalFactoryItem item)
         {

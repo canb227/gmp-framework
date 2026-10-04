@@ -29,8 +29,6 @@ public partial class ScrapArm : Structure
     /// <summary>Raised with the new object's id each time the arm spawns an item (only on the peer running its machine logic).</summary>
     public event Action<ulong> ItemSpawned;
 
-    Dictionary<string, Node> multiMesh = new();
-
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -54,19 +52,7 @@ public partial class ScrapArm : Structure
 
                 if (itemID != null)
                 {
-                    if (multiMesh.ContainsKey(itemID))
-                    {
-
-                    }
-                    else
-                    {
-                        multiMesh[itemID] = ClassDB.Instantiate("Box3DMultiMeshRenderer").As<Node3D>();
-                        multiMesh[itemID].Name = $"MultiMesh_{itemID}";
-                        GameWorld.b3droot.AddChild(multiMesh[itemID]);
-
-                    }
-                    //Logging.Log($"guh-1 {multiMesh[itemID].GetPath()}", "GameWorld");
-                    ItemSpawned?.Invoke(ItemInfo.SpawnInWorld(itemID, dropDestination.GlobalPosition, parentPath: multiMesh[itemID].GetPath()));
+                    ItemSpawned?.Invoke(ItemInfo.SpawnInWorld(itemID, dropDestination.GlobalPosition));
                 }
             }
         }

@@ -27,6 +27,10 @@ public partial class GameWorld
 {
     public static WorldTickMessage pendingOutgoingTick = new();
 
+    /// <summary>This tick's objects with an update due, reused between ticks.</summary>
+    private static readonly List<GMPObject> dueUpdates = new();
+    private static readonly Comparison<GMPObject> ByAccumulatorDescending = (a, b) => b.priorityAccumulator.CompareTo(a.priorityAccumulator);
+
     /// <summary>Newest received state per object, applied (and cleared) at the start of the next physics tick.</summary>
     private static readonly Dictionary<ulong, (ulong sender, byte[] state)> pendingStates = new();
 
@@ -100,8 +104,14 @@ public partial class GameWorld
         }
         pendingStates.Clear();
 
+        // Nobody to send to (solo, or the last peer left): skip building updates, which costs per object per tick.
+        if (Lobby.MemberCount <= 1)
+        {
+            return;
+        }
 
         int tickSize = 0;
+        dueUpdates.Clear();
         foreach (var entity in syncedObjs.Values)
         {
             if (entity.authority!=Lobby.selfPeerID)
@@ -109,37 +119,35 @@ public partial class GameWorld
                 //not mine hands off
                 continue;
             }
-            else if (entity.priority <=-1)
+            if (entity.priority > -1)
             {
-                //sleepy boi hands off
+                // priority -1 (sleepy boi) never accumulates, but still sends anything queued for it
+                entity.priorityAccumulator += entity.priority;
+            }
+            if (entity.priorityAccumulator > 0)
+            {
+                dueUpdates.Add(entity);
+            }
+        }
+        // Highest accumulated priority first, sorted in place (no per-tick allocation).
+        dueUpdates.Sort(ByAccumulatorDescending);
+        foreach (GMPObject e in dueUpdates)
+        {
+            byte[] update = e.GenerateStateUpdate();
+            if (update == null || update.Length ==0)
+            {
+                e.priorityAccumulator = 0;
                 continue;
+            }
+            if (tickSize + update.Length <= maxTickSize)
+            {
+                tickSize += update.Length;
+                pendingOutgoingTick.updates.Add((e.id, update));
+                e.priorityAccumulator = 0;
             }
             else
             {
-                entity.priorityAccumulator += entity.priority;
-            }
-        }
-        List<GMPObject> temp = syncedObjs.Values.OrderByDescending(e => e.priorityAccumulator).ToList();
-        foreach (GMPObject e in temp)
-        {
-            if (e.authority == Lobby.selfPeerID && e.priorityAccumulator > 0)
-            {
-                byte[] update = e.GenerateStateUpdate();
-                if (update == null || update.Length ==0)
-                {
-                    e.priorityAccumulator = 0;
-                    continue;
-                }
-                if (tickSize + update.Length <= maxTickSize)
-                {
-                    tickSize += update.Length;
-                    pendingOutgoingTick.updates.Add((e.id, update));
-                    e.priorityAccumulator = 0;
-                }
-                else
-                {
-                    break;
-                }
+                break;
             }
         }
         if (pendingOutgoingTick.updates.Count > 0)

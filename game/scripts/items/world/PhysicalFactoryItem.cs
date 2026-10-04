@@ -41,17 +41,11 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
 
     /// <summary>Sync priority of an awake item unless its scene sets its own.</summary>
     public const int DefaultPriority = 10;
-    /// <summary>
-    /// How often (s) a sleeping item checks whether it has woken. Box3D signals falling asleep but not waking, so
-    /// waking is polled, and only while asleep; until it's noticed the item just syncs at its sleeping priority.
-    /// </summary>
-    const double WakeCheckInterval = 0.2;
 
     /// <summary>Set once a pickup has been granted, so later simultaneous requests lose.</summary>
     bool taken;
 
     int awakePriority;
-    double untilWakeCheck;
     /// <summary>Whether this item is asleep in this peer's simulation (tracked on the authority only).</summary>
     public bool asleep { get; private set; }
 
@@ -67,7 +61,7 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
         // of a contact). Material-only tags don't need it: impact sounds come from the world's hit events.
         if (tags != null && TagInteractions.HasRulesFor(tags))
         {
-            Set("contact_monitor", true);
+            contactMonitor = true;
             Connect("body_entered", Callable.From<Node>(OnBodyEntered));
         }
     }
@@ -77,8 +71,13 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
         base.AfterInit();
         awakePriority = priority; // Init has resolved the scene/spawn priority by now
         // Level items can settle while the level loads, before this point, and Box3D won't report it again.
-        if (authority == Lobby.selfPeerID && !Call("is_awake").AsBool()) OnFellAsleep();
-        ApplyCentralForce(new Vector3(Random.Shared.Next(-5,5), Random.Shared.Next(-5,5), Random.Shared.Next(5,5)));
+        if (authority == Lobby.selfPeerID && !this.IsAwake()) OnFellAsleep();
+        this.ApplyCentralForce(new Vector3(Random.Shared.Next(-5,5), Random.Shared.Next(-5,5), Random.Shared.Next(5,5)));
+    }
+
+    public override void _ExitTree()
+    {
+        SleepingItemPoller.Remove(this);
     }
 
     public override void OnAuthorityChanged()
@@ -86,7 +85,7 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
         base.OnAuthorityChanged();
         // Start awake on the new authority, and wake the body so Box3D reports it when it settles again.
         SetAwake();
-        if (authority == Lobby.selfPeerID && id != 0) Call("set_awake", [true]);
+        if (authority == Lobby.selfPeerID && id != 0) this.SetAwake(true);
     }
 
     // Only the authority simulates the item (everyone else has it Kinematic), so only its sleep state counts.
@@ -94,24 +93,30 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
     {
         if (id == 0 || authority != Lobby.selfPeerID || awakePriority <= 0 || asleep) return;
         asleep = true;
-        untilWakeCheck = WakeCheckInterval;
+        SleepingItemPoller.Add(this);
         priority = sleepingPriority;
         // Queue one more update so peers get the resting pose, not the last one sent while it settled.
         priorityAccumulator = Math.Max(priorityAccumulator, awakePriority);
     }
 
-    public override void _PhysicsProcess(double delta)
+    /// <summary>
+    /// Called by <see cref="SleepingItemPoller"/> every so often while this item is asleep. Box3D signals falling
+    /// asleep but not waking, so waking is polled; until it's noticed the item just syncs at its sleeping priority.
+    /// Returns false once the item is awake (or no longer this peer's to simulate) and needs no more checks.
+    /// </summary>
+    public bool CheckStillAsleep()
     {
-        base._PhysicsProcess(delta);
-        if (!asleep) return;
-        untilWakeCheck -= delta;
-        if (untilWakeCheck > 0) return;
-        untilWakeCheck = WakeCheckInterval;
-        if (authority != Lobby.selfPeerID || Call("is_awake").AsBool()) SetAwake();
+        if (authority != Lobby.selfPeerID || this.IsAwake())
+        {
+            SetAwake();
+            return false;
+        }
+        return true;
     }
 
     void SetAwake()
     {
+        SleepingItemPoller.Remove(this);
         asleep = false;
         if (awakePriority > 0) priority = awakePriority;
     }

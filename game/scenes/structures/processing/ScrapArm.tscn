@@ -534,6 +534,7 @@ script = ExtResource("1_hdp5h")
 grabTarget = NodePath("Model/Skeleton/Skeleton3D/gripTarget")
 grabLocation = NodePath("Model/Skeleton/Skeleton3D/gripLocation")
 dropDestination = NodePath("Marker3D")
+blueprintItemID = "blueprint_scrap_grabber"
 flowArrow = 1
 
 [node name="Model" type="Node3D" parent="." unique_id=775633509]

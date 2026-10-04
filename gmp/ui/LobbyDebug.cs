@@ -727,15 +727,15 @@ public partial class LobbyDebug : Control
         {
             Vector3 from = new Vector3(16, 1.5f, 0);
             var ray = GameWorld.Raycast(from, from + dir * 60f);
-            if (!ray["hit"].AsBool()) continue;
-            Node hit = ray["collider"].AsGodotObject() as Node;
+            if (!ray.hit) continue;
+            Node hit = ray.collider;
             bool isLevel = true;
             for (Node n = hit; n != null; n = n.GetParent())
                 if (n is GMPObject) { isLevel = false; break; }
             // The face must lie well inside a cell, or no cell straddles it.
-            float along = ray["position"].AsVector3().Dot(dir.Abs()) / BuildGrid.CellSize;
+            float along = ray.position.Dot(dir.Abs()) / BuildGrid.CellSize;
             float fromBoundary = Mathf.Abs(along - Mathf.Round(along)) * BuildGrid.CellSize;
-            cell = BuildGrid.WorldToCell(ray["position"].AsVector3() + dir * 0.05f);
+            cell = BuildGrid.WorldToCell(ray.position + dir * 0.05f);
             if (isLevel && fromBoundary > 0.2f && BuildGrid.GetStructureAt(cell) == null) return true;
         }
         cell = default;
@@ -1073,7 +1073,7 @@ public partial class LobbyDebug : Control
             // body was placed at the built cell rather than left at the origin.
             Vector3 centre = BuildGrid.CellToWorld(TestBuildCell);
             var ray = GameWorld.Raycast(centre + Vector3.Up * BuildGrid.CellSize, centre);
-            bool hitsStructure = ray["hit"].AsBool() && BuildGrid.FindStructure(ray["collider"].AsGodotObject() as Node) != null;
+            bool hitsStructure = ray.hit && BuildGrid.FindStructure(ray.collider) != null;
             _buildSnapshot = $"{TestBlockCounts()}{(hitsStructure ? "" : "(no collision)")}";
 
             Vector3I[] longBlock = [Vector3I.Zero, new Vector3I(1, 0, 0)];
@@ -1141,8 +1141,8 @@ public partial class LobbyDebug : Control
                 if (!clear) break;
                 Vector3 at = BuildGrid.CellToWorld(anchor + new Vector3I(c.X, 0, c.Z)) with { Y = 0 };
                 var ray = GameWorld.Raycast(at + Vector3.Up * 10, at + Vector3.Down * 10);
-                clear = ray["hit"].AsBool() && Mathf.Abs(ray["position"].AsVector3().Y) <= 0.01f
-                    && BuildGrid.FindStructure(ray["collider"].AsGodotObject() as Node) == null;
+                clear = ray.hit && Mathf.Abs(ray.position.Y) <= 0.01f
+                    && BuildGrid.FindStructure(ray.collider) == null;
             }
             if (clear)
             {

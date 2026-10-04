@@ -164,7 +164,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         if (!isLocal)
         {
             // Remote copy: keep sliding along the last replicated velocity between state updates.
-            Call("move_and_slide", [Velocity, delta]);
+            MoveAndSlide(Velocity, delta);
             return;
         }
 
@@ -204,7 +204,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             Velocity.Z = Mathf.MoveToward(Velocity.Z, 0, Speed);
         }
         cachedVel = Velocity;
-        Velocity = Call("move_and_slide", [Velocity, delta]).AsVector3();
+        Velocity = MoveAndSlide(Velocity, delta);
         if (IsOnFloor())
         {
             distanceSinceStepSound += (Velocity.Length() * delta);

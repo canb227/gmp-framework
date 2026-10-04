@@ -63,7 +63,7 @@ public partial class Structure : GMPOBox3DBody, Interactable
     /// <summary>The synced items a trigger sensor currently overlaps.</summary>
     protected static IEnumerable<PhysicalFactoryItem> ItemsInTrigger(Node3D trigger)
     {
-        foreach (Node n in trigger.Call("get_overlapping_bodies").AsGodotArray<Node>())
+        foreach (Node n in trigger.Call(Box3DNames.getOverlappingBodies).AsGodotArray<Node>())
         {
             if (n is PhysicalFactoryItem item && GameWorld.syncedObjs.ContainsKey(item.id))
             {
@@ -161,6 +161,8 @@ public partial class Structure : GMPOBox3DBody, Interactable
         {
             this.occupiedCells = new Godot.Collections.Array<Vector3I>(placedIn);
         }
+        // Structures never follow synced state, so only machines with their own _PhysicsProcess keep processing on.
+        RefreshPhysicsProcess();
     }
 
     public override void OnAuthorityChanged()
@@ -170,10 +172,5 @@ public partial class Structure : GMPOBox3DBody, Interactable
     public override void _ExitTree()
     {
         BuildGrid.Vacate(this);
-    }
-
-    // Static: nothing to follow.
-    public override void _PhysicsProcess(double delta)
-    {
     }
 }

@@ -11,6 +11,10 @@ public partial class GameWorld : Node3D
 {
     public static GameWorld instance;
     public static GMPOBox3DWorld b3droot;
+
+    /// <summary>Box3D solver threads on machines with enough cores (fewer on small CPUs; see _Ready).</summary>
+    public const int SolverWorkers = 4;
+
     private static bool started = false;
     public static ulong tickNum = 0;
 
@@ -32,7 +36,15 @@ public partial class GameWorld : Node3D
             world.SetScript(GD.Load<Script>("res://gmp/objects/GMPOBox3DWorld.cs"));
             b3droot = (GMPOBox3DWorld)InstanceFromId(worldId);
             b3droot.debugDraw = false;
+            // Solve each step on Box3D's step thread while the engine renders; results land at the next tick.
+            // Any Box3D call (body API, raycasts, queries) waits for an in-flight step, so make them from
+            // _PhysicsProcess, where the step has had a whole frame to finish, not from _Process.
+            b3droot.asyncStep = true;
+            // Solver threads (Box3D starts and owns them). Box3D does best on performance cores only, so stay well
+            // under the logical core count; at 2000 bodies the solver was too light (~2 ms) to measure a gain.
+            b3droot.workerCount = System.Math.Clamp(System.Environment.ProcessorCount / 2, 1, SolverWorkers);
             AddChild(b3droot);
+            Logging.Log($"Box3D solver workers: {b3droot.workerCount}", "GameWorld");
             // Box3D reports sleep per world, not per body; hand it to the body (it has no matching wake signal).
             b3droot.BodyFellAsleep += body => (body as GMPOBox3DBody)?.OnFellAsleep();
         }
@@ -45,7 +57,7 @@ public partial class GameWorld : Node3D
     public const long QueryHiddenLayer = 1L << 30;
 
     /// <summary>Raycasts against the Box3D physics world. By default ignores <see cref="QueryHiddenLayer"/>.</summary>
-    public static Godot.Collections.Dictionary Raycast(Vector3 from, Vector3 to, long collisionMask = ~QueryHiddenLayer)
+    public static RayHit Raycast(Vector3 from, Vector3 to, long collisionMask = ~QueryHiddenLayer)
     {
         return b3droot.Raycast(from, to, collisionMask);
     }

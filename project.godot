@@ -202,6 +202,7 @@ alternate={
 [physics]
 
 3d/run_on_separate_thread=true
+common/physics_ticks_per_second=30
 common/physics_jitter_fix=0.0
 3d/physics_engine="Dummy"
 common/physics_interpolation=true
@@ -209,4 +210,5 @@ common/physics_interpolation=true
 [rendering]
 
 rendering_device/driver.windows="d3d12"
-anti_aliasing/quality/use_taa=true
+scaling_3d/mode=2
+scaling_3d/scale=0.7999999999999999

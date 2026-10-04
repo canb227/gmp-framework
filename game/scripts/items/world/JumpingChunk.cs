@@ -28,7 +28,7 @@ public partial class JumpingChunk : PhysicalFactoryItem
 
         float angle = (float)(Random.Shared.NextDouble() * Math.Tau);
         Vector3 dv = new(Mathf.Cos(angle) * sidewaysSpeed, hopSpeed, Mathf.Sin(angle) * sidewaysSpeed);
-        float mass = Call("get_mass").AsSingle();
-        Call("apply_central_impulse", [dv * mass]);
+        float mass = this.GetMass();
+        this.ApplyCentralImpulse(dv * mass);
     }
 }

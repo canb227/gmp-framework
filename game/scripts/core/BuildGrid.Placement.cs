@@ -98,6 +98,7 @@ public partial class BuildGrid
 
     public override void _PhysicsProcess(double delta)
     {
+        UpdateHighlight();
         // Decide settled requests in arrival order.
         for (int i = 0; i < pendingPlacements.Count; i++)
         {

@@ -35,7 +35,7 @@ public partial class GMPOBox3DCharacter : Node3D, GMPObject
     {
         // Box3DCharacterBody's move_and_slide queries don't skip sensor shapes, so a character would walk
         // into (and be stopped by) query-hidden sensors such as placement previews. Never collide with them.
-        Set("collision_mask", Get("collision_mask").AsInt64() & ~GameWorld.QueryHiddenLayer);
+        Set(Box3DNames.collisionMask, Get(Box3DNames.collisionMask).AsInt64() & ~GameWorld.QueryHiddenLayer);
     }
 
     public virtual void AfterInit()
@@ -75,16 +75,16 @@ public partial class GMPOBox3DCharacter : Node3D, GMPObject
 
     public Vector3 MoveAndSlide(Vector3 velocity, double delta)
     {
-        return Call("move_and_slide", [velocity, delta]).AsVector3();
+        return Call(Box3DNames.moveAndSlide, [velocity, delta]).AsVector3();
     }
 
     public bool IsOnFloor()
     {
-        return Call("is_on_floor").AsBool();
+        return Call(Box3DNames.isOnFloor).AsBool();
     }
 
     private void Teleport(Vector3 position, Vector3 rotation)
     {
-        Call("teleport", [new Transform3D(Basis.FromEuler(rotation), position)]);
+        Call(Box3DNames.teleport, [new Transform3D(Basis.FromEuler(rotation), position)]);
     }
 }

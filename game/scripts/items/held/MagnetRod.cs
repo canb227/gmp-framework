@@ -171,8 +171,8 @@ public partial class MagnetRod : HeldItem
         capturedItems.RemoveWhere(item => !IsInstanceValid(item) || item.authority != Lobby.selfPeerID);
         foreach (PhysicalFactoryItem item in capturedItems)
         {
-            float mass = item.Call("get_mass").AsSingle();
-            Vector3 velocity = item.Call("get_linear_velocity").AsVector3();
+            float mass = item.GetMass();
+            Vector3 velocity = item.GetLinearVelocity();
             Vector3 accel = (centre - item.GlobalPosition) * spring - velocity * damping - gravity;
             Vector3 force = accel * mass;
             if (force.Length() > maxForce) force = force.Normalized() * maxForce;

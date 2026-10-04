@@ -66,9 +66,9 @@ public class PlacementProbe
         probe.CollectBodies(structure, Transform3D.Identity);
         foreach (var (body, _) in probe.bodies)
         {
-            body.Set("is_sensor", true);
-            body.Set("sensor_events", true);
-            body.Set("collision_layer", GameWorld.QueryHiddenLayer);
+            body.Set(Box3DNames.isSensor, true);
+            body.Set(Box3DNames.sensorEvents, true);
+            body.Set(Box3DNames.collisionLayer, GameWorld.QueryHiddenLayer);
         }
         // Box3D bodies take their pose on entering the tree; park it far away until MoveTo.
         structure.Position = new Vector3(0, -10000, 0);
@@ -80,7 +80,7 @@ public class PlacementProbe
     void CollectBodies(Node node, Transform3D relative)
     {
         // Bodies authored as sensors are machine triggers, not solid: they don't take part in placement.
-        if (node.IsClass("Box3DBody") && !node.Get("is_sensor").AsBool())
+        if (node.IsClass("Box3DBody") && !node.Get(Box3DNames.isSensor).AsBool())
         {
             bodies.Add(((Node3D)node, relative));
         }
@@ -102,7 +102,7 @@ public class PlacementProbe
         root.Basis = root.Basis.Scaled(Vector3.One * SkinScale);
         foreach (var (body, relative) in bodies)
         {
-            body.Call("teleport", [root * relative]);
+            body.Call(Box3DNames.teleport, [root * relative]);
         }
         movedOnFrame = Engine.GetPhysicsFrames();
     }
@@ -113,7 +113,7 @@ public class PlacementProbe
         PlacementBlockers hits = PlacementBlockers.None;
         foreach (var (body, _) in bodies)
         {
-            foreach (Node other in body.Call("get_overlapping_bodies").AsGodotArray<Node>())
+            foreach (Node other in body.Call(Box3DNames.getOverlappingBodies).AsGodotArray<Node>())
             {
                 hits |= Classify(other);
             }
@@ -127,7 +127,7 @@ public class PlacementProbe
         var parts = new List<string>();
         foreach (var (body, _) in bodies)
         {
-            foreach (Node other in body.Call("get_overlapping_bodies").AsGodotArray<Node>())
+            foreach (Node other in body.Call(Box3DNames.getOverlappingBodies).AsGodotArray<Node>())
             {
                 PlacementBlockers c = Classify(other);
                 if ((c & categories) != 0)
