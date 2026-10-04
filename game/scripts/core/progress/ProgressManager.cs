@@ -25,6 +25,7 @@ public partial struct ProgressData
 
 public partial class ProgressManager : Node
 {
+    public static Dictionary<string, int> extraItemStorage = new();
     public static Dictionary<string,Quest> allQuests = new();
     public List<string> completedQuests = new();
 
@@ -47,13 +48,13 @@ public partial class ProgressManager : Node
 
     private void OnItemDespawned(ItemVoid @void, string itemID)
     {
-
+        bool usedForQuest = false;
         foreach (var kvp in currentQuests.ToList())
         {
             Quest quest = kvp.Value;
             if (quest.itemSubmissionObjectives.TryGetValue(itemID, out int required))
             {
-
+                usedForQuest = true;
                 quest.itemSubmissionProgress.TryGetValue(itemID, out int turnedIn);
                 quest.itemSubmissionProgress[itemID] = Math.Min(turnedIn + 1, required);
                 if (AllObjectivesMet(quest))
@@ -62,6 +63,10 @@ public partial class ProgressManager : Node
                 }
                 QuestStateUpdated?.Invoke();
             }
+        }
+        if (!usedForQuest || usedForQuest)
+        {
+            extraItemStorage[itemID] = extraItemStorage.GetValueOrDefault(itemID, 0) + 1;
         }
     }
 

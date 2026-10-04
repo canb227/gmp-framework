@@ -37,7 +37,8 @@ public partial class ShopUI : Control
     private readonly List<(BlueprintItem item, Button row, Label costLabel)> rows = new();
     private BlueprintItem selected;
     private int quantity = 1;
-
+    private static FactoryPlayer LocalPlayer() =>
+    GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
     private VBoxContainer itemList;
     private Label listCount, emptyDetail, detailCategory, detailName, detailStats, detailDescription;
     private Label costName, costEach, costTotal, costHave, freeLabel, quantityLabel;
@@ -333,11 +334,12 @@ public partial class ShopUI : Control
 
     private int HeldCount(string itemID)
     {
-        if (inventory == null || string.IsNullOrEmpty(itemID))
-        {
-            return 0;
-        }
-        return inventory.slots.Where(s => !s.IsEmpty && s.itemID == itemID).Sum(s => s.Count);
+        //if (inventory == null || string.IsNullOrEmpty(itemID))
+        //{
+        //    return 0;
+        //}
+        //return inventory.slots.Where(s => !s.IsEmpty && s.itemID == itemID).Sum(s => s.Count);
+        return ProgressManager.extraItemStorage.GetValueOrDefault(itemID, 0);
     }
 
     private int MaxAffordable()
@@ -412,6 +414,9 @@ public partial class ShopUI : Control
         if (selected != null)
         {
             PurchaseRequested?.Invoke(selected.itemID, quantity);
+            int cost = selected.costAmount * quantity;
+            ProgressManager.extraItemStorage[selected.costItemID] = ProgressManager.extraItemStorage[selected.costItemID] - cost;
+            LocalPlayer().inventory.AddItem(selected.itemID, quantity);
         }
     }
 }

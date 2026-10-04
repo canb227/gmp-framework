@@ -95,6 +95,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         if (!isLocal) return;
 
         if (HandleShopInput(@event)) return;
+        if (HandlePauseInput(@event)) return;
         if (HandleMouseAndMenuInput(@event)) return;
         HandleScrollWheel(@event);
         if (!hud.isOpen && currentInHandItem != null && currentInHandItem.HandleInput(@event)) return;
@@ -104,7 +105,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     }
 
 
-    /// <summary>Mouse capture, mouse look, Escape and the inventory key. Returns true if the event was consumed.</summary>
+    /// <summary>Mouse capture, mouse look, Escape (closes the inventory) and the inventory key. Returns true if the event was consumed.</summary>
     bool HandleMouseAndMenuInput(InputEvent @event)
     {
         if (@event is InputEventMouseButton mb && mb.Pressed && !hud.isOpen)
@@ -112,20 +113,18 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             Input.MouseMode = Input.MouseModeEnum.Captured;
         }
 
-        if (@event is InputEventKey key && key.Pressed && key.Keycode == Key.Escape)
+        // Escape with nothing open is the pause menu's (HandlePauseInput).
+        if (@event is InputEventKey key && key.Pressed && key.Keycode == Key.Escape && hud.isOpen)
         {
-            if (hud.isOpen)
-            {
-                hud.Close();
-                return true;
-            }
-            Input.MouseMode = Input.MouseModeEnum.Visible;
+            hud.Close();
+            return true;
         }
 
         if (@event is InputEventMouseMotion motion && Input.MouseMode == Input.MouseModeEnum.Captured)
         {
-            RotateY(-motion.Relative.X * MouseSensitivity);
-            camera.RotateX(-motion.Relative.Y * MouseSensitivity);
+            float sensitivity = MouseSensitivity * GameSettings.mouseSensitivity;
+            RotateY(-motion.Relative.X * sensitivity);
+            camera.RotateX(-motion.Relative.Y * sensitivity * (GameSettings.invertMouseY ? -1 : 1));
             camera.Rotation = new Vector3(
                 Mathf.Clamp(camera.Rotation.X, Mathf.DegToRad(-89f), Mathf.DegToRad(89f)),
                 camera.Rotation.Y,
@@ -184,13 +183,13 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         {
             Velocity += gravity * (float)delta;
         }
-        else if (Input.IsActionJustPressed("jump") && !isShopOpen)
+        else if (Input.IsActionJustPressed("jump") && !menuHasInput)
         {
             Velocity = Velocity + JumpVector;
         }
 
         // No walking while a menu has the keyboard.
-        Vector2 inputDir = isShopOpen ? Vector2.Zero : Input.GetVector("left", "right", "forward", "backward");
+        Vector2 inputDir = menuHasInput ? Vector2.Zero : Input.GetVector("left", "right", "forward", "backward");
         Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
         if (direction != Vector3.Zero)
         {

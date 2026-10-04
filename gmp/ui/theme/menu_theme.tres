@@ -2,6 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://bbhufd5asngqe" path="res://gmp/ui/theme/toggle_on.svg" id="1_on"]
 [ext_resource type="Texture2D" uid="uid://6t6w8ma5o3rr" path="res://gmp/ui/theme/toggle_off.svg" id="2_off"]
+[ext_resource type="Texture2D" uid="uid://b1cj4ow33p4dw" path="res://gmp/ui/theme/slider_grabber.svg" id="3_grab"]
+[ext_resource type="Texture2D" uid="uid://cgvxct13xsiug" path="res://gmp/ui/theme/slider_grabber_hl.svg" id="4_grab_hl"]
 
 [sub_resource type="StyleBoxFlat" id="avatar"]
 bg_color = Color(0.1, 0.1, 0.11, 1)
@@ -91,6 +93,26 @@ border_color = Color(0.2, 0.2, 0.22, 1)
 [sub_resource type="StyleBoxLine" id="separator"]
 color = Color(0.2, 0.2, 0.22, 1)
 thickness = 2
+
+[sub_resource type="StyleBoxFlat" id="slider_fill"]
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(1, 0.55, 0.05, 1)
+
+[sub_resource type="StyleBoxFlat" id="slider_fill_hl"]
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(1, 0.65, 0.22, 1)
+
+[sub_resource type="StyleBoxFlat" id="slider_track"]
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(0.06, 0.06, 0.07, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.24, 0.24, 0.26, 1)
 
 [sub_resource type="StyleBoxFlat" id="lineedit_focus"]
 draw_center = false
@@ -274,6 +296,12 @@ GridContainer/constants/v_separation = 16
 HBoxContainer/constants/separation = 16
 HSeparator/constants/separation = 24
 HSeparator/styles/separator = SubResource("separator")
+HSlider/icons/grabber = ExtResource("3_grab")
+HSlider/icons/grabber_disabled = ExtResource("3_grab")
+HSlider/icons/grabber_highlight = ExtResource("4_grab_hl")
+HSlider/styles/grabber_area = SubResource("slider_fill")
+HSlider/styles/grabber_area_highlight = SubResource("slider_fill_hl")
+HSlider/styles/slider = SubResource("slider_track")
 HeaderLabel/base_type = &"Label"
 HeaderLabel/colors/font_color = Color(0.5, 0.5, 0.53, 1)
 HeaderLabel/font_sizes/font_size = 22

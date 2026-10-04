@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using static System.Net.Mime.MediaTypeNames;
 
 public partial class ScrapArm : Structure
 {
@@ -52,7 +53,9 @@ public partial class ScrapArm : Structure
 
                 if (itemID != null)
                 {
-                    ItemSpawned?.Invoke(ItemInfo.SpawnInWorld(itemID, dropDestination.GlobalPosition));
+                    Logging.Log($"Spawning item {itemID}", "ScrapArm");
+                    ulong spawned = ItemInfo.SpawnInWorld(itemID, dropDestination.GlobalPosition);
+                    ItemSpawned?.Invoke(spawned);
                 }
             }
         }
@@ -75,13 +78,13 @@ public partial class ScrapArm : Structure
 
         if (frontStructure != null)
         {
-         //   Logging.Log($"front cell {front} contains a structure: {frontStructure.Name}!", "ScrapArm");
+            Logging.Log($"front cell {front} contains a structure: {frontStructure.Name}!", "ScrapArm");
             
 
         }
         if (backStructure != null)
         {
-          //  Logging.Log($"back cell {behind} contains a structure: {backStructure.Name}!", "ScrapArm");
+            Logging.Log($"back cell {behind} contains a structure: {backStructure.Name}!", "ScrapArm");
             if (backStructure is ItemSource source)
             {
                 linkedSource = source;

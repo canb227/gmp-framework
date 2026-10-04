@@ -54,7 +54,7 @@ theme_override_constants/separation = 20
 
 [node name="BackButton" type="Button" parent="Margin/RootVBox/TopBar" unique_id=2116955495]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 96)
+custom_minimum_size = Vector2(200, 84)
 layout_mode = 2
 text = "BACK"
 
@@ -72,18 +72,18 @@ text = "Lobby Debug (LAN)"
 uppercase = true
 
 [node name="TopSpacer" type="Control" parent="Margin/RootVBox/TopBar" unique_id=1139723520]
-custom_minimum_size = Vector2(40, 0)
+custom_minimum_size = Vector2(16, 0)
 layout_mode = 2
 
 [node name="HostButton" type="Button" parent="Margin/RootVBox/TopBar" unique_id=188159228]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(220, 96)
+custom_minimum_size = Vector2(200, 84)
 layout_mode = 2
 text = "HOST"
 
 [node name="JoinButton" type="Button" parent="Margin/RootVBox/TopBar" unique_id=1661852851]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(220, 96)
+custom_minimum_size = Vector2(200, 84)
 layout_mode = 2
 text = "JOIN TO:"
 
@@ -96,7 +96,7 @@ placeholder_text = "IP ADDRESS"
 
 [node name="PortInput" type="LineEdit" parent="Margin/RootVBox/TopBar" unique_id=1400239644]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(240, 0)
+custom_minimum_size = Vector2(170, 0)
 layout_mode = 2
 text = "2272"
 placeholder_text = "PORT"
@@ -110,8 +110,10 @@ size_flags_vertical = 3
 theme_override_constants/separation = 32
 
 [node name="LeftPanel" type="PanelContainer" parent="Margin/RootVBox/Body" unique_id=126224365]
-custom_minimum_size = Vector2(620, 0)
+custom_minimum_size = Vector2(420, 0)
 layout_mode = 2
+size_flags_stretch_ratio = 0.55
+size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="LeftContent" type="VBoxContainer" parent="Margin/RootVBox/Body/LeftPanel" unique_id=1342895945]
@@ -256,6 +258,8 @@ theme_override_constants/separation = 32
 
 [node name="PlayerSection" type="VBoxContainer" parent="Margin/RootVBox/Body/CenterColumn" unique_id=509824508]
 layout_mode = 2
+size_flags_stretch_ratio = 0.9
+size_flags_vertical = 3
 theme_override_constants/separation = 12
 
 [node name="PlayerSectionLabel" type="Label" parent="Margin/RootVBox/Body/CenterColumn/PlayerSection" unique_id=368089220]
@@ -264,8 +268,9 @@ theme_type_variation = &"SectionLabel"
 text = "PLAYERS IN LOBBY"
 
 [node name="PlayerListPanel" type="PanelContainer" parent="Margin/RootVBox/Body/CenterColumn/PlayerSection" unique_id=391168215]
-custom_minimum_size = Vector2(0, 520)
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
+size_flags_vertical = 3
 
 [node name="PlayerScroll" type="ScrollContainer" parent="Margin/RootVBox/Body/CenterColumn/PlayerSection/PlayerListPanel" unique_id=1664749514]
 layout_mode = 2
@@ -320,8 +325,10 @@ layout_mode = 2
 text = "SEND"
 
 [node name="RightPanel" type="PanelContainer" parent="Margin/RootVBox/Body" unique_id=718161323]
-custom_minimum_size = Vector2(620, 0)
+custom_minimum_size = Vector2(420, 0)
 layout_mode = 2
+size_flags_stretch_ratio = 0.55
+size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="RightContent" type="VBoxContainer" parent="Margin/RootVBox/Body/RightPanel" unique_id=1118110457]

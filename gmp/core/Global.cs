@@ -53,6 +53,8 @@ public partial class Global : Node
         Logging.Log($" mkdir user://config/{Global.steamid} | {DirAccess.MakeDirAbsolute("user://config/" + Global.steamid).ToString()}", "FirstTimeSetup");
         Logging.Log($" mkdir user://logs/{Global.steamid}     | {DirAccess.MakeDirAbsolute("user://logs/" + Global.steamid).ToString()}", "FirstTimeSetup");
 
+        GameSettings.LoadAndApply(GetTree().Root);
+
         if (Logging.bSaveLogsToFile)
         {
             Logging.StartLoggingToFile();

@@ -42,8 +42,13 @@ public partial class MainMenu : Control
         Open(LobbyScene);
     }
 
+    /// <summary>The command-line flags are acted on once per run, so leaving a flag-launched lobby or game returns here.</summary>
+    private static bool cmdlineHandled;
+
     private void HandleCmdline()
     {
+        if (cmdlineHandled) return;
+        cmdlineHandled = true;
         bool steam = false, lan = false;
         foreach (string a in OS.GetCmdlineUserArgs())
         {

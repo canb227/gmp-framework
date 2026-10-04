@@ -21,7 +21,13 @@ public partial class InventoryUI : Control
     int _hoveredSlot = -1;
 
     Control inventoryScreen;
+    Control inventoryCenter;
+    Control inventoryPanel;
+    GridContainer inventoryGrid;
     Label heldItemName;
+
+    /// <summary>Inventory grid widths: the square layout, and a wide one (as wide as the hotbar) for short screens.</summary>
+    const int SquareColumns = 5, WideColumns = 10;
     /// <summary>The held-item name currently shown above the hotbar.</summary>
     public string heldItemText => heldItemName.Text;
 
@@ -59,7 +65,10 @@ public partial class InventoryUI : Control
             slotCounts[i] = panel.GetNode<Label>("StackCount");
         }
 
-        var gridContainer = GetNode("InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid");
+        inventoryCenter = GetNode<Control>("InventoryScreen/InventoryCenter");
+        inventoryPanel = GetNode<Control>("InventoryScreen/InventoryCenter/InventoryPanel");
+        var gridContainer = GetNode<GridContainer>("InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid");
+        inventoryGrid = gridContainer;
         for (int i = 0; i < Inventory.TotalSlots - Inventory.HotbarSlots; i++)
         {
             int slotIndex = i + Inventory.HotbarSlots;
@@ -91,6 +100,30 @@ public partial class InventoryUI : Control
 
         inventory.InventoryChanged += RefreshAllSlots;
         RefreshAllSlots();
+        inventoryScreen.Resized += FitInventoryGrid;
+        FitInventoryGrid();
+    }
+
+    /// <summary>
+    /// Uses the square inventory grid when the panel fits above the hotbar, and otherwise lays the same slots out
+    /// <see cref="WideColumns"/> wide (fewer rows), so it fits short windows (720p gets a 960-unit tall screen, see
+    /// <see cref="HiResUI.MinPixelScale"/>).
+    /// </summary>
+    void FitInventoryGrid()
+    {
+        int slots = inventoryGrid.GetChildCount();
+        float slotHeight = ((Control)inventoryGrid.GetChild(0)).GetCombinedMinimumSize().Y;
+        float gap = inventoryGrid.GetThemeConstant("v_separation");
+        float GridHeight(int columns)
+        {
+            int rows = (slots + columns - 1) / columns;
+            return rows * slotHeight + (rows - 1) * gap;
+        }
+        // Everything in the panel apart from the grid: header, rule, padding.
+        float chrome = inventoryPanel.GetCombinedMinimumSize().Y - GridHeight(inventoryGrid.Columns);
+        // The centring area's anchored height (it grows to fit the panel, so its own size can't be used).
+        float available = inventoryScreen.Size.Y + inventoryCenter.OffsetBottom - inventoryCenter.OffsetTop;
+        inventoryGrid.Columns = chrome + GridHeight(SquareColumns) <= available ? SquareColumns : WideColumns;
     }
 
     void OnSlotMouseEntered(int slotIndex)

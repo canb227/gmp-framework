@@ -647,7 +647,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.29345834, 2.08005, -2.7991
 
 [node name="gripLocation" type="BoneAttachment3D" parent="Model/Skeleton/Skeleton3D" unique_id=596231037]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.596456, 0.80264574, 0, -0.80264574, 0.596456, 0, 1.8844663, -2.1591172)
+transform = Transform3D(1, 0, 0, 0, 0.5964569, 0.802645, 0, -0.802645, 0.5964569, 0, 1.8844665, -2.1591172)
 bone_name = "Grip"
 bone_idx = 7
 
