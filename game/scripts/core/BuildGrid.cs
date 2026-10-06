@@ -13,7 +13,7 @@ public partial class BuildGrid : Node3D
     public static BuildGrid instance;
     /// <summary>Debug toggle for the grid lines (console: debugui grid).</summary>
     public static bool enabled = false;
-    /// <summary>Set while the local player holds a blueprint; also shows the grid lines.</summary>
+    /// <summary>Set while the local player holds a blueprint; reveals the grid around the ghost (BuildGrid.Reveal.cs).</summary>
     public static bool placementActive = false;
     public static bool highlightLookedAtCell = false;
     public static Vector3I? highlightedCell = null;
@@ -22,6 +22,8 @@ public partial class BuildGrid : Node3D
     private const float DrawExtent = 200.0f;
     private const float HighlightRaycastRange = 20.0f;
     private const float HighlightEdgeNudge = 0.001f;
+    // Occupied cells the placement ray enters closer than this are ignored when picking a face to snap to.
+    private const float PlacementMinCellDistance = 1.0f;
 
     private static readonly Dictionary<Vector3I, Structure> cells = new();
 
@@ -78,11 +80,13 @@ public partial class BuildGrid : Node3D
         };
 
         AddChild(_highlightMeshInstance);
+        CreateReveal();
     }
 
     public override void _Process(double delta)
     {
-        if (enabled || placementActive)
+        UpdateReveal((float)delta);
+        if (enabled)
         {
             if (!_meshBuilt)
             {
@@ -158,9 +162,10 @@ public partial class BuildGrid : Node3D
     /// Where a structure with footprint <paramref name="offsets"/> (rotated by <paramref name="quarterTurns"/>)
     /// would be anchored when placed by looking along a ray. The ray picks a face:
     /// <list type="bullet">
-    /// <item>If the ray enters a cell occupied by a structure before it hits any collider, it snaps to the face
-    /// of that cell it crossed: whatever the structure's colliders look like (a thin conveyor, a slope), every
-    /// occupied cell presents its full faces, and the target is the cell across that face.</item>
+    /// <item>If the ray crosses cells occupied by a structure before it hits any collider beyond them, it snaps
+    /// to a full face of those cells, whatever the structure's colliders look like (a thin conveyor, a slope):
+    /// the face it entered through if the ray ends inside them, else the face it exits through (see
+    /// <see cref="TryFindOccupiedCellAlongRay"/>). The target is the cell across that face.</item>
     /// <item>Otherwise the target is the cell on the open side of the surface the ray hit (its normal snapped to
     /// the nearest axis, so slopes work).</item>
     /// </list>
@@ -169,27 +174,33 @@ public partial class BuildGrid : Node3D
     /// </summary>
     public static bool TryGetPlacementTarget(Vector3 from, Vector3 direction, float range, IEnumerable<Vector3I> offsets, int quarterTurns, out Vector3I anchor)
     {
+        return TryGetPlacementTarget(from, direction, range, offsets, quarterTurns, out anchor, out _, out _);
+    }
+
+    /// <summary>
+    /// <see cref="TryGetPlacementTarget(Vector3, Vector3, float, IEnumerable{Vector3I}, int, out Vector3I)"/>, also
+    /// giving the face that was picked: <paramref name="target"/> is the empty cell across it and
+    /// <paramref name="normal"/> points out of the surface into that cell.
+    /// </summary>
+    public static bool TryGetPlacementTarget(Vector3 from, Vector3 direction, float range, IEnumerable<Vector3I> offsets, int quarterTurns,
+        out Vector3I anchor, out Vector3I target, out Vector3I normal)
+    {
         anchor = default;
         direction = direction.Normalized();
         var ray = GameWorld.Raycast(from, from + direction * range);
         bool hit = ray.hit;
         float hitDistance = hit ? from.DistanceTo(ray.position) : range;
 
-        Vector3I target, normal;
-        if (TryFindOccupiedCellAlongRay(from, direction, hitDistance, out Vector3I entered, out normal))
+        // A structure's cells crossed by the ray snap to a full face of them; otherwise the cell on the open side
+        // of the surface that was hit.
+        if (!TryFindOccupiedCellAlongRay(from, direction, 2f, hitDistance, out target, out normal))
         {
-            // The ray reached a structure's cell before any collider: snap to the face of that cell it crossed.
-            target = entered + normal;
-        }
-        else if (hit)
-        {
-            // Otherwise the cell on the open side of the surface that was hit.
+            if (!hit)
+            {
+                return false;
+            }
             normal = DominantAxis(ray.normal);
             target = WorldToCell(ray.position + (Vector3)normal * HighlightEdgeNudge);
-        }
-        else
-        {
-            return false;
         }
 
         int rearmost = int.MaxValue;
@@ -203,15 +214,27 @@ public partial class BuildGrid : Node3D
     }
 
     /// <summary>
-    /// Walks the ray cell by cell (Amanatides-Woo voxel traversal) and returns the first cell occupied by a
-    /// structure that it enters within <paramref name="maxDistance"/>, with the normal of the face it entered
-    /// through (pointing back out of that cell). The cell the ray starts in is skipped, so standing inside or
-    /// on a structure's cell doesn't hide its neighbours.
+    /// Walks the ray cell by cell (Amanatides-Woo voxel traversal) up to <paramref name="maxDistance"/> and, at the
+    /// first run of cells occupied by structures that it enters, snaps to a full face of that run, so thin
+    /// structures act like solid cells. <paramref name="target"/> is the empty cell across that face and
+    /// <paramref name="normal"/> points from the run into it:
+    /// <list type="bullet">
+    /// <item>If the ray ends inside the run, the face it entered through, like hitting a solid block.</item>
+    /// <item>If it passes through and out the other side, the face it exits through. Aiming just past a structure
+    /// (over a thin conveyor at the floor in front of it) then lands where the player looks, rather than on
+    /// whichever face the ray happened to clip on the way in.</item>
+    /// </list>
+    /// The cell the ray starts in is skipped, so standing inside or on a structure's cell doesn't hide its
+    /// neighbours, and so is any occupied cell the ray enters closer than <paramref name="minDistance"/>, so
+    /// structures right in front of the camera don't grab the target.
     /// </summary>
-    static bool TryFindOccupiedCellAlongRay(Vector3 from, Vector3 direction, float maxDistance, out Vector3I cell, out Vector3I normal)
+    static bool TryFindOccupiedCellAlongRay(Vector3 from, Vector3 direction, float minDistance, float maxDistance, out Vector3I target, out Vector3I normal)
     {
-        cell = WorldToCell(from);
+        Vector3I cell = WorldToCell(from);
+        target = default;
         normal = default;
+        bool inRun = false;
+        Vector3I runEntryTarget = default, runEntryNormal = default;
         Vector3I step = new(Math.Sign(direction.X), Math.Sign(direction.Y), Math.Sign(direction.Z));
         // Distance along the ray to the next cell boundary on each axis, and between boundaries.
         Vector3 next = default, delta = default;
@@ -232,16 +255,37 @@ public partial class BuildGrid : Node3D
         while (true)
         {
             int axis = next.X < next.Y ? (next.X < next.Z ? 0 : 2) : (next.Y < next.Z ? 1 : 2);
-            if (next[axis] > maxDistance)
+            float entryDistance = next[axis];
+            if (entryDistance > maxDistance)
             {
                 return false;
             }
+            Vector3I previous = cell;
             cell[axis] += step[axis];
             next[axis] += delta[axis];
-            if (GetStructureAt(cell) != null)
+            bool occupied = entryDistance >= minDistance && GetStructureAt(cell) != null;
+
+            if (inRun && !occupied)
             {
+                // Passed through the run and out of it: the face it exits through.
+                target = cell;
                 normal = default;
-                normal[axis] = -step[axis];
+                normal[axis] = step[axis];
+                return true;
+            }
+            if (!inRun && occupied)
+            {
+                inRun = true;
+                runEntryNormal = default;
+                runEntryNormal[axis] = -step[axis];
+                runEntryTarget = previous;
+            }
+            float exitDistance = Mathf.Min(next.X, Mathf.Min(next.Y, next.Z));
+            if (inRun && exitDistance >= maxDistance - HighlightEdgeNudge)
+            {
+                // The ray ends inside the run: the face it entered through.
+                target = runEntryTarget;
+                normal = runEntryNormal;
                 return true;
             }
         }

@@ -5,8 +5,8 @@ using Godot;
 /// <see cref="PlacementProbe"/> of the blueprint's structure where it would be built (face-snapped, see
 /// <see cref="BuildGrid.TryGetPlacementTarget"/>), tinted by whether the placement is allowed, which the
 /// probe's sensors check against the simulation. Structures with a <see cref="Structure.flowArrow"/> (conveyors)
-/// also get a floating arrow showing which way they'll carry items. While shown it turns on the grid lines
-/// (<see cref="BuildGrid.placementActive"/>). Other players' copies stay empty. As a <see cref="HeldItem"/>
+/// also get a floating arrow showing which way they'll carry items. While shown it reveals the grid around itself
+/// and highlights the face it's snapped to (<see cref="BuildGrid.placementActive"/>, BuildGrid.Reveal.cs). Other players' copies stay empty. As a <see cref="HeldItem"/>
 /// it handles its own input: "rotate" turns the preview, "alternate" switches a two-form blueprint (e.g. left/right
 /// turn, uphill/downhill slope) to its other form, and primary builds it (host-arbitrated, see
 /// BuildGrid.Placement.cs). Deconstructing is an interact on a structure (FactoryPlayer.Interaction.cs).
@@ -98,6 +98,8 @@ public partial class BlueprintGhost : HeldItem
         if (isLocal)
         {
             BuildGrid.placementActive = false;
+            BuildGrid.placementFocus = null;
+            BuildGrid.placementFace = null;
         }
     }
 
@@ -145,13 +147,17 @@ public partial class BlueprintGhost : HeldItem
 
         Camera3D camera = player.camera;
         if (!BuildGrid.TryGetPlacementTarget(camera.GlobalPosition, -camera.GlobalTransform.Basis.Z, placeRange,
-                probe.structure.cellOffsets, quarterTurns, out Vector3I anchor))
+                probe.structure.cellOffsets, quarterTurns, out Vector3I anchor, out Vector3I faceCell, out Vector3I faceNormal))
         {
             targetCell = null;
             canPlace = false;
             probe.structure.Visible = false;
+            BuildGrid.placementFocus = null;
+            BuildGrid.placementFace = null;
             return;
         }
+        BuildGrid.placementFocus = FootprintCentre(anchor);
+        BuildGrid.placementFace = (faceCell, faceNormal);
 
         if (targetCell != anchor || probe.quarterTurns != quarterTurns || !probe.structure.Visible)
         {
@@ -167,5 +173,19 @@ public partial class BlueprintGhost : HeldItem
         }
         canPlace = BuildGrid.IsPlacementAllowed(probe, out _);
         material.AlbedoColor = canPlace ? validColor : invalidColor;
+        BuildGrid.placementTint = material.AlbedoColor;
+    }
+
+    // World-space centre of the footprint's bounding box at anchor, where the grid reveal centres.
+    Vector3 FootprintCentre(Vector3I anchor)
+    {
+        Vector3 min = Vector3.Inf, max = -Vector3.Inf;
+        foreach (Vector3I cell in BuildGrid.FootprintCells(anchor, probe.structure.cellOffsets, quarterTurns))
+        {
+            Vector3 c = BuildGrid.CellToWorld(cell);
+            min = min.Min(c);
+            max = max.Max(c);
+        }
+        return (min + max) / 2f;
     }
 }
