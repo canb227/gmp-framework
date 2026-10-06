@@ -26,7 +26,11 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     /// <summary>Walking speed while "sprint" (left Shift) is held, m/s.</summary>
     [Export] public float sprintSpeed = 9.0f;
     public Vector3 JumpVector = new Vector3(0, 5, 0);
-    const float MouseSensitivity = 0.002f;
+    /// <summary>
+    /// Radians of look per screen pixel of mouse movement. Look reads unscaled screen pixels, so this is the same at
+    /// every window size; it matches the old canvas-scaled 0.002 at 3440x1440 (stretched from the 1152x648 base).
+    /// </summary>
+    const float MouseSensitivity = 0.0009f;
 
     public Inventory inventory = new();
 
@@ -40,6 +44,16 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     Label3D playerNameLabel;
     public InventoryUI hud;
 
+    /// <summary>Look pitch in radians; yaw is the body's own rotation.</summary>
+    float lookPitch;
+    /// <summary>The camera's offset from the body as authored in the scene (eye height).</summary>
+    Vector3 cameraOffset;
+    /// <summary>
+    /// True for the local player, whose camera is top-level and out of physics interpolation, posed by
+    /// <see cref="PoseCamera"/>. Interpolated, mouse look only showed up in full at the next 30 Hz physics tick.
+    /// </summary>
+    bool cameraPosed;
+
     /// <summary>True on the peer that controls this player (its authority).</summary>
     public bool isLocal => authority == Lobby.selfPeerID;
 
@@ -48,6 +62,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         base._Ready();
         gravity = gravityDirection * gravityMagnitude;
         camera = GetNode<Camera3D>("Camera3D");
+        cameraOffset = camera.Position;
         itemHolder = camera.GetNode<Node3D>("ItemHolder");
         hud = GetNode<InventoryUI>("PlayerHUD");
         ReadyInteraction();
@@ -61,6 +76,11 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         if (isLocal)
         {
             camera.Current = true;
+            lookPitch = camera.Rotation.X;
+            camera.TopLevel = true;
+            camera.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
+            cameraPosed = true;
+            PoseCamera(false);
             Input.MouseMode = Input.MouseModeEnum.Captured;
             playerNameLabel.Hide();
             body.GetNode<MeshInstance3D>("m").CastShadow=GeometryInstance3D.ShadowCastingSetting.ShadowsOnly;
@@ -122,14 +142,12 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
         if (@event is InputEventMouseMotion motion && Input.MouseMode == Input.MouseModeEnum.Captured)
         {
+            // ScreenRelative, not Relative: Relative is scaled by the canvas stretch, so look speed changed with window size.
             float sensitivity = MouseSensitivity * GameSettings.mouseSensitivity;
-            RotateY(-motion.Relative.X * sensitivity);
-            camera.RotateX(-motion.Relative.Y * sensitivity * (GameSettings.invertMouseY ? -1 : 1));
-            camera.Rotation = new Vector3(
-                Mathf.Clamp(camera.Rotation.X, Mathf.DegToRad(-89f), Mathf.DegToRad(89f)),
-                camera.Rotation.Y,
-                camera.Rotation.Z
-            );
+            RotateY(-motion.ScreenRelative.X * sensitivity);
+            lookPitch = Mathf.Clamp(lookPitch - motion.ScreenRelative.Y * sensitivity * (GameSettings.invertMouseY ? -1 : 1),
+                Mathf.DegToRad(-89f), Mathf.DegToRad(89f));
+            PoseCamera(false);
         }
 
         if (@event.IsActionPressed("inventory"))
@@ -167,9 +185,12 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             return;
         }
 
+        // Gameplay rays and the grab point use where the player actually is this tick, not where it's drawn.
+        PoseCamera(false);
         ApplyGrabForce(delta);
         UpdatePickTarget();
         ApplyMovement(delta);
+        PoseCamera(false);
         if (distanceSinceStepSound > distancePerStepSound)
         {
             //AudioManager.playRandomSound(this.GetPath(), ["res://game/assets/audio/impacts/footstep_concrete_000.ogg", "res://game/assets/audio/impacts/footstep_concrete_001.ogg", "res://game/assets/audio/impacts/footstep_concrete_002.ogg", "res://game/assets/audio/impacts/footstep_concrete_003.ogg", "res://game/assets/audio/impacts/footstep_concrete_004.ogg"],-45);
@@ -211,6 +232,19 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
     }
 
+    /// <summary>
+    /// Poses the local player's camera at eye height with the current look angles, applied at once rather than
+    /// eased in over a physics tick. For drawing (<paramref name="interpolated"/>) it rides the body's interpolated
+    /// position so walking stays smooth; otherwise it sits at the body's actual position, for gameplay rays.
+    /// </summary>
+    void PoseCamera(bool interpolated)
+    {
+        if (!cameraPosed) return;
+        Vector3 origin = interpolated ? GetGlobalTransformInterpolated().Origin : GlobalPosition;
+        Basis yaw = GlobalBasis;
+        camera.GlobalTransform = new Transform3D(yaw * new Basis(Vector3.Right, lookPitch), origin + yaw * cameraOffset);
+    }
+
     // ---- state sync -------------------------------------------------------
 
     public override byte[] GenerateStateUpdate()
@@ -221,7 +255,9 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             isHuman = this.isHuman,
             pos = this.Position,
             rot = this.Rotation,
-            headRot = this.camera.Rotation,
+            // Remote copies keep their camera as a child of the body, so send the pitch alone, not the
+            // top-level camera's world rotation.
+            headRot = cameraPosed ? new Vector3(lookPitch, 0, 0) : this.camera.Rotation,
             vel = this.cachedVel,
             equippedSlot = inventory.ActiveHotbarSlot,
         };
@@ -250,6 +286,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
     public override void _Process(double delta)
     {
+        PoseCamera(true);
         if (displayPlayerDebugInfo && isLocal)
         {
             UpdateDebugUI();
