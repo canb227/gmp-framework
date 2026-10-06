@@ -193,5 +193,10 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
         }
     }
 
+    public virtual void onTurnedIn()
+    {
+        ProgressManager.TurnInForQuest(itemID);
+        ProgressManager.AddResource(itemID, 1);
+    }
 }
 

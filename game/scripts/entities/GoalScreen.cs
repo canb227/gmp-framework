@@ -52,11 +52,11 @@ public partial class GoalScreen : Node3D
 
     private static IEnumerable<Objective> CurrentObjectives()
     {
-        if (ProgressManager.instance?.currentQuests == null)
+        if (ProgressManager.currentQuests == null)
         {
             yield break;
         }
-        foreach (Quest quest in ProgressManager.instance.currentQuests.Values)
+        foreach (Quest quest in ProgressManager.currentQuests.Values)
         {
             if (quest == null)
             {

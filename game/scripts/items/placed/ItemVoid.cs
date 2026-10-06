@@ -34,6 +34,7 @@ public partial class ItemVoid : Structure
             // Raised before the despawn so handlers can still read the item.
             ItemDespawned?.Invoke(item.itemID);
             AnyItemDespawned?.Invoke(this, item.itemID);
+            item.onTurnedIn();
             // Despawn runs synchronously here, so the item leaves syncedObjs and isn't seen again.
             GameWorld.DespawnObject(item.id);
             despawnedCount++;

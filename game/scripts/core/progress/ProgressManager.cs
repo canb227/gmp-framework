@@ -27,9 +27,9 @@ public partial class ProgressManager : Node
 {
     public static Dictionary<string, int> extraItemStorage = new();
     public static Dictionary<string,Quest> allQuests = new();
-    public List<string> completedQuests = new();
+    public static List<string> completedQuests = new();
 
-    public Dictionary<string, Quest> currentQuests = new();
+    public static Dictionary<string, Quest> currentQuests = new();
     public static ProgressManager instance;
 
     public static event Action QuestStateUpdated;
@@ -48,26 +48,26 @@ public partial class ProgressManager : Node
 
     private void OnItemDespawned(ItemVoid @void, string itemID)
     {
-        bool usedForQuest = false;
-        foreach (var kvp in currentQuests.ToList())
-        {
-            Quest quest = kvp.Value;
-            if (quest.itemSubmissionObjectives.TryGetValue(itemID, out int required))
-            {
-                usedForQuest = true;
-                quest.itemSubmissionProgress.TryGetValue(itemID, out int turnedIn);
-                quest.itemSubmissionProgress[itemID] = Math.Min(turnedIn + 1, required);
-                if (AllObjectivesMet(quest))
-                {
-                    CompleteQuest(kvp.Key);
-                }
-                QuestStateUpdated?.Invoke();
-            }
-        }
-        if (!usedForQuest || usedForQuest)
-        {
-            extraItemStorage[itemID] = extraItemStorage.GetValueOrDefault(itemID, 0) + 1;
-        }
+    //    bool usedForQuest = false;
+    //    foreach (var kvp in currentQuests.ToList())
+    //    {
+    //        Quest quest = kvp.Value;
+    //        if (quest.itemSubmissionObjectives.TryGetValue(itemID, out int required))
+    //        {
+    //            usedForQuest = true;
+    //            quest.itemSubmissionProgress.TryGetValue(itemID, out int turnedIn);
+    //            quest.itemSubmissionProgress[itemID] = Math.Min(turnedIn + 1, required);
+    //            if (AllObjectivesMet(quest))
+    //            {
+    //                CompleteQuest(kvp.Key);
+    //            }
+    //            QuestStateUpdated?.Invoke();
+    //        }
+    //    }
+    //    if (!usedForQuest || usedForQuest)
+    //    {
+    //        extraItemStorage[itemID] = extraItemStorage.GetValueOrDefault(itemID, 0) + 1;
+    //    }
     }
 
 
@@ -85,7 +85,7 @@ public partial class ProgressManager : Node
     }
 
 
-    public void CompleteQuest(string questID)
+    public static void CompleteQuest(string questID)
     {
         if (!currentQuests.TryGetValue(questID, out Quest quest))
         {
@@ -113,7 +113,7 @@ public partial class ProgressManager : Node
         QuestStateUpdated?.Invoke();
     }
 
-    public void loadQuestsFromFile()
+    public static void loadQuestsFromFile()
     {
         allQuests.Clear();
         string[] questFiles = ResourceLoader.ListDirectory("res://game/definitions/quests/");
@@ -131,4 +131,26 @@ public partial class ProgressManager : Node
 
     }
 
+    internal static void TurnInForQuest(string itemID)
+    {
+        foreach (var kvp in currentQuests.ToList())
+        {
+            Quest quest = kvp.Value;
+            if (quest.itemSubmissionObjectives.TryGetValue(itemID, out int required))
+            {
+                quest.itemSubmissionProgress.TryGetValue(itemID, out int turnedIn);
+                quest.itemSubmissionProgress[itemID] = Math.Min(turnedIn + 1, required);
+                if (AllObjectivesMet(quest))
+                {
+                    CompleteQuest(kvp.Key);
+                }
+                QuestStateUpdated?.Invoke();
+            }
+        }
+    }
+
+    internal static void AddResource(string itemID, int v)
+    {
+        extraItemStorage[itemID] = extraItemStorage.GetValueOrDefault(itemID, 0) + v;
+    }
 }

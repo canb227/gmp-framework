@@ -33,7 +33,7 @@ public static class QuestsDebug
         }
 
         ImGui.Checkbox("Show all quests", ref showAllQuests);
-        ImGui.Text($"Current: {progress.currentQuests.Count} | Completed: {progress.completedQuests.Count} | Defined: {ProgressManager.allQuests.Count}");
+        ImGui.Text($"Current: {ProgressManager.currentQuests.Count} | Completed: {ProgressManager.completedQuests.Count} | Defined: {ProgressManager.allQuests.Count}");
         ImGui.Separator();
 
         if (showAllQuests)
@@ -51,7 +51,7 @@ public static class QuestsDebug
     private static void RenderCurrentAndCompleted(ProgressManager progress)
     {
         // Copy: Complete changes currentQuests mid-loop.
-        foreach (var (questID, quest) in progress.currentQuests.ToList())
+        foreach (var (questID, quest) in ProgressManager.currentQuests.ToList())
         {
             ImGui.PushID(questID);
             if (ImGui.CollapsingHeader($"{quest.questName ?? questID}###{questID}", ImGuiTreeNodeFlags.DefaultOpen))
@@ -60,14 +60,14 @@ public static class QuestsDebug
             }
             ImGui.PopID();
         }
-        if (progress.currentQuests.Count == 0)
+        if (ProgressManager.currentQuests.Count == 0)
         {
             ImGui.TextDisabled("No current quests.");
         }
 
-        if (ImGui.CollapsingHeader($"Completed ({progress.completedQuests.Count})"))
+        if (ImGui.CollapsingHeader($"Completed ({ProgressManager.completedQuests.Count})"))
         {
-            foreach (string questID in progress.completedQuests)
+            foreach (string questID in ProgressManager.completedQuests)
             {
                 ImGui.BulletText(questID);
             }
@@ -78,8 +78,8 @@ public static class QuestsDebug
     {
         foreach (var (questID, quest) in ProgressManager.allQuests.OrderBy(kv => kv.Key).ToList())
         {
-            bool active = progress.currentQuests.ContainsKey(questID);
-            string status = active ? "ACTIVE" : progress.completedQuests.Contains(questID) ? "COMPLETED" : "LOCKED";
+            bool active = ProgressManager.currentQuests.ContainsKey(questID);
+            string status = active ? "ACTIVE" : ProgressManager.completedQuests.Contains(questID) ? "COMPLETED" : "LOCKED";
             ImGui.PushID(questID);
             if (ImGui.CollapsingHeader($"{quest.questName ?? questID}  [{status}]###{questID}"))
             {
@@ -100,7 +100,7 @@ public static class QuestsDebug
         ImGui.BeginDisabled(!active);
         if (ImGui.Button("Complete quest"))
         {
-            progress.CompleteQuest(questID);
+            ProgressManager.CompleteQuest(questID);
         }
         ImGui.EndDisabled();
         ImGui.SameLine();
