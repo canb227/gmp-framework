@@ -1073,7 +1073,7 @@ public partial class LobbyDebug : Control
             // body was placed at the built cell rather than left at the origin.
             Vector3 centre = BuildGrid.CellToWorld(TestBuildCell);
             var ray = GameWorld.Raycast(centre + Vector3.Up * BuildGrid.CellSize, centre);
-            bool hitsStructure = ray.hit && BuildGrid.FindStructure(ray.collider) != null;
+            bool hitsStructure = ray.hit && BuildGrid.FindStructure(ray) != null;
             _buildSnapshot = $"{TestBlockCounts()}{(hitsStructure ? "" : "(no collision)")}";
 
             Vector3I[] longBlock = [Vector3I.Zero, new Vector3I(1, 0, 0)];
@@ -1142,7 +1142,7 @@ public partial class LobbyDebug : Control
                 Vector3 at = BuildGrid.CellToWorld(anchor + new Vector3I(c.X, 0, c.Z)) with { Y = 0 };
                 var ray = GameWorld.Raycast(at + Vector3.Up * 10, at + Vector3.Down * 10);
                 clear = ray.hit && Mathf.Abs(ray.position.Y) <= 0.01f
-                    && BuildGrid.FindStructure(ray.collider) == null;
+                    && BuildGrid.FindStructure(ray) == null;
             }
             if (clear)
             {

@@ -39,6 +39,7 @@ public partial class BuildGrid
         }
         pendingPlacements.Clear();
         collisionRefusals = 0;
+        ResetBeltLines();
     }
 
     /// <summary>True if the grid cells are free and the probe's overlaps include nothing in <see cref="placementBlockers"/>.</summary>
@@ -99,6 +100,7 @@ public partial class BuildGrid
     public override void _PhysicsProcess(double delta)
     {
         UpdateHighlight();
+        UpdateBeltLines();
         // Decide settled requests in arrival order.
         for (int i = 0; i < pendingPlacements.Count; i++)
         {

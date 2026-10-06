@@ -1,7 +1,8 @@
 """
-Scenes for the conveyor families: basic additions (splitter, switch splitter, loader), advanced conveyors and
-magnetic conveyors (floor / wall / ceiling forms). Colliders follow build_conveyor_extras.py,
-build_conveyors_advanced.py and build_conveyors_magnetic.py.
+Scenes for the conveyor families: basic conveyors and additions (splitter, switch splitter, loader), advanced
+conveyors and magnetic conveyors (floor / wall / ceiling forms). Colliders follow build_conveyors.py,
+build_conveyor_extras.py, build_conveyors_advanced.py and build_conveyors_magnetic.py. Unlike machines' belts,
+these belts expose their return run underneath (ret=True).
 """
 import math
 from scenegen import *
@@ -21,18 +22,23 @@ def lips(sc, prof, st, sides=(-1, 1)):
 
 def straight_cols(sc, speed, wall_top):
     prof = straight_profile()
-    belt_along(sc, prof, [0, 2], speed)
+    belt_along(sc, prof, [0, 2], speed, ret=True)
     for side in (-1, 1):
         walls_along(sc, prof, [0, 2], wall_top, side)
 
-def belt_speed(sc, speed):
-    if speed != 2.0:
-        sc.model_prop("Belt", f"instance_shader_parameters/belt_speed = {f(speed)}")
+def belt_speed(sc, speed, mirrored=False):
+    """Instance parameters of the model's belt mesh (ConveyorBeltLoop.gdshader): its speed, and whether the model is
+    a mirrored build whose belt u runs right to left across the flow (the left turns), so the line pattern can
+    match it to its neighbours."""
+    props = [f"instance_shader_parameters/belt_speed = {ff(speed)}" if speed != 2.0 else None,
+             "instance_shader_parameters/belt_mirror_u = 1.0" if mirrored else None]
+    if any(props):
+        sc.model_prop("Belt", *props)
 
 # ---------------------------------------------------------------------------- basic additions
 def splitter_common(sc, front_h):
     prof = straight_profile()
-    belt_along(sc, prof, [0, 2], BASIC_SPEED)
+    belt_along(sc, prof, [0, 2], BASIC_SPEED, ret=True)
     lips(sc, prof, [0, 2])
     for side in (-1, 1):
         walls_along(sc, prof, [0, 1], BASIC_WALL, side, lips=False)          # guards on the back half only
@@ -74,7 +80,7 @@ def loader_cols(sc, speed, wall_top):
     prof, L, flat, ls = bend_up_profile(**LOADER)
     bend = flat + LOADER["R"] * LOADER["th"]
     st = stations([(0, flat, 1), (flat, bend, 6), (bend, L, 1)])
-    belt_along(sc, prof, st, speed, y_bounds=(-1, 1))
+    belt_along(sc, prof, st, speed, y_bounds=(-1, 1), ret=True)
     for side in (-1, 1):
         walls_along(sc, prof, stations([(0, flat, 1), (flat, bend, 3), (bend, L, 1)]), wall_top, side, y_bounds=(-1, 1))
     return prof, L
@@ -86,43 +92,18 @@ def loader():
     loader_cols(sc, BASIC_SPEED, BASIC_WALL)
     return sc.write("game/scenes/structures/conveyors/ConveyorLoader.tscn")
 
-# ---------------------------------------------------------------------------- turns (curved belt as a mesh shape)
+# ---------------------------------------------------------------------------- turns
 def turn_scene(name, model, imp, blueprint, left, speed, wall_top, xf=None, post_h=None):
-    """As gen_colliders.turn(): the root is a mesh shape whose triangles each carry their own tangent velocity
-    along the arc; the guard arcs and lips are boxes on a child Rails body."""
+    """A quarter turn: the belt follows the radius-1 arc from the back face to the side face (left or right), and
+    the guard arcs and lips are boxes on the root."""
     mx = -1 if left else 1
-    N = 16
-    r_in, r_out = 1 - BELT_W, 1 + BELT_W
     P = lambda r, th, y: (mx * (1 - r * math.cos(th)), y, 1 - r * math.sin(th))
-    verts, idx, mats, surf = [], [], [], []
-    R = xf or IDENT
-    for layer, (y, sign) in enumerate(((BELT_TOP, 1), (RET_Y, -1))):
-        for i in range(N):
-            t0, t1 = math.pi / 2 * i / N, math.pi / 2 * (i + 1) / N
-            tm = (t0 + t1) / 2
-            b = len(verts)
-            verts += [P(r_in, t0, y), P(r_out, t0, y), P(r_out, t1, y), P(r_in, t1, y)]
-            for tri in ((0, 1, 2), (0, 2, 3)):
-                a, c, d = (verts[b + j] for j in tri)
-                n_y = (c[2] - a[2]) * (d[0] - a[0]) - (c[0] - a[0]) * (d[2] - a[2])
-                tri = tri if (n_y > 0) == (sign > 0) else (tri[0], tri[2], tri[1])
-                idx += [b + j for j in tri]
-                mats.append(layer * N + i)
-            vx, vz = speed * math.sin(tm), -speed * math.cos(tm)
-            surf.append(mat_vec(R, (mx * vx * sign, 0, vz * sign)))
-    verts = [mat_vec(R, v) for v in verts]
-    sm = ", ".join('{"custom_color": 0, "friction": %s, "restitution": 0.0, "rolling_resistance": 0.0, "tangent_velocity": %s, "user_material_id": %d}'
-                   % (f(BELT_FRICTION), v3(t), TAG_RUBBER) for t in surf)
     sc = Scene(name, model, imp, xf=xf)
-    sc.root("structure", blueprint, arrow=0 if xf else (2 if left else 3), tags=(TAG_RUBBER,), extra=[
-        "shape_type = 6",
-        "mesh_vertices = PackedVector3Array(" + ", ".join(f"{f(a)}, {f(b)}, {f(c)}" for a, b, c in verts) + ")",
-        "mesh_indices = PackedInt32Array(" + ", ".join(str(i) for i in idx) + ")",
-        "mesh_materials = PackedByteArray(" + ", ".join(str(m) for m in mats) + ")",
-        f"surface_materials = Array[Dictionary]([{sm}])"])
+    sc.root("structure", blueprint, arrow=0 if xf else (2 if left else 3), tags=(TAG_RUBBER,))
     sc.model()
-    belt_speed(sc, speed)
-    sc.body("Rails")
+    belt_speed(sc, speed, mirrored=left)    # the left turn models are built mirrored
+    arc_pts = [P(1, math.pi / 2 * i / 64, BELT_TOP) for i in range(65)]
+    sc.belt(simplify(arc_pts), speed, ret=True)
     def arc(prefix, r0, r1, y0, y1, n):
         rc = (r0 + r1) / 2
         for i in range(n):
@@ -134,12 +115,12 @@ def turn_scene(name, model, imp, blueprint, left, speed, wall_top, xf=None, post
                 tc += (trim / 2 / rc) * (1 if i == 0 else -1)
             x, y, z = P(rc, tc, (y0 + y1) / 2)
             ry = mx * (math.pi - tc) if mx > 0 else -(math.pi - tc)
-            sc.box(f"{prefix}{i}", (r1 - r0, y1 - y0, ln), (x, y, z), rot_y(ry), parent="Rails", friction=WALL_FRICTION)
+            sc.box(f"{prefix}{i}", (r1 - r0, y1 - y0, ln), (x, y, z), rot_y(ry), friction=WALL_FRICTION)
     arc("WallOuter", 1 + WALL_X[0], 1 + WALL_X[1], BELT_TOP - 0.15, BELT_TOP + wall_top, 8)
     arc("LipOuter", 1 + LIP_X[0], 1 + LIP_X[1], BELT_TOP + LIP_O[0], BELT_TOP + LIP_O[1], 8)
     arc("LipInner", 1 - LIP_X[1], 1 - LIP_X[0], BELT_TOP + LIP_O[0], BELT_TOP + LIP_O[1], 3)
     ph = post_h or wall_top
-    sc.box("PivotPost", (0.12, ph + 0.15, 0.12), (mx * 0.93, BELT_TOP + (ph - 0.15) / 2, 0.93), parent="Rails", friction=WALL_FRICTION)
+    sc.box("PivotPost", (0.12, ph + 0.15, 0.12), (mx * 0.93, BELT_TOP + (ph - 0.15) / 2, 0.93), friction=WALL_FRICTION)
     return sc
 
 # ---------------------------------------------------------------------------- slopes
@@ -151,24 +132,38 @@ def slope_scene(name, model, imp, blueprint, down, speed, wall_top):
     sc.root("structure", blueprint, cells=((0, 0, 0), (0, 0, -1), (0, 1, 0), (0, 1, -1)), arrow=4 if down else 1, tags=(TAG_RUBBER,))
     sc.model()
     if down or speed != 2.0:
-        sc.model_prop("Belt", f"instance_shader_parameters/belt_speed = {f(-speed if down else speed)}")
+        sc.model_prop("Belt", f"instance_shader_parameters/belt_speed = {ff(-speed if down else speed)}")
     prof, L = slope_profile()
     a1 = SLOPE_R * SLOPE_TH
-    st = stations([(0, a1, 6), (a1, a1 + SLOPE_LS, 1), (a1 + SLOPE_LS, L, 6)])
-    for i in range(len(st) - 1):
-        mid_ph = (prof(st[i])[1] + prof(st[i + 1])[1]) / 2
-        v = speed if down else speed * (1 + 0.5 * mid_ph / SLOPE_TH)       # grippier, faster climb (as the basic slope)
-        v = -v if down else v
-        seg_b(sc, f"BeltTop{i}", prof, st[i], st[i + 1], 0, 2 * BELT_W, -TOP_T, 0, speed=v, friction=SLOPE_FRICTION,
-              material=TAG_RUBBER, y_bounds=(-1, 3))
-        seg_b(sc, f"BeltReturn{i}", prof, st[i], st[i + 1], 0, 2 * LIP_X[0], -BELT_H, -BELT_H + RET_T, ref_top=False,
-              speed=-v, friction=SLOPE_FRICTION, material=TAG_RUBBER, y_bounds=(-1, 3))
+    # grippier, and the climb pushes up to half as fast again on the 30 deg incline (the down slope just runs back)
+    belt_along(sc, prof, [0, L], speed, friction=SLOPE_FRICTION, climb=None if down else speed * 1.5, reverse=down, ret=True)
     wst = stations([(0, a1, 3), (a1, a1 + SLOPE_LS, 1), (a1 + SLOPE_LS, L, 3)])
     for side in (-1, 1):
         walls_along(sc, prof, wst, wall_top, side, y_bounds=(-1, 3))
     return sc
 
 # ---------------------------------------------------------------------------- families
+def basic():
+    """The salvage conveyors (models from build_conveyors.py): straight, turns and slopes."""
+    out = []
+    M = "res://game/assets/models/conveyors/"
+    D = "game/scenes/structures/conveyors/"
+    sc = Scene("Conveyor", M + "conveyor_straight.glb", BASIC_IMPORT)
+    sc.root("structure", "blueprint_conveyor", arrow=1, tags=(TAG_RUBBER,))
+    sc.model()
+    straight_cols(sc, BASIC_SPEED, BASIC_WALL)
+    out.append(sc.write(D + "Conveyor.tscn"))
+    for left in (False, True):
+        side = "Left" if left else "Right"
+        sc = turn_scene(f"ConveyorTurn{side}", M + f"conveyor_turn_{side.lower()}.glb", BASIC_IMPORT,
+                        "blueprint_conveyor_turn", left, BASIC_SPEED, BASIC_WALL)
+        out.append(sc.write(D + f"ConveyorTurn{side}.tscn"))
+    for down in (False, True):
+        nm = "ConveyorSlopeDown" if down else "ConveyorSlope"
+        sc = slope_scene(nm, M + "conveyor_slope.glb", BASIC_IMPORT, "blueprint_conveyor_slope", down, BASIC_SPEED, BASIC_WALL)
+        out.append(sc.write(D + nm + ".tscn"))
+    return out
+
 def basic_extras():
     return [splitter(), splitter_switch(), loader()]
 

@@ -300,6 +300,23 @@ public partial class BuildGrid : Node3D
         return new Vector3I(0, 0, Math.Sign(v.Z));
     }
 
+    /// <summary>
+    /// The Structure a ray hit, or null. Like <see cref="FindStructure(Node)"/>, but a hit on a merged belt line
+    /// (BuildGrid.Belts.cs) resolves to the structure owning the cell just behind the hit surface.
+    /// </summary>
+    public static Structure FindStructure(in RayHit hit)
+    {
+        if (!hit.hit)
+        {
+            return null;
+        }
+        if (IsBeltLine(hit.collider))
+        {
+            return GetStructureAt(WorldToCell(hit.position - hit.normal * 0.02f));
+        }
+        return FindStructure(hit.collider);
+    }
+
     /// <summary>The Structure a collider belongs to (it may be a child body), or null.</summary>
     public static Structure FindStructure(Node node)
     {

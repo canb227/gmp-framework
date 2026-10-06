@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://iwtiiq1kan13" path="res://game/assets/models/machines/processing/polisher.glb" id="1_r"]
 [ext_resource type="Script" uid="uid://bbkovbjsnajma" path="res://game/scripts/items/placed/Grinder.cs" id="2_r"]
 [ext_resource type="Script" uid="uid://de6ss1gh7mjqf" path="res://game/scripts/entities/Spinner.cs" id="3_r"]
+[ext_resource type="Script" uid="uid://djjc1nh5u0bg" path="res://game/scripts/items/placed/ConveyorBelt.cs" id="4_r"]
 
 [node name="Polisher" type="Box3DBody" node_paths=PackedStringArray("hopperTrigger")]
 body_type = 0
@@ -39,19 +40,13 @@ script = ExtResource("3_r")
 axis = Vector3(0, 1, 0)
 speed = 12.0
 
-[node name="BeltTop0" type="Box3DCollisionShape" parent="."]
-box_size = Vector3(1.68, 0.04, 4)
+[node name="Belt" type="Node3D" parent="."]
+script = ExtResource("4_r")
+points = PackedVector3Array(0, -0.85, 1, 0, -0.85, -3)
+visual = NodePath("../Model/Belt")
+width = 1.68
+speed = 2.0
 friction = 0.8
-user_material_id = 5
-tangent_velocity = Vector3(0, 0, -2)
-position = Vector3(0, -0.87, -1)
-
-[node name="BeltReturn0" type="Box3DCollisionShape" parent="."]
-box_size = Vector3(1.624, 0.03, 4)
-friction = 0.8
-user_material_id = 5
-tangent_velocity = Vector3(0, 0, 2)
-position = Vector3(0, -0.92, -1)
 
 [node name="LipL0" type="Box3DCollisionShape" parent="."]
 box_size = Vector3(0.03, 0.055, 4)

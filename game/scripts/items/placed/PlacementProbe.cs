@@ -156,6 +156,10 @@ public class PlacementProbe
             {
                 return PlacementBlockers.None; // another probe (e.g. a pending host check)
             }
+            if (BuildGrid.IsBeltLine(n))
+            {
+                return PlacementBlockers.StaticObjects; // structures' belts, merged into lines
+            }
             switch (n)
             {
                 case Structure:

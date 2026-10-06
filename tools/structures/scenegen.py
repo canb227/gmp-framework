@@ -5,7 +5,7 @@ Frames: collider geometry is mostly described in the Blender frame the models we
 and converted with b2g(): Godot = (x, z, -y). The scene root is the anchor cell's centre, as in the models.
 Transform3D text is written row-major (Godot's Basis rows), matching the existing scenes.
 """
-import os, json, struct, math, random, hashlib
+import os, re, json, struct, math, random, hashlib
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SENSOR_LAYER = 1073741824        # layer the machines' trigger sensors use (see Grinder.tscn)
@@ -18,6 +18,7 @@ SCRIPTS = {                      # res path -> uid (read from the .uid files whe
     "spinner": "res://game/scripts/entities/Spinner.cs",
     "lever": "res://game/scripts/entities/Lever.cs",
     "oscillator": "res://game/scripts/entities/Oscillator.cs",
+    "belt": "res://game/scripts/items/placed/ConveyorBelt.cs",
 }
 
 def res_to_abs(res):
@@ -180,6 +181,7 @@ class Scene:
     def __init__(self, name, model_res=None, import_script=None, xf=None, xo=(0, 0, 0)):
         self.name = name
         self.ext_lines, self.ext_ids, self.nodes = [], {}, []
+        self.belt_count = 0
         self.xf = xf or IDENT
         self.xo = xo                    # translation applied after xf (e.g. turning about the footprint centre)
         self.model_res = model_res
@@ -285,13 +287,45 @@ class Scene:
         props.append(f"position = {v3(p)}" if is_ident(m) else f"transform = {xform_text(m, p)}")
         self.node(header, *props)
 
+    def belt(self, points_g, speed, friction=None, climb=None, width=None, ret=False, ret_width=None, ret_depth=None, normal_g=(0, 1, 0), prefix="", visual="Belt"):
+        """A ConveyorBelt: the carrying surface's centreline (Godot frame, in flow order) and how it moves. It has no
+        collider of its own; the build grid merges belts whose ends meet into seamless lines (BuildGrid.Belts.cs).
+        ret: the belt exposes its return run underneath (the conveyor families do; machines' belts don't).
+        visual: name of the model's belt mesh, whose scrolling pattern the line keeps continuous across pieces."""
+        pts = [add(mat_vec(self.xf, p), self.xo) for p in points_g]
+        n = mat_vec(self.xf, normal_g)
+        name = f"{prefix}Belt" + (str(self.belt_count) if self.belt_count else "")
+        self.belt_count += 1
+        props = [f'script = ExtResource("{self.script("belt")}")',
+                 "points = PackedVector3Array(" + ", ".join(f"{f(a)}, {f(b)}, {f(c)}" for a, b, c in pts) + ")"]
+        if any(abs(x - y) > 1e-9 for x, y in zip(n, (0, 1, 0))):
+            props.append(f"normal = {v3(n)}")
+        mesh_path = next((p for p in sorted(self.model_nodes) if visual and (p == visual or p.endswith("/" + visual))), None)
+        if mesh_path:
+            props.append(f'visual = NodePath("../Model/{mesh_path}")')
+        props += [f"width = {ff(width if width is not None else 2 * BELT_W)}",
+                  f"speed = {ff(speed)}",
+                  f"climbSpeed = {ff(climb)}" if climb else None,
+                  f"friction = {ff(friction if friction is not None else BELT_FRICTION)}"]
+        if ret:
+            props += [f"returnDepth = {ff(ret_depth if ret_depth is not None else BELT_H)}",
+                      f"returnWidth = {ff(ret_width if ret_width is not None else 2 * LIP_X[0])}"]
+        self.node(f'[node name="{name}" type="Node3D" parent="."]', *props)
+
     def sensor_b(self, name, center, size, parent="."):
         self.body(name, b2g(center) if parent == "." else center, sensor=True, size=(size[0], size[2], size[1]), parent=parent)
 
     def write(self, rel_path):
         path = os.path.join(REPO, rel_path)
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        text = "\n".join(["[gd_scene format=3]", ""] + self.ext_lines + [""] + self.nodes).rstrip() + "\n"
+        # keep a uid the editor has given the scene, so references to it by uid still resolve
+        header = "[gd_scene format=3]"
+        if os.path.exists(path):
+            first = open(path, encoding="utf-8").readline()
+            m = re.search(r'uid="([^"]+)"', first)
+            if m:
+                header = f'[gd_scene format=3 uid="{m.group(1)}"]'
+        text = "\n".join([header, ""] + self.ext_lines + [""] + self.nodes).rstrip() + "\n"
         open(path, "w", newline="\n").write(text)
         return rel_path
 
@@ -379,13 +413,33 @@ def stations(runs):
             out.add(round(s0 + (s1 - s0) * i / n, 6))
     return sorted(out)
 
-def belt_along(sc, prof, st, speed, friction=BELT_FRICTION, prefix="", y_bounds=None):
-    """Belt top surface (moving forward) and return run (moving back, facing down) along a profile."""
-    for i in range(len(st) - 1):
-        seg_b(sc, f"{prefix}BeltTop{i}", prof, st[i], st[i + 1], 0, 2 * BELT_W, -TOP_T, 0,
-              speed=speed, friction=friction, material=TAG_RUBBER, y_bounds=y_bounds)
-        seg_b(sc, f"{prefix}BeltReturn{i}", prof, st[i], st[i + 1], 0, 2 * LIP_X[0], -BELT_H, -BELT_H + RET_T,
-              ref_top=False, speed=-speed, friction=friction, material=TAG_RUBBER, y_bounds=y_bounds)
+BELT_SAG = 0.008   # how far a belt's simplified path may cut inside its curve (m)
+
+def simplify(points, tol=BELT_SAG):
+    """Douglas-Peucker: the fewest of `points` (always keeping both ends) that stay within tol of the rest. The
+    belt colliders follow the model's curves only this closely: smoother for items, and plenty for the eye."""
+    if len(points) < 3:
+        return list(points)
+    a, b = points[0], points[-1]
+    ab = sub(b, a); lab = length(ab)
+    def dist(p):
+        ap = sub(p, a)
+        return length(cross(ab, ap)) / lab if lab > 1e-12 else length(ap)
+    i, d = max(((k, dist(points[k])) for k in range(1, len(points) - 1)), key=lambda t: t[1])
+    if d <= tol:
+        return [a, b]
+    return simplify(points[:i + 1], tol)[:-1] + simplify(points[i:], tol)
+
+def profile_points(prof, s0, s1, step=0.02):
+    """Godot-frame points along the middle of a profile's belt surface from s0 to s1, finely sampled."""
+    n = max(1, int(math.ceil((s1 - s0) / step)))
+    return [b2g((0,) + tuple(prof(s0 + (s1 - s0) * i / n)[0])) for i in range(n + 1)]
+
+def belt_along(sc, prof, st, speed, friction=BELT_FRICTION, prefix="", y_bounds=None, climb=None, reverse=False, ret=False):
+    """A belt along a profile, from its first station to its last (reverse: the other way). The path is resampled
+    and simplified (see simplify), so the stations only need to bound it. ret: expose the return run underneath."""
+    pts = simplify(profile_points(prof, st[0], st[-1]))
+    sc.belt(pts[::-1] if reverse else pts, speed, friction=friction, climb=climb, ret=ret, prefix=prefix)
 
 def walls_along(sc, prof, st, wall_top, side, prefix="", lips=True, y_bounds=None):
     """One side's guard wall (stringer + panels, up to wall_top above the belt) and underside lip."""

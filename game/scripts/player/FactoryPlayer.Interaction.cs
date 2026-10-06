@@ -89,7 +89,7 @@ public partial class FactoryPlayer
             hoverInfoBelow.Show();
             hoverInfoBelow.Text = testbedButton.prompt;
         }
-        else if (BuildGrid.FindStructure(hit) is Structure structure)
+        else if (BuildGrid.FindStructure(ray) is Structure structure)
         {
             pickTarget = structure;
             hoverInfoName.Show();

@@ -13,6 +13,7 @@ from scenegen import REPO, mat_mul, mat_vec, add, IDENT
 import scenes_conveyors
 
 FAMILIES = [
+    ("basic conveyors", scenes_conveyors.basic),
     ("conveyor additions", scenes_conveyors.basic_extras),
     ("advanced conveyors", scenes_conveyors.advanced),
     ("magnetic conveyors", scenes_conveyors.magnetic),
@@ -93,6 +94,12 @@ def check(path, tol=0.002):
                 else:
                     continue
                 break
+    for n in nodes[1:]:
+        if "points" in n["props"] and n["parent"] == ".":       # ConveyorBelt paths
+            v = nums(n["props"]["points"])
+            for i in range(0, len(v), 3):
+                if not inside(v[i:i + 3]):
+                    bad.append((n["name"], tuple(round(x, 3) for x in v[i:i + 3]))); break
     if "mesh_vertices" in root["props"]:
         v = nums(root["props"]["mesh_vertices"])
         for i in range(0, len(v), 3):

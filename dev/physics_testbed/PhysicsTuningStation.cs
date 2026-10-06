@@ -89,11 +89,9 @@ public partial class PhysicsTuningStation : Node3D
     // Last stats received from the host (what every peer shows).
     string statsText = "";
 
-    // Belts: every belt/wall collider of the segment's conveyors with its authored values.
-    record BeltShape(Node3D shape, bool slope, float friction, float restitution, Vector3 tangent);
-    record MeshBelt(GMPOBox3DBody body, Godot.Collections.Dictionary[] materials);
-    readonly List<BeltShape> beltShapes = new();
-    readonly List<MeshBelt> meshBelts = new();
+    // Belts: every belt and wall collider of the segment's conveyors with its authored values.
+    record BeltValues(ConveyorBelt belt, bool slope, float friction, float restitution, float speed, float climbSpeed);
+    readonly List<BeltValues> belts = new();
     readonly List<(Node3D shape, float friction)> wallShapes = new();
     float authoredFlatFriction = 0.8f, authoredSlopeFriction = 1.2f, authoredBeltRestitution, authoredWallFriction = 0.1f;
 
@@ -309,28 +307,24 @@ public partial class PhysicsTuningStation : Node3D
                 continue; // only conveyors carry a flow arrow
             }
             bool slope = s.cellOffsets.Count > 1;
-            if (s.shapeType == ShapeTypeEnum.Mesh)
-            {
-                // Turns: the belt is the body's own mesh collider, one surface material per segment.
-                meshBelts.Add(new MeshBelt(s, s.surfaceMaterials.Select(m => m.Duplicate()).ToArray()));
-            }
             foreach (Node n in s.FindChildren("*", "", true, false))
             {
+                if (n is ConveyorBelt belt)
+                {
+                    // Belts are merged into lines by the build grid; tuning edits the belt and has its line rebuilt.
+                    belts.Add(new BeltValues(belt, slope, belt.friction, belt.restitution, belt.speed, belt.climbSpeed));
+                    if (slope && !slopeSeen) { authoredSlopeFriction = belt.friction; slopeSeen = true; }
+                    if (!slope && !flatSeen) { authoredFlatFriction = belt.friction; authoredBeltRestitution = belt.restitution; flatSeen = true; }
+                    continue;
+                }
                 if (n is not Node3D shape || shape.GetClass() != "Box3DCollisionShape")
                 {
                     continue;
                 }
                 string name = shape.Name;
-                float friction = shape.Get("friction").AsSingle();
-                if (name.StartsWith("Belt"))
+                if (name.StartsWith("Wall") || name.StartsWith("Lip"))
                 {
-                    float restitution = shape.Get("restitution").AsSingle();
-                    beltShapes.Add(new BeltShape(shape, slope, friction, restitution, shape.Get("tangent_velocity").AsVector3()));
-                    if (slope && !slopeSeen) { authoredSlopeFriction = friction; slopeSeen = true; }
-                    if (!slope && !flatSeen) { authoredFlatFriction = friction; authoredBeltRestitution = restitution; flatSeen = true; }
-                }
-                else if (name.StartsWith("Wall") || name.StartsWith("Lip"))
-                {
+                    float friction = shape.Get("friction").AsSingle();
                     wallShapes.Add((shape, friction));
                     if (!wallSeen) { authoredWallFriction = friction; wallSeen = true; }
                 }
@@ -347,22 +341,13 @@ public partial class PhysicsTuningStation : Node3D
         }
         float flat = Value("Flat belt friction"), slope = Value("Slope belt friction");
         float restitution = Value("Belt restitution"), speed = Value("Belt speed multiplier"), wall = Value("Wall friction");
-        foreach (BeltShape b in beltShapes)
+        foreach (BeltValues b in belts)
         {
-            b.shape.Set("friction", b.slope ? slope : flat);
-            b.shape.Set("restitution", restitution);
-            b.shape.Set("tangent_velocity", b.tangent * speed);
-        }
-        foreach (MeshBelt m in meshBelts)
-        {
-            for (int i = 0; i < m.materials.Length; i++)
-            {
-                var mat = m.materials[i].Duplicate();
-                mat["friction"] = flat;
-                mat["restitution"] = restitution;
-                mat["tangent_velocity"] = m.materials[i]["tangent_velocity"].AsVector3() * speed;
-                m.body.SetMeshMaterial(i, mat);
-            }
+            b.belt.friction = b.slope ? slope : flat;
+            b.belt.restitution = restitution;
+            b.belt.speed = b.speed * speed;
+            b.belt.climbSpeed = b.climbSpeed * speed;
+            BuildGrid.RefreshBelt(b.belt);
         }
         foreach ((Node3D shape, float _) in wallShapes)
         {

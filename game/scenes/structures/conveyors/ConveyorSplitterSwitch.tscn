@@ -1,8 +1,9 @@
 [gd_scene format=3]
 
 [ext_resource type="PackedScene" uid="uid://mvvurq2q1heq" path="res://game/assets/models/conveyors/conveyor_splitter_switch.glb" id="1_r"]
-[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
-[ext_resource type="Script" uid="uid://dj3nflyr2gxmx" path="res://game/scripts/entities/Lever.cs" id="3_r"]
+[ext_resource type="Script" uid="uid://b10te24frnknc" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+[ext_resource type="Script" uid="uid://djjc1nh5u0bg" path="res://game/scripts/items/placed/ConveyorBelt.cs" id="3_r"]
+[ext_resource type="Script" uid="uid://dj3nflyr2gxmx" path="res://game/scripts/entities/Lever.cs" id="4_r"]
 
 [node name="ConveyorSplitterSwitch" type="Box3DBody"]
 body_type = 0
@@ -13,19 +14,15 @@ tags = Array[int]([5])
 
 [node name="Model" parent="." instance=ExtResource("1_r")]
 
-[node name="BeltTop0" type="Box3DCollisionShape" parent="."]
-box_size = Vector3(1.68, 0.04, 2)
+[node name="Belt" type="Node3D" parent="."]
+script = ExtResource("3_r")
+points = PackedVector3Array(0, -0.85, 1, 0, -0.85, -1)
+visual = NodePath("../Model/Belt")
+width = 1.68
+speed = 2.0
 friction = 0.8
-user_material_id = 5
-tangent_velocity = Vector3(0, 0, -2)
-position = Vector3(0, -0.87, 0)
-
-[node name="BeltReturn0" type="Box3DCollisionShape" parent="."]
-box_size = Vector3(1.624, 0.03, 2)
-friction = 0.8
-user_material_id = 5
-tangent_velocity = Vector3(0, 0, 2)
-position = Vector3(0, -0.92, 0)
+returnDepth = 0.085
+returnWidth = 1.624
 
 [node name="LipL0" type="Box3DCollisionShape" parent="."]
 box_size = Vector3(0.03, 0.055, 2)
@@ -71,7 +68,7 @@ position = Vector3(0, 0.19, 0)
 [node name="LeverBody" type="Box3DBody" parent="." node_paths=PackedStringArray("handle")]
 body_type = 0
 box_size = Vector3(0.45, 0.5, 0.12)
-script = ExtResource("3_r")
+script = ExtResource("4_r")
 handle = NodePath("../Model/Lever")
 displayName = "Splitter Switch"
 position = Vector3(0.45, -0.37, -0.95)

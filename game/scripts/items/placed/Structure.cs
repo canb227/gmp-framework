@@ -161,6 +161,8 @@ public partial class Structure : GMPOBox3DBody, Interactable
         {
             this.occupiedCells = new Godot.Collections.Array<Vector3I>(placedIn);
         }
+        // Its belts have no colliders of their own: they join the merged belt lines.
+        BuildGrid.RegisterBelts(this);
         // Structures never follow synced state, so only machines with their own _PhysicsProcess keep processing on.
         RefreshPhysicsProcess();
     }
@@ -172,5 +174,6 @@ public partial class Structure : GMPOBox3DBody, Interactable
     public override void _ExitTree()
     {
         BuildGrid.Vacate(this);
+        BuildGrid.UnregisterBelts(this);
     }
 }

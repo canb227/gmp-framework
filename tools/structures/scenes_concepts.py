@@ -210,7 +210,7 @@ def plate(sc, name, c, width, length, angle, t=0.04, **kw):
 FURNACE_SPEED = 0.8
 def tunnel_furnace():
     sc = scene("ConceptTunnelFurnace", "concept_tunnel_furnace.glb", cells=cells(1, 2, 1), arrow=1)
-    sc.model_prop("Belt", f"instance_shader_parameters/belt_speed = {f(FURNACE_SPEED)}")
+    sc.model_prop("Belt", f"instance_shader_parameters/belt_speed = {ff(FURNACE_SPEED)}")
     sc.box_b("Belt", (0, 1.0, BELT_TOP - 0.05), (1.68, 3.98, 0.1), friction=0.9, material=TAG_RUBBER, tangent=b2g((0, FURNACE_SPEED, 0)))
     for sx in (-1, 1):
         sc.box_b(f"Wall{'LR'[sx > 0]}", (sx * 0.93, 1.0, -0.1), (0.1, 3.1, 1.7))
