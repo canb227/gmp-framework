@@ -16,6 +16,21 @@ public enum FlowArrow
     StraightDown,
 }
 
+public static class FlowArrowExtensions
+{
+    /// <summary>
+    /// How far a structure turns the items it carries, in quarter turns of positive yaw (the same sense as
+    /// <see cref="BuildGrid.RotateOffset"/>): items always enter moving toward the front (local -Z), so a structure
+    /// placed with q quarter turns hands them on moving the way a structure with q + this would take them in.
+    /// </summary>
+    public static int OutputQuarterTurns(this FlowArrow flow) => flow switch
+    {
+        FlowArrow.TurnLeft => 1,   // leaves moving -X: forward turned a quarter counter-clockwise
+        FlowArrow.TurnRight => 3,  // leaves moving +X
+        _ => 0,
+    };
+}
+
 /// <summary>
 /// Builds the flat arrow meshes for <see cref="FlowArrow"/>, in a structure's own frame (front is -Z), for
 /// <see cref="BlueprintGhost"/> to float above the preview.

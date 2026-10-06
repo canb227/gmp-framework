@@ -122,7 +122,15 @@ public partial class BlueprintGhost : HeldItem
         {
             if (canPlace && targetCell is Vector3I cell)
             {
+                // Read before requesting: using up the blueprint re-equips the slot, which can free this ghost's probe.
+                FlowArrow flow = probe.structure.flowArrow;
+                int placedTurns = quarterTurns;
                 BuildGrid.RequestPlace(player, blueprint, cell, quarterTurns, showingAlternate);
+                // Pre-rotate the next placement to carry on from this one's output, whatever blueprint comes next.
+                if (flow != FlowArrow.None)
+                {
+                    quarterTurns = (placedTurns + flow.OutputQuarterTurns()) % 4;
+                }
             }
             return true;
         }
