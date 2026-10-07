@@ -407,9 +407,10 @@ def hall(keep=None):
     h.group("Bays")
     # north: conveyor family (fronts face -Z, into the hall)
     bay(h, "Conveyors", "CONVEYORS", [C + "ConveyorSplitter", C + "ConveyorSplitterSwitch", C + "ConveyorLoader",
-        CA + "ConveyorAdvanced", CA + "ConveyorAdvancedTurnRight", CA + "ConveyorAdvancedTurnLeft", CA + "ConveyorAdvancedSlope",
+        CA + "ConveyorAdvanced", CA + "ConveyorAdvancedSlope",
         CA + "ConveyorAdvancedSlopeDown", CA + "ConveyorAdvancedLoader"], 0, 21, 39, 21, 29)
-    bay(h, "Magnetic", "MAGNETIC CONVEYORS", [CM + "ConveyorMagnetic" + m + t for m in ("", "Wall", "Ceiling") for t in ("", "TurnRight", "TurnLeft")],
+    bay(h, "Magnetic", "MAGNETIC CONVEYORS", [CM + "ConveyorMagnetic" + m + t for m in ("", "Wall", "Ceiling")
+                                              for t in (("",) if m == "" else ("", "TurnRight", "TurnLeft"))],
         0, 41, 58, 21, 29)
     bay(h, "Launchers", "LAUNCHERS", [S + "launchers/LaunchRamp", S + "launchers/Cannon", S + "launchers/Catapult"], 0, 60, 66, 21, 29)
     # south: chutes (fronts face +Z)

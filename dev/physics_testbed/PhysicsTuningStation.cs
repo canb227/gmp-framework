@@ -296,21 +296,28 @@ public partial class PhysicsTuningStation : Node3D
         return d;
     }
 
+    static bool HasBelt(Structure s)
+    {
+        foreach (var _ in StructurePorts.Belts(s)) return true;
+        return false;
+    }
+
     /// <summary>Finds the belt and wall colliders of every conveyor beside this station and remembers their authored values.</summary>
     void CollectBelts()
     {
         bool flatSeen = false, slopeSeen = false, wallSeen = false;
         foreach (Node sibling in GetParent().GetChildren())
         {
-            if (sibling is not Structure s || s.flowArrow == FlowArrow.None)
+            if (sibling is not Structure s || !HasBelt(s))
             {
-                continue; // only conveyors carry a flow arrow
+                continue; // only conveyors are tuned
             }
-            bool slope = s.cellOffsets.Count > 1;
             foreach (Node n in s.FindChildren("*", "", true, false))
             {
                 if (n is ConveyorBelt belt)
                 {
+                    // A slope's belt climbs (or falls) along its path; a flat one stays level.
+                    bool slope = Mathf.Abs(belt.points[^1].Y - belt.points[0].Y) > 0.01f;
                     // Belts are merged into lines by the build grid; tuning edits the belt and has its line rebuilt.
                     belts.Add(new BeltValues(belt, slope, belt.friction, belt.restitution, belt.speed, belt.climbSpeed));
                     if (slope && !slopeSeen) { authoredSlopeFriction = belt.friction; slopeSeen = true; }

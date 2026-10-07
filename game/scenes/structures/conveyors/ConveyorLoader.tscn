@@ -11,7 +11,6 @@ script = ExtResource("2_r")
 cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, 1), Vector3i(1, 0, 1)])
 placementOffset = Vector3(0.5, 0.5, 0.5)
 blueprintItemID = "blueprint_conveyor_loader"
-flowArrow = 1
 tags = Array[int]([5])
 
 [node name="Model" parent="." instance=ExtResource("1_r")]
@@ -23,6 +22,7 @@ visual = NodePath("../Model/Belt")
 width = 1.68
 speed = 2.0
 friction = 0.8
+endIsPort = false
 returnDepth = 0.085
 returnWidth = 1.624
 

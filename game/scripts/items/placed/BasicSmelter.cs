@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// A two-cell-tall machine: items dropped into the hopper on top are consumed and ground one at a time; after
-/// <see cref="processTime"/> each comes out transformed (<see cref="recipes"/>, <see cref="outputCounts"/> of
-/// them side by side) just in front of the bottom cell, at belt height, so they land on a conveyor placed there.
-/// Items without a recipe come out unchanged. Runs on the grinder's authority, which despawns inputs and
-/// spawns outputs for everyone.
+/// A furnace: items dropped into its walled hopper (its input port's volume, <see cref="Structure.ItemsAtInputs"/>)
+/// are smelted one at a time; after <see cref="processTime"/> each comes out as its <see cref="recipes"/> output at
+/// its output port's spawn (<see cref="Structure.OutputPosition"/>), in front of its mouth. Items without a recipe
+/// are left in the hopper. Runs on the smelter's authority, which despawns inputs and spawns outputs for everyone.
 /// <para>
 /// Known gap: an item grabbed or picked up at the moment it enters the hopper is decided separately by
 /// its own authority, so in that race it could be both kept and ground.
@@ -16,10 +15,6 @@ using System.Linq;
 /// </summary>
 public partial class BasicSmelter : Structure
 {
-    /// <summary>Sensor child body filling the hopper.</summary>
-    [Export] public Node3D hopperTrigger;
-    /// <summary>Where outputs appear, relative to the grinder (in front of the bottom cell, at belt height).</summary>
-    [Export] public Node3D outputSpawnPoint;
     /// <summary>Seconds to grind one input item; queued items are ground one after another.</summary>
     [Export] public double processTime = 1.0;
     public double processTimeRemaining = 0;
@@ -43,7 +38,7 @@ public partial class BasicSmelter : Structure
         {
             return;
         }
-        IEnumerable<PhysicalFactoryItem> itemsInInput = ItemsInTrigger(hopperTrigger);
+        IEnumerable<PhysicalFactoryItem> itemsInInput = ItemsAtInputs();
         if (!currentlyProcessing && itemsInInput.Count()>0)
         {
             PhysicalFactoryItem selected = itemsInInput.ElementAt(Random.Shared.Next(itemsInInput.Count()));
@@ -68,7 +63,7 @@ public partial class BasicSmelter : Structure
                 if (recipes.TryGetValue(itemInSmelter, out string outputItemID))
                 {
                     currentlyProcessing = false;
-                    GameWorld.SpawnScene(ItemInfo.Fetch(outputItemID).droppedScene,outputSpawnPoint.GlobalPosition);
+                    GameWorld.SpawnScene(ItemInfo.Fetch(outputItemID).droppedScene, OutputPosition());
                 }
             }
         }

@@ -145,7 +145,6 @@ PIECES = [
 ]
 ICONS = [
     ("ConveyorMag_Straight", "blueprints/blueprint_conveyor_mag.png", "blueprint", (1.3, 1.0, 1.05)),
-    ("ConveyorMag_TurnRight", "blueprints/blueprint_conveyor_mag_turn.png", "blueprint", (-0.35, -0.9, 1.6)),
     ("ConveyorMag_StraightWall", "blueprints/blueprint_conveyor_mag_wall.png", "blueprint", (1.5, 0.9, 0.6)),
     ("ConveyorMag_TurnRightWall", "blueprints/blueprint_conveyor_mag_turn_wall.png", "blueprint", (1.5, -0.6, 0.6)),
     ("ConveyorMag_StraightCeiling", "blueprints/blueprint_conveyor_mag_ceiling.png", "blueprint", (1.0, 0.9, -1.2)),

@@ -10,6 +10,11 @@ and Model/DoorL by -80 deg about Z, DoorRBody and Model/DoorR by +80 deg. LeverB
 import math
 from scenegen import *
 
+# Ports (StructurePort.cs) on the 1 m grid: a one-module chute fills cells 0..1 on each axis. Side ports carry items
+# at channel height, which is belt height, so chutes and conveyors connect to each other.
+SIDE_IN, SIDE_OUT = ("in", (0, 0, 1), "Back", (2, 1)), ("out", (0, 0, 0), "Front", (2, 1))
+TOP_IN, BOTTOM_OUT = ("in", (0, 1, 0), "Top", (2, 2)), ("out", (0, 0, 0), "Bottom", (2, 2))
+
 IMPORT = "res://game/assets/models/shared/salvage_import.gd"
 IN, WT = 0.75, 0.08
 FLOOR_TOP = BELT_TOP
@@ -77,7 +82,7 @@ def names(tier):
 def h_straight(tier):
     N, P = names(tier)
     sc = Scene(f"{N}HStraight", f"res://game/assets/models/chutes/{P}h_straight.glb", IMPORT)
-    sc.root("structure", f"blueprint_{P}h_straight", arrow=1)
+    sc.root("structure", f"blueprint_{P}h_straight", ports=(SIDE_IN, SIDE_OUT))
     sc.model()
     sc.box_b("Floor", (0, 0, FLOOR_TOP - 0.03), (2 * IN, 2.0, 0.06), friction=floor_friction(tier))
     for side, tag in ((-1, "L"), (1, "R")):
@@ -89,7 +94,8 @@ def h_turn(tier, left):
     N, P = names(tier)
     side = "Left" if left else "Right"
     sc = Scene(f"{N}HTurn{side}", f"res://game/assets/models/chutes/{P}h_turn_{side.lower()}.glb", IMPORT)
-    sc.root("structure", f"blueprint_{P}h_turn", arrow=2 if left else 3)
+    sc.root("structure", f"blueprint_{P}h_turn",
+            ports=(SIDE_IN, ("out", (0, 0, 0), "Left", (2, 1)) if left else ("out", (1, 0, 0), "Right", (2, 1))))
     sc.model()
     sc.box_b("Floor", (0, 0, FLOOR_TOP - 0.03), (1.98, 1.98, 0.06), friction=floor_friction(tier))
     y0, y1 = FLOOR_TOP - 0.14, FLOOR_TOP + H_WALL
@@ -101,7 +107,7 @@ def h_turn(tier, left):
 def v_straight(tier):
     N, P = names(tier)
     sc = Scene(f"{N}VStraight", f"res://game/assets/models/chutes/{P}v_straight.glb", IMPORT)
-    sc.root("structure", f"blueprint_{P}v_straight")
+    sc.root("structure", f"blueprint_{P}v_straight", ports=(TOP_IN, BOTTOM_OUT))
     sc.model()
     bore_walls(sc, -0.99, 0.99)
     return sc
@@ -126,7 +132,7 @@ def vturn_profile():
 def v_turn(tier):
     N, P = names(tier)
     sc = Scene(f"{N}VTurn", f"res://game/assets/models/chutes/{P}v_turn.glb", IMPORT)
-    sc.root("structure", f"blueprint_{P}v_turn")
+    sc.root("structure", f"blueprint_{P}v_turn", ports=(TOP_IN, SIDE_OUT))     # out through the front
     sc.model()
     prof, L, s_v, s_a = vturn_profile()
     st = stations([(0, s_v, 1), (s_v, s_v + s_a, 8), (s_v + s_a, L, 1)])
@@ -140,7 +146,7 @@ def v_turn(tier):
 def hopper_up(tier):
     N, P = names(tier)
     sc = Scene(f"{N}HopperUp", f"res://game/assets/models/chutes/{P}hopper_up.glb", IMPORT)
-    sc.root("structure", f"blueprint_{P}hopper_up")
+    sc.root("structure", f"blueprint_{P}hopper_up", ports=(TOP_IN, BOTTOM_OUT))
     sc.model()
     funnel_walls(sc, (-0.89, 0.89, -0.89, 0.89), (-IN, IN, -IN, IN), 0.92, -0.2)
     bore_walls(sc, -0.99, -0.2)
@@ -149,7 +155,7 @@ def hopper_up(tier):
 def dropper_down(tier):
     N, P = names(tier)
     sc = Scene(f"{N}DropperDown", f"res://game/assets/models/chutes/{P}dropper_down.glb", IMPORT)
-    sc.root("structure", f"blueprint_{P}dropper_down")
+    sc.root("structure", f"blueprint_{P}dropper_down", ports=(TOP_IN, BOTTOM_OUT))
     sc.model()
     bore_walls(sc, -0.99, 0.99)
     hinge = IN - 0.03
@@ -166,7 +172,8 @@ def hopper_2x2(tier):
     N, P = names(tier)
     sc = Scene(f"{N}Hopper2x2", f"res://game/assets/models/chutes/{P}hopper_2x2.glb", IMPORT)
     sc.root("structure", f"blueprint_{P}hopper_2x2",
-            cells=[(x, y, z) for y in (0, 1) for z in (0, -1) for x in (0, 1)])
+            cells=[(x, y, z) for y in (0, 1) for z in (0, -1) for x in (0, 1)],
+            ports=(("in", (0, 3, -2), "Top", (4, 4)), BOTTOM_OUT))                # the whole top; out under the anchor
     sc.model()
     funnel_walls(sc, (-0.89, 2.89, -0.89, 2.89), (-IN, IN, -IN, IN), 2.92, 0.2)
     bore_walls(sc, -0.99, 0.2)
@@ -177,7 +184,8 @@ def hopper_3x3(tier):
     N, P = names(tier)
     sc = Scene(f"{N}Hopper3x3", f"res://game/assets/models/chutes/{P}hopper_3x3.glb", IMPORT)
     sc.root("structure", f"blueprint_{P}hopper_3x3",
-            cells=[(x, y, z) for y in (0, 1) for z in (1, 0, -1) for x in (-1, 0, 1)])
+            cells=[(x, y, z) for y in (0, 1) for z in (1, 0, -1) for x in (-1, 0, 1)],
+            ports=(("in", (-2, 3, -2), "Top", (6, 6)), BOTTOM_OUT))
     sc.model()
     funnel_walls(sc, (-2.89, 2.89, -2.89, 2.89), (-IN, IN, -IN, IN), 2.92, 0.4)
     bore_walls(sc, -0.99, 0.4)

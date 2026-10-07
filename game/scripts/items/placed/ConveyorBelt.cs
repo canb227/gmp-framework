@@ -36,6 +36,12 @@ public partial class ConveyorBelt : Node3D
     /// <summary>How far under the carrying surface the exposed return run is; 0 (the default) for none.</summary>
     [Export] public float returnDepth;
     [Export] public float returnWidth = 1.624f;
+    /// <summary>
+    /// Whether the belt's start and end are ports (<see cref="StructurePorts"/>): where it meets a neighbour across a
+    /// cell face. Off for an end that hands items on some other way, such as a loader's kicker or a launcher's lip.
+    /// </summary>
+    [Export] public bool startIsPort = true;
+    [Export] public bool endIsPort = true;
 
     /// <summary>
     /// The belt's visible mesh, if it uses the scrolling belt shader (ConveyorBeltLoop.gdshader). Its belt line sets

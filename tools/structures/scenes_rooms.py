@@ -21,9 +21,9 @@ D = "game/scenes/structures/rooms/"
 ARM_A, ARM_B = (-1.5, 3.0), (-0.2, 11.0)          # as build_rooms.py
 SIEVE_BARS = [-0.32 + 0.62 * k for k in range(9)]
 
-def room_scene(name, glb, cell_list, arrow=0):
+def room_scene(name, glb, cell_list):
     sc = Scene(name, M + glb, "res://game/assets/models/shared/salvage_import.gd")
-    sc.root("structure", "", cells=cell_list, arrow=arrow)
+    sc.root("structure", "", cells=cell_list)
     sc.model()
     return sc
 
@@ -54,7 +54,7 @@ def sweep_arm():
     return sc
 
 def slot_sieve():
-    sc = room_scene("SlotSieve", "slot_sieve.glb", cells(3, 2, 1), arrow=1)
+    sc = room_scene("SlotSieve", "slot_sieve.glb", cells(3, 2, 1))
     sc.box_b("SideClosed", (4.95, 1.0, -0.6), (0.1, 4.0, 0.8))
     sc.box_b("SideRail", (-0.95, 1.0, -0.3), (0.1, 4.0, 0.2))
     for k, x in enumerate(SIEVE_BARS):
@@ -66,7 +66,7 @@ def slot_sieve():
     return sc
 
 def terrace_catcher():
-    sc = room_scene("TerraceCatcher", "terrace_catcher.glb", cells(3, 1, 1), arrow=2)
+    sc = room_scene("TerraceCatcher", "terrace_catcher.glb", cells(3, 1, 1))
     sc.box_b("Floor", (2.0, 0, -0.95), (6.0, 2.0, 0.1), friction=0.7, tangent=b2g((1.2, 0, 0)))
     sc.box_b("BackWall", (2.0, -0.95, -0.3), (6.0, 0.1, 1.2), extra=("restitution = 0.0",))
     sc.box_b("FrontLip", (2.0, 0.95, -0.75), (6.0, 0.1, 0.3))
@@ -75,7 +75,7 @@ def terrace_catcher():
     return sc
 
 def storm_collector():
-    sc = room_scene("StormCollector", "storm_collector.glb", cells(1, 2, 3), arrow=1)
+    sc = room_scene("StormCollector", "storm_collector.glb", cells(1, 2, 3))
     sc.autoplay()
     sc.box_b("Pad", (0, 1.0, (BELT_TOP - 1) / 2), (1.9, 3.96, BELT_TOP + 1), friction=0.8, material=TAG_RUBBER,
              tangent=b2g((0, BASIC_SPEED, 0)))
@@ -89,12 +89,12 @@ def storm_collector():
     return sc
 
 def insulated_belt():
-    sc = room_scene("InsulatedBelt", "insulated_belt.glb", [(0, 0, 0)], arrow=1)
+    sc = room_scene("InsulatedBelt", "insulated_belt.glb", [(0, 0, 0)])
     straight_cols(sc, BASIC_SPEED, BASIC_WALL)
     return sc
 
 def capacitor_press():
-    sc = room_scene("CapacitorPress", "capacitor_press.glb", [(0, 0, 0)], arrow=1)
+    sc = room_scene("CapacitorPress", "capacitor_press.glb", [(0, 0, 0)])
     sc.autoplay()
     straight_cols(sc, BASIC_SPEED, BASIC_WALL)
     for sx in (-1, 1):
@@ -104,7 +104,7 @@ def capacitor_press():
     return sc
 
 def belt_scraper():
-    sc = room_scene("BeltScraper", "belt_scraper.glb", [(0, 0, 0)], arrow=1)
+    sc = room_scene("BeltScraper", "belt_scraper.glb", [(0, 0, 0)])
     sc.autoplay()
     straight_cols(sc, BASIC_SPEED, BASIC_WALL)
     return sc

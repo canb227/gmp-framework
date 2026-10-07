@@ -7,8 +7,8 @@ public static class BlueprintSets
     public static readonly Dictionary<string, string[]> Sets = new()
     {
         ["conveyors"] = ["blueprint_conveyor_splitter", "blueprint_conveyor_splitter_switch", "blueprint_conveyor_loader"],
-        ["advanced"] = ["blueprint_conveyor_adv", "blueprint_conveyor_adv_turn", "blueprint_conveyor_adv_slope", "blueprint_conveyor_adv_loader"],
-        ["magnetic"] = ["blueprint_conveyor_mag", "blueprint_conveyor_mag_wall", "blueprint_conveyor_mag_ceiling", "blueprint_conveyor_mag_turn", "blueprint_conveyor_mag_turn_wall", "blueprint_conveyor_mag_turn_ceiling"],
+        ["advanced"] = ["blueprint_conveyor_adv", "blueprint_conveyor_adv_slope", "blueprint_conveyor_adv_loader"],
+        ["magnetic"] = ["blueprint_conveyor_mag", "blueprint_conveyor_mag_wall", "blueprint_conveyor_mag_ceiling", "blueprint_conveyor_mag_turn_wall", "blueprint_conveyor_mag_turn_ceiling"],
         ["launchers"] = ["blueprint_launch_ramp", "blueprint_cannon", "blueprint_catapult"],
         ["sorting"] = ["blueprint_filter_basic", "blueprint_filter_arm"],
         ["fields"] = ["blueprint_antigrav_projector", "blueprint_zeropoint_projector"],

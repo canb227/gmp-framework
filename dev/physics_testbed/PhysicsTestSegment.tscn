@@ -3,8 +3,6 @@
 [ext_resource type="PackedScene" path="res://game/scenes/entities/devScrapSource.tscn" id="1_source"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/processing/ScrapArm.tscn" id="2_arm"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/Conveyor.tscn" id="3_straight"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorTurnLeft.tscn" id="4_left"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorTurnRight.tscn" id="5_right"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorSlope.tscn" id="6_slope"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/Smelter.tscn" id="7_smelter"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/ItemVoid.tscn" id="8_void"]
@@ -47,26 +45,26 @@ position = Vector3(1, 1, -1)
 [node name="Belt" parent="." instance=ExtResource("3_straight")]
 position = Vector3(1, 1, -3)
 
-[node name="Left1" parent="." instance=ExtResource("4_left")]
+[node name="Left1" parent="." instance=ExtResource("3_straight")]
 position = Vector3(1, 1, -5)
+rotation = Vector3(0, 1.5707964, 0)
 
-[node name="Right1" parent="." instance=ExtResource("5_right")]
+[node name="Right1" parent="." instance=ExtResource("3_straight")]
 position = Vector3(-1, 1, -5)
-rotation = Vector3(0, 1.5707964, 0)
 
-[node name="Left2" parent="." instance=ExtResource("4_left")]
+[node name="Left2" parent="." instance=ExtResource("3_straight")]
 position = Vector3(-1, 1, -7)
+rotation = Vector3(0, 1.5707964, 0)
 
-[node name="Right2" parent="." instance=ExtResource("5_right")]
+[node name="Right2" parent="." instance=ExtResource("3_straight")]
 position = Vector3(-3, 1, -7)
-rotation = Vector3(0, 1.5707964, 0)
 
-[node name="Left3" parent="." instance=ExtResource("4_left")]
+[node name="Left3" parent="." instance=ExtResource("3_straight")]
 position = Vector3(-3, 1, -9)
-
-[node name="Right3" parent="." instance=ExtResource("5_right")]
-position = Vector3(-5, 1, -9)
 rotation = Vector3(0, 1.5707964, 0)
+
+[node name="Right3" parent="." instance=ExtResource("3_straight")]
+position = Vector3(-5, 1, -9)
 
 [node name="Slope1" parent="." instance=ExtResource("6_slope")]
 position = Vector3(-5, 1, -11)

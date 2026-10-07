@@ -22,9 +22,9 @@ M = "res://game/assets/models/machines/concepts/"
 D = "game/scenes/structures/concepts/"
 TUBE_R, TUBE_SPEED = 0.72, 6.0
 
-def scene(name, glb, cells=((0, 0, 0),), arrow=0):
+def scene(name, glb, cells=((0, 0, 0),)):
     sc = Scene(name, M + glb, IMPORT)
-    sc.root("structure", "", cells=cells, arrow=arrow)
+    sc.root("structure", "", cells=cells)
     sc.model()
     sc.autoplay()
     return sc
@@ -57,7 +57,7 @@ def gravity_inverter():
     return sc
 
 def tag_gate():
-    sc = scene("ConceptTagGate", "concept_tag_gate.glb", arrow=1)
+    sc = scene("ConceptTagGate", "concept_tag_gate.glb")
     straight_cols(sc, BASIC_SPEED, BASIC_WALL)
     for sx in (-1, 1):
         sc.box_b(f"Post{'LR'[sx > 0]}", (sx * 0.93, 0, (BELT_TOP + 0.45) / 2 + 0.07), (0.12, 0.22, 0.45 - BELT_TOP - 0.14))
@@ -90,13 +90,13 @@ def vortex_funnel():
     return sc
 
 def tube_straight():
-    sc = scene("ConceptTubeStraight", "concept_tube_straight.glb", arrow=1)
+    sc = scene("ConceptTubeStraight", "concept_tube_straight.glb")
     tube_ring(sc, "Wall", (0, 0, 0), (0, 1, 0), (1, 0, 0), 1.96)
     sc.box_b("Leg", (0, 0, -0.86), (0.12, 0.12, 0.28))
     return sc
 
 def tube_bend():
-    sc = scene("ConceptTubeBend", "concept_tube_bend.glb", arrow=3)
+    sc = scene("ConceptTubeBend", "concept_tube_bend.glb")
     piv = (1, -1, 0)
     n = 5
     for i in range(n):
@@ -112,7 +112,7 @@ def tube_bend():
     return sc
 
 def tube_junction():
-    sc = scene("ConceptTubeJunction", "concept_tube_junction.glb", arrow=1)
+    sc = scene("ConceptTubeJunction", "concept_tube_junction.glb")
     tube_ring(sc, "Main", (0, 0, 0), (0, 1, 0), (1, 0, 0), 1.96, skip=(0,))
     tube_ring(sc, "Branch", (0.87, 0, 0), (1, 0, 0), (0, -1, 0), 0.2)
     sc.body("FlapBody")
@@ -120,7 +120,7 @@ def tube_junction():
     return sc
 
 def tube_receiver():
-    sc = scene("ConceptTubeReceiver", "concept_tube_receiver.glb", arrow=1)
+    sc = scene("ConceptTubeReceiver", "concept_tube_receiver.glb")
     tube_ring(sc, "Wall", (0, -0.6, 0), (0, 1, 0), (1, 0, 0), 0.7)
     for sx in (-1, 1):
         sc.box_b(f"Side{'LR'[sx > 0]}", (sx * 0.88, 0.1, -0.025), (0.05, 0.7, 1.9))
@@ -131,7 +131,7 @@ def tube_receiver():
     return sc
 
 def emitter(name, glb):
-    sc = scene(name, glb, arrow=1)
+    sc = scene(name, glb)
     straight_cols(sc, BASIC_SPEED, BASIC_WALL)
     for sx in (-1, 1):
         sc.box_b(f"Post{'LR'[sx > 0]}", (sx * 0.96, 0, (BELT_TOP + 0.62) / 2 + 0.08), (0.07, 0.14, 0.62 - BELT_TOP - 0.16))
@@ -151,7 +151,7 @@ def counterweight_elevator():
     return sc
 
 def rail_gun():
-    sc = scene("ConceptRailGun", "concept_rail_gun.glb", cells=cells(1, 4, 1), arrow=1)
+    sc = scene("ConceptRailGun", "concept_rail_gun.glb", cells=cells(1, 4, 1))
     sc.box_b("Base", (0, 3.0, -0.95), (1.9, 7.9, 0.1))
     for sx in (-1, 1):
         sc.box_b(f"Rail{'LR'[sx > 0]}", (sx * 0.38, 3.0, -0.3), (0.14, 7.7, 0.2))
@@ -209,7 +209,7 @@ def plate(sc, name, c, width, length, angle, t=0.04, **kw):
 
 FURNACE_SPEED = 0.8
 def tunnel_furnace():
-    sc = scene("ConceptTunnelFurnace", "concept_tunnel_furnace.glb", cells=cells(1, 2, 1), arrow=1)
+    sc = scene("ConceptTunnelFurnace", "concept_tunnel_furnace.glb", cells=cells(1, 2, 1))
     sc.model_prop("Belt", f"instance_shader_parameters/belt_speed = {ff(FURNACE_SPEED)}")
     sc.box_b("Belt", (0, 1.0, BELT_TOP - 0.05), (1.68, 3.98, 0.1), friction=0.9, material=TAG_RUBBER, tangent=b2g((0, FURNACE_SPEED, 0)))
     for sx in (-1, 1):
@@ -254,7 +254,7 @@ def impact_forge():
     return sc
 
 def quench_tank():
-    sc = scene("ConceptQuenchTank", "concept_quench_tank.glb", cells=cells(1, 2, 1), arrow=1)
+    sc = scene("ConceptQuenchTank", "concept_quench_tank.glb", cells=cells(1, 2, 1))
     for belt in ("Lift", "Belt"):
         sc.model_prop(belt, "instance_shader_parameters/belt_speed = 1.0")
     sc.box_b("Floor", (0, -0.4, -0.95), (1.84, 1.1, 0.1))
@@ -273,7 +273,7 @@ def quench_tank():
 
 SR_TOP, SR_BOT, SR_TURNS, SR_R0, SR_R1 = 4.3, -0.88, 2.25, 0.3, 0.86      # as build_thermal.py
 def spiral_radiator():
-    sc = scene("ConceptSpiralRadiator", "concept_spiral_radiator.glb", cells=cells(1, 1, 3), arrow=4)
+    sc = scene("ConceptSpiralRadiator", "concept_spiral_radiator.glb", cells=cells(1, 1, 3))
     sc.box_b("Base", (0, 0, -0.97), (1.98, 1.98, 0.06))
     sc.box_b("Core", (0, 0, 1.85), (0.5, 0.5, 5.7))
     n = 36
@@ -299,7 +299,7 @@ def spiral_radiator():
     return sc
 
 def counterflow_exchanger():
-    sc = scene("ConceptCounterflowExchanger", "concept_counterflow_exchanger.glb", cells=cells(2, 2, 1), arrow=1)
+    sc = scene("ConceptCounterflowExchanger", "concept_counterflow_exchanger.glb", cells=cells(2, 2, 1))
     for name, x, v in (("BeltA", 0, 1.0), ("BeltB", 2, -1.0)):
         sc.model_prop(name, "instance_shader_parameters/belt_speed = 1.0")
         sc.box_b(name, (x, 1.0, BELT_TOP - 0.05), (1.68, 3.98, 0.1), friction=0.9, material=TAG_RUBBER, tangent=b2g((0, v, 0)))

@@ -249,7 +249,6 @@ PIECES = [
 ]
 ICONS = [
     ("ConveyorAdv_Straight", "blueprints/blueprint_conveyor_adv.png", "blueprint", (1.3, 1.0, 1.05)),
-    ("ConveyorAdv_TurnRight", "blueprints/blueprint_conveyor_adv_turn.png", "blueprint", (-0.35, -0.9, 1.6)),
     ("ConveyorAdv_Slope", "blueprints/blueprint_conveyor_adv_slope.png", "blueprint", (1.6, 0.9, 1.0)),
     ("ConveyorAdv_Loader", "blueprints/blueprint_conveyor_adv_loader.png", "blueprint", (1.6, 0.9, 1.0)),
 ]

@@ -1,8 +1,22 @@
 [gd_scene format=3]
 
 [ext_resource type="PackedScene" uid="uid://m3i7fygdykii" path="res://game/assets/models/chutes/chute_dropper_down.glb" id="1_r"]
-[ext_resource type="Script" uid="uid://4e0tnsui2eu8" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
-[ext_resource type="Script" uid="uid://dj3nflyr2gxmx" path="res://game/scripts/entities/Lever.cs" id="3_r"]
+[ext_resource type="Script" uid="uid://b10te24frnknc" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+[ext_resource type="Script" uid="uid://2hhnc7f4qnm3" path="res://game/scripts/items/placed/StructurePort.cs" id="3_r"]
+[ext_resource type="Script" uid="uid://dj3nflyr2gxmx" path="res://game/scripts/entities/Lever.cs" id="4_r"]
+
+[sub_resource type="Resource" id="Port_0"]
+script = ExtResource("3_r")
+cell = Vector3i(0, 1, 0)
+face = 4
+size = Vector2i(2, 2)
+
+[sub_resource type="Resource" id="Port_1"]
+script = ExtResource("3_r")
+kind = 1
+cell = Vector3i(0, 0, 0)
+face = 5
+size = Vector2i(2, 2)
 
 [node name="ChuteDropperDown" type="Box3DBody"]
 body_type = 0
@@ -10,6 +24,7 @@ box_size = Vector3(0, 0, 0)
 script = ExtResource("2_r")
 cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, 1), Vector3i(1, 0, 1), Vector3i(0, 1, 0), Vector3i(1, 1, 0), Vector3i(0, 1, 1), Vector3i(1, 1, 1)])
 placementOffset = Vector3(0.5, 0.5, 0.5)
+ports = Array[ExtResource("3_r")]([SubResource("Port_0"), SubResource("Port_1")])
 blueprintItemID = "blueprint_chute_dropper_down"
 tags = Array[int]([3])
 
@@ -62,7 +77,7 @@ position = Vector3(-0.36, -0.02, 0)
 [node name="LeverBody" type="Box3DBody" parent="." node_paths=PackedStringArray("handle")]
 body_type = 0
 box_size = Vector3(0.12, 0.52, 0.34)
-script = ExtResource("3_r")
+script = ExtResource("4_r")
 handle = NodePath("../Model/Lever")
 displayName = "Dropper Door"
 position = Vector3(0.91, 0.36, 0)

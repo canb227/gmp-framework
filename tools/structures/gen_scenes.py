@@ -64,8 +64,10 @@ def check(path, tol=0.002):
     cells = [(0, 0, 0)]
     if "cellOffsets" in root["props"]:
         cells = [tuple(int(x) for x in t) for t in re.findall(r"Vector3i\((-?\d+), (-?\d+), (-?\d+)\)", root["props"]["cellOffsets"])]
+    # Each 1 m build grid cell, in the root's frame: the root sits placementOffset from the anchor cell's centre.
+    off = tuple(nums(root["props"]["placementOffset"])) if "placementOffset" in root["props"] else (0.0, 0.0, 0.0)
     def inside(p):
-        return any(all(2 * c[i] - 1 - tol <= p[i] <= 2 * c[i] + 1 + tol for i in range(3)) for c in cells)
+        return any(all(c[i] - 0.5 - off[i] - tol <= p[i] <= c[i] + 0.5 - off[i] + tol for i in range(3)) for c in cells)
     frames = {".": (IDENT, (0.0, 0.0, 0.0))}
     sensors = set()
     for n in nodes[1:]:
@@ -95,10 +97,11 @@ def check(path, tol=0.002):
                     continue
                 break
     for n in nodes[1:]:
-        if "points" in n["props"] and n["parent"] == ".":       # ConveyorBelt paths
+        if "points" in n["props"] and n["parent"] in frames:    # ConveyorBelt paths (on the root or a sub-body)
             v = nums(n["props"]["points"])
+            pm, po = frames[n["parent"]]
             for i in range(0, len(v), 3):
-                if not inside(v[i:i + 3]):
+                if not inside(add(mat_vec(pm, v[i:i + 3]), po)):
                     bad.append((n["name"], tuple(round(x, 3) for x in v[i:i + 3]))); break
     if "mesh_vertices" in root["props"]:
         v = nums(root["props"]["mesh_vertices"])
