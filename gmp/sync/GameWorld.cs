@@ -43,10 +43,10 @@ public partial class GameWorld : Node3D
             // Solve each step on Box3D's step thread while the engine renders; results land at the next tick.
             // Any Box3D call (body API, raycasts, queries) waits for an in-flight step, so make them from
             // _PhysicsProcess, where the step has had a whole frame to finish, not from _Process.
-            b3droot.asyncStep = true;
+            b3droot.asyncStep = false;
             // Solver threads (Box3D starts and owns them). Box3D does best on performance cores only, so stay well
             // under the logical core count; at 2000 bodies the solver was too light (~2 ms) to measure a gain.
-            b3droot.workerCount = System.Math.Clamp(System.Environment.ProcessorCount / 2, 1, SolverWorkers);
+            b3droot.workerCount = 1;//System.Math.Clamp(System.Environment.ProcessorCount / 2, 1, SolverWorkers);
             AddChild(b3droot);
             Logging.Log($"Box3D solver workers: {b3droot.workerCount}", "GameWorld");
             // Box3D reports sleep per world, not per body; hand it to the body (it has no matching wake signal).

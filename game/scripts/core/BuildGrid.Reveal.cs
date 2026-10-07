@@ -19,15 +19,18 @@ public partial class BuildGrid
 {
     /// <summary>Centre of the ghost's footprint in world space, or null while it has no target. Set by the local ghost.</summary>
     public static Vector3? placementFocus;
-    /// <summary>The face the ghost is snapped to: the empty cell across it and its normal (out of the surface), or null.</summary>
-    public static (Vector3I cell, Vector3I normal)? placementFace;
+    /// <summary>
+    /// The face the ghost stands against, or null: the min and max cells of its footprint's rearmost layer along
+    /// normal (which points out of the surface), whose back side is the face. Set by the local ghost.
+    /// </summary>
+    public static (Vector3I min, Vector3I max, Vector3I normal)? placementFace;
     /// <summary>The ghost's tint (valid/invalid); the face highlight takes its hue. Set by the local ghost.</summary>
     public static Color placementTint = Colors.White;
 
     // Lattice half-extent in cells. The reveal radius must stay within RevealCells * CellSize so the lattice edge is
     // never visible: the lattice spans RevealCells cells either side of the focus' cell.
-    private const int RevealCells = 4;
     private const float RevealRadius = 7.0f;
+    private const int RevealCells = (int)(RevealRadius / CellSize) + 1;
     // Enough layers for a quick sweep across cells to fade out gracefully; past that the faintest is recycled.
     private const int RevealLayers = 5;
     private const int FaceLayers = 3;
@@ -140,6 +143,7 @@ public partial class BuildGrid
     private static readonly StringName OpacityParam = "opacity";
     private static readonly StringName FocusParam = "focus";
     private static readonly StringName FaceColorParam = "face_color";
+    private static readonly StringName FaceSizeParam = "face_size";
 
     private static readonly Action<MeshInstance3D, ShaderMaterial, Vector3> PlaceReveal = (instance, material, focus) =>
     {
@@ -148,15 +152,25 @@ public partial class BuildGrid
         material.SetShaderParameter(FocusParam, focus);
     };
 
-    private static readonly Action<MeshInstance3D, ShaderMaterial, (Vector3I, Vector3I)> PlaceFace = (instance, _, face) =>
+    private static readonly Action<MeshInstance3D, ShaderMaterial, (Vector3I, Vector3I, Vector3I)> PlaceFace = (instance, material, face) =>
     {
-        var (cell, normal) = face;
-        instance.GlobalTransform = new Transform3D(FaceBasis(normal),
-            CellToWorld(cell) - (Vector3)normal * (CellSize / 2f - FaceLift));
+        var (min, max, normal) = face;
+        Vector3 lo = (Vector3)min * CellSize, hi = ((Vector3)max + Vector3.One) * CellSize;
+        Vector3 centre = (lo + hi) / 2f;
+        int axis = normal.X != 0 ? 0 : normal.Y != 0 ? 1 : 2;
+        centre[axis] = normal[axis] > 0 ? lo[axis] : hi[axis];
+        // A unit quad stretched over the face; the shader is told its size so its border keeps a constant width.
+        Basis basis = FaceBasis(normal);
+        Vector3 extent = hi - lo;
+        extent[axis] = 0f;
+        float width = Mathf.Abs(extent.Dot(basis.X)), height = Mathf.Abs(extent.Dot(basis.Y));
+        instance.GlobalTransform = new Transform3D(new Basis(basis.X * width, basis.Y * height, basis.Z),
+            centre + (Vector3)normal * FaceLift);
+        material.SetShaderParameter(FaceSizeParam, new Vector2(width, height));
     };
 
     private FadePool<Vector3> _reveal;
-    private FadePool<(Vector3I, Vector3I)> _face;
+    private FadePool<(Vector3I, Vector3I, Vector3I)> _face;
 
     private void CreateReveal()
     {
@@ -168,10 +182,11 @@ public partial class BuildGrid
         {
             m.SetShaderParameter("cell_size", CellSize);
             m.SetShaderParameter("reveal_radius", RevealRadius);
+            m.SetShaderParameter("major_size", ModuleSize);
         });
 
-        var quad = new QuadMesh { Size = new Vector2(CellSize, CellSize) };
-        _face = new FadePool<(Vector3I, Vector3I)>(this, FaceLayers,
+        var quad = new QuadMesh { Size = Vector2.One };
+        _face = new FadePool<(Vector3I, Vector3I, Vector3I)>(this, FaceLayers,
             () => new MeshInstance3D { Mesh = quad },
             "res://game/assets/shaders/BuildGridFace.gdshader", FaceFadeInTime, FaceFadeOutTime);
     }

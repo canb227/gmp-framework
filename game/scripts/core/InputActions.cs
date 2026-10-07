@@ -21,6 +21,8 @@ public static class InputActions
     public static readonly StringName scrollUp = "scrollUp";
     public static readonly StringName rotate = "rotate";
     public static readonly StringName alternate = "alternate";
+    /// <summary>Held while placing to turn off smart placement (belt end snapping, turning to follow the last output).</summary>
+    public static readonly StringName freePlace = "freePlace";
 
     /// <summary>The hotbar slot actions slot0 to slot9, by slot index.</summary>
     public static readonly StringName[] slots =

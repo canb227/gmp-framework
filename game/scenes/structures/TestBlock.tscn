@@ -12,6 +12,8 @@ albedo_color = Color(0.55, 0.6, 0.7, 1)
 body_type = 0
 box_size = Vector3(2, 2, 2)
 script = ExtResource("1_l61cd")
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, 1), Vector3i(1, 0, 1), Vector3i(0, 1, 0), Vector3i(1, 1, 0), Vector3i(0, 1, 1), Vector3i(1, 1, 1)])
+placementOffset = Vector3(0.5, 0.5, 0.5)
 blueprintItemID = "blueprint_test_block"
 
 [node name="Mesh" type="MeshInstance3D" parent="." unique_id=784677154]

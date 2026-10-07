@@ -488,7 +488,7 @@ transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13, 1, 1)
 
 [node name="Slope" parent="ObjectSpawnerDisplay/SpawnerConveyorLine" unique_id=1346301794 instance=ExtResource("hall_51")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15, 1, 1)
-cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0)])
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, 1), Vector3i(1, 0, 1), Vector3i(0, 1, 0), Vector3i(1, 1, 0), Vector3i(0, 1, 1), Vector3i(1, 1, 1)])
 
 [node name="Run1" parent="ObjectSpawnerDisplay/SpawnerConveyorLine" unique_id=507056064 instance=ExtResource("hall_50")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 19, 3, 1)
