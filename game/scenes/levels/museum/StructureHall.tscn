@@ -4,14 +4,10 @@
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorSplitterSwitch.tscn" id="hall_1"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorLoader.tscn" id="hall_2"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvanced.tscn" id="hall_3"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedTurnRight.tscn" id="hall_4"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedTurnLeft.tscn" id="hall_5"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedSlope.tscn" id="hall_6"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedSlopeDown.tscn" id="hall_7"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedLoader.tscn" id="hall_8"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagnetic.tscn" id="hall_9"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticTurnRight.tscn" id="hall_10"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticTurnLeft.tscn" id="hall_11"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticWall.tscn" id="hall_12"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticWallTurnRight.tscn" id="hall_13"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticWallTurnLeft.tscn" id="hall_14"]
@@ -285,28 +281,6 @@ font_size = 40
 outline_size = 12
 text = "Advanced Conveyor"
 
-[node name="ConveyorAdvancedTurnRight" parent="Bays/Conveyors" instance=ExtResource("hall_4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59, 1, 49)
-
-[node name="ConveyorAdvancedTurnRightLabel" type="Label3D" parent="Bays/Conveyors"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59, 2.7, 49)
-billboard = 1
-pixel_size = 0.008
-font_size = 40
-outline_size = 12
-text = "Advanced Conveyor Turn"
-
-[node name="ConveyorAdvancedTurnLeft" parent="Bays/Conveyors" instance=ExtResource("hall_5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 63, 1, 49)
-
-[node name="ConveyorAdvancedTurnLeftLabel" type="Label3D" parent="Bays/Conveyors"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 63, 2.7, 49)
-billboard = 1
-pixel_size = 0.008
-font_size = 40
-outline_size = 12
-text = "Advanced Conveyor Turn (left)"
-
 [node name="ConveyorAdvancedSlope" parent="Bays/Conveyors" instance=ExtResource("hall_6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 67, 1, 51)
 
@@ -360,28 +334,6 @@ pixel_size = 0.008
 font_size = 40
 outline_size = 12
 text = "Magnetic Conveyor"
-
-[node name="ConveyorMagneticTurnRight" parent="Bays/Magnetic" instance=ExtResource("hall_10")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 87, 1, 51)
-
-[node name="ConveyorMagneticTurnRightLabel" type="Label3D" parent="Bays/Magnetic"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 87, 2.7, 51)
-billboard = 1
-pixel_size = 0.008
-font_size = 40
-outline_size = 12
-text = "Magnetic Conveyor Turn"
-
-[node name="ConveyorMagneticTurnLeft" parent="Bays/Magnetic" instance=ExtResource("hall_11")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 91, 1, 51)
-
-[node name="ConveyorMagneticTurnLeftLabel" type="Label3D" parent="Bays/Magnetic"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 91, 2.7, 51)
-billboard = 1
-pixel_size = 0.008
-font_size = 40
-outline_size = 12
-text = "Magnetic Conveyor Turn (left)"
 
 [node name="ConveyorMagneticWall" parent="Bays/Magnetic" instance=ExtResource("hall_12")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 95, 1, 51)

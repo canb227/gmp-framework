@@ -99,6 +99,11 @@ public class PlacementProbe
         this.anchor = anchor;
         this.quarterTurns = quarterTurns;
         Transform3D root = structure.PlacementTransform(anchor, quarterTurns);
+        // A conveyor shows the form it would take there. Only its own: built neighbours keep theirs until it's built.
+        if (structure is ConveyorStructure conveyor)
+        {
+            conveyor.ApplyShape(BuildGrid.ResolveConveyorShape(conveyor, root));
+        }
         root.Basis = root.Basis.Scaled(Vector3.One * SkinScale);
         foreach (var (body, relative) in bodies)
         {

@@ -2,11 +2,12 @@ using Godot;
 using System.Collections.Generic;
 
 /// <summary>
-/// A two-cell-tall machine: items dropped into the hopper on top are consumed and ground one at a time; after
-/// <see cref="processTime"/> each comes out transformed (<see cref="recipes"/>, <see cref="outputCounts"/> of
-/// them side by side) just in front of the bottom cell, at belt height, so they land on a conveyor placed there.
-/// Items without a recipe come out unchanged. Runs on the grinder's authority, which despawns inputs and
-/// spawns outputs for everyone.
+/// A machine that grinds what reaches its inputs: items in its input ports' volumes (<see cref="Structure.ItemsAtInputs"/>,
+/// the grinder's hopper, or a press's stretch of belt) are consumed and ground one at a time; after
+/// <see cref="processTime"/> each comes out transformed (<see cref="recipes"/>, <see cref="outputCounts"/> of them
+/// side by side) at its output port's spawn (<see cref="Structure.OutputPosition"/>), placed so they land on a
+/// conveyor there. Items without a recipe come out unchanged. Runs on the grinder's authority, which despawns inputs
+/// and spawns outputs for everyone.
 /// <para>
 /// Known gap: an item grabbed or picked up at the moment it enters the hopper is decided separately by
 /// its own authority, so in that race it could be both kept and ground.
@@ -14,10 +15,6 @@ using System.Collections.Generic;
 /// </summary>
 public partial class Grinder : Structure
 {
-    /// <summary>Sensor child body filling the hopper.</summary>
-    [Export] public Node3D hopperTrigger;
-    /// <summary>Where outputs appear, relative to the grinder (in front of the bottom cell, at belt height).</summary>
-    [Export] public Vector3 outputPoint = new(0, -0.3f, -1.6f);
     /// <summary>Seconds to grind one input item; queued items are ground one after another.</summary>
     [Export] public double processTime = 1.0;
     /// <summary>Input itemID → output itemID.</summary>
@@ -36,9 +33,9 @@ public partial class Grinder : Structure
 
     public override void _PhysicsProcess(double delta)
     {
-        if (!runsMachineLogic || hopperTrigger == null) return;
+        if (!runsMachineLogic) return;
 
-        foreach (PhysicalFactoryItem item in ItemsInTrigger(hopperTrigger))
+        foreach (PhysicalFactoryItem item in ItemsAtInputs())
         {
             string input = item.itemID ?? "";
             GameWorld.DespawnObject(item.id);
@@ -58,8 +55,8 @@ public partial class Grinder : Structure
             (string output, int count) = queue.Dequeue();
             for (int i = 0; output != null && i < count; i++)
             {
-                Vector3 side = new((i - (count - 1) / 2f) * outputSpacing, 0, 0);
-                ItemInfo.SpawnInWorld(output, GlobalTransform * (outputPoint + side), GlobalRotation);
+                Vector3 side = GlobalBasis.X * ((i - (count - 1) / 2f) * outputSpacing);
+                ItemInfo.SpawnInWorld(output, OutputPosition() + side, GlobalRotation);
                 producedCount++;
             }
             untilNextOutput = processTime;

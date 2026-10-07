@@ -3,8 +3,12 @@ Scenes for the conveyor families: basic conveyors and additions (splitter, switc
 conveyors and magnetic conveyors (floor / wall / ceiling forms). Colliders follow build_conveyors.py,
 build_conveyor_extras.py, build_conveyors_advanced.py and build_conveyors_magnetic.py. Unlike machines' belts,
 these belts expose their return run underneath (ret=True).
+
+The floor conveyors have no separate turn pieces: each is one ConveyorStructure scene holding a straight and two
+turns as variants, and the build grid picks the form from the belts feeding it (BuildGrid.BeltShapes.cs). The wall
+and ceiling magnetic conveyors keep their own left and right turns.
 """
-import math
+import math, re
 from scenegen import *
 
 BASIC_IMPORT = "res://game/assets/models/conveyors/conveyor_import.gd"
@@ -46,7 +50,7 @@ def splitter_common(sc, front_h):
 
 def splitter():
     sc = Scene("ConveyorSplitter", "res://game/assets/models/conveyors/conveyor_splitter.glb", BASIC_IMPORT)
-    sc.root("structure", "blueprint_conveyor_splitter", tags=(TAG_RUBBER,))
+    sc.root("structure", "blueprint_conveyor_splitter", layers=1, tags=(TAG_RUBBER,))
     sc.model()
     splitter_common(sc, 0.22)
     z0, z1 = BELT_TOP + 0.015, BELT_TOP + 0.34
@@ -64,7 +68,7 @@ SWITCH_ANGLE = math.radians(33.0)
 
 def splitter_switch():
     sc = Scene("ConveyorSplitterSwitch", "res://game/assets/models/conveyors/conveyor_splitter_switch.glb", BASIC_IMPORT)
-    sc.root("structure", "blueprint_conveyor_splitter_switch", tags=(TAG_RUBBER,))
+    sc.root("structure", "blueprint_conveyor_splitter_switch", layers=1, tags=(TAG_RUBBER,))
     sc.model()
     splitter_common(sc, 0.3)
     # the paddle is its own static body so a switch script can turn it with Model/Arm (+33 deg right, -33 left)
@@ -80,26 +84,31 @@ def loader_cols(sc, speed, wall_top):
     prof, L, flat, ls = bend_up_profile(**LOADER)
     bend = flat + LOADER["R"] * LOADER["th"]
     st = stations([(0, flat, 1), (flat, bend, 6), (bend, L, 1)])
-    belt_along(sc, prof, st, speed, y_bounds=(-1, 1), ret=True)
+    belt_along(sc, prof, st, speed, y_bounds=(-1, 1), ret=True, end_port=False)     # the kicker lifts items over a wall
     for side in (-1, 1):
         walls_along(sc, prof, stations([(0, flat, 1), (flat, bend, 3), (bend, L, 1)]), wall_top, side, y_bounds=(-1, 1))
     return prof, L
 
 def loader():
     sc = Scene("ConveyorLoader", "res://game/assets/models/conveyors/conveyor_loader.glb", BASIC_IMPORT)
-    sc.root("structure", "blueprint_conveyor_loader", arrow=1, tags=(TAG_RUBBER,))
+    sc.root("structure", "blueprint_conveyor_loader", layers=1, tags=(TAG_RUBBER,))
     sc.model()
     loader_cols(sc, BASIC_SPEED, BASIC_WALL)
     return sc.write("game/scenes/structures/conveyors/ConveyorLoader.tscn")
 
 # ---------------------------------------------------------------------------- turns
 def turn_scene(name, model, imp, blueprint, left, speed, wall_top, xf=None, post_h=None):
-    """A quarter turn: the belt follows the radius-1 arc from the back face to the side face (left or right), and
-    the guard arcs and lips are boxes on the root."""
+    """A quarter turn on its own (the wall and ceiling magnetic conveyors): see turn_parts."""
+    sc = Scene(name, model, imp, xf=xf)
+    sc.root("structure", blueprint, tags=(TAG_RUBBER,))
+    turn_parts(sc, left, speed, wall_top, post_h)
+    return sc
+
+def turn_parts(sc, left, speed, wall_top, post_h=None):
+    """A quarter turn's model, belt and colliders: the belt follows the radius-1 arc from the back face to the side
+    face (left or right), and the guard arcs and lips are boxes."""
     mx = -1 if left else 1
     P = lambda r, th, y: (mx * (1 - r * math.cos(th)), y, 1 - r * math.sin(th))
-    sc = Scene(name, model, imp, xf=xf)
-    sc.root("structure", blueprint, arrow=0 if xf else (2 if left else 3), tags=(TAG_RUBBER,))
     sc.model()
     belt_speed(sc, speed, mirrored=left)    # the left turn models are built mirrored
     arc_pts = [P(1, math.pi / 2 * i / 64, BELT_TOP) for i in range(65)]
@@ -121,15 +130,51 @@ def turn_scene(name, model, imp, blueprint, left, speed, wall_top, xf=None, post
     arc("LipInner", 1 - LIP_X[1], 1 - LIP_X[0], BELT_TOP + LIP_O[0], BELT_TOP + LIP_O[1], 3)
     ph = post_h or wall_top
     sc.box("PivotPost", (0.12, ph + 0.15, 0.12), (mx * 0.93, BELT_TOP + (ph - 0.15) / 2, 0.93), friction=WALL_FRICTION)
-    return sc
+
+# ---------------------------------------------------------------------------- self-turning floor conveyors
+# The forms a floor conveyor switches between, as (name, left turn?, turn about the root). ConveyorStructure.cs
+# takes the first as the default. Every form takes items in through a different face and lets them out through the
+# front: the turns are the back-to-side turn models given a quarter turn, so the side they turn toward faces forward.
+VARIANTS = (("Straight", None, None),
+            ("TurnFromLeft", True, rot_y(-math.pi / 2)),     # the left turn: back -> left becomes left -> front
+            ("TurnFromRight", False, rot_y(math.pi / 2)))    # the right turn: back -> right becomes right -> front
+OUTPUT_END = (0.0, BELT_TOP, -1.0)
+# Under the return run, at floor level: the root keeps one collider of its own, since a Box3D body without any
+# falls back to a zero-size box at its origin, which would sit in the items' way above the belt.
+PAD_SIZE, PAD_Y = (0.3, 0.02, 0.3), -0.985
+
+def auto_conveyor(name, path, imp, blueprint, straight_model, turn_models, speed, wall_top, post_h=None, layers=2):
+    """One floor conveyor holding its straight and both turns (see VARIANTS); `turn_models` is (right, left)."""
+    sc = Scene(name, None, imp)
+    sc.root("conveyor", blueprint, tags=(TAG_RUBBER,), layers=layers)
+    sc.box("Pad", PAD_SIZE, (0, PAD_Y, 0), friction=WALL_FRICTION, material=TAG_RUBBER)
+    for vname, left, xf in VARIANTS:
+        with sc.variant(vname, straight_model if left is None else turn_models[left], imp, xf, active=left is None):
+            if left is None:
+                sc.model()
+                belt_speed(sc, speed)
+                straight_cols(sc, speed, wall_top)
+            else:
+                turn_parts(sc, left, speed, wall_top, post_h)
+    # Switching form must never move the belt's output end: the forms are picked from the outputs feeding each belt,
+    # so if an output could move, one belt's form could change another's.
+    ends = re.findall(r'\[node name="Belt" type="Node3D" parent="(\w+)"\]\n[^\n]*\npoints = PackedVector3Array\(([^)]*)\)',
+                      "\n".join(sc.nodes))
+    assert [v for v, _ in ends] == [v for v, _, _ in VARIANTS], ends
+    for vname, pts in ends:
+        last = tuple(float(x) for x in pts.split(", ")[-3:])
+        assert all(abs(a - b) < 1e-4 for a, b in zip(last, OUTPUT_END)), (name, vname, last)
+    return sc.write(path)
 
 # ---------------------------------------------------------------------------- slopes
 def slope_scene(name, model, imp, blueprint, down, speed, wall_top):
     """Up slope (items climb toward the front) or its down form (the up slope turned half round about the
-    footprint centre, belt reversed), as gen_colliders.slope()."""
+    footprint centre, belt reversed), as gen_colliders.slope(). L-shaped: the module over the low end is empty (the
+    belt is only 1 m up where it leaves it), so it isn't part of the footprint."""
     xf, xo = (rot_y(math.pi), (0, 0, -2)) if down else (None, (0, 0, 0))
     sc = Scene(name, model, imp, xf=xf, xo=xo)
-    sc.root("structure", blueprint, cells=((0, 0, 0), (0, 0, -1), (0, 1, 0), (0, 1, -1)), arrow=4 if down else 1, tags=(TAG_RUBBER,))
+    upper = (0, 1, 0) if down else (0, 1, -1)          # the module over the high end
+    sc.root("structure", blueprint, cells=((0, 0, 0), (0, 0, -1), upper), tags=(TAG_RUBBER,))
     sc.model()
     if down or speed != 2.0:
         sc.model_prop("Belt", f"instance_shader_parameters/belt_speed = {ff(-speed if down else speed)}")
@@ -144,20 +189,12 @@ def slope_scene(name, model, imp, blueprint, down, speed, wall_top):
 
 # ---------------------------------------------------------------------------- families
 def basic():
-    """The salvage conveyors (models from build_conveyors.py): straight, turns and slopes."""
+    """The salvage conveyors (models from build_conveyors.py): the self-turning conveyor and slopes."""
     out = []
     M = "res://game/assets/models/conveyors/"
     D = "game/scenes/structures/conveyors/"
-    sc = Scene("Conveyor", M + "conveyor_straight.glb", BASIC_IMPORT)
-    sc.root("structure", "blueprint_conveyor", arrow=1, tags=(TAG_RUBBER,))
-    sc.model()
-    straight_cols(sc, BASIC_SPEED, BASIC_WALL)
-    out.append(sc.write(D + "Conveyor.tscn"))
-    for left in (False, True):
-        side = "Left" if left else "Right"
-        sc = turn_scene(f"ConveyorTurn{side}", M + f"conveyor_turn_{side.lower()}.glb", BASIC_IMPORT,
-                        "blueprint_conveyor_turn", left, BASIC_SPEED, BASIC_WALL)
-        out.append(sc.write(D + f"ConveyorTurn{side}.tscn"))
+    out.append(auto_conveyor("Conveyor", D + "Conveyor.tscn", BASIC_IMPORT, "blueprint_conveyor", M + "conveyor_straight.glb",
+                             (M + "conveyor_turn_right.glb", M + "conveyor_turn_left.glb"), BASIC_SPEED, BASIC_WALL, layers=1))
     for down in (False, True):
         nm = "ConveyorSlopeDown" if down else "ConveyorSlope"
         sc = slope_scene(nm, M + "conveyor_slope.glb", BASIC_IMPORT, "blueprint_conveyor_slope", down, BASIC_SPEED, BASIC_WALL)
@@ -171,22 +208,15 @@ def advanced():
     out = []
     M = "res://game/assets/models/conveyors_advanced/"
     D = "game/scenes/structures/conveyors_advanced/"
-    sc = Scene("ConveyorAdvanced", M + "conveyor_adv_straight.glb", SALVAGE_IMPORT)
-    sc.root("structure", "blueprint_conveyor_adv", arrow=1, tags=(TAG_RUBBER,))
-    sc.model(); belt_speed(sc, ADV_SPEED)
-    straight_cols(sc, ADV_SPEED, ADV_WALL)
-    out.append(sc.write(D + "ConveyorAdvanced.tscn"))
-    for left in (False, True):
-        side = "Left" if left else "Right"
-        sc = turn_scene(f"ConveyorAdvancedTurn{side}", M + f"conveyor_adv_turn_{side.lower()}.glb", SALVAGE_IMPORT,
-                        "blueprint_conveyor_adv_turn", left, ADV_SPEED, ADV_WALL)
-        out.append(sc.write(D + f"ConveyorAdvancedTurn{side}.tscn"))
+    out.append(auto_conveyor("ConveyorAdvanced", D + "ConveyorAdvanced.tscn", SALVAGE_IMPORT, "blueprint_conveyor_adv",
+                             M + "conveyor_adv_straight.glb", (M + "conveyor_adv_turn_right.glb", M + "conveyor_adv_turn_left.glb"),
+                             ADV_SPEED, ADV_WALL))
     for down in (False, True):
         nm = "ConveyorAdvancedSlopeDown" if down else "ConveyorAdvancedSlope"
         sc = slope_scene(nm, M + "conveyor_adv_slope.glb", SALVAGE_IMPORT, "blueprint_conveyor_adv_slope", down, ADV_SPEED, ADV_WALL)
         out.append(sc.write(D + nm + ".tscn"))
     sc = Scene("ConveyorAdvancedLoader", M + "conveyor_adv_loader.glb", SALVAGE_IMPORT)
-    sc.root("structure", "blueprint_conveyor_adv_loader", arrow=1, tags=(TAG_RUBBER,))
+    sc.root("structure", "blueprint_conveyor_adv_loader", tags=(TAG_RUBBER,))
     sc.model(); belt_speed(sc, ADV_SPEED)
     loader_cols(sc, ADV_SPEED, ADV_WALL)
     out.append(sc.write(D + "ConveyorAdvancedLoader.tscn"))
@@ -200,15 +230,20 @@ def magnetic():
     out = []
     M = "res://game/assets/models/conveyors_magnetic/"
     D = "game/scenes/structures/conveyors_magnetic/"
+    turns = (M + "conveyor_mag_turn_right.glb", M + "conveyor_mag_turn_left.glb")
     for mount, xf, bp in MOUNTS:
+        if not mount:
+            out.append(auto_conveyor("ConveyorMagnetic", D + "ConveyorMagnetic.tscn", SALVAGE_IMPORT, "blueprint_conveyor_mag",
+                                     M + "conveyor_mag_straight.glb", turns, MAG_SPEED, BASIC_WALL, post_h=BASIC_WALL + 0.1))
+            continue
         sc = Scene(f"ConveyorMagnetic{mount}", M + "conveyor_mag_straight.glb", SALVAGE_IMPORT, xf=xf)
-        sc.root("structure", f"blueprint_conveyor_mag{bp}", arrow=0 if xf else 1, tags=(TAG_RUBBER,))
+        sc.root("structure", f"blueprint_conveyor_mag{bp}", tags=(TAG_RUBBER,))
         sc.model()
         straight_cols(sc, MAG_SPEED, BASIC_WALL)
         out.append(sc.write(D + f"ConveyorMagnetic{mount}.tscn"))
         for left in (False, True):
             side = "Left" if left else "Right"
-            sc = turn_scene(f"ConveyorMagnetic{mount}Turn{side}", M + f"conveyor_mag_turn_{side.lower()}.glb", SALVAGE_IMPORT,
+            sc = turn_scene(f"ConveyorMagnetic{mount}Turn{side}", turns[left], SALVAGE_IMPORT,
                             f"blueprint_conveyor_mag_turn{bp}", left, MAG_SPEED, BASIC_WALL, xf=xf, post_h=BASIC_WALL + 0.1)
             out.append(sc.write(D + f"ConveyorMagnetic{mount}Turn{side}.tscn"))
     return out

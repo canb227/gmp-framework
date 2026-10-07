@@ -11,6 +11,8 @@ using System.Reflection;
 /// <item>While the 3D toolbar's "Grid Snap" toggle is on, every selected Structure is held at the grid pose
 /// nearest to where it is dragged or rotated (<see cref="Structure.NearestGridTransform"/>).</item>
 /// <item>Project > Tools > Snap Structures To Build Grid snaps every Structure in the open scene (undoable).</item>
+/// <item>Every Structure's ports are drawn in the viewport (<see cref="StructurePortGizmo"/>), and redrawn as the
+/// selected one's properties are edited.</item>
 /// </list>
 /// Structure isn't a [Tool] script, so in the editor its nodes carry a placeholder: they are found by script
 /// inheritance and read <see cref="Structure.placementOffset"/> through Get(). The edited scene's root is never
@@ -25,6 +27,7 @@ public partial class StructureSnapPlugin : EditorPlugin
     static readonly HashSet<string> structureScriptPaths = typeof(Structure).GetCustomAttributes<ScriptPathAttribute>(false).Select(a => a.Path).ToHashSet();
 
     CheckButton _toggle;
+    StructurePortGizmo _portGizmo;
 
     public override void _EnterTree()
     {
@@ -36,6 +39,9 @@ public partial class StructureSnapPlugin : EditorPlugin
         };
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, _toggle);
         AddToolMenuItem(SnapAllMenuItem, Callable.From(SnapAllInScene));
+        _portGizmo = new StructurePortGizmo();
+        AddNode3DGizmoPlugin(_portGizmo);
+        EditorInterface.Singleton.GetInspector().PropertyEdited += OnPropertyEdited;
     }
 
     public override void _ExitTree()
@@ -43,6 +49,25 @@ public partial class StructureSnapPlugin : EditorPlugin
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, _toggle);
         _toggle.QueueFree();
         RemoveToolMenuItem(SnapAllMenuItem);
+        EditorInterface.Singleton.GetInspector().PropertyEdited -= OnPropertyEdited;
+        RemoveNode3DGizmoPlugin(_portGizmo);
+        _portGizmo = null;
+    }
+
+    // A port, belt or footprint edit moves the ports: redraw the selected structures (and the structures above an
+    // edited belt or sub-resource, which is what's selected then).
+    void OnPropertyEdited(string property)
+    {
+        foreach (Node node in EditorInterface.Singleton.GetSelection().GetSelectedNodes())
+        {
+            for (Node n = node; n != null; n = n.GetParent())
+            {
+                if (IsStructure(n) && n is Node3D n3)
+                {
+                    n3.UpdateGizmos();
+                }
+            }
+        }
     }
 
     public override void _Process(double delta)
@@ -114,7 +139,8 @@ public partial class StructureSnapPlugin : EditorPlugin
         return !current.IsEqualApprox(snapped);
     }
 
-    static bool IsStructure(Node node)
+    /// <summary>True if <paramref name="node"/> carries the Structure script or one derived from it (placeholders included).</summary>
+    public static bool IsStructure(Node node)
     {
         for (Script s = node.GetScript().As<Script>(); s != null; s = s.GetBaseScript())
         {

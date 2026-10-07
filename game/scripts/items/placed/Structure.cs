@@ -1,5 +1,6 @@
 using Godot;
 using PolyType;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,15 +27,19 @@ public partial class Structure : GMPOBox3DBody, Interactable
     /// <summary>The blueprint given back when this structure is deconstructed.</summary>
     [Export]
     public string blueprintItemID;
-    /// <summary>Direction arrow drawn above this structure's placement preview (not the built structure); see <see cref="FlowArrowMesh"/>.</summary>
-    /// 
-
     //Press {interact} to:
     [Export]
     public string interactionText = "deconstruct!";
 
+    /// <summary>
+    /// Where items go in and come out, besides the ends of its belts, which are ports already (see
+    /// <see cref="StructurePorts"/>). Snapping and the preview's input/output arrows go by these.
+    /// </summary>
     [Export]
-    public FlowArrow flowArrow = FlowArrow.None;
+    public Godot.Collections.Array<StructurePort> ports = [];
+    /// <summary>Extra arrows for the placement preview, for flows the ports don't show. Display only.</summary>
+    [Export]
+    public Godot.Collections.Array<StructureArrow> arrows = [];
     /// <summary>Tags of the structure itself; its first material tag is how it sounds when struck (<see cref="ImpactSounds"/>).</summary>
     [Export]
     public Godot.Collections.Array<ItemTags> tags;
@@ -46,6 +51,20 @@ public partial class Structure : GMPOBox3DBody, Interactable
 
     /// <summary>Height of a conveyor belt's top above the floor of its cell.</summary>
     public const float BeltTopHeight = 0.15f;
+
+    /// <summary>Every port (declared and from the belts) in the root's frame; worked out on first use.</summary>
+    public IReadOnlyList<PortShape> localPorts => portCache ??= StructurePorts.Collect(this);
+    private List<PortShape> portCache;
+    /// <summary>
+    /// Every port any of its forms could have (a self-turning conveyor's three inputs), each once: what it connects
+    /// by when built, and snaps by when placed. The same as <see cref="localPorts"/> for most structures.
+    /// </summary>
+    public IReadOnlyList<PortShape> allLocalPorts => allPortCache ??= StructurePorts.Collect(this, true);
+    private List<PortShape> allPortCache;
+    /// <summary>Drops the cached <see cref="localPorts"/>, after the structure's belts change.</summary>
+    protected void RefreshPorts() => portCache = null;
+    // Scenes whose ports have been checked, so each warns once however many are built.
+    private static readonly HashSet<string> validatedScenes = new();
 
     public Vector3I anchor { get; private set; }
     public int quarterTurns { get; private set; }
@@ -73,6 +92,81 @@ public partial class Structure : GMPOBox3DBody, Interactable
             if (bodies[i] is PhysicalFactoryItem item && GameWorld.syncedObjs.ContainsKey(item.id))
             {
                 yield return item;
+            }
+        }
+    }
+
+    /// <summary>
+    /// The synced items in the volumes of its input ports (<see cref="StructurePort.volume"/>), each volume read once
+    /// however many ports share it: what a machine takes in.
+    /// </summary>
+    protected IEnumerable<PhysicalFactoryItem> ItemsAtInputs()
+    {
+        FindPortNodes();
+        for (int v = 0; v < inputVolumes.Count; v++)
+        {
+            foreach (PhysicalFactoryItem item in ItemsInTrigger(inputVolumes[v]))
+            {
+                yield return item;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Where its <paramref name="output"/>th output port that has a <see cref="StructurePort.spawn"/> puts an item, in
+    /// world space: the spawn node's position, or a random point in one of its boxes if it's a volume. The structure's
+    /// own position if it has no such port.
+    /// </summary>
+    protected Vector3 OutputPosition(int output = 0)
+    {
+        FindPortNodes();
+        if (output >= outputSpawns.Count)
+        {
+            return GlobalPosition;
+        }
+        var (node, boxes, totalWeight) = outputSpawns[output];
+        if (boxes.Length == 0)
+        {
+            return node.GlobalPosition;
+        }
+        // A box picked by volume, then a point in it.
+        float pick = Random.Shared.NextSingle() * totalWeight;
+        var box = boxes[^1];
+        foreach (var b in boxes)
+        {
+            if ((pick -= b.weight) <= 0) { box = b; break; }
+        }
+        Vector3 local = new((Random.Shared.NextSingle() * 2 - 1) * box.half.X, (Random.Shared.NextSingle() * 2 - 1) * box.half.Y,
+            (Random.Shared.NextSingle() * 2 - 1) * box.half.Z);
+        return node.GlobalTransform * (box.xf * local);
+    }
+
+    private List<Node3D> inputVolumes;
+    private List<(Node3D node, (Transform3D xf, Vector3 half, float weight)[] boxes, float totalWeight)> outputSpawns;
+
+    // The nodes the declared ports link to, looked up once (StructurePorts.Validate reports bad links).
+    private void FindPortNodes()
+    {
+        if (inputVolumes != null)
+        {
+            return;
+        }
+        inputVolumes = new();
+        outputSpawns = new();
+        foreach (StructurePort port in ports)
+        {
+            if (port == null) continue;
+            if (port.kind == PortKind.Input && port.volume?.IsEmpty == false && GetNodeOrNull<Node3D>(port.volume) is Node3D volume
+                && !inputVolumes.Contains(volume))
+            {
+                inputVolumes.Add(volume);
+            }
+            else if (port.kind == PortKind.Output && port.spawn?.IsEmpty == false && GetNodeOrNull<Node3D>(port.spawn) is Node3D spawn)
+            {
+                var boxes = StructurePorts.SpawnBoxes(spawn);
+                float total = 0;
+                foreach (var b in boxes) total += b.weight;
+                outputSpawns.Add((spawn, boxes, total));
             }
         }
     }
@@ -166,6 +260,15 @@ public partial class Structure : GMPOBox3DBody, Interactable
         {
             this.occupiedCells = new Godot.Collections.Array<Vector3I>(placedIn);
         }
+        if (validatedScenes.Add(SceneFilePath))
+        {
+            foreach (string problem in StructurePorts.Validate(this))
+            {
+                Logging.Warn($"{SceneFilePath}: {problem}", "StructurePorts");
+            }
+        }
+        // Ports first: they settle a self-turning conveyor's form, and so which of its belts joins.
+        BuildGrid.RegisterPorts(this);
         // Its belts have no colliders of their own: they join the merged belt lines.
         BuildGrid.RegisterBelts(this);
         // Structures never follow synced state, so only machines with their own _PhysicsProcess keep processing on.
@@ -179,6 +282,7 @@ public partial class Structure : GMPOBox3DBody, Interactable
     public override void _ExitTree()
     {
         BuildGrid.Vacate(this);
+        BuildGrid.UnregisterPorts(this);
         BuildGrid.UnregisterBelts(this);
     }
 }

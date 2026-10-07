@@ -6,6 +6,7 @@ and converted with b2g(): Godot = (x, z, -y). The scene root is the anchor cell'
 Transform3D text is written row-major (Godot's Basis rows), matching the existing scenes.
 """
 import os, re, json, struct, math, random, hashlib
+from contextlib import contextmanager
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SENSOR_LAYER = 1073741824        # layer the machines' trigger sensors use (see Grinder.tscn)
@@ -19,7 +20,10 @@ SCRIPTS = {                      # res path -> uid (read from the .uid files whe
     "lever": "res://game/scripts/entities/Lever.cs",
     "oscillator": "res://game/scripts/entities/Oscillator.cs",
     "belt": "res://game/scripts/items/placed/ConveyorBelt.cs",
+    "conveyor": "res://game/scripts/items/placed/ConveyorStructure.cs",
+    "port": "res://game/scripts/items/placed/StructurePort.cs",
 }
+PORT_FACES = {"Front": 0, "Back": 1, "Left": 2, "Right": 3, "Top": 4, "Bottom": 5}
 
 def res_to_abs(res):
     return os.path.join(REPO, res[len("res://"):])
@@ -176,18 +180,45 @@ def glb_children(glb_res):
 class Scene:
     """One structure scene. Geometry calls take Godot coordinates; the *_b helpers take Blender ones.
     `xf` (a rotation about the root) is applied to every shape and to the model, for turned variants
-    (the magnetic conveyors' wall and ceiling forms)."""
+    (the magnetic conveyors' wall and ceiling forms). Inside `variant()` the same calls write into one of the
+    scene's alternative forms instead of onto the root."""
 
     def __init__(self, name, model_res=None, import_script=None, xf=None, xo=(0, 0, 0)):
         self.name = name
-        self.ext_lines, self.ext_ids, self.nodes = [], {}, []
+        self.ext_lines, self.ext_ids, self.nodes, self.subs = [], {}, [], []
         self.belt_count = 0
         self.xf = xf or IDENT
         self.xo = xo                    # translation applied after xf (e.g. turning about the footprint centre)
+        self.group = None               # the variant being written (see variant), or None for the root
         self.model_res = model_res
         self.model_nodes = glb_children(model_res) if model_res else {}
         if model_res:
             self.model_id = self.ext("PackedScene", model_res, ensure_import(model_res, import_script))
+
+    def _parent(self, parent):
+        """A node's parent path: "." means the root, or the variant being written."""
+        return self.group if parent == "." and self.group else parent
+
+    def _in_group(self, path):
+        """A path under the root, or under the variant being written."""
+        return f"{self.group}/{path}" if self.group else path
+
+    @contextmanager
+    def variant(self, name, model_res, import_script, xf=None, active=False):
+        """One alternative form of the structure (e.g. a conveyor's straight and turns, see ConveyorStructure.cs):
+        a static sub-body holding its own model, belts and colliders, written by the calls made inside the block,
+        turned by `xf` about the root. Box3D only takes the shapes that are a body's direct children and ignores
+        shape nodes added or removed at runtime, so a form is switched by enabling its whole sub-body; all but the
+        `active` one start disabled and hidden."""
+        self.body(name, extra=() if active else ("enabled = false", "visible = false"))
+        saved = (self.group, self.xf, self.xo, self.model_res, self.model_nodes, getattr(self, "model_id", None), self.belt_count)
+        self.group, self.xf, self.xo, self.belt_count = name, xf or IDENT, (0, 0, 0), 0
+        self.model_res, self.model_nodes = model_res, glb_children(model_res)
+        self.model_id = self.ext("PackedScene", model_res, ensure_import(model_res, import_script))
+        try:
+            yield
+        finally:
+            self.group, self.xf, self.xo, self.model_res, self.model_nodes, self.model_id, self.belt_count = saved
 
     def ext(self, kind, res, uid=None):
         if res in self.ext_ids:
@@ -205,37 +236,54 @@ class Scene:
         self.nodes += [header] + [p for p in props if p] + [""]
 
     # --- root and model
-    def root(self, script_key, blueprint=None, cells=((0, 0, 0),), arrow=0, tags=(TAG_METAL,), extra=(), paths=None):
+    def root(self, script_key, blueprint=None, cells=((0, 0, 0),), tags=(TAG_METAL,), extra=(), paths=None, layers=2, ports=()):
+        """cells: the 2 m module cells the structure fills (the models are built on them), written out as the 1 m
+        build grid cells covering them: two across each way and `layers` (1 or 2) tall. The root sits at the
+        anchor module's centre, half a cell up and across from the anchor cell's centre (placementOffset).
+        ports: (kind "in"/"out", 1 m cell, face name, (cells across, cells up), {optional "volume"/"spawn": node
+        path}) per StructurePort (StructurePort.cs); belt ends are ports already."""
+        cells = [(2 * x + dx, 2 * y + dy, 2 * z + dz) for x, y, z in cells
+                 for dy in range(layers) for dz in range(2) for dx in range(2)]
         header = f'[node name="{self.name}" type="Box3DBody"'
         if paths:
             header += ' node_paths=PackedStringArray(' + ", ".join(f'"{p}"' for p in paths) + ')'
         header += "]"
         props = ["body_type = 0", 'box_size = Vector3(0, 0, 0)', f'script = ExtResource("{self.script(script_key)}")']
         props += list(extra)
-        if len(cells) > 1 or tuple(cells[0]) != (0, 0, 0):
-            props.append("cellOffsets = Array[Vector3i]([" + ", ".join(f"Vector3i({a}, {b}, {c})" for a, b, c in cells) + "])")
+        props.append("cellOffsets = Array[Vector3i]([" + ", ".join(f"Vector3i({a}, {b}, {c})" for a, b, c in cells) + "])")
+        props.append("placementOffset = Vector3(0.5, 0.5, 0.5)")
+        if ports:
+            sid = self.ext("Script", SCRIPTS["port"])
+            for i, (kind, cell, face, size, *more) in enumerate(ports):
+                lines = [f'[sub_resource type="Resource" id="Port_{i}"]', f'script = ExtResource("{sid}")']
+                if kind == "out":
+                    lines.append("kind = 1")
+                lines += [f"cell = Vector3i({cell[0]}, {cell[1]}, {cell[2]})", f"face = {PORT_FACES[face]}",
+                          f"size = Vector2i({size[0]}, {size[1]})"]
+                for key, path in (more[0] if more else {}).items():
+                    lines.append(f'{key} = NodePath("{path}")')
+                self.subs.append("\n".join(lines))
+            props.append(f'ports = Array[ExtResource("{sid}")]([' + ", ".join(f'SubResource("Port_{i}")' for i in range(len(ports))) + "])")
         if blueprint is not None:
             props.append(f'blueprintItemID = "{blueprint}"')
-        if arrow:
-            props.append(f"flowArrow = {arrow}")
         if tags:
             props.append("tags = Array[int]([" + ", ".join(str(t) for t in tags) + "])")
         self.node(header, *props)
 
     def model(self):
         plain = is_ident(self.xf) and not any(self.xo)
-        self.node(f'[node name="Model" parent="." instance=ExtResource("{self.model_id}")]',
+        self.node(f'[node name="Model" parent="{self._parent(".")}" instance=ExtResource("{self.model_id}")]',
                   None if plain else f"transform = {xform_text(self.xf, self.xo)}")
 
     def model_prop(self, path, *props):
         """Override properties of a node inside the model (e.g. the belt speed)."""
-        parent, name = ("Model/" + path).rsplit("/", 1)
+        parent, name = self._in_group("Model/" + path).rsplit("/", 1)
         idx = self.model_nodes.get(path)
         self.node(f'[node name="{name}" parent="{parent}"' + (f' index="{idx}"' if idx is not None else "") + "]", *props)
 
     def autoplay(self, clip="idle-loop"):
         """Start the model's baked animation clip (the salvage exports carry one looping clip)."""
-        self.node('[node name="AnimationPlayer" parent="Model"]', f'autoplay = "{clip}"')
+        self.node(f'[node name="AnimationPlayer" parent="{self._in_group("Model")}"]', f'autoplay = "{clip}"')
 
     def spin(self, path, axis_g, speed):
         """Cosmetic Spinner on a model node (axis in the node's local Godot frame, rad/s)."""
@@ -255,7 +303,7 @@ class Scene:
                  f"user_material_id = {material}" if material else None,
                  f"tangent_velocity = {v3(t)}" if t else None] + list(extra)
         props.append(f"position = {v3(p)}" if is_ident(m) else f"transform = {xform_text(m, p)}")
-        self.node(f'[node name="{name}" type="Box3DCollisionShape" parent="{parent}"]', *props)
+        self.node(f'[node name="{name}" type="Box3DCollisionShape" parent="{self._parent(parent)}"]', *props)
 
     def box_b(self, name, center, size, parent=".", **kw):
         """Axis-aligned box from Blender centre / size."""
@@ -274,7 +322,7 @@ class Scene:
         """Child Box3DBody: a static sub-body (moving parts) or a trigger sensor (size = its box)."""
         m = mat_mul(self.xf, basis or IDENT) if parent == "." else (basis or IDENT)
         p = add(mat_vec(self.xf, pos_g), self.xo) if parent == "." else pos_g
-        header = f'[node name="{name}" type="Box3DBody" parent="{parent}"'
+        header = f'[node name="{name}" type="Box3DBody" parent="{self._parent(parent)}"'
         if paths:
             header += ' node_paths=PackedStringArray(' + ", ".join(f'"{x}"' for x in paths) + ')'
         header += "]"
@@ -287,11 +335,13 @@ class Scene:
         props.append(f"position = {v3(p)}" if is_ident(m) else f"transform = {xform_text(m, p)}")
         self.node(header, *props)
 
-    def belt(self, points_g, speed, friction=None, climb=None, width=None, ret=False, ret_width=None, ret_depth=None, normal_g=(0, 1, 0), prefix="", visual="Belt"):
+    def belt(self, points_g, speed, friction=None, climb=None, width=None, ret=False, ret_width=None, ret_depth=None, normal_g=(0, 1, 0), prefix="", visual="Belt", end_port=True):
         """A ConveyorBelt: the carrying surface's centreline (Godot frame, in flow order) and how it moves. It has no
         collider of its own; the build grid merges belts whose ends meet into seamless lines (BuildGrid.Belts.cs).
         ret: the belt exposes its return run underneath (the conveyor families do; machines' belts don't).
-        visual: name of the model's belt mesh, whose scrolling pattern the line keeps continuous across pieces."""
+        visual: name of the model's belt mesh, whose scrolling pattern the line keeps continuous across pieces.
+        end_port: False when the belt's end hands items on some other way than across a cell face (a loader's kicker,
+        a launcher's lip), so it isn't a port (StructurePorts.cs)."""
         pts = [add(mat_vec(self.xf, p), self.xo) for p in points_g]
         n = mat_vec(self.xf, normal_g)
         name = f"{prefix}Belt" + (str(self.belt_count) if self.belt_count else "")
@@ -307,10 +357,17 @@ class Scene:
                   f"speed = {ff(speed)}",
                   f"climbSpeed = {ff(climb)}" if climb else None,
                   f"friction = {ff(friction if friction is not None else BELT_FRICTION)}"]
+        if not end_port:
+            props.append("endIsPort = false")
         if ret:
             props += [f"returnDepth = {ff(ret_depth if ret_depth is not None else BELT_H)}",
                       f"returnWidth = {ff(ret_width if ret_width is not None else 2 * LIP_X[0])}"]
-        self.node(f'[node name="{name}" type="Node3D" parent="."]', *props)
+        self.node(f'[node name="{name}" type="Node3D" parent="{self._parent(".")}"]', *props)
+
+    def marker(self, name, pos_g):
+        """A Marker3D (e.g. an output port's spawn point, StructurePort.spawn)."""
+        p = add(mat_vec(self.xf, pos_g), self.xo)
+        self.node(f'[node name="{name}" type="Marker3D" parent="{self._parent(".")}"]', f"position = {v3(p)}")
 
     def sensor_b(self, name, center, size, parent="."):
         self.body(name, b2g(center) if parent == "." else center, sensor=True, size=(size[0], size[2], size[1]), parent=parent)
@@ -325,7 +382,8 @@ class Scene:
             m = re.search(r'uid="([^"]+)"', first)
             if m:
                 header = f'[gd_scene format=3 uid="{m.group(1)}"]'
-        text = "\n".join([header, ""] + self.ext_lines + [""] + self.nodes).rstrip() + "\n"
+        subs = [line for sub in self.subs for line in (sub, "")]
+        text = "\n".join([header, ""] + self.ext_lines + [""] + subs + self.nodes).rstrip() + "\n"
         open(path, "w", newline="\n").write(text)
         return rel_path
 
@@ -435,11 +493,11 @@ def profile_points(prof, s0, s1, step=0.02):
     n = max(1, int(math.ceil((s1 - s0) / step)))
     return [b2g((0,) + tuple(prof(s0 + (s1 - s0) * i / n)[0])) for i in range(n + 1)]
 
-def belt_along(sc, prof, st, speed, friction=BELT_FRICTION, prefix="", y_bounds=None, climb=None, reverse=False, ret=False):
+def belt_along(sc, prof, st, speed, friction=BELT_FRICTION, prefix="", y_bounds=None, climb=None, reverse=False, ret=False, end_port=True):
     """A belt along a profile, from its first station to its last (reverse: the other way). The path is resampled
     and simplified (see simplify), so the stations only need to bound it. ret: expose the return run underneath."""
     pts = simplify(profile_points(prof, st[0], st[-1]))
-    sc.belt(pts[::-1] if reverse else pts, speed, friction=friction, climb=climb, ret=ret, prefix=prefix)
+    sc.belt(pts[::-1] if reverse else pts, speed, friction=friction, climb=climb, ret=ret, prefix=prefix, end_port=end_port)
 
 def walls_along(sc, prof, st, wall_top, side, prefix="", lips=True, y_bounds=None):
     """One side's guard wall (stringer + panels, up to wall_top above the belt) and underside lip."""

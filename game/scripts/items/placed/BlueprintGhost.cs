@@ -5,19 +5,18 @@ using System.Collections.Generic;
 /// The in-hand scene of every <see cref="BlueprintItem"/>. On the local player it shows a translucent
 /// <see cref="PlacementProbe"/> of the blueprint's structure where it would be built (face-snapped, see
 /// <see cref="BuildGrid.TryGetPlacementTarget"/>), tinted by whether the placement is allowed, which the
-/// probe's sensors check against the simulation. Structures with a <see cref="Structure.flowArrow"/> (conveyors)
-/// also get a floating arrow showing which way they'll carry items. While shown it reveals the grid around itself
+/// probe's sensors check against the simulation. Floating arrows show which way a belt carries items, or where a
+/// machine takes them in and lets them out (<see cref="FlowArrowMesh"/>). While shown it reveals the grid around itself
 /// and highlights the face it's snapped to (<see cref="BuildGrid.placementActive"/>, BuildGrid.Reveal.cs). Other players' copies stay empty. As a <see cref="HeldItem"/>
-/// it handles its own input: "rotate" turns the preview, "alternate" switches a two-form blueprint (e.g. left/right
-/// turn, uphill/downhill slope) to its other form, and primary builds it (host-arbitrated, see
-/// BuildGrid.Placement.cs). Deconstructing is an interact on a structure (FactoryPlayer.Interaction.cs).
+/// it handles its own input: "rotate" turns the preview, "alternate" switches a two-form blueprint (e.g. uphill/downhill
+/// slope) to its other form, and primary builds it (host-arbitrated, see BuildGrid.Placement.cs). A floor conveyor
+/// previews the form it would take where it's aimed (<see cref="ConveyorStructure"/>, see <see cref="PlacementProbe.MoveTo"/>). Deconstructing is an interact on a structure (FactoryPlayer.Interaction.cs).
 /// </summary>
 public partial class BlueprintGhost : HeldItem
 {
     [Export] public float placeRange = 10f;
     [Export] public Color validColor = new(0.2f, 1f, 0.3f, 0.35f);
     [Export] public Color invalidColor = new(1f, 0.2f, 0.2f, 0.35f);
-    [Export] public Color arrowColor = new(1f, 1f, 1f, 0.55f);
 
     public BlueprintItem blueprint => item as BlueprintItem;
     /// <summary>The anchor cell the structure would be built at, or null when not looking at anything in range.</summary>
@@ -45,8 +44,9 @@ public partial class BlueprintGhost : HeldItem
     public bool canPlace { get; private set; }
 
     PlacementProbe probe;
-    // The preview's belt ends in its own frame, for lining it up with built belts (empty for non-belt structures).
-    List<Vector3> beltEnds = new();
+    // The preview's ports in its own frame, for lining it up with built structures. A self-turning conveyor's
+    // include every form's, so it also lines up with a belt that would feed its side.
+    IReadOnlyList<PortShape> ports = [];
     readonly StandardMaterial3D material = new()
     {
         ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
@@ -78,10 +78,10 @@ public partial class BlueprintGhost : HeldItem
         probe = PlacementProbe.Create(blueprint.StructureScene(showingAlternate), false);
         if (probe == null)
         {
-            beltEnds = new();
+            ports = [];
             return;
         }
-        beltEnds = BuildGrid.LocalBeltEnds(probe.structure);
+        ports = probe.structure.allLocalPorts;
         foreach (Node n in probe.structure.FindChildren("*", nameof(MeshInstance3D), true, false))
         {
             // Set through the engine rather than casting: a mesh can carry its own script (e.g. a Spinner),
@@ -89,16 +89,24 @@ public partial class BlueprintGhost : HeldItem
             n.Set(GeometryInstance3D.PropertyName.MaterialOverride, material);
             n.Set(GeometryInstance3D.PropertyName.CastShadow, (int)GeometryInstance3D.ShadowCastingSetting.Off);
         }
-        // Conveyors show which way they'll carry items; the arrow belongs to the preview only.
-        if (FlowArrowMesh.Create(probe.structure, new StandardMaterial3D
-            {
-                ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
-                Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
-                AlbedoColor = arrowColor,
-            }) is MeshInstance3D arrow)
+        RefreshArrows();
+    }
+
+    // The preview's arrows (FlowArrowMesh): which way a belt carries items, or where a structure takes them in and
+    // lets them out. Rebuilt when a self-turning conveyor's preview changes form, since its way in moves.
+    Node3D arrows;
+    ConveyorStructure.Shape? arrowsShape;
+
+    void RefreshArrows()
+    {
+        // Freed already if the preview it hung on was replaced.
+        if (GodotObject.IsInstanceValid(arrows)) arrows.QueueFree();
+        arrows = FlowArrowMesh.Create(probe.structure);
+        if (arrows != null)
         {
-            probe.structure.AddChild(arrow);
+            probe.structure.AddChild(arrows);
         }
+        arrowsShape = (probe.structure as ConveyorStructure)?.shape;
     }
 
     public override void _ExitTree()
@@ -117,7 +125,8 @@ public partial class BlueprintGhost : HeldItem
     {
         if (@event.IsActionPressed(InputActions.rotate))
         {
-            quarterTurns = (quarterTurns + 1) % 4;
+            // Clockwise seen from above: a quarter turn of negative yaw.
+            quarterTurns = (quarterTurns + 3) % 4;
             return true;
         }
         if (@event.IsActionPressed(InputActions.alternate))
@@ -133,13 +142,13 @@ public partial class BlueprintGhost : HeldItem
             if (canPlace && targetCell is Vector3I cell)
             {
                 // Read before requesting: using up the blueprint re-equips the slot, which can free this ghost's probe.
-                FlowArrow flow = probe.structure.flowArrow;
+                int? outputTurns = StructurePorts.OutputQuarterTurns(probe.structure.localPorts);
                 int placedTurns = quarterTurns;
                 BuildGrid.RequestPlace(player, blueprint, cell, quarterTurns, showingAlternate);
                 // Pre-rotate the next placement to carry on from this one's output, whatever blueprint comes next.
-                if (flow != FlowArrow.None && smartPlacement)
+                if (outputTurns is int turns && smartPlacement)
                 {
-                    quarterTurns = (placedTurns + flow.OutputQuarterTurns()) % 4;
+                    quarterTurns = (placedTurns + turns) % 4;
                 }
             }
             return true;
@@ -174,10 +183,10 @@ public partial class BlueprintGhost : HeldItem
             BuildGrid.placementFace = null;
             return;
         }
-        // A belt aimed a cell off a built belt's end is pulled into line with it, so the two merge.
+        // A structure aimed a cell off a built one's port is pulled into line with it, so they connect (and belts merge).
         if (smartPlacement)
         {
-            anchor = BuildGrid.AlignBeltEnds(probe.structure, beltEnds, anchor, quarterTurns);
+            anchor = BuildGrid.AlignPorts(probe.structure, ports, anchor, quarterTurns);
         }
         BuildGrid.placementFocus = FootprintCentre(anchor);
         BuildGrid.placementFace = ContactFace(anchor, faceNormal);
@@ -187,6 +196,10 @@ public partial class BlueprintGhost : HeldItem
             targetCell = anchor;
             probe.MoveTo(anchor, quarterTurns);
             probe.structure.Visible = true;
+            if (probe.structure is ConveyorStructure conveyor && conveyor.shape != arrowsShape)
+            {
+                RefreshArrows();
+            }
         }
         // Until the probe settles its overlaps still describe the previous pose: keep the old tint, don't allow placing.
         if (!probe.settled)

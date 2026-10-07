@@ -15,8 +15,6 @@ SIZE = 128
 ICONS = [
     ("Conveyor_Straight", "blueprints/blueprint_conveyor.png", "blueprint", (1.3, 1.0, 1.05)),
     ("Conveyor_Slope", "blueprints/blueprint_conveyor_slope.png", "blueprint", (1.6, 0.9, 1.0)),
-    ("Conveyor_TurnRight", "blueprints/blueprint_conveyor_turn_right.png", "blueprint", (-0.35, -0.9, 1.6)),
-    ("Conveyor_TurnLeft", "blueprints/blueprint_conveyor_turn_left.png", "blueprint", (0.35, -0.9, 1.6)),
     ("Prop_Grinder", "blueprints/blueprint_grinder.png", "blueprint", (1.2, 1.3, 0.8)),
     ("Prop_Spawner", "blueprints/blueprint_item_spawner.png", "blueprint", (1.0, 1.4, 0.8)),
     ("Prop_Void", "blueprints/blueprint_item_void.png", "blueprint", (0.9, -1.3, 1.3)),

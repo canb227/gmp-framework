@@ -10,7 +10,6 @@ script = ExtResource("2_r")
 cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, 1), Vector3i(1, 0, 1), Vector3i(0, 1, 0), Vector3i(1, 1, 0), Vector3i(0, 1, 1), Vector3i(1, 1, 1)])
 placementOffset = Vector3(0.5, 0.5, 0.5)
 blueprintItemID = ""
-flowArrow = 3
 tags = Array[int]([3])
 
 [node name="Model" parent="." instance=ExtResource("1_r")]

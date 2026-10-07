@@ -13,6 +13,6 @@ itemSubmissionObjectives = Dictionary[String, int]({
 itemSubmissionProgress = Dictionary[String, int]({
 "scrap_ball": 0
 })
-onCompleteUnlockedItems = Array[String](["blueprint_conveyor", "blueprint_conveyor_slope", "blueprint_conveyor_turn", "blueprint_conveyor_loader", "blueprint_scrap_grabber"])
+onCompleteUnlockedItems = Array[String](["blueprint_conveyor", "blueprint_conveyor_slope", "blueprint_conveyor_loader", "blueprint_scrap_grabber"])
 onCompleteUnlockQuests = Array[String](["quest_intro_01"])
 metadata/_custom_type_script = "uid://crybn2gwdne7r"

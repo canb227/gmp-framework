@@ -56,17 +56,29 @@ public partial class BuildGrid
     private static Node3D beltLineRoot;
     private static int beltLineCounter;
 
-    /// <summary>Adds <paramref name="structure"/>'s belts to the lines (from <see cref="Structure.AfterInit"/>).</summary>
+    /// <summary>
+    /// Adds <paramref name="structure"/>'s belts to the lines (from <see cref="Structure.AfterInit"/>, after its ports,
+    /// which settle a self-turning conveyor's form: only that form's belt joins).
+    /// </summary>
     public static void RegisterBelts(Structure structure)
     {
-        if (beltsByStructure.ContainsKey(structure))
+        if (!beltsByStructure.ContainsKey(structure))
         {
-            return;
+            AddBelts(structure);
         }
+    }
+
+    /// <summary>Takes <paramref name="structure"/>'s belts out of their lines (from <see cref="Structure._ExitTree"/>).</summary>
+    public static void UnregisterBelts(Structure structure) => RemoveBelts(structure);
+
+    // Registers the structure's belts (only the current form's, for a conveyor) and returns them, or null if it has none.
+    private static List<BeltEntry> AddBelts(Structure structure)
+    {
         List<BeltEntry> entries = null;
+        ConveyorBelt only = (structure as ConveyorStructure)?.activeBelt;
         foreach (Node n in structure.FindChildren("*", "", true, false))
         {
-            if (n is not ConveyorBelt belt || belt.points.Length < 2)
+            if (n is not ConveyorBelt belt || belt.points.Length < 2 || (only != null && belt != only))
             {
                 continue;
             }
@@ -90,14 +102,15 @@ public partial class BuildGrid
         {
             beltsByStructure[structure] = entries;
         }
+        return entries;
     }
 
-    /// <summary>Takes <paramref name="structure"/>'s belts out of their lines (from <see cref="Structure._ExitTree"/>).</summary>
-    public static void UnregisterBelts(Structure structure)
+    // Unregisters the structure's belts, rebuilding the rest of their lines, and returns them, or null if it had none.
+    private static List<BeltEntry> RemoveBelts(Structure structure)
     {
         if (!beltsByStructure.Remove(structure, out List<BeltEntry> entries))
         {
-            return;
+            return null;
         }
         foreach (BeltEntry entry in entries)
         {
@@ -116,6 +129,7 @@ public partial class BuildGrid
                 }
             }
         }
+        return entries;
     }
 
     /// <summary>Rebuilds the line holding <paramref name="belt"/>, after its speed, friction or the like changed.</summary>
@@ -125,75 +139,6 @@ public partial class BuildGrid
         {
             dirtyBelts.Add(entry);
         }
-    }
-
-    /// <summary>
-    /// The ends of <paramref name="structure"/>'s belts in its root's own frame. For a placement preview, whose belts
-    /// are never registered; pass the result to <see cref="AlignBeltEnds"/>.
-    /// </summary>
-    public static List<Vector3> LocalBeltEnds(Structure structure)
-    {
-        var ends = new List<Vector3>();
-        foreach (Node n in structure.FindChildren("*", "", true, false))
-        {
-            if (n is not ConveyorBelt belt || belt.points.Length < 2)
-            {
-                continue;
-            }
-            Transform3D rel = belt.Transform;
-            for (Node p = belt.GetParent(); p != structure && p != null; p = p.GetParent())
-            {
-                if (p is Node3D p3) rel = p3.Transform * rel;
-            }
-            ends.Add(rel * belt.points[0]);
-            ends.Add(rel * belt.points[^1]);
-        }
-        return ends;
-    }
-
-    /// <summary>
-    /// Nudges a belt structure's <paramref name="anchor"/> by up to one cell on each axis so its belt ends
-    /// (<paramref name="localEnds"/>, from <see cref="LocalBeltEnds"/>) meet the ends of belts already built, which is
-    /// what merges them into one line. Structures are wider than a cell, so aiming lands a belt a cell off its
-    /// neighbour about half the time; this pulls it into line. Of the free placements, the one meeting the most ends
-    /// wins, then the one nearest the aimed anchor. Returns <paramref name="anchor"/> unchanged if none meets an end.
-    /// </summary>
-    public static Vector3I AlignBeltEnds(Structure structure, List<Vector3> localEnds, Vector3I anchor, int quarterTurns)
-    {
-        if (localEnds.Count == 0 || beltEnds.Count == 0)
-        {
-            return anchor;
-        }
-        Vector3I best = anchor;
-        int bestMet = 0, bestDistance = int.MaxValue;
-        for (int x = -1; x <= 1; x++)
-        {
-            for (int y = -1; y <= 1; y++)
-            {
-                for (int z = -1; z <= 1; z++)
-                {
-                    Vector3I candidate = anchor + new Vector3I(x, y, z);
-                    int distance = x * x + y * y + z * z;
-                    Transform3D xf = structure.PlacementTransform(candidate, quarterTurns);
-                    int met = 0;
-                    foreach (Vector3 end in localEnds)
-                    {
-                        if (beltEnds.ContainsKey(EndKey(xf * end))) met++;
-                    }
-                    if (met == 0 || met < bestMet || (met == bestMet && distance >= bestDistance))
-                    {
-                        continue;
-                    }
-                    if (CanPlace(candidate, structure.cellOffsets, quarterTurns))
-                    {
-                        best = candidate;
-                        bestMet = met;
-                        bestDistance = distance;
-                    }
-                }
-            }
-        }
-        return best;
     }
 
     /// <summary>True for a merged belt line body (a hit on one belongs to the structure in the hit cell, see <see cref="FindStructure(in RayHit)"/>).</summary>
@@ -238,6 +183,7 @@ public partial class BuildGrid
         belts.Clear();
         beltsByStructure.Clear();
         beltEnds.Clear();
+        ResetPorts();
         dirtyBelts.Clear();
         retiredLineBodies.Clear();
         if (GodotObject.IsInstanceValid(beltLineRoot))

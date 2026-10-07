@@ -435,8 +435,8 @@ def build_void():
 # ======================================================================================
 # Smelter: 2 x 2 x 2 cells (origin = anchor cell centre; footprint x -1..3, y -1..3, z -1..3). A furnace rebuilt
 # from facility wall panels: panelled lower housing with the output mouth at belt height in front of the anchor
-# column (+Y); an open hopper across the back of the upper level with a low intake lip at the back (-Y) so an
-# upper-level conveyor can feed it; a panelled kiln with a molten seam and a chimney over the front half.
+# column (+Y); a hopper boxed in on all four sides across the back of the upper level, so items are dropped in from
+# above; a panelled kiln with a molten seam and a chimney over the front half.
 # ======================================================================================
 SM_C = Vector((1.0, 1.0, 0.0))                      # footprint centre (x, y)
 SM_FACES = {"F": (Vector((0, 1, 0)), Vector((1, 0, 0))), "B": (Vector((0, -1, 0)), Vector((1, 0, 0))),
@@ -548,7 +548,7 @@ def build_smelter():
         B.box(gp + Vector((0.006, math.cos(a) * 0.045, math.sin(a) * 0.045)), (0.003, 0.09, 0.01), Matrix.Rotation(a, 3, 'X'), "glow", (1.0, 0.15, 0.1), 0.05)
     B.box(Vector((2.985, 0.5, 0.22)), (0.006, 0.6, 0.08), I3, "tape", C_TAPE, 0.25)
 
-    # ---- upper level, back half: open hopper with a low intake lip at the back ----
+    # ---- upper level, back half: hopper walled on all four sides (fed from above) ----
     for sx in (-1, 1):
         x = 1 + sx * 1.9
         B.box(Vector((x, 0.0, 1.625)), (0.13, 1.98, 1.15), I3, "metal", C_FRAME, 0.2, rust=0.4)
@@ -561,12 +561,15 @@ def build_smelter():
     B.box(Vector((1.0, 0.855, 1.6)), (3.7, 0.012, 0.95), I3, "steel", L["C_WEAR"], 0.12, rust=0.1)
     for x0 in (-0.95, 0.05, 2.03):                                                               # cladding facing the kiln
         B.box(Vector((x0 + 0.46, 1.0, 1.66)), (0.9, 0.02, 1.0), I3, "panel", C_WHITE if x0 != 0.05 else (0.6, 0.6, 0.58), 0.3)
-    B.box(Vector((1.0, -0.925, 1.11)), (3.98, 0.13, 0.12), I3, "steel", C_STEEL, 0.2, rust=0.5)         # intake lip
-    hazard(B, Vector((-0.99, -0.991, 1.055)), (1, 0, 0), (0, 0, 1), 3.98, 0.11, (0, -1, 0), pitch=0.1)
-    for sx in (-1, 1):                                                                            # intake posts
+    B.box(Vector((1.0, -0.925, 1.625)), (3.98, 0.13, 1.15), I3, "metal", C_FRAME, 0.2, rust=0.4)        # back wall
+    B.box(Vector((1.0, -0.855, 1.6)), (3.7, 0.012, 0.95), I3, "steel", L["C_WEAR"], 0.12, rust=0.1)
+    for x0 in (-0.95, 0.05, 1.05, 2.03):                                                         # cladding facing out
+        B.box(Vector((x0 + 0.46, -1.0, 1.55)), (0.9, 0.02, 0.9), I3, "panel", C_WHITE if x0 != 1.05 else C_DARK, 0.3)
+    hazard(B, Vector((-0.99, -1.0115, 2.03)), (1, 0, 0), (0, 0, 1), 3.98, 0.15, (0, -1, 0), pitch=0.12)
+    for sx in (-1, 1):                                                                            # corner posts
         B.box(Vector((1 + sx * 1.925, -0.925, 1.625)), (0.14, 0.14, 1.15), I3, "metal", C_DARK, 0.2, rust=0.3)
-    for (c, s) in ((Vector((1, 0.925, 2.22)), (3.98, 0.16, 0.06)), (Vector((-0.91, 0, 2.22)), (0.16, 1.98, 0.06)),
-                   (Vector((2.91, 0, 2.22)), (0.16, 1.98, 0.06))):                                 # rolled rim
+    for (c, s) in ((Vector((1, 0.925, 2.22)), (3.98, 0.16, 0.06)), (Vector((1, -0.925, 2.22)), (3.98, 0.16, 0.06)),
+                   (Vector((-0.91, 0, 2.22)), (0.16, 1.98, 0.06)), (Vector((2.91, 0, 2.22)), (0.16, 1.98, 0.06))):  # rolled rim
         B.box(c, s, I3, "metal", C_DARK, 0.2, rust=0.4)
     # hopper floor: grate bars over the glowing melt
     B.box(Vector((1.0, 0.0, 1.056)), (3.72, 1.72, 0.01), I3, "molten", C_MOLTEN, 0.05)

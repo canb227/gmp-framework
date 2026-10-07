@@ -19,12 +19,15 @@ M = "res://game/assets/models/machines/"
 def cells_1xn(n, h=1):
     return [(0, y, -z) for y in range(h) for z in range(n)]
 
-def grinder_root(sc, blueprint, cells, output_b, process_time, arrow=0):
-    sc.root("grinder", blueprint, cells=cells, arrow=arrow, paths=("hopperTrigger",), extra=[
-        'hopperTrigger = NodePath("Trigger")',
+def grinder_root(sc, blueprint, cells, output_b, process_time):
+    """A press on a 2 m-wide belt through its footprint (Grinder.cs): its belt's ends are its ports, declared here so
+    they carry the Trigger it reads items from and the OutputSpawn (output_b, Blender frame) it puts them at."""
+    sc.root("grinder", blueprint, cells=cells, extra=[
         "recipes = Dictionary[String, String]({})",
-        f"outputPoint = {v3(b2g(output_b))}",
-        f"processTime = {f(process_time)}"])
+        f"processTime = {f(process_time)}"],
+        ports=(("in", (0, 0, 1), "Back", (2, 1), {"volume": "Trigger"}),
+               ("out", (0, 0, -2), "Front", (2, 1), {"spawn": "OutputSpawn"})))
+    sc.marker("OutputSpawn", b2g(output_b))
 
 def post_b(sc, name, p0, p1, r=0.03):
     """Thin box along a scaffold pipe (Blender end points)."""
@@ -40,7 +43,7 @@ RAMP_SPEED = 8.0
 
 def launch_ramp():
     sc = Scene("LaunchRamp", M + "launchers/launch_ramp.glb", IMPORT)
-    sc.root("structure", "blueprint_launch_ramp", cells=cells_1xn(3, 2), arrow=1, tags=(TAG_RUBBER,))
+    sc.root("structure", "blueprint_launch_ramp", cells=cells_1xn(3, 2), tags=(TAG_RUBBER,))
     sc.model()
     belt_speed(sc, RAMP_SPEED)
     sc.spin("Flywheel", (1, 0, 0), 14.0)
@@ -48,7 +51,7 @@ def launch_ramp():
     prof, L, flat, ls = bend_up_profile(**RAMP)
     bend = flat + RAMP["R"] * RAMP["th"]
     st = stations([(0, flat, 1), (flat, bend, 6), (bend, L, 2)])
-    belt_along(sc, prof, st, RAMP_SPEED, friction=SLOPE_FRICTION, y_bounds=(-1, 5))
+    belt_along(sc, prof, st, RAMP_SPEED, friction=SLOPE_FRICTION, y_bounds=(-1, 5), end_port=False)   # throws items off its lip
     for side in (-1, 1):
         walls_along(sc, prof, stations([(0, flat, 1), (flat, bend, 3), (bend, L, 2)]), BASIC_WALL, side, y_bounds=(-1, 5))
     for k, fr in enumerate((0.2, 0.55, 0.9)):
@@ -62,11 +65,11 @@ CANNON_ELEV = math.radians(40.0)
 
 def cannon():
     sc = Scene("Cannon", M + "launchers/cannon.glb", IMPORT)
-    sc.root("structure", "blueprint_cannon", cells=cells_1xn(2, 2), arrow=1)
+    sc.root("structure", "blueprint_cannon", cells=cells_1xn(2, 2))
     sc.model()
     belt_speed(sc, ADV_SPEED)
     prof = straight_profile()
-    belt_along(sc, prof, [0, 1.1], ADV_SPEED)
+    belt_along(sc, prof, [0, 1.1], ADV_SPEED, end_port=False)                     # feeds the barrel
     for side in (-1, 1):
         walls_along(sc, prof, [0, 1.1], ADV_WALL, side)
     sc.box_b("Breech", (0, 1.05, -0.45), (1.9, 1.3, 1.1))
@@ -83,7 +86,7 @@ CATAPULT_REST = math.radians(20.0)
 
 def catapult():
     sc = Scene("Catapult", M + "launchers/catapult.glb", IMPORT)
-    sc.root("structure", "blueprint_catapult", cells=cells_1xn(3, 2), arrow=1)
+    sc.root("structure", "blueprint_catapult", cells=cells_1xn(3, 2))
     sc.model()
     ax = CATAPULT_AXLE
     for side in (-1, 1):
@@ -108,7 +111,7 @@ def catapult():
 # ---------------------------------------------------------------------------- sorting
 def filter_basic():
     sc = Scene("FilterBasic", M + "sorting/filter_basic.glb", IMPORT)
-    sc.root("structure", "blueprint_filter_basic", cells=[(0, 0, 0), (0, 1, 0)], arrow=1, tags=(TAG_RUBBER,))
+    sc.root("structure", "blueprint_filter_basic", cells=[(0, 0, 0), (0, 1, 0)], tags=(TAG_RUBBER,))
     sc.model()
     prof = straight_profile()
     belt_along(sc, prof, [0, 2], BASIC_SPEED)
@@ -170,7 +173,7 @@ def long_belt(sc, open_span):
 
 def plate_press():
     sc = Scene("PlatePress", M + "processing/plate_press.glb", IMPORT)
-    grinder_root(sc, "blueprint_plate_press", cells_1xn(2), (0, 2.6, BELT_TOP + 0.3), 1.5, arrow=1)
+    grinder_root(sc, "blueprint_plate_press", cells_1xn(2), (0, 2.6, BELT_TOP + 0.3), 1.5)
     sc.model()
     sc.oscillate("Ram", "offset = Vector3(0, -0.5, 0)", "period = 2.5", "motion = 1")
     long_belt(sc, (1.3, 2.7))
@@ -186,7 +189,7 @@ def plate_press():
 
 def rod_extruder():
     sc = Scene("RodExtruder", M + "processing/rod_extruder.glb", IMPORT)
-    grinder_root(sc, "blueprint_rod_extruder", cells_1xn(2), (0, 2.75, BELT_TOP + 0.3), 2.0, arrow=1)
+    grinder_root(sc, "blueprint_rod_extruder", cells_1xn(2), (0, 2.75, BELT_TOP + 0.3), 2.0)
     sc.model()
     sc.spin("RollerA", (1, 0, 0), 4.0)
     sc.spin("RollerB", (1, 0, 0), -4.0)
@@ -204,7 +207,7 @@ def rod_extruder():
 
 def polisher():
     sc = Scene("Polisher", M + "processing/polisher.glb", IMPORT)
-    grinder_root(sc, "blueprint_polisher", [(0, 0, 0), (1, 0, 0), (0, 0, -1), (1, 0, -1)], (0, 2.6, BELT_TOP + 0.3), 2.5, arrow=1)
+    grinder_root(sc, "blueprint_polisher", [(0, 0, 0), (1, 0, 0), (0, 0, -1), (1, 0, -1)], (0, 2.6, BELT_TOP + 0.3), 2.5)
     sc.model()
     sc.spin("BrushA", (1, 0, 0), 9.0)
     sc.spin("BrushB", (1, 0, 0), -9.0)

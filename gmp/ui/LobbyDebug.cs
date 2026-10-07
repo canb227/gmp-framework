@@ -86,6 +86,10 @@ public partial class LobbyDebug : Control
     private int _altSubStep;
     private string _altSnapshot = "none";
     private bool _ghostAltOk;
+    // Self-turning conveyors: how many were turned before the scenario built its pair (every peer counts its own),
+    // and where the host built the feeder.
+    private static int _turnBaseline;
+    private static Vector3I? _turnFeeder;
     private int _buttonSpawned = -1, _leverSpawned = -1;
     private Vector3 _jumperStart;
     private float _jumperMaxMove;
@@ -311,28 +315,30 @@ public partial class LobbyDebug : Control
             int demoRegistered = demoStructures.Count(st => BuildGrid.FootprintCells(st.anchor, st.cellOffsets, st.quarterTurns).All(c => BuildGrid.GetStructureAt(c) == st));
             bool demoGridOk = demoStructures.Count == 30 && demoAligned == 30 && demoRegistered == 30;
             machinesOk &= demoGridOk;
-            // Every conveyor's placement preview gets a non-empty direction arrow; other structures get none.
-            string arrows = string.Join(",", new[] { "conveyors/Conveyor", "conveyors/ConveyorSlope", "conveyors/ConveyorSlopeDown", "conveyors/ConveyorTurnLeft", "conveyors/ConveyorTurnRight", "Grinder" }.Select(n =>
+            // Every conveyor's placement preview gets a non-empty direction arrow; the grinder gets one per port
+            // (two inputs and an output); a structure without a flow arrow or ports gets none.
+            string arrows = string.Join(",", new[] { "conveyors/Conveyor", "conveyors/ConveyorSlope", "conveyors/ConveyorSlopeDown", "Grinder", "TestBlock" }.Select(n =>
             {
                 var st = GD.Load<PackedScene>($"res://game/scenes/structures/{n}.tscn").Instantiate<Structure>();
-                MeshInstance3D arrow = FlowArrowMesh.Create(st, null);
-                int tris = arrow?.Mesh is ArrayMesh m && m.GetSurfaceCount() > 0 ? m.SurfaceGetArrayLen(0) / 3 : 0;
-                arrow?.Free();
+                Node3D arrows = FlowArrowMesh.Create(st);
+                int count = arrows?.GetChildCount() ?? 0;
+                arrows?.Free();
                 st.Free();
-                return tris.ToString();
+                return count.ToString();
             }));
-            bool arrowsOk = arrows.Split(',').Take(5).All(n => int.Parse(n) > 0) && arrows.EndsWith(",0");
+            bool arrowsOk = arrows == "1,1,1,3,0";
             machinesOk &= arrowsOk;
-            // Every peer: one left turn and one downhill slope were built from the alternate forms, then the turn was
-            // deconstructed. Host only: the preview switched forms, and the turn gave back the shared turn blueprint.
+            // Every peer: a conveyor fed from its right side turned, and went back to straight once its feeder was
+            // deconstructed; one downhill slope was built from the slope's alternate form. Host only: the preview
+            // switched forms, and of the two conveyors built, the feeder's blueprint came back.
             string altState = $"{_altSnapshot}->{AlternateFormCounts()}";
-            int turnBlueprints = self?.inventory.slots.Where(sl => sl.itemID == "blueprint_conveyor_turn").Sum(sl => sl.Count) ?? -1;
-            bool altOk = altState == "1:1->0:1" && (!Lobby.isHost || (_ghostAltOk && turnBlueprints == GameBootstrap.StartingBlueprintCount));
+            int turnBlueprints = self?.inventory.slots.Where(sl => sl.itemID == "blueprint_conveyor").Sum(sl => sl.Count) ?? -1;
+            bool altOk = altState == "1:1->0:1" && (!Lobby.isHost || (_ghostAltOk && turnBlueprints == GameBootstrap.StartingBlueprintCount - 1));
             machinesOk &= altOk;
             // Character movement queries hit sensors, so players must mask out the placement ghosts' layer.
             bool ghostMaskOk = players.All(p => (p.Get("collision_mask").AsInt64() & GameWorld.QueryHiddenLayer) == 0);
             bool ok = players.Count == _expectPeers && GameWorld.inboundTickCount > 0 && invOk && claimOk && buttonOk && buildOk && machinesOk && ghostMaskOk;
-            string summary = $"players={players.Count}/{_expectPeers} synced={GameWorld.syncedObjs.Count} inbound_ticks={GameWorld.inboundTickCount} inv_ok={invOk} consensus_claim={claimAuthority} consensus_button={buttonState} spawner={_buttonSpawned}/{leverStream}/{spawner?.spawnedCount}->voided:{roomVoided} consensus_build={buildState} snap_ok={_snapOk} collision_ok={collisionOk} consensus_machines={machineState.Replace(' ', '_')} ghost_mask_ok={ghostMaskOk} {spawnerState.Replace(' ', '_')} consensus_tools={toolState.Replace(' ', '_')} jumper_moved={_jumperMaxMove:F2} temp_contacts={TagInteractions.temperatureContacts} grab_rest={_grabRestError:F2}m/{_grabRestSpeed:F2}mps grab_track={_grabMaxError:F2}m/{_grabMaxSpeed:F2}of{_grabMaxPointSpeed:F2}mps hud_held={_hudHeldName.Replace(' ', '_')} visible_huds={visibleHuds} sprint={_sprintMaxSpeed:F2} arrow_tris={arrows} consensus_alt={altState} ghost_alt={_ghostAltOk} turn_bp={turnBlueprints} demo_grid={demoStructures.Count}/aligned:{demoAligned}/registered:{demoRegistered} impacts=disabled sleep_ok={sleepOk}(ore:{restingOre?.asleep}/{restingOre?.priority} jumper:{_jumperSeenAsleep}/{_jumperSeenAwake})";
+            string summary = $"players={players.Count}/{_expectPeers} synced={GameWorld.syncedObjs.Count} inbound_ticks={GameWorld.inboundTickCount} inv_ok={invOk} consensus_claim={claimAuthority} consensus_button={buttonState} spawner={_buttonSpawned}/{leverStream}/{spawner?.spawnedCount}->voided:{roomVoided} consensus_build={buildState} snap_ok={_snapOk} collision_ok={collisionOk} consensus_machines={machineState.Replace(' ', '_')} ghost_mask_ok={ghostMaskOk} {spawnerState.Replace(' ', '_')} consensus_tools={toolState.Replace(' ', '_')} jumper_moved={_jumperMaxMove:F2} temp_contacts={TagInteractions.temperatureContacts} grab_rest={_grabRestError:F2}m/{_grabRestSpeed:F2}mps grab_track={_grabMaxError:F2}m/{_grabMaxSpeed:F2}of{_grabMaxPointSpeed:F2}mps hud_held={_hudHeldName.Replace(' ', '_')} visible_huds={visibleHuds} sprint={_sprintMaxSpeed:F2} arrows={arrows} consensus_alt={altState} ghost_alt={_ghostAltOk} turn_bp={turnBlueprints} demo_grid={demoStructures.Count}/aligned:{demoAligned}/registered:{demoRegistered} impacts=disabled sleep_ok={sleepOk}(ore:{restingOre?.asleep}/{restingOre?.priority} jumper:{_jumperSeenAsleep}/{_jumperSeenAwake})";
             Log($"TEST GAME {(ok ? "PASS" : "FAIL")} — {summary}");
             GD.Print($"TEST_RESULT:{(ok ? "PASS" : "FAIL")} {summary}");
             GetTree().Quit(ok ? 0 : 1);
@@ -806,16 +812,17 @@ public partial class LobbyDebug : Control
         }
     }
 
-    // Alternate structure forms (the host's hotbar is otherwise idle from 7.5 to 8.4 s):
-    // 7.6 host builds the turn blueprint's alternate (left turn); 7.9 the slope's alternate (downhill);
-    // 8.2 host's ghost switches forms and its preview arrow follows; 9.0 every peer counts them; 9.2 host deconstructs the turn.
+    // Structure forms (the host's hotbar is otherwise idle from 7.5 to 8.4 s): 7.6 host builds a conveyor and,
+    // first, another feeding its right side (BuildGrid.BeltShapes.cs); 7.9 the slope's alternate (downhill);
+    // 8.2 host's ghost switches forms and its preview arrow follows; 9.0 every peer reads them; 9.2 host deconstructs the feeder.
     private void RunAlternateFormScenario(double t)
     {
         FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
         if (_altSubStep == 0 && t >= 7.6)
         {
             _altSubStep++;
-            if (Lobby.isHost && local != null) BuildAlternate(local, "blueprint_conveyor_turn");
+            _turnBaseline = TurnedConveyors();
+            if (Lobby.isHost && local != null) BuildFedConveyor(local);
         }
         else if (_altSubStep == 1 && t >= 7.9)
         {
@@ -831,9 +838,9 @@ public partial class LobbyDebug : Control
                 if (local.heldItem is BlueprintGhost ghost)
                 {
                     ghost.SetAlternate(true);
-                    bool down = ghost.showingAlternate && ghost.previewStructure?.flowArrow == FlowArrow.StraightDown;
+                    bool down = ghost.showingAlternate && ghost.previewStructure?.SceneFilePath.EndsWith("/ConveyorSlopeDown.tscn") == true;
                     ghost.SetAlternate(false);
-                    _ghostAltOk = down && ghost.previewStructure?.flowArrow == FlowArrow.Straight;
+                    _ghostAltOk = down && ghost.previewStructure?.SceneFilePath.EndsWith("/ConveyorSlope.tscn") == true;
                 }
             }
         }
@@ -845,8 +852,8 @@ public partial class LobbyDebug : Control
         else if (_altSubStep == 4 && t >= 9.2)
         {
             _altSubStep++;
-            Structure leftTurn = BuiltStructures().FirstOrDefault(st => st.SceneFilePath.EndsWith("/ConveyorTurnLeft.tscn"));
-            if (Lobby.isHost && local != null && leftTurn != null) BuildGrid.RequestDeconstruct(local, leftTurn);
+            if (Lobby.isHost && local != null && _turnFeeder is Vector3I feeder && BuildGrid.GetStructureAt(feeder) is Structure built)
+                BuildGrid.RequestDeconstruct(local, built);
         }
     }
 
@@ -869,12 +876,33 @@ public partial class LobbyDebug : Control
             BuildGrid.RequestPlace(local, blueprint, cell, 0, true);
     }
 
-    // "left turns:downhill slopes" among the structures built during the test.
+    // Holds the conveyor blueprint and builds two conveyors on free floor: one heading -Z, and one heading -X whose
+    // output ends on the first one's right face. The feeder is requested first, so the target registers after it.
+    private static void BuildFedConveyor(FactoryPlayer local)
+    {
+        if (!HoldBlueprint(local, "blueprint_conveyor") || ItemInfo.Fetch("blueprint_conveyor") is not BlueprintItem blueprint) return;
+        Structure shape = blueprint.StructureScene(false).Instantiate<Structure>();
+        Vector3I[] offsets = shape.cellOffsets.ToArray();
+        shape.Free();
+        // A quarter turn about the 2x2 footprint's corner moves it a cell along +Z: from the target's anchor, the
+        // feeder's anchor two cells along +X and one along +Z puts its output on the target's right face.
+        Vector3I feederOffset = new(2, 0, 1);
+        Vector3I[] both = offsets.Concat(BuildGrid.FootprintCells(feederOffset, offsets, 1)).ToArray();
+        if (!TryFindOpenFloorCell(out Vector3I target, both)) return;
+        _turnFeeder = target + feederOffset;
+        BuildGrid.RequestPlace(local, blueprint, target + feederOffset, 1);
+        BuildGrid.RequestPlace(local, blueprint, target, 0);
+    }
+
+    // "conveyors turned since the scenario began:downhill slopes" among the structures built during the test.
     private static string AlternateFormCounts()
     {
         var structures = BuiltStructures().ToList();
-        return $"{structures.Count(st => st.SceneFilePath.EndsWith("/ConveyorTurnLeft.tscn"))}:{structures.Count(st => st.SceneFilePath.EndsWith("/ConveyorSlopeDown.tscn"))}";
+        return $"{TurnedConveyors() - _turnBaseline}:{structures.Count(st => st.SceneFilePath.EndsWith("/ConveyorSlopeDown.tscn"))}";
     }
+
+    private static int TurnedConveyors() =>
+        BuiltStructures().OfType<ConveyorStructure>().Count(c => c.shape != ConveyorStructure.Shape.Straight);
 
     private void RunResourceScenario(double t)
     {
