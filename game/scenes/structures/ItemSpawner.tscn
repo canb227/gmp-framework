@@ -6,6 +6,8 @@
 [node name="ItemSpawner" type="Box3DBody" unique_id=1113125691]
 body_type = 0
 script = ExtResource("1_via20")
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, 1), Vector3i(1, 0, 1), Vector3i(0, 1, 0), Vector3i(1, 1, 0), Vector3i(0, 1, 1), Vector3i(1, 1, 1)])
+placementOffset = Vector3(0.5, 0.5, 0.5)
 blueprintItemID = "blueprint_item_spawner"
 
 [node name="Model" parent="." unique_id=110515688 instance=ExtResource("2_wlxtr")]

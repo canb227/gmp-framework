@@ -18,7 +18,9 @@ public partial class BuildGrid : Node3D
     public static bool highlightLookedAtCell = false;
     public static Vector3I? highlightedCell = null;
 
-    public const float CellSize = 2.0f;
+    public const float CellSize = 1.0f;
+    /// <summary>Size of one structure module: structures are built in 2 m blocks of cells. The grid draws bolder lines on it.</summary>
+    public const float ModuleSize = 2.0f;
     private const float DrawExtent = 200.0f;
     private const float HighlightRaycastRange = 20.0f;
     private const float HighlightEdgeNudge = 0.001f;
@@ -170,7 +172,10 @@ public partial class BuildGrid : Node3D
     /// the nearest axis, so slopes work).</item>
     /// </list>
     /// The footprint then grows away from that face: it is shifted along the face normal so its rearmost
-    /// cell sits in the target cell, e.g. a 2x1x1 put against a wall's side sticks out of the wall.
+    /// layer sits in the target cell's layer, e.g. a 2x1x1 put against a wall's side sticks out of the wall. Across
+    /// the face it is centred on where the ray meets the face (in whole cells, always covering the target cell), so
+    /// a structure several cells wide sits under the crosshair and turning it turns it about its own middle. The one
+    /// exception is height on a wall: there the footprint stands on the target cell rather than centring on it.
     /// </summary>
     public static bool TryGetPlacementTarget(Vector3 from, Vector3 direction, float range, IEnumerable<Vector3I> offsets, int quarterTurns, out Vector3I anchor)
     {
@@ -192,8 +197,15 @@ public partial class BuildGrid : Node3D
         float hitDistance = hit ? from.DistanceTo(ray.position) : range;
 
         // A structure's cells crossed by the ray snap to a full face of them; otherwise the cell on the open side
-        // of the surface that was hit.
-        if (!TryFindOccupiedCellAlongRay(from, direction, 2f, hitDistance, out target, out normal))
+        // of the surface that was hit. aim is where the ray meets the face, which the footprint centres on.
+        Vector3 aim;
+        if (TryFindOccupiedCellAlongRay(from, direction, 2f, hitDistance, out target, out normal))
+        {
+            int axis = normal.X != 0 ? 0 : normal.Y != 0 ? 1 : 2;
+            float plane = (target[axis] + (normal[axis] > 0 ? 0 : 1)) * CellSize;
+            aim = from + direction * ((plane - from[axis]) / direction[axis]);
+        }
+        else
         {
             if (!hit)
             {
@@ -201,15 +213,40 @@ public partial class BuildGrid : Node3D
             }
             normal = DominantAxis(ray.normal);
             target = WorldToCell(ray.position + (Vector3)normal * HighlightEdgeNudge);
+            aim = ray.position;
         }
 
-        int rearmost = int.MaxValue;
+        Vector3I min = new(int.MaxValue, int.MaxValue, int.MaxValue), max = new(int.MinValue, int.MinValue, int.MinValue);
         foreach (Vector3I offset in offsets)
         {
             Vector3I o = RotateOffset(offset, quarterTurns);
-            rearmost = Mathf.Min(rearmost, o.X * normal.X + o.Y * normal.Y + o.Z * normal.Z);
+            for (int axis = 0; axis < 3; axis++)
+            {
+                min[axis] = Math.Min(min[axis], o[axis]);
+                max[axis] = Math.Max(max[axis], o[axis]);
+            }
         }
-        anchor = target - normal * rearmost;
+        for (int axis = 0; axis < 3; axis++)
+        {
+            if (normal[axis] != 0)
+            {
+                // Along the normal: the rearmost layer in the target cell's.
+                anchor[axis] = target[axis] - (normal[axis] > 0 ? min[axis] : max[axis]);
+            }
+            else if (axis == 1)
+            {
+                // Height on a wall: stand on the target cell.
+                anchor[axis] = target[axis] - min[axis];
+            }
+            else
+            {
+                // Across the face: the run of cells whose middle is nearest the aim, still covering the target cell.
+                int width = max[axis] - min[axis] + 1;
+                int start = Mathf.RoundToInt(aim[axis] / CellSize - width / 2f);
+                start = Mathf.Clamp(start, target[axis] - width + 1, target[axis]);
+                anchor[axis] = start - min[axis];
+            }
+        }
         return true;
     }
 

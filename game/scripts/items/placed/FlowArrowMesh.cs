@@ -40,6 +40,8 @@ public static class FlowArrowMesh
     const float ShaftWidth = 0.22f;
     const float HeadWidth = 0.6f;
     const float HeadLength = 0.5f;
+    /// <summary>How far a straight arrow stops short of the footprint's back and front edges.</summary>
+    const float EndInset = 0.4f;
     /// <summary>Height of the arrow above the belt surface.</summary>
     public const float Hover = 0.55f;
 
@@ -51,33 +53,32 @@ public static class FlowArrowMesh
     {
         if (structure.flowArrow == FlowArrow.None) return null;
 
-        // Footprint bounds, in metres relative to the anchor cell's centre.
+        // Footprint box, in metres relative to the anchor cell's centre.
         Vector3 min = Vector3.Inf, max = -Vector3.Inf;
+        float half = BuildGrid.CellSize / 2;
         foreach (Vector3I c in structure.cellOffsets)
         {
-            min = min.Min((Vector3)c * BuildGrid.CellSize);
-            max = max.Max((Vector3)c * BuildGrid.CellSize);
+            min = min.Min((Vector3)c * BuildGrid.CellSize - Vector3.One * half);
+            max = max.Max((Vector3)c * BuildGrid.CellSize + Vector3.One * half);
         }
-        float half = BuildGrid.CellSize / 2;
-        float beltY = min.Y - half + Structure.BeltTopHeight + Hover;
+        float beltY = min.Y + Structure.BeltTopHeight + Hover;
+        Vector3 centre = new((min.X + max.X) / 2, beltY, (min.Z + max.Z) / 2);
 
-        List<Vector2> outline; // (x, z) points of the arrow's outline
+        List<Vector2> outline; // (x, z) points of the arrow's outline, relative to centre
         Transform3D placement;
         if (structure.flowArrow is FlowArrow.Straight or FlowArrow.StraightDown)
         {
-            float back = max.Z + half * 0.6f, front = min.Z - half * 0.6f;
-            outline = StraightArrow(back, front);
-            // A footprint several cells tall is a slope climbing toward the front: tilt the arrow to match.
-            float rise = max.Y - min.Y, run = max.Z - min.Z + BuildGrid.CellSize;
-            Vector3 centre = new((min.X + max.X) / 2, beltY + rise / 2, (min.Z + max.Z) / 2);
+            outline = StraightArrow(max.Z - centre.Z - EndInset, min.Z - centre.Z + EndInset);
+            // A footprint taller than one module is a slope (it rises its height less a module) climbing toward the front: tilt the arrow to match.
+            float rise = Mathf.Max(0, max.Y - min.Y - BuildGrid.ModuleSize), run = max.Z - min.Z;
+            centre.Y += rise / 2;
             float pitch = Mathf.Atan2(rise, run) * (structure.flowArrow == FlowArrow.StraightDown ? -1 : 1);
             placement = new Transform3D(new Basis(Vector3.Right, pitch), centre);
-            outline = outline.ConvertAll(p => new Vector2(p.X - centre.X, p.Y - centre.Z));
         }
         else
         {
-            outline = TurnArrow(structure.flowArrow == FlowArrow.TurnRight ? 1 : -1);
-            placement = new Transform3D(Basis.Identity, new Vector3(0, beltY, 0));
+            outline = TurnArrow(structure.flowArrow == FlowArrow.TurnRight ? 1 : -1, (max.X - min.X) / 2);
+            placement = new Transform3D(Basis.Identity, centre);
         }
 
         var mesh = new MeshInstance3D
@@ -100,11 +101,11 @@ public static class FlowArrowMesh
     }
 
     // A quarter arc about the inner corner, from the back edge's centre to the side edge's centre, with a head
-    // pointing out of the side. side = +1 exits +X (right turn), -1 exits -X.
-    static List<Vector2> TurnArrow(int side)
+    // pointing out of the side. side = +1 exits +X (right turn), -1 exits -X. r is half the footprint's width.
+    static List<Vector2> TurnArrow(int side, float r)
     {
         const int Steps = 12;
-        float r = BuildGrid.CellSize / 2, w = ShaftWidth / 2, h = HeadWidth / 2;
+        float w = ShaftWidth / 2, h = HeadWidth / 2;
         Vector2 corner = new(side * r, r); // inner corner: back-right for a right turn, back-left for a left one
         // Angles about the corner in the (x, z) plane: the entry (0, r) and the exit (side * r, 0).
         float aStart = side > 0 ? Mathf.Pi : 0;

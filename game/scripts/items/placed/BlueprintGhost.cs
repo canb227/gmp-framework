@@ -1,4 +1,5 @@
 using Godot;
+using System.Collections.Generic;
 
 /// <summary>
 /// The in-hand scene of every <see cref="BlueprintItem"/>. On the local player it shows a translucent
@@ -35,10 +36,17 @@ public partial class BlueprintGhost : HeldItem
     public bool showingAlternate => useAlternate && blueprint?.alternateStructureScene != null;
     /// <summary>The structure copy the preview shows (used by the headless multiplayer test).</summary>
     public Structure previewStructure => probe?.structure;
+    /// <summary>
+    /// Off while the player holds "freePlace" (G): the preview stays exactly where it's aimed (no snapping belt ends
+    /// together) and placing doesn't turn the next one to follow its output.
+    /// </summary>
+    static bool smartPlacement => !Input.IsActionPressed(InputActions.freePlace);
     /// <summary>True when the probe has settled at <see cref="targetCell"/> and reports the placement allowed.</summary>
     public bool canPlace { get; private set; }
 
     PlacementProbe probe;
+    // The preview's belt ends in its own frame, for lining it up with built belts (empty for non-belt structures).
+    List<Vector3> beltEnds = new();
     readonly StandardMaterial3D material = new()
     {
         ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
@@ -70,8 +78,10 @@ public partial class BlueprintGhost : HeldItem
         probe = PlacementProbe.Create(blueprint.StructureScene(showingAlternate), false);
         if (probe == null)
         {
+            beltEnds = new();
             return;
         }
+        beltEnds = BuildGrid.LocalBeltEnds(probe.structure);
         foreach (Node n in probe.structure.FindChildren("*", nameof(MeshInstance3D), true, false))
         {
             // Set through the engine rather than casting: a mesh can carry its own script (e.g. a Spinner),
@@ -127,7 +137,7 @@ public partial class BlueprintGhost : HeldItem
                 int placedTurns = quarterTurns;
                 BuildGrid.RequestPlace(player, blueprint, cell, quarterTurns, showingAlternate);
                 // Pre-rotate the next placement to carry on from this one's output, whatever blueprint comes next.
-                if (flow != FlowArrow.None)
+                if (flow != FlowArrow.None && smartPlacement)
                 {
                     quarterTurns = (placedTurns + flow.OutputQuarterTurns()) % 4;
                 }
@@ -155,7 +165,7 @@ public partial class BlueprintGhost : HeldItem
 
         Camera3D camera = player.camera;
         if (!BuildGrid.TryGetPlacementTarget(camera.GlobalPosition, -camera.GlobalTransform.Basis.Z, placeRange,
-                probe.structure.cellOffsets, quarterTurns, out Vector3I anchor, out Vector3I faceCell, out Vector3I faceNormal))
+                probe.structure.cellOffsets, quarterTurns, out Vector3I anchor, out _, out Vector3I faceNormal))
         {
             targetCell = null;
             canPlace = false;
@@ -164,8 +174,13 @@ public partial class BlueprintGhost : HeldItem
             BuildGrid.placementFace = null;
             return;
         }
+        // A belt aimed a cell off a built belt's end is pulled into line with it, so the two merge.
+        if (smartPlacement)
+        {
+            anchor = BuildGrid.AlignBeltEnds(probe.structure, beltEnds, anchor, quarterTurns);
+        }
         BuildGrid.placementFocus = FootprintCentre(anchor);
-        BuildGrid.placementFace = (faceCell, faceNormal);
+        BuildGrid.placementFace = ContactFace(anchor, faceNormal);
 
         if (targetCell != anchor || probe.quarterTurns != quarterTurns || !probe.structure.Visible)
         {
@@ -195,5 +210,27 @@ public partial class BlueprintGhost : HeldItem
             max = max.Max(c);
         }
         return (min + max) / 2f;
+    }
+
+    // The footprint's rearmost layer along normal, as the min and max cells of its bounding box: its back side is
+    // the face the structure is put against, which BuildGrid.Reveal.cs highlights.
+    (Vector3I min, Vector3I max, Vector3I normal) ContactFace(Vector3I anchor, Vector3I normal)
+    {
+        int rear = int.MaxValue;
+        foreach (Vector3I cell in BuildGrid.FootprintCells(anchor, probe.structure.cellOffsets, quarterTurns))
+        {
+            rear = Mathf.Min(rear, (cell.X * normal.X + cell.Y * normal.Y + cell.Z * normal.Z));
+        }
+        Vector3I min = new(int.MaxValue, int.MaxValue, int.MaxValue), max = new(int.MinValue, int.MinValue, int.MinValue);
+        foreach (Vector3I cell in BuildGrid.FootprintCells(anchor, probe.structure.cellOffsets, quarterTurns))
+        {
+            if ((cell.X * normal.X + cell.Y * normal.Y + cell.Z * normal.Z) != rear) continue;
+            for (int axis = 0; axis < 3; axis++)
+            {
+                min[axis] = Mathf.Min(min[axis], cell[axis]);
+                max[axis] = Mathf.Max(max[axis], cell[axis]);
+            }
+        }
+        return (min, max, normal);
     }
 }
