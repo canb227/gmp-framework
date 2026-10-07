@@ -105,12 +105,12 @@ public partial class BlueprintGhost : HeldItem
 
     public override bool HandleInput(InputEvent @event)
     {
-        if (@event.IsActionPressed("rotate"))
+        if (@event.IsActionPressed(InputActions.rotate))
         {
             quarterTurns = (quarterTurns + 1) % 4;
             return true;
         }
-        if (@event.IsActionPressed("alternate"))
+        if (@event.IsActionPressed(InputActions.alternate))
         {
             if (blueprint?.alternateStructureScene != null)
             {
@@ -118,7 +118,7 @@ public partial class BlueprintGhost : HeldItem
             }
             return true;
         }
-        if (@event.IsActionPressed("primary"))
+        if (@event.IsActionPressed(InputActions.primary))
         {
             if (canPlace && targetCell is Vector3I cell)
             {

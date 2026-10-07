@@ -24,7 +24,7 @@ public partial class FactoryPlayer
 
     void HandleInteractionInput(InputEvent @event)
     {
-        if (!@event.IsActionPressed("interact")) return;
+        if (!@event.IsActionPressed(InputActions.interact)) return;
         
         if (pickTarget is Interactable i)
         {

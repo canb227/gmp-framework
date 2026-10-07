@@ -93,9 +93,12 @@ public class SteamNetwork :  Network
         if (!_started)
             return;
         SteamAPI.RunCallbacks(); // pretty sure I don't need this, test later
-        foreach (byte ch in Enum.GetValues(typeof(Channel)))
-            ReceiveOn(ch);
+        foreach (Channel ch in AllChannels)
+            ReceiveOn((byte)ch);
     }
+
+    // Enum.GetValues allocates (and boxing each value in the foreach did too); this runs every frame.
+    private static readonly Channel[] AllChannels = Enum.GetValues<Channel>();
 
     // ---- internals -------------------------------------------------------------
 

@@ -75,12 +75,12 @@ public partial class MagnetRod : HeldItem
 
     public override bool HandleInput(InputEvent @event)
     {
-        if (@event.IsActionPressed("primary"))
+        if (@event.IsActionPressed(InputActions.primary))
         {
             SetActive(true);
             return true;
         }
-        if (@event.IsActionReleased("primary"))
+        if (@event.IsActionReleased(InputActions.primary))
         {
             return true; // released in _PhysicsProcess, which also covers losing focus mid-hold
         }
@@ -103,7 +103,7 @@ public partial class MagnetRod : HeldItem
     public override void _PhysicsProcess(double delta)
     {
         if (!isLocal) return;
-        if (active && !forceActive && !Input.IsActionPressed("primary"))
+        if (active && !forceActive && !Input.IsActionPressed(InputActions.primary))
         {
             SetActive(false);
         }

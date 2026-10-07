@@ -57,7 +57,11 @@ public partial class RPCManager : Node
     /// </summary>
     public static ulong sender { get; private set; }
 
-    private static readonly Dictionary<(Type, string), MethodInfo> methodCache = new();
+    /// <summary>An [RPC] method with what dispatch needs from reflection, looked up once per type and name.</summary>
+    private sealed record RpcMethod(MethodInfo method, ParameterInfo[] parameters, bool requireAuthority);
+
+    // Both attribute reads and GetParameters() allocate on every call, so dispatch reads them from here.
+    private static readonly Dictionary<(Type, string), RpcMethod> methodCache = new();
 
     public override void _Ready()
     {
@@ -208,14 +212,14 @@ public partial class RPCManager : Node
             return;
         }
 
-        MethodInfo method = FindRpcMethod(target.GetType(), rpc.MethodName);
+        RpcMethod method = FindRpcMethod(target.GetType(), rpc.MethodName);
         if (method == null)
         {
             Logging.Error($"RPC {rpc.MethodName} from {from} rejected: no [RPC] method with that name on {target.GetType().Name}", "RPCManager");
             return;
         }
 
-        if (method.GetCustomAttribute<RPCAttribute>().requireAuthority)
+        if (method.requireAuthority)
         {
             ulong expected = target is GMPObject g ? g.authority : Lobby.hostID;
             if (from != expected)
@@ -231,10 +235,10 @@ public partial class RPCManager : Node
         sender = from;
         try
         {
-            object[] callArgs = DeserializeArgs(rpc.args, method.GetParameters());
+            object[] callArgs = DeserializeArgs(rpc.args, method.parameters);
             if (!target.IsQueuedForDeletion())
             {
-                method.Invoke(target, callArgs);
+                method.method.Invoke(target, callArgs);
             }
 
         }
@@ -253,19 +257,19 @@ public partial class RPCManager : Node
     }
 
     // Walks the type hierarchy so private [RPC] methods declared on base classes are found too.
-    private static MethodInfo FindRpcMethod(Type type, string name)
+    private static RpcMethod FindRpcMethod(Type type, string name)
     {
-        if (methodCache.TryGetValue((type, name), out MethodInfo cached))
+        if (methodCache.TryGetValue((type, name), out RpcMethod cached))
             return cached;
 
-        MethodInfo found = null;
+        RpcMethod found = null;
         for (Type t = type; t != null && found == null; t = t.BaseType)
         {
             foreach (MethodInfo m in t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly))
             {
-                if (m.Name == name && m.GetCustomAttribute<RPCAttribute>() != null)
+                if (m.Name == name && m.GetCustomAttribute<RPCAttribute>() is RPCAttribute attribute)
                 {
-                    found = m;
+                    found = new RpcMethod(m, m.GetParameters(), attribute.requireAuthority);
                     break;
                 }
             }

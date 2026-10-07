@@ -16,7 +16,7 @@ public partial class FactoryPlayer
     void HandleEquipmentInput(InputEvent @event)
     {
         // Drop item (Q) — drop 1 from active hotbar slot
-        if (@event.IsActionPressed("drop"))
+        if (@event.IsActionPressed(InputActions.drop))
             DropFromActiveSlot(1);
 
         SelectSlotFromNumberKeys(@event);
@@ -110,7 +110,7 @@ public partial class FactoryPlayer
     {
         for (int i = 0; i <= 9; i++)
         {
-            if (@event.IsActionPressed($"slot{i}"))
+            if (@event.IsActionPressed(InputActions.slots[i]))
             {
                 // Pressing the active slot's key again unequips.
                 inventory.ActiveHotbarSlot = inventory.ActiveHotbarSlot == i ? -1 : i;

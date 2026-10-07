@@ -7,7 +7,7 @@ using System.Linq;
 public partial class GameWorld
 {
     public static bool displaySyncedObjectDebugInfo = false;
-    public override void _Process(double delta)
+    void DrawDebugUI()
     {
         if (displaySyncedObjectDebugInfo)
         {

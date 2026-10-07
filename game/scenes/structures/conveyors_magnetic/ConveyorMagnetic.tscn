@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://b10te24frnknc" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
 [ext_resource type="Script" uid="uid://djjc1nh5u0bg" path="res://game/scripts/items/placed/ConveyorBelt.cs" id="3_r"]
 
-[node name="ConveyorMagnetic" type="Box3DBody"]
+[node name="ConveyorMagnetic" type="Box3DBody" unique_id=2087803918]
 body_type = 0
 box_size = Vector3(0, 0, 0)
 script = ExtResource("2_r")
@@ -12,38 +12,34 @@ blueprintItemID = "blueprint_conveyor_mag"
 flowArrow = 1
 tags = Array[int]([5])
 
-[node name="Model" parent="." instance=ExtResource("1_r")]
+[node name="Model" parent="." unique_id=705130439 instance=ExtResource("1_r")]
 
-[node name="Belt" type="Node3D" parent="."]
+[node name="Belt" type="Node3D" parent="." unique_id=1025269428]
 script = ExtResource("3_r")
 points = PackedVector3Array(0, -0.85, 1, 0, -0.85, -1)
-visual = NodePath("../Model/Belt")
-width = 1.68
-speed = 2.0
-friction = 0.8
 returnDepth = 0.085
-returnWidth = 1.624
+visual = NodePath("../Model/Belt")
 
-[node name="WallL0" type="Box3DCollisionShape" parent="."]
+[node name="WallL0" type="Box3DCollisionShape" parent="." unique_id=1590203720]
 box_size = Vector3(0.11, 0.4, 2)
 friction = 0.1
 user_material_id = 3
-position = Vector3(-0.895, -0.8, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.895, -0.8, 0)
 
-[node name="LipL0" type="Box3DCollisionShape" parent="."]
+[node name="LipL0" type="Box3DCollisionShape" parent="." unique_id=1973793184]
 box_size = Vector3(0.03, 0.055, 2)
 friction = 0.1
 user_material_id = 3
-position = Vector3(-0.827, -0.9725, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.827, -0.9725, 0)
 
-[node name="WallR0" type="Box3DCollisionShape" parent="."]
+[node name="WallR0" type="Box3DCollisionShape" parent="." unique_id=66007683]
 box_size = Vector3(0.11, 0.4, 2)
 friction = 0.1
 user_material_id = 3
-position = Vector3(0.895, -0.8, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.895, -0.8, 0)
 
-[node name="LipR0" type="Box3DCollisionShape" parent="."]
+[node name="LipR0" type="Box3DCollisionShape" parent="." unique_id=1055976740]
 box_size = Vector3(0.03, 0.055, 2)
 friction = 0.1
 user_material_id = 3
-position = Vector3(0.827, -0.9725, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.827, -0.9725, 0)

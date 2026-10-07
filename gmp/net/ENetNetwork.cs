@@ -188,20 +188,27 @@ public class ENetNetwork : Network
 
     // Pump every ENet host (bound + every outbound) once per frame. Lobby calls this
     // from _Process. Snapshot the outbound list — Dialing a deferred Connect while
-    // servicing can append to it.
+    // servicing can append to it. The snapshot list is reused: this runs every frame.
     public void service()
     {
         if (_server != null)
             Pump(_server);
-        foreach (var c in _outbound.ToArray())
+        _pumpSnapshot.Clear();
+        _pumpSnapshot.AddRange(_outbound);
+        foreach (var c in _pumpSnapshot)
             Pump(c);
+        _pumpSnapshot.Clear();
     }
+
+    private readonly List<ENetConnection> _pumpSnapshot = new();
 
     private void Pump(ENetConnection host)
     {
         while (true)
         {
-            Array ev = host.Service();
+            // Disposed right away: each Service() call returns a new Godot Array, and undisposed ones pile up as
+            // finalizable garbage that lengthens the next GC pause.
+            using Array ev = host.Service();
             if (ev.Count < 4)
                 break;
             var type = (ENetConnection.EventType)ev[0].AsInt32();

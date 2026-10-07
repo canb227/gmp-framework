@@ -44,7 +44,7 @@ public partial class FactoryPlayer
     {
         if (!isShopOpen) return false;
         bool escape = @event is InputEventKey key && key.Pressed && !key.Echo && key.Keycode == Key.Escape;
-        if (escape || @event.IsActionPressed("interact"))
+        if (escape || @event.IsActionPressed(InputActions.interact))
         {
             CloseShop();
             GetViewport().SetInputAsHandled();

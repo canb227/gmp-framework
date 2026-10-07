@@ -87,22 +87,8 @@ public partial class Lobby : Node
             renderLobbyDebugInfo();
         }
         network?.service();
-        foreach (var item in outgoingTracker.ToList())
-        {
-            if (Time.GetTicksMsec()-item.Item1> timer * 1000)
-            {
-                outgoingTracker.Remove(item);
-            }
-        }
-        foreach (var item in incomingTracker.ToList())
-        {
-            if (Time.GetTicksMsec() - item.Item1 > timer*1000)
-            {
-                incomingTracker.Remove(item);
-            }
-        }
-        incomingBandwidth = incomingTracker.Sum(kv  => kv.Item2);
-        outgoingBandwidth = outgoingTracker.Sum(kv => kv.Item2);
+        incomingBandwidth = PruneAndSum(incomingTracker, timer * 1000);
+        outgoingBandwidth = PruneAndSum(outgoingTracker, timer * 1000);
 
         timer += delta;
         if (timer>timerMax)
@@ -110,6 +96,28 @@ public partial class Lobby : Node
             timer = 0;
         }
 
+    }
+
+    /// <summary>
+    /// Drops the entries older than <paramref name="windowMs"/> and returns the byte total of the rest. In place and
+    /// without LINQ: this runs every frame, and per-frame garbage brings on the collector's pauses sooner.
+    /// </summary>
+    private static int PruneAndSum(List<(ulong, int)> tracker, double windowMs)
+    {
+        ulong now = Time.GetTicksMsec();
+        int total = 0;
+        for (int i = tracker.Count - 1; i >= 0; i--)
+        {
+            if (now - tracker[i].Item1 > windowMs)
+            {
+                tracker.RemoveAt(i);
+            }
+            else
+            {
+                total += tracker[i].Item2;
+            }
+        }
+        return total;
     }
 
     private void renderLobbyDebugInfo()
@@ -384,7 +392,7 @@ public partial class Lobby : Node
         if (network == null || members.Count == 0)
             return Error.Unconfigured;
         outgoingTracker.Add((Time.GetTicksMsec(),msg.Length * members.Count));
-        return network.Broadcast(new List<ulong>(members.Keys), ch, msg, sendFlags);
+        return BroadcastToMembers(true, ch, msg, sendFlags);
     }
 
     /// <summary>Sends to every member except this peer.</summary>
@@ -393,7 +401,34 @@ public partial class Lobby : Node
         if (network == null || members.Count <= 1)
             return Error.Unconfigured;
         outgoingTracker.Add((Time.GetTicksMsec(), msg.Length * (members.Count-1)));
-        return network.Broadcast(members.Keys.Where(id => id != selfPeerID).ToList(), ch, msg, sendFlags);
+        return BroadcastToMembers(false, ch, msg, sendFlags);
+    }
+
+    // Recipient lists, reused rather than allocated per send (state sync broadcasts every tick). One per nesting
+    // level: delivering to this peer runs its handlers synchronously, and they may broadcast again mid-send.
+    private static readonly List<List<ulong>> recipientBuffers = new();
+    private static int recipientDepth;
+
+    private static Error BroadcastToMembers(bool includeSelf, Channel ch, byte[] msg, int sendFlags)
+    {
+        if (recipientDepth == recipientBuffers.Count)
+        {
+            recipientBuffers.Add(new List<ulong>());
+        }
+        List<ulong> recipients = recipientBuffers[recipientDepth++];
+        try
+        {
+            foreach (ulong id in members.Keys)
+            {
+                if (includeSelf || id != selfPeerID) recipients.Add(id);
+            }
+            return network.Broadcast(recipients, ch, msg, sendFlags);
+        }
+        finally
+        {
+            recipients.Clear();
+            recipientDepth--;
+        }
     }
 
     /// <summary>Sends to one member (sending to this peer's own id delivers synchronously).</summary>

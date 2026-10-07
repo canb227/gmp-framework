@@ -112,6 +112,14 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
     public override void _UnhandledInput(InputEvent @event)
     {
+        // Mouse motion arrives every frame as a fresh native event, so its C# wrapper is garbage right after this
+        // call; dispose it now rather than leave it to the finalizer (each one lengthens the next GC pause).
+        try { UnhandledInput(@event); }
+        finally { if (@event is InputEventMouseMotion) @event.Dispose(); }
+    }
+
+    void UnhandledInput(InputEvent @event)
+    {
         if (!isLocal) return;
 
         if (HandleShopInput(@event)) return;
@@ -150,7 +158,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             PoseCamera(false);
         }
 
-        if (@event.IsActionPressed("inventory"))
+        if (@event.IsActionPressed(InputActions.inventory))
         {
             if (hud.isOpen)
                 hud.Close();
@@ -165,7 +173,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     {
         if (hud.isOpen) return;
 
-        int step = @event.IsActionPressed("scrollDown") ? +1 : @event.IsActionPressed("scrollUp") ? -1 : 0;
+        int step = @event.IsActionPressed(InputActions.scrollDown) ? +1 : @event.IsActionPressed(InputActions.scrollUp) ? -1 : 0;
         if (step == 0) return;
 
         if (isGrabbing)
@@ -204,17 +212,17 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         {
             Velocity += gravity * (float)delta;
         }
-        else if (Input.IsActionJustPressed("jump") && !menuHasInput)
+        else if (Input.IsActionJustPressed(InputActions.jump) && !menuHasInput)
         {
             Velocity = Velocity + JumpVector;
         }
 
         // No walking while a menu has the keyboard.
-        Vector2 inputDir = menuHasInput ? Vector2.Zero : Input.GetVector("left", "right", "forward", "backward");
+        Vector2 inputDir = menuHasInput ? Vector2.Zero : Input.GetVector(InputActions.left, InputActions.right, InputActions.forward, InputActions.backward);
         Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
         if (direction != Vector3.Zero)
         {
-            float speed = Input.IsActionPressed("sprint") ? sprintSpeed : Speed;
+            float speed = Input.IsActionPressed(InputActions.sprint) ? sprintSpeed : Speed;
             Velocity.X = direction.X * speed;
             Velocity.Z = direction.Z * speed;
         }

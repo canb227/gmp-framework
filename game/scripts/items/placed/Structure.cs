@@ -63,9 +63,14 @@ public partial class Structure : GMPOBox3DBody, Interactable
     /// <summary>The synced items a trigger sensor currently overlaps.</summary>
     protected static IEnumerable<PhysicalFactoryItem> ItemsInTrigger(Node3D trigger)
     {
-        foreach (Node n in trigger.Call(Box3DNames.getOverlappingBodies).AsGodotArray<Node>())
+        // Machines poll this every tick: dispose the Godot wrappers here rather than leave them to the garbage
+        // collector's finalizer queue, and index rather than foreach, which allocates an enumerator.
+        using Variant result = trigger.Call(Box3DNames.getOverlappingBodies);
+        Godot.Collections.Array<Node> bodies = result.AsGodotArray<Node>();
+        using Godot.Collections.Array untyped = (Godot.Collections.Array)bodies; // the typed array isn't IDisposable
+        for (int i = 0; i < bodies.Count; i++)
         {
-            if (n is PhysicalFactoryItem item && GameWorld.syncedObjs.ContainsKey(item.id))
+            if (bodies[i] is PhysicalFactoryItem item && GameWorld.syncedObjs.ContainsKey(item.id))
             {
                 yield return item;
             }

@@ -18,7 +18,9 @@ public static class GMPOBox3DWorldApi
     /// <summary>Closest hit along the ray.</summary>
     public static RayHit Raycast(this GMPOBox3DWorld world, Vector3 from, Vector3 to, long collisionMask = -1, long collisionLayer = -1)
     {
-        using Godot.Collections.Dictionary result = world.Call(Box3DNames.raycast, from, to, collisionMask, collisionLayer).AsGodotDictionary();
+        // The Variant holds its own native copy (and a finalizable disposer), so it needs disposing too.
+        using Variant v = world.Call(Box3DNames.raycast, from, to, collisionMask, collisionLayer);
+        using Godot.Collections.Dictionary result = v.AsGodotDictionary();
         return RayHit.From(result);
     }
     /// <summary>Every hit along the ray, nearest first.</summary>
@@ -113,7 +115,12 @@ public readonly record struct RayHit(bool hit, Vector3 position, Vector3 normal,
     {
         if (!result[Box3DKeys.hit].AsBool()) return default;
         // No collider when the shape's body has no node (shouldn't happen for scene bodies, but the key is optional).
-        Node collider = result.TryGetValue(Box3DKeys.collider, out Variant c) ? c.As<Node>() : null;
+        Node collider = null;
+        if (result.TryGetValue(Box3DKeys.collider, out Variant c))
+        {
+            collider = c.As<Node>();
+            c.Dispose(); // an Object Variant carries a finalizable disposer; the Node wrapper outlives it
+        }
         return new RayHit(true, result[Box3DKeys.position].AsVector3(), result[Box3DKeys.normal].AsVector3(),
             result[Box3DKeys.fraction].AsSingle(), collider, result[Box3DKeys.userMaterial].AsInt64());
     }

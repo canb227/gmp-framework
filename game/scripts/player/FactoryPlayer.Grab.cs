@@ -76,7 +76,7 @@ public partial class FactoryPlayer
 
     void HandleGrabInput(InputEvent @event)
     {
-        if (@event.IsActionPressed("primary"))
+        if (@event.IsActionPressed(InputActions.primary))
         {
             bool emptyHand = inventory.ActiveHotbarSlot == -1 || inventory.slots[inventory.ActiveHotbarSlot].IsEmpty;
             if (emptyHand && pickTarget is PhysicalFactoryItem item && item.canBeGrabbed)
@@ -84,7 +84,7 @@ public partial class FactoryPlayer
                 RequestGrab(item);
             }
         }
-        if (@event.IsActionReleased("primary") && isGrabbing)
+        if (@event.IsActionReleased(InputActions.primary) && isGrabbing)
         {
             EndGrab();
         }
@@ -113,7 +113,7 @@ public partial class FactoryPlayer
             return; // someone else got it first
         }
         // Granted, but if the button was released or we moved on in the meantime, hand it back.
-        if (!isGrabbing && (Input.IsActionPressed("primary") || forceGrabHeld))
+        if (!isGrabbing && (Input.IsActionPressed(InputActions.primary) || forceGrabHeld))
         {
             StartGrab(item);
         }

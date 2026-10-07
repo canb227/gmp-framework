@@ -26,6 +26,10 @@ public partial class GameWorld : Node3D
         Lobby.LobbyDoneLoadingEvent += Instance_LobbyDoneLoadingEvent;
         Lobby.LobbyDonePreloadingEvent += Instance_LobbyDonePreloadingEvent;
         GetTree().Paused = true;
+        // Full (gen2) collections then run in the background instead of stopping the game; gen0/gen1 collections
+        // still pause it, so per-frame allocations should stay low. Needs background GC, which is on by default.
+        System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.SustainedLowLatency;
+        Logging.Log($"GC latency mode: {System.Runtime.GCSettings.LatencyMode}", "GameWorld");
         Logging.Log($"Atempting b3d init: {ClassDB.ClassExists("Box3DWorld")}", "GameWorld");
         if (ClassDB.ClassExists("Box3DWorld"))
         {
@@ -48,6 +52,28 @@ public partial class GameWorld : Node3D
             // Box3D reports sleep per world, not per body; hand it to the body (it has no matching wake signal).
             b3droot.BodyFellAsleep += body => (body as GMPOBox3DBody)?.OnFellAsleep();
         }
+    }
+
+    /// <summary>Seconds between the scheduled gen0 collections (see <see cref="_Process"/>).</summary>
+    public const double GcInterval = 2.0;
+    double gcTimer;
+
+    public override void _Process(double delta)
+    {
+        // A gen0 pause grows with the Godot wrappers created since the last collection: every wrapper (GodotObject,
+        // StringName, Array, Variant) registers a WeakReference in GodotSharp's DisposablesTracker, and the GC
+        // clears those inside the pause, disposed or not. Left to itself gen0 fills its ~15 MB budget about every
+        // 30 s and pauses 10-20 ms; collecting every couple of seconds keeps each pause under a millisecond.
+        if (started)
+        {
+            gcTimer += delta;
+            if (gcTimer >= GcInterval)
+            {
+                gcTimer = 0;
+                System.GC.Collect(0, System.GCCollectionMode.Forced, blocking: true, compacting: false);
+            }
+        }
+        DrawDebugUI();
     }
 
     /// <summary>
@@ -75,6 +101,9 @@ public partial class GameWorld : Node3D
 
     private static void Instance_LobbyDoneLoadingEvent()
     {
+        // Collect the loading garbage now, while the loading screen is still up, so play starts with a clean heap
+        // instead of paying for it in the first collection mid-game.
+        System.GC.Collect(System.GC.MaxGeneration, System.GCCollectionMode.Forced, blocking: true, compacting: true);
         instance.GetTree().Paused = false;
         started = true;
     }

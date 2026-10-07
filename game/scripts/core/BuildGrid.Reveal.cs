@@ -82,9 +82,14 @@ public partial class BuildGrid
         /// <summary>The material of the layer fading in, or null; the others keep what they had as they fade out.</summary>
         public ShaderMaterial currentMaterial => current?.material;
 
-        /// <summary>Fades in the layer at <paramref name="key"/> (or none, if null) and fades out the rest.</summary>
-        public void Update(TKey? key, float delta, Action<MeshInstance3D, ShaderMaterial, TKey> place)
+        /// <summary>
+        /// Fades in the layer at <paramref name="key"/> (or none, if null) and fades out the rest. Returns true when a
+        /// layer was newly placed there with <paramref name="place"/>. Runs every frame, so it allocates nothing: pass
+        /// a cached delegate that captures nothing.
+        /// </summary>
+        public bool Update(TKey? key, float delta, Action<MeshInstance3D, ShaderMaterial, TKey> place)
         {
+            bool placed = false;
             if (key is not TKey k)
             {
                 current = null;
@@ -92,7 +97,15 @@ public partial class BuildGrid
             else if (current == null || !current.key.Equals(k))
             {
                 // Back to a place still fading out: pick it up from there. Otherwise reuse the faintest layer.
-                current = layers.Find(l => l.weight > 0f && l.key.Equals(k));
+                current = null;
+                foreach (Layer l in layers)
+                {
+                    if (l.weight > 0f && l.key.Equals(k))
+                    {
+                        current = l;
+                        break;
+                    }
+                }
                 if (current == null)
                 {
                     current = layers[0];
@@ -103,6 +116,7 @@ public partial class BuildGrid
                     current.key = k;
                     current.weight = 0f;
                     place(current.instance, current.material, k);
+                    placed = true;
                 }
             }
 
@@ -115,11 +129,31 @@ public partial class BuildGrid
                 if (layer.instance.Visible)
                 {
                     float w = layer.weight;
-                    layer.material.SetShaderParameter("opacity", w * w * (3f - 2f * w));
+                    layer.material.SetShaderParameter(OpacityParam, w * w * (3f - 2f * w));
                 }
             }
+            return placed;
         }
     }
+
+    // Cached: a string here would make a new StringName every frame.
+    private static readonly StringName OpacityParam = "opacity";
+    private static readonly StringName FocusParam = "focus";
+    private static readonly StringName FaceColorParam = "face_color";
+
+    private static readonly Action<MeshInstance3D, ShaderMaterial, Vector3> PlaceReveal = (instance, material, focus) =>
+    {
+        // The lattice sits on the world grid around the focus' cell; only the fade is centred on the focus.
+        instance.GlobalPosition = (Vector3)WorldToCell(focus) * CellSize;
+        material.SetShaderParameter(FocusParam, focus);
+    };
+
+    private static readonly Action<MeshInstance3D, ShaderMaterial, (Vector3I, Vector3I)> PlaceFace = (instance, _, face) =>
+    {
+        var (cell, normal) = face;
+        instance.GlobalTransform = new Transform3D(FaceBasis(normal),
+            CellToWorld(cell) - (Vector3)normal * (CellSize / 2f - FaceLift));
+    };
 
     private FadePool<Vector3> _reveal;
     private FadePool<(Vector3I, Vector3I)> _face;
@@ -146,26 +180,13 @@ public partial class BuildGrid
     {
         bool active = placementActive && placementFocus.HasValue;
 
-        _reveal.Update(active ? placementFocus : null, delta, (instance, material, focus) =>
-        {
-            // The lattice sits on the world grid around the focus' cell; only the fade is centred on the focus.
-            instance.GlobalPosition = (Vector3)WorldToCell(focus) * CellSize;
-            material.SetShaderParameter("focus", focus);
-        });
-
-        bool newFace = false;
-        _face.Update(active ? placementFace : null, delta, (instance, _, face) =>
-        {
-            var (cell, normal) = face;
-            instance.GlobalTransform = new Transform3D(FaceBasis(normal),
-                CellToWorld(cell) - (Vector3)normal * (CellSize / 2f - FaceLift));
-            newFace = true;
-        });
+        _reveal.Update(active ? placementFocus : null, delta, PlaceReveal);
+        bool newFace = _face.Update(active ? placementFace : null, delta, PlaceFace);
         // The ghost's hue at full strength (its alpha is for the ghost's body). A new face starts in the current tint;
         // on the same face a valid/invalid change blends over rather than flicking.
         Color tint = new(placementTint, 1f);
         _faceTint = newFace ? tint : _faceTint.Lerp(tint, 1f - Mathf.Exp(-FaceTintRate * delta));
-        _face.currentMaterial?.SetShaderParameter("face_color", _faceTint);
+        _face.currentMaterial?.SetShaderParameter(FaceColorParam, _faceTint);
     }
 
     private Color _faceTint = Colors.White;
