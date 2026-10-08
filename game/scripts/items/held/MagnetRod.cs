@@ -15,6 +15,11 @@ using System.Collections.Generic;
 /// the total force capped at <see cref="maxForce"/>: light items snap in, heavy ones lag and sag. The items
 /// collide with each other, which packs them into a ball.
 /// </para>
+/// <para>
+/// With <see cref="singleItemGrab"/> set (the "magnet_rod_single" variant), the rod instead grabs the one item under
+/// the cursor using the player's own grab (<see cref="FactoryPlayer.RequestGrab"/>), for A/B testing grab-by-tool
+/// against grab-by-empty-hand (<see cref="FactoryPlayer.emptyHandGrabEnabled"/>).
+/// </para>
 /// </summary>
 public partial class MagnetRod : HeldItem
 {
@@ -24,6 +29,8 @@ public partial class MagnetRod : HeldItem
     [Export] public int maxItems = 30;
     /// <summary>Seconds between searches for new items while active.</summary>
     [Export] public double rescanInterval = 0.25;
+    /// <summary>Grab only the looked-at item, via the player's grab, instead of pulling a ball of items.</summary>
+    [Export] public bool singleItemGrab;
 
     [ExportGroup("Ball")]
     [Export] public float holdDistance = 3f;
@@ -69,12 +76,14 @@ public partial class MagnetRod : HeldItem
     public override void _ExitTree()
     {
         if (!isLocal) return;
+        if (singleItemGrab) player.ReleaseGrab();
         SetActive(false);
         GameWorld.ClaimGrantedEvent -= OnClaimGranted;
     }
 
     public override bool HandleInput(InputEvent @event)
     {
+        if (singleItemGrab) return HandleSingleGrabInput(@event);
         if (@event.IsActionPressed(InputActions.primary))
         {
             SetActive(true);
@@ -83,6 +92,21 @@ public partial class MagnetRod : HeldItem
         if (@event.IsActionReleased(InputActions.primary))
         {
             return true; // released in _PhysicsProcess, which also covers losing focus mid-hold
+        }
+        return false;
+    }
+
+    bool HandleSingleGrabInput(InputEvent @event)
+    {
+        if (@event.IsActionPressed(InputActions.primary))
+        {
+            if (player.pickTarget is PhysicalFactoryItem item && item.canBeGrabbed) player.RequestGrab(item);
+            return true;
+        }
+        if (@event.IsActionReleased(InputActions.primary))
+        {
+            player.ReleaseGrab();
+            return true;
         }
         return false;
     }
@@ -103,6 +127,12 @@ public partial class MagnetRod : HeldItem
     public override void _PhysicsProcess(double delta)
     {
         if (!isLocal) return;
+        if (singleItemGrab)
+        {
+            // The player drives the grab (and its scroll distance); the rod only shows the coil glow while holding.
+            if (activeIndicator != null) activeIndicator.Visible = player.grabbedItem != null;
+            return;
+        }
         if (active && !forceActive && !Input.IsActionPressed(InputActions.primary))
         {
             SetActive(false);

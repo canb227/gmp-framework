@@ -291,6 +291,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         ImGui.Text($"Active Hotbar Slot: {inventory.ActiveHotbarSlot}");
         ImGui.Text($"Pick Target: {pickTarget?.Name ?? "none"}");
         ImGui.Text($"Grab Target: {grabTarget?.Name ?? "none"}");
+        ImGui.Checkbox("Empty-hand grab", ref emptyHandGrabEnabled);
         ImGui.Text($"Inventory Open: {UIManager.IsInventoryOpen}");
         ImGui.End();
     }

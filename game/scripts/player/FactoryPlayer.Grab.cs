@@ -59,6 +59,12 @@ public partial class FactoryPlayer
     static readonly Vector3 grabGravity = ProjectSettings.GetSetting("physics/3d/default_gravity_vector").AsVector3()
         * ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
 
+    /// <summary>
+    /// A/B test switch: when false, an empty hand no longer grabs; only a tool can start a grab (the single-item
+    /// magnet rod, <see cref="MagnetRod.singleItemGrab"/>). Toggled in the "debugui player" window.
+    /// </summary>
+    public static bool emptyHandGrabEnabled = true;
+
     /// <summary>Holds the grab button down regardless of input (used by the headless multiplayer test).</summary>
     public bool forceGrabHeld;
     public PhysicalFactoryItem grabbedItem => grabTarget;
@@ -76,7 +82,7 @@ public partial class FactoryPlayer
 
     void HandleGrabInput(InputEvent @event)
     {
-        if (@event.IsActionPressed(InputActions.primary))
+        if (emptyHandGrabEnabled && @event.IsActionPressed(InputActions.primary))
         {
             bool emptyHand = inventory.ActiveHotbarSlot == -1 || inventory.slots[inventory.ActiveHotbarSlot].IsEmpty;
             if (emptyHand && pickTarget is PhysicalFactoryItem item && item.canBeGrabbed)

@@ -11,10 +11,9 @@ public static class GameBootstrap
     public const string PlayerScene = "res://game/scenes/player/FactoryPlayer.tscn";
     public static readonly string[] StartingBlueprints =
     [
-        "blueprint_conveyor", "blueprint_conveyor_slope", "blueprint_smelter", "blueprint_scrap_grabber", "blueprint_conveyor_loader", "scrap_ball", "scrap_ingot",
+        "blueprint_conveyor", "blueprint_conveyor_slope", "blueprint_conveyor_loader", "scrap_ball", 
     ];
     public const int StartingBlueprintCount = 99;
-    public const bool giveStarterItems = false;
 
     /// <summary>Host spawns the selected level for everyone.</summary>
     public static void Preload(GameInfo gameInfo)
@@ -37,13 +36,20 @@ public static class GameBootstrap
         ulong pid = GameWorld.SpawnScene(PlayerScene, spawnPos, default, default, GMPObject.serializer.Serialize(init));
         FactoryPlayer player = GameWorld.syncedObjs[pid] as FactoryPlayer;
 
-        if (giveStarterItems)
+        FactoryPlayer.emptyHandGrabEnabled = Lobby.gameInfo.emptyHandGrab;
+        switch (Lobby.gameInfo.starterItems)
         {
-            player.inventory.AddItem("magnet_rod", 1);
-            foreach (string blueprint in StartingBlueprints)
-            {
-                player.inventory.AddItem(blueprint, StartingBlueprintCount);
-            }
+            case StarterItems.SingleMagnetRod:
+                player.inventory.AddItem("magnet_rod_single", 1);
+                break;
+            case StarterItems.All:
+                player.inventory.AddItem("magnet_rod", 1);
+                player.inventory.AddItem("magnet_rod_single", 1);
+                foreach (string blueprint in StartingBlueprints)
+                {
+                    player.inventory.AddItem(blueprint, StartingBlueprintCount);
+                }
+                break;
         }
 
         player.UpdateEquippedItem();

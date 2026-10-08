@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://v3645dcjw5ni" path="res://game/scenes/items/held/MagnetRod.tscn" id="1_rod"]
+
+[node name="MagnetRodSingle" instance=ExtResource("1_rod")]
+singleItemGrab = true

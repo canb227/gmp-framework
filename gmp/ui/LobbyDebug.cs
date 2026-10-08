@@ -124,6 +124,8 @@ public partial class LobbyDebug : Control
     private Button _sendButton;
     private PackedScene _rowScene;
     private OptionButton _levelSelect;
+    private OptionButton _starterItemsSelect;
+    private CheckBox _handGrabCheck;
 
     public override void _Ready()
     {
@@ -144,6 +146,8 @@ public partial class LobbyDebug : Control
         _hostValue = GetNode<Label>("%HostValue");
         _playersValue = GetNode<Label>("%PlayersValue");
         _levelSelect = GetNode<OptionButton>("%LevelOption");
+        _starterItemsSelect = GetNode<OptionButton>("%StarterItemsOption");
+        _handGrabCheck = GetNode<CheckBox>("%HandGrabCheck");
 
         _logText = GetNode<RichTextLabel>("Margin/RootVBox/Body/LeftPanel/LeftContent/EventLogSection/LogPanel/LogText");
         _playerRows = GetNode<VBoxContainer>("Margin/RootVBox/Body/CenterColumn/PlayerSection/PlayerListPanel/PlayerScroll/PlayerRows");
@@ -160,6 +164,8 @@ public partial class LobbyDebug : Control
         _sendButton.Pressed += OnSendChat;
         _startButton.Pressed += OnStartGamePressed;
         _levelSelect.ItemSelected += _levelSelect_ItemSelected;
+        _starterItemsSelect.ItemSelected += _starterItemsSelect_ItemSelected;
+        _handGrabCheck.Toggled += _handGrabCheck_Toggled;
         _chatInput.TextSubmitted += _ => OnSendChat();
 
         // Subscribe to Lobby (an autoload) events.
@@ -183,6 +189,12 @@ public partial class LobbyDebug : Control
         }
         _levelSelect.Select(3);
         _levelSelect_ItemSelected(3);
+        // Item order matches the StarterItems enum.
+        _starterItemsSelect.AddItem("None");
+        _starterItemsSelect.AddItem("Only single magnet rod");
+        _starterItemsSelect.AddItem("All");
+        _starterItemsSelect.Select((int)Lobby.gameInfo.starterItems);
+        _handGrabCheck.SetPressedNoSignal(Lobby.gameInfo.emptyHandGrab);
         ProcessMode = ProcessModeEnum.Always;
         Log($"lobby ready ({_mode}) as {_selfName} ({ShortId(_selfId)})");
 
@@ -192,6 +204,18 @@ public partial class LobbyDebug : Control
     private void _levelSelect_ItemSelected(long index)
     {
         Lobby.gameInfo.levelIdx = (int)index;
+        Lobby.SendGameInfoUpdate();
+    }
+
+    private void _starterItemsSelect_ItemSelected(long index)
+    {
+        Lobby.gameInfo.starterItems = (StarterItems)index;
+        Lobby.SendGameInfoUpdate();
+    }
+
+    private void _handGrabCheck_Toggled(bool on)
+    {
+        Lobby.gameInfo.emptyHandGrab = on;
         Lobby.SendGameInfoUpdate();
     }
 
@@ -564,6 +588,8 @@ public partial class LobbyDebug : Control
     {
         // GameInfo (level/mode/max players) changed on the wire. Nothing to render yet.
         _levelSelect.Select(Lobby.gameInfo.levelIdx);
+        _starterItemsSelect.Select((int)Lobby.gameInfo.starterItems);
+        _handGrabCheck.SetPressedNoSignal(Lobby.gameInfo.emptyHandGrab);
     }
 
     // Every peer has finished loading the game world — drop the lobby UI.
