@@ -274,9 +274,9 @@ def bay(h, name, title, items, yaw, i0, i1, k0, k1, back_wall=None, root="Struct
     h.label(parent, name + "Sign", (back[0], 6.4, back[1]), title, size=96, pixel=0.02, billboard=False, yaw=(yaw + 2) % 4)
 
 # ---------------------------------------------------------------------------- demo lines (flow toward +X, yaw 3)
-C = S + "conveyors/"
-CA = S + "conveyors_advanced/"
-CM = S + "conveyors_magnetic/"
+C = S + "conveyors/basic/"
+CA = S + "conveyors/advanced/"
+CM = S + "conveyors/magnetic/"
 CH = S + "chutes/"
 E = 3                                                     # east-facing yaw
 
@@ -937,7 +937,7 @@ def scree_slope(h):
 # ---------------------------------------------------------------------------- rooms 5-6: tag-themed production chains
 RM = "res://game/assets/models/machines/rooms/"
 IT = "res://game/assets/models/items/"
-C = S + "conveyors/"
+C = S + "conveyors/basic/"
 
 def frozen(h, parent, glb, pos, cols=IDB, name="Frozen"):
     """A model-only stand-in for an item or machine (no physics): part of a room's tableau."""

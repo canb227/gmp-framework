@@ -33,11 +33,11 @@ Cells are W x L x H (x, along the flow, up). Nodes are inside each scene's `Mode
 
 | Structure | Scene | Cells | Notes |
 |---|---|---|---|
-| Splitter | conveyors/ConveyorSplitter | 1x1x1 | wedge sends items out of both sides of the front half |
-| Switchable splitter | conveyors/ConveyorSplitterSwitch | 1x1x1 | `Arm` / `ArmBody` turn +-33 deg about Y (right / left); `LeverBody` (Lever.cs) tilts `Lever` |
-| Loader | conveyors/ConveyorLoader | 1x1x1 | end lip 0.35 m above belt height |
-| Advanced conveyor, turn L/R, slope up/down, loader | conveyors_advanced/* | as basic | 0.5 m walls, belt 3 m/s |
-| Magnetic conveyor, turn L/R | conveyors_magnetic/ConveyorMagnetic[Wall/Ceiling][Turn*] | 1x1x1 | wall form on the cell's -X side, ceiling form on its top; `Glow` shows the magnets |
+| Splitter | conveyors/basic/ConveyorSplitter | 1x1x1 | wedge sends items out of both sides of the front half |
+| Switchable splitter | conveyors/basic/ConveyorSplitterSwitch | 1x1x1 | `Arm` / `ArmBody` turn +-33 deg about Y (right / left); `LeverBody` (Lever.cs) tilts `Lever` |
+| Loader | conveyors/basic/ConveyorLoader | 1x1x1 | end lip 0.35 m above belt height |
+| Advanced conveyor (self-turning), slope up/down, loader | conveyors/advanced/* | as basic | 0.5 m walls, belt 3 m/s |
+| Magnetic conveyor (floor form self-turning; wall/ceiling forms with turns L/R) | conveyors/magnetic/ConveyorMagnetic[Wall/Ceiling][Turn*] | 1x1x1 | wall form on the cell's -X side, ceiling form on its top; `Glow` shows the magnets |
 | Chute set (basic / advanced) | chutes/Chute[Adv]* | see below | floor at belt height, 1.5 m bore; advanced `Power` node + `Floor` tangent for the push |
 | Horizontal straight / turn L/R | ChuteHStraight, ChuteHTurn* | 1x1x1 | open top, walls to 1.2 m |
 | Vertical straight / elbow | ChuteVStraight, ChuteVTurn | 1x1x1 | elbow: in through the top, out through the front |

@@ -317,7 +317,7 @@ public partial class LobbyDebug : Control
             machinesOk &= demoGridOk;
             // Every conveyor's placement preview gets a non-empty direction arrow; the grinder gets one per port
             // (two inputs and an output); a structure without a flow arrow or ports gets none.
-            string arrows = string.Join(",", new[] { "conveyors/Conveyor", "conveyors/ConveyorSlope", "conveyors/ConveyorSlopeDown", "Grinder", "TestBlock" }.Select(n =>
+            string arrows = string.Join(",", new[] { "conveyors/basic/Conveyor", "conveyors/basic/ConveyorSlope", "conveyors/basic/ConveyorSlopeDown", "Grinder", "TestBlock" }.Select(n =>
             {
                 var st = GD.Load<PackedScene>($"res://game/scenes/structures/{n}.tscn").Instantiate<Structure>();
                 Node3D arrows = FlowArrowMesh.Create(st);

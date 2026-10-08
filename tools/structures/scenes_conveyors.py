@@ -16,6 +16,9 @@ SALVAGE_IMPORT = "res://game/assets/models/shared/salvage_import.gd"
 BASIC_SPEED, ADV_SPEED, MAG_SPEED = 2.0, 3.0, 2.0
 BASIC_WALL, ADV_WALL = 0.25, 0.53          # guard top above the belt (advanced includes its top rail)
 LOADER = dict(total_y=1.95, rise=0.35, R=1.2, th=math.radians(20.0))
+# The kicker's lip isn't on the front face, so the belt's end isn't a port; this one, where a straight conveyor's
+# output is, makes neighbours treat the loader like a straight (a conveyor across its front turns, others snap to it).
+LOADER_OUT = ("out", (0, 0, 0), "Front", (2, 1))
 
 def lips(sc, prof, st, sides=(-1, 1)):
     for side in sides:
@@ -61,7 +64,7 @@ def splitter():
         n_in = (-t[1], t[0]) if tag == "R" else (t[1], -t[0])               # into the wedge
         c = ((tip[0] + end[0]) / 2 + n_in[0] * 0.03, (tip[1] + end[1]) / 2 + n_in[1] * 0.03, (z0 + z1) / 2)
         sc.obox_b(f"Wedge{tag}", c, (d[0], d[1], 0), (n_in[0] * 0.06, n_in[1] * 0.06, 0), (0, 0, z1 - z0), friction=WALL_FRICTION)
-    return sc.write("game/scenes/structures/conveyors/ConveyorSplitter.tscn")
+    return sc.write("game/scenes/structures/conveyors/basic/ConveyorSplitter.tscn")
 
 SWITCH_PIVOT_B = (0.0, 0.35, BELT_TOP)
 SWITCH_ANGLE = math.radians(33.0)
@@ -78,7 +81,7 @@ def splitter_switch():
     gb = (0.35, 0.95, BELT_TOP + 0.38)
     sc.body("LeverBody", b2g((gb[0] + 0.1, gb[1], gb[2] + 0.1)), size=(0.45, 0.5, 0.12), script_key="lever",
             extra=('handle = NodePath("../Model/Lever")', 'displayName = "Splitter Switch"'), paths=("handle",))
-    return sc.write("game/scenes/structures/conveyors/ConveyorSplitterSwitch.tscn")
+    return sc.write("game/scenes/structures/conveyors/basic/ConveyorSplitterSwitch.tscn")
 
 def loader_cols(sc, speed, wall_top):
     prof, L, flat, ls = bend_up_profile(**LOADER)
@@ -91,10 +94,10 @@ def loader_cols(sc, speed, wall_top):
 
 def loader():
     sc = Scene("ConveyorLoader", "res://game/assets/models/conveyors/conveyor_loader.glb", BASIC_IMPORT)
-    sc.root("structure", "blueprint_conveyor_loader", layers=1, tags=(TAG_RUBBER,))
+    sc.root("structure", "blueprint_conveyor_loader", layers=1, tags=(TAG_RUBBER,), ports=(LOADER_OUT,))
     sc.model()
     loader_cols(sc, BASIC_SPEED, BASIC_WALL)
-    return sc.write("game/scenes/structures/conveyors/ConveyorLoader.tscn")
+    return sc.write("game/scenes/structures/conveyors/basic/ConveyorLoader.tscn")
 
 # ---------------------------------------------------------------------------- turns
 def turn_scene(name, model, imp, blueprint, left, speed, wall_top, xf=None, post_h=None):
@@ -192,7 +195,7 @@ def basic():
     """The salvage conveyors (models from build_conveyors.py): the self-turning conveyor and slopes."""
     out = []
     M = "res://game/assets/models/conveyors/"
-    D = "game/scenes/structures/conveyors/"
+    D = "game/scenes/structures/conveyors/basic/"
     out.append(auto_conveyor("Conveyor", D + "Conveyor.tscn", BASIC_IMPORT, "blueprint_conveyor", M + "conveyor_straight.glb",
                              (M + "conveyor_turn_right.glb", M + "conveyor_turn_left.glb"), BASIC_SPEED, BASIC_WALL, layers=1))
     for down in (False, True):
@@ -207,7 +210,7 @@ def basic_extras():
 def advanced():
     out = []
     M = "res://game/assets/models/conveyors_advanced/"
-    D = "game/scenes/structures/conveyors_advanced/"
+    D = "game/scenes/structures/conveyors/advanced/"
     out.append(auto_conveyor("ConveyorAdvanced", D + "ConveyorAdvanced.tscn", SALVAGE_IMPORT, "blueprint_conveyor_adv",
                              M + "conveyor_adv_straight.glb", (M + "conveyor_adv_turn_right.glb", M + "conveyor_adv_turn_left.glb"),
                              ADV_SPEED, ADV_WALL))
@@ -216,7 +219,7 @@ def advanced():
         sc = slope_scene(nm, M + "conveyor_adv_slope.glb", SALVAGE_IMPORT, "blueprint_conveyor_adv_slope", down, ADV_SPEED, ADV_WALL)
         out.append(sc.write(D + nm + ".tscn"))
     sc = Scene("ConveyorAdvancedLoader", M + "conveyor_adv_loader.glb", SALVAGE_IMPORT)
-    sc.root("structure", "blueprint_conveyor_adv_loader", tags=(TAG_RUBBER,))
+    sc.root("structure", "blueprint_conveyor_adv_loader", tags=(TAG_RUBBER,), ports=(LOADER_OUT,))
     sc.model(); belt_speed(sc, ADV_SPEED)
     loader_cols(sc, ADV_SPEED, ADV_WALL)
     out.append(sc.write(D + "ConveyorAdvancedLoader.tscn"))
@@ -229,7 +232,7 @@ MOUNTS = [("", None, ""), ("Wall", rot_z(-math.pi / 2), "_wall"), ("Ceiling", ro
 def magnetic():
     out = []
     M = "res://game/assets/models/conveyors_magnetic/"
-    D = "game/scenes/structures/conveyors_magnetic/"
+    D = "game/scenes/structures/conveyors/magnetic/"
     turns = (M + "conveyor_mag_turn_right.glb", M + "conveyor_mag_turn_left.glb")
     for mount, xf, bp in MOUNTS:
         if not mount:

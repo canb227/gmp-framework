@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://game/scenes/structures/processing/PlatePress.tscn" id="hall_43"]
 [ext_resource type="PackedScene" uid="uid://bywvnipt62y5r" path="res://game/scenes/structures/ItemVoid.tscn" id="hall_47"]
 [ext_resource type="PackedScene" uid="uid://dxbidpuifub02" path="res://game/scenes/structures/ItemSpawner.tscn" id="hall_49"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/Conveyor.tscn" id="hall_50"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/basic/Conveyor.tscn" id="hall_50"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/concepts/ConceptCryoVent.tscn" id="hall_65"]
 [ext_resource type="PackedScene" uid="uid://baufo66olsmqx" path="res://game/assets/models/items/iron_ingot.glb" id="hall_82"]
 [ext_resource type="PackedScene" uid="uid://8h70r3hmidrb" path="res://game/assets/models/items/iron_rod.glb" id="hall_84"]

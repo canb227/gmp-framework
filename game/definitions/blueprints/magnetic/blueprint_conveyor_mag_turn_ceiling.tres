@@ -3,8 +3,8 @@
 [ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_bp"]
 [ext_resource type="Texture2D" uid="uid://iyuylomqgawp" path="res://game/assets/icons/blueprints/blueprint_conveyor_mag_turn_ceiling.png" id="2_icon"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/BlueprintGhost.tscn" id="3_ghost"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticCeilingTurnRight.tscn" id="4_struct"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_magnetic/ConveyorMagneticCeilingTurnLeft.tscn" id="5_alt"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/magnetic/ConveyorMagneticCeilingTurnRight.tscn" id="4_struct"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/magnetic/ConveyorMagneticCeilingTurnLeft.tscn" id="5_alt"]
 
 [resource]
 script = ExtResource("1_bp")

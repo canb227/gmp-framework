@@ -23,8 +23,8 @@
 [ext_resource type="Texture2D" uid="uid://c1okanp5ps2lp" path="res://game/assets/imposters/iron/base_iron_ore_orm.png" id="25_bc8b5"]
 [ext_resource type="Script" uid="uid://b72q8icnr0vi8" path="res://game/scenes/levels/DeleteMe.cs" id="26_icqg5"]
 [ext_resource type="PackedScene" uid="uid://bywvnipt62y5r" path="res://game/scenes/structures/ItemVoid.tscn" id="hall_47"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/Conveyor.tscn" id="hall_50"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorSlope.tscn" id="hall_51"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/basic/Conveyor.tscn" id="hall_50"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/basic/ConveyorSlope.tscn" id="hall_51"]
 [ext_resource type="PackedScene" path="res://game/scenes/entities/Lever.tscn" id="sp_lever"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_iuiei"]

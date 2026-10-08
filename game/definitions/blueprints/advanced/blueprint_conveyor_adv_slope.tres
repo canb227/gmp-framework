@@ -3,8 +3,8 @@
 [ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_bp"]
 [ext_resource type="Texture2D" uid="uid://mw1obhooqd8a" path="res://game/assets/icons/blueprints/blueprint_conveyor_adv_slope.png" id="2_icon"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/BlueprintGhost.tscn" id="3_ghost"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedSlope.tscn" id="4_struct"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors_advanced/ConveyorAdvancedSlopeDown.tscn" id="5_alt"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/advanced/ConveyorAdvancedSlope.tscn" id="4_struct"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/advanced/ConveyorAdvancedSlopeDown.tscn" id="5_alt"]
 
 [resource]
 script = ExtResource("1_bp")

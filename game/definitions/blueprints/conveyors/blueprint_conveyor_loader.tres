@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_bp"]
 [ext_resource type="Texture2D" uid="uid://t1gm0c4g0r7w" path="res://game/assets/icons/blueprints/blueprint_conveyor_loader.png" id="2_icon"]
 [ext_resource type="PackedScene" uid="uid://e450hsdm0ju3" path="res://game/scenes/structures/BlueprintGhost.tscn" id="3_ghost"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorLoader.tscn" id="4_struct"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/basic/ConveyorLoader.tscn" id="4_struct"]
 
 [resource]
 script = ExtResource("1_bp")
