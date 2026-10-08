@@ -13,7 +13,7 @@ config_version=5
 config/name="FactoryGame"
 config/description="A physics-based co-op automation puzzle game!"
 config/version="0.0"
-run/main_scene="uid://ckre0b3bwrbof"
+run/main_scene="res://dev/ui_test/ui_test.tscn"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -29,6 +29,7 @@ Console="*uid://dle03qiwu8337"
 BuildGrid="*res://game/scripts/core/BuildGrid.cs"
 AudioManager="*uid://bqyfqwjdjhwfa"
 ProgressManager="*uid://yyd2313sfhhb"
+UIManager="*res://game/scripts/ui/UIManager.cs"
 
 [display]
 

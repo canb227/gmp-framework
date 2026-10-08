@@ -181,8 +181,8 @@ public partial class LobbyDebug : Control
         {
             _levelSelect.AddItem(item.levelName);
         }
-        _levelSelect.Select(2);
-        _levelSelect_ItemSelected(2);
+        _levelSelect.Select(3);
+        _levelSelect_ItemSelected(3);
         ProcessMode = ProcessModeEnum.Always;
         Log($"lobby ready ({_mode}) as {_selfName} ({ShortId(_selfId)})");
 
@@ -301,8 +301,8 @@ public partial class LobbyDebug : Control
             // Host only: HUD named the held magnet rod; sprinting reached (nearly) sprint speed.
             FactoryPlayer self = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
             bool uiOk = !Lobby.isHost || (_hudHeldName == "Magnet Rod" && self != null && _sprintMaxSpeed > self.sprintSpeed * 0.9f);
-            // Every peer: only its own player's HUD is drawn (each player scene carries a HUD, and they overlap on screen).
-            string visibleHuds = string.Join("+", players.Where(p => p.hud.IsVisibleInTree()).Select(p => p.isLocal ? "self" : $"peer{p.controllingPeerID % 1000}"));
+            // Every peer: the one HUD (UIManager's) is drawn and bound to its own player.
+            string visibleHuds = UIManager.Hud is { } hud && hud.IsVisibleInTree() ? (hud.player.isLocal ? "self" : $"peer{hud.player.controllingPeerID % 1000}") : "none";
             uiOk &= visibleHuds == "self";
             bool toolsOk = toolState == "ore_kept:True magnet:3/3->released:True" && grabOk && uiOk && sleepOk
                 && (!Lobby.isHost || (_jumperMaxMove > 0.5f && TagInteractions.temperatureContacts >= 2));
@@ -475,8 +475,7 @@ public partial class LobbyDebug : Control
     // starts clean. Unsubscribing from Lobby's events happens in _ExitTree.
     private void OnBackPressed()
     {
-        Lobby.LeaveLobby();
-        GetTree().ChangeSceneToFile("res://gmp/ui/main_menu.tscn");
+        UIManager.QuitToMainMenu();
     }
 
     // ---- host / join --------------------------------------------------------
@@ -963,7 +962,7 @@ public partial class LobbyDebug : Control
                 && GameWorld.heldBy.TryGetValue(id, out ulong holder) && holder == Lobby.hostID
                 && (o as Node3D).GlobalPosition.Y > floor + 0.5f);
             _magnetSnapshot = $"{floating}/{MagnetTestIds.Length}";
-            if (Lobby.isHost && local != null) _hudHeldName = local.hud.heldItemText;
+            if (Lobby.isHost && local != null) _hudHeldName = UIManager.Hud?.heldItemText ?? "none";
             if (floating != MagnetTestIds.Length)
             {
                 foreach (ulong id in MagnetTestIds)

@@ -3,7 +3,7 @@ using Godot.Collections;
 
 /// <summary>
 /// FactoryPlayer: looks-at targeting. Raycasts from the camera each physics tick to find the item or
-/// button, lever or structure under the crosshair, shows the hover labels, and handles the "interact" action
+/// button, lever or structure under the crosshair, shows the HUD hover labels, and handles the "interact" action
 /// (pick up an item / press a button / flip a lever / deconstruct a structure).
 /// </summary>
 public partial class FactoryPlayer
@@ -12,15 +12,6 @@ public partial class FactoryPlayer
 
     /// <summary>The PhysicalFactoryItem, BasicButton, Lever or Structure currently under the crosshair, or null.</summary>
     public Node3D pickTarget { get; private set; }
-
-    Label hoverInfoName;
-    Label hoverInfoBelow;
-
-    void ReadyInteraction()
-    {
-        hoverInfoName = hud.GetNode<Label>("%HoverInfoName");
-        hoverInfoBelow = hud.GetNode<Label>("%HoverInfoBelow");
-    }
 
     void HandleInteractionInput(InputEvent @event)
     {
@@ -50,58 +41,41 @@ public partial class FactoryPlayer
         RayHit ray = GameWorld.Raycast(camera.GlobalPosition, camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * pickRange);
         Node hit = ray.collider;
 
+        string name = null, prompt = null;
         if (hit is PhysicalFactoryItem item)
         {
             pickTarget = item;
-            hoverInfoName.Show();
             // Items without a definition resource (e.g. test props) fall back to their id.
-            hoverInfoName.Text = ItemInfo.Fetch(item.itemID)?.displayName ?? item.itemID;
-            if (item.canBePickedUp)
-            {
-                hoverInfoBelow.Show();
-                hoverInfoBelow.Text = "Press F to " + item.interactionText;
-            }
-            else
-            {
-                hoverInfoBelow.Hide();
-            }
+            name = ItemInfo.Fetch(item.itemID)?.displayName ?? item.itemID;
+            if (item.canBePickedUp) prompt = "Press F to " + item.interactionText;
         }
         else if (hit is BasicButton button)
         {
             pickTarget = button;
-            hoverInfoName.Hide();
-            hoverInfoBelow.Show();
-            hoverInfoBelow.Text = "Press F to Activate.";
+            prompt = "Press F to Activate.";
         }
         else if (hit is Lever lever)
         {
             pickTarget = lever;
-            hoverInfoName.Show();
-            hoverInfoName.Text = lever.displayName;
-            hoverInfoBelow.Show();
-            hoverInfoBelow.Text = lever.pulled ? "Press F to push." : "Press F to pull.";
+            name = lever.displayName;
+            prompt = lever.pulled ? "Press F to push." : "Press F to pull.";
         }
         else if (hit is TestbedButton testbedButton)
         {
             pickTarget = testbedButton;
-            hoverInfoName.Show();
-            hoverInfoName.Text = testbedButton.displayName;
-            hoverInfoBelow.Show();
-            hoverInfoBelow.Text = testbedButton.prompt;
+            name = testbedButton.displayName;
+            prompt = testbedButton.prompt;
         }
         else if (BuildGrid.FindStructure(ray) is Structure structure)
         {
             pickTarget = structure;
-            hoverInfoName.Show();
-            hoverInfoName.Text = structure.displayName;
-            hoverInfoBelow.Show();
-            hoverInfoBelow.Text = "Press F to " + structure.interactionText;
+            name = structure.displayName;
+            prompt = "Press F to " + structure.interactionText;
         }
         else
         {
             pickTarget = null;
-            hoverInfoName.Hide();
-            hoverInfoBelow.Hide();
         }
+        UIManager.SetHoverInfo(name, prompt);
     }
 }

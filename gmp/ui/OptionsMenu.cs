@@ -8,18 +8,13 @@ using System.Text.RegularExpressions;
 /// The full-screen options screen: GRAPHICS (display and rendering), INPUT (mouse and key bindings) and GAMEPLAY
 /// tabs, built from <see cref="GameSettings"/>. Every change applies and saves immediately.
 /// <para>
-/// Opened two ways: as its own scene from the main menu, where Back returns to the main menu; or as an overlay (the
-/// pause menu instances it), where Back raises <see cref="CloseRequested"/> instead. Escape does the same as Back,
-/// except while a key binding is being captured.
+/// A <see cref="UIScreen"/> opened over the main menu or the pause menu (<see cref="UIManager.OpenOptions"/>); Back
+/// closes it, returning to whichever it came from. Escape does the same as Back, except while a key binding is
+/// being captured, when it cancels the capture.
 /// </para>
 /// </summary>
-public partial class OptionsMenu : Control
+public partial class OptionsMenu : UIScreen
 {
-    const string MainMenuScene = "res://gmp/ui/main_menu.tscn";
-
-    /// <summary>Raised by Back / Escape when something else owns this screen (see the class summary).</summary>
-    public event Action CloseRequested;
-
     VBoxContainer graphicsRows, inputRows, gameplayRows;
     OptionButton resolutionOption;
 
@@ -51,15 +46,10 @@ public partial class OptionsMenu : Control
     void Back()
     {
         CancelCapture();
-        if (CloseRequested != null)
-        {
-            CloseRequested.Invoke();
-        }
-        else
-        {
-            GetTree().ChangeSceneToFile(MainMenuScene);
-        }
+        UIManager.CloseScreen(this);
     }
+
+    public override void Cancel() => Back();
 
     // ---- GRAPHICS ----
 
@@ -207,15 +197,6 @@ public partial class OptionsMenu : Control
             capturing = null;
             GameSettings.SetBinding(action, slot, new InputEventMouseButton { ButtonIndex = mouse.ButtonIndex });
             RefreshBindings();
-        }
-    }
-
-    public override void _UnhandledInput(InputEvent @event)
-    {
-        if (capturing == null && @event is InputEventKey key && key.Pressed && !key.Echo && key.Keycode == Key.Escape)
-        {
-            GetViewport().SetInputAsHandled();
-            Back();
         }
     }
 

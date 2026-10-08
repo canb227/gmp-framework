@@ -5,28 +5,14 @@ using System.Linq;
 
 /// <summary>
 /// Shop terminal UI (ShopUI.tscn): a catalogue of purchasable structure blueprints on the left; selecting one
-/// shows its details on the right, with a purchase widget at the bottom (unit cost vs. how many of the cost item
-/// the player holds, an order-quantity selector, and a Purchase button that raises <see cref="PurchaseRequested"/>).
+/// shows its details on the right, with a purchase widget at the bottom (unit cost vs. how much of the cost item
+/// the players hold, an order-quantity selector, and a Purchase button).
 /// Laid out for a fixed 2560x1440 screen so it can later be rendered in a SubViewport on an in-world display.
-/// What's on sale is the static <see cref="availableItemIDs"/> list, empty at start and grown through
-/// <see cref="AddAvailableItem"/> (e.g. by quest rewards); every open shop rebuilds when it changes.
-/// Purely a view: it never changes the inventory itself.
+/// A view over <see cref="Shop"/>, which holds the stock, prices and the purchase itself; every open shop rebuilds
+/// when the stock changes. Opened as a screen by <see cref="UIManager.OpenShop"/>; Exit, Escape or interact close it.
 /// </summary>
-public partial class ShopUI : Control
+public partial class ShopUI : UIScreen
 {
-    /// <summary>Raised by the Purchase button: (blueprint item id, quantity). Handlers take payment and deliver.</summary>
-    public event Action<string, int> PurchaseRequested;
-    /// <summary>Raised by the Exit button.</summary>
-    public event Action CloseRequested;
-
-    /// <summary>
-    /// Blueprint item ids on sale, in the order they were added. Shared by every shop; starts empty. Change it
-    /// through <see cref="AddAvailableItem"/> / <see cref="ClearAvailableItems"/> so open shops refresh.
-    /// </summary>
-    public static readonly List<string> availableItemIDs = new();
-    /// <summary>Raised whenever <see cref="availableItemIDs"/> changes.</summary>
-    public static event Action AvailableItemsChanged;
-
     [Export] public int maxOrder = 99;
     static readonly Color Accent = new(1f, 0.55f, 0.05f);
     static readonly Color Shortfall = new(0.95f, 0.27f, 0.2f);
@@ -37,8 +23,6 @@ public partial class ShopUI : Control
     private readonly List<(BlueprintItem item, Button row, Label costLabel)> rows = new();
     private BlueprintItem selected;
     private int quantity = 1;
-    private static FactoryPlayer LocalPlayer() =>
-    GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
     private VBoxContainer itemList;
     private Label listCount, emptyDetail, detailCategory, detailName, detailStats, detailDescription;
     private Label costName, costEach, costTotal, costHave, freeLabel, quantityLabel;
@@ -75,9 +59,9 @@ public partial class ShopUI : Control
         plusButton.Pressed += () => SetQuantity(quantity + 1);
         maxButton.Pressed += () => SetQuantity(MaxAffordable());
         purchaseButton.Pressed += OnPurchasePressed;
-        closeButton.Pressed += () => CloseRequested?.Invoke();
+        closeButton.Pressed += () => UIManager.CloseScreen(this);
 
-        AvailableItemsChanged += OnAvailableItemsChanged;
+        Shop.StockChanged += OnStockChanged;
         BuildCatalogue();
     }
 
@@ -88,21 +72,29 @@ public partial class ShopUI : Control
             GetViewport().SizeChanged -= Refit;
             fittingToViewport = false;
         }
-        AvailableItemsChanged -= OnAvailableItemsChanged;
+        Shop.StockChanged -= OnStockChanged;
         SetInventory(null);
     }
 
-    /// <summary>Shows the shop against <paramref name="playerInventory"/> (whose counts the cost widget reads).</summary>
+    /// <summary>Interact closes the shop as well as Escape (the terminal is opened with interact).</summary>
+    public override void _UnhandledInput(InputEvent @event)
+    {
+        if (@event.IsActionPressed(InputActions.interact))
+        {
+            GetViewport().SetInputAsHandled();
+            UIManager.CloseScreen(this);
+        }
+    }
+
+    /// <summary>Points the shop at <paramref name="playerInventory"/>, which purchases go into.</summary>
     public void Open(Inventory playerInventory)
     {
         SetInventory(playerInventory);
-        Visible = true;
     }
 
-    public void Close()
+    public override void OnClosed()
     {
         SetInventory(null);
-        Visible = false;
     }
 
     /// <summary>
@@ -146,38 +138,9 @@ public partial class ShopUI : Control
         RefreshCosts();
     }
 
-    // ---- stock -----------------------------------------------------------------
-
-    /// <summary>
-    /// Puts <paramref name="itemID"/> on sale in every shop. It must be a <see cref="BlueprintItem"/>; returns false
-    /// (and changes nothing) for unknown or non-blueprint ids and for ids already on sale.
-    /// </summary>
-    public static bool AddAvailableItem(string itemID)
-    {
-        if (availableItemIDs.Contains(itemID))
-        {
-            return false;
-        }
-        if (ItemInfo.Fetch(itemID) is not BlueprintItem)
-        {
-            Logging.Log($"can't stock '{itemID}': not a blueprint item", "ShopUI");
-            return false;
-        }
-        availableItemIDs.Add(itemID);
-        AvailableItemsChanged?.Invoke();
-        return true;
-    }
-
-    /// <summary>Takes everything off sale (e.g. when a new game starts; the list is static, so it outlives one).</summary>
-    public static void ClearAvailableItems()
-    {
-        availableItemIDs.Clear();
-        AvailableItemsChanged?.Invoke();
-    }
-
     // ---- catalogue -------------------------------------------------------------
 
-    /// <summary>Rebuilds the list from <see cref="availableItemIDs"/>, keeping the selection if it's still on sale.</summary>
+    /// <summary>Rebuilds the list from <see cref="Shop.Stock"/>, keeping the selection if it's still on sale.</summary>
     private void BuildCatalogue()
     {
         foreach (Node child in itemList.GetChildren())
@@ -188,7 +151,7 @@ public partial class ShopUI : Control
         rows.Clear();
 
         // Grouped by definition folder, groups in order of first appearance, items in the order they were added.
-        List<BlueprintItem> stock = availableItemIDs.Select(id => ItemInfo.Fetch(id) as BlueprintItem).Where(i => i != null).ToList();
+        List<BlueprintItem> stock = Shop.Stock.Select(id => ItemInfo.Fetch(id) as BlueprintItem).Where(i => i != null).ToList();
         bool first = true;
         foreach (var group in stock.GroupBy(CategoryOf))
         {
@@ -209,7 +172,7 @@ public partial class ShopUI : Control
         Select(stock.Contains(selected) ? selected : stock.FirstOrDefault());
     }
 
-    private void OnAvailableItemsChanged()
+    private void OnStockChanged()
     {
         BuildCatalogue();
     }
@@ -332,28 +295,7 @@ public partial class ShopUI : Control
         RefreshCosts();
     }
 
-    private int HeldCount(string itemID)
-    {
-        //if (inventory == null || string.IsNullOrEmpty(itemID))
-        //{
-        //    return 0;
-        //}
-        //return inventory.slots.Where(s => !s.IsEmpty && s.itemID == itemID).Sum(s => s.Count);
-        return ProgressManager.extraItemStorage.GetValueOrDefault(itemID, 0);
-    }
-
-    private int MaxAffordable()
-    {
-        if (selected == null)
-        {
-            return 1;
-        }
-        if (!selected.HasCost)
-        {
-            return Math.Max(1, selected.maxStackSize);
-        }
-        return Math.Clamp(HeldCount(selected.costItemID) / selected.costAmount, 1, maxOrder);
-    }
+    private int MaxAffordable() => selected == null ? 1 : Shop.MaxAffordable(selected, maxOrder);
 
     private void SetQuantity(int value)
     {
@@ -372,7 +314,7 @@ public partial class ShopUI : Control
         foreach (var (item, _, costLabel) in rows)
         {
             costLabel.Text = item.HasCost ? $"×{item.costAmount}" : "FREE";
-            bool short1 = item.HasCost && HeldCount(item.costItemID) < item.costAmount;
+            bool short1 = !Shop.CanAfford(item, 1);
             costLabel.AddThemeColorOverride("font_color", !item.HasCost ? Dim : short1 ? Shortfall : Accent);
         }
 
@@ -391,9 +333,9 @@ public partial class ShopUI : Control
         if (selected.HasCost)
         {
             ItemInfo costItem = ItemInfo.Fetch(selected.costItemID);
-            int total = selected.costAmount * quantity;
-            int held = HeldCount(selected.costItemID);
-            affordable = held >= total;
+            int total = Shop.TotalCost(selected, quantity);
+            int held = Shop.HeldCurrency(selected.costItemID);
+            affordable = Shop.CanAfford(selected, quantity);
 
             costIcon.Texture = costItem?.icon;
             costName.Text = costItem?.displayName ?? selected.costItemID;
@@ -411,12 +353,10 @@ public partial class ShopUI : Control
 
     private void OnPurchasePressed()
     {
-        if (selected != null)
+        if (selected != null && Shop.TryPurchase(inventory, selected.itemID, quantity))
         {
-            PurchaseRequested?.Invoke(selected.itemID, quantity);
-            int cost = selected.costAmount * quantity;
-            ProgressManager.extraItemStorage[selected.costItemID] = ProgressManager.extraItemStorage[selected.costItemID] - cost;
-            LocalPlayer().inventory.AddItem(selected.itemID, quantity);
+            // Paying changes the held currency, which raises no event of its own.
+            RefreshCosts();
         }
     }
 }

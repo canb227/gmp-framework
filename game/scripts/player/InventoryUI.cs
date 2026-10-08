@@ -3,10 +3,17 @@ using System;
 
 
 //claude wrote this so its kinda wack
+/// <summary>
+/// The local player's HUD (PlayerHUD.tscn): hotbar, held-item name, crosshair hover labels, and the inventory
+/// screen. Created and bound by <see cref="UIManager.BindHud"/>; open/close the inventory through UIManager too,
+/// which owns the mouse mode.
+/// </summary>
 public partial class InventoryUI : Control
 {
-    FactoryPlayer player;
+    /// <summary>The player this HUD shows. Set by UIManager before the HUD enters the tree.</summary>
+    public FactoryPlayer player;
     Inventory inventory;
+    Label hoverInfoName, hoverInfoBelow;
 
     PanelContainer[] slotPanels = new PanelContainer[Inventory.TotalSlots];
     TextureRect[] slotIcons = new TextureRect[Inventory.TotalSlots];
@@ -37,10 +44,11 @@ public partial class InventoryUI : Control
     public override void _Ready()
     {
         HiResUI.Fill(this);
-        player = GetParent<FactoryPlayer>();
         inventory = player.inventory;
         inventoryScreen = GetNode<Control>("InventoryScreen");
         heldItemName = GetNode<Label>("%HeldItemName");
+        hoverInfoName = GetNode<Label>("%HoverInfoName");
+        hoverInfoBelow = GetNode<Label>("%HoverInfoBelow");
 
         // Terminal-style slot wells (see gmp/ui/theme/menu_theme.tres); the active hotbar slot gets the orange accent.
         normalStyle = new StyleBoxFlat();
@@ -167,10 +175,17 @@ public partial class InventoryUI : Control
             inventory.InventoryChanged -= RefreshAllSlots;
     }
 
+    /// <summary>The crosshair labels: the target's name and the prompt below it. Null hides a line.</summary>
+    public void SetHoverInfo(string name, string prompt)
+    {
+        hoverInfoName.Visible = name != null;
+        if (name != null) hoverInfoName.Text = name;
+        hoverInfoBelow.Visible = prompt != null;
+        if (prompt != null) hoverInfoBelow.Text = prompt;
+    }
+
     void RefreshAllSlots()
     {
-        // Other players' copies of this HUD are hidden for good (FactoryPlayer.AfterInit); their inventories still sync.
-        if (!Visible) return;
         for (int i = 0; i < Inventory.TotalSlots; i++)
         {
             var slot = inventory.GetSlot(i);
@@ -324,20 +339,20 @@ public partial class InventoryUI : Control
         player.UpdateEquippedItem();
     }
 
+    /// <summary>Shows the inventory screen. Call through <see cref="UIManager.OpenInventory"/>, which frees the mouse.</summary>
     public void Open()
     {
         isOpen = true;
         inventoryScreen.Show();
         MouseFilter = MouseFilterEnum.Stop;
-        Input.MouseMode = Input.MouseModeEnum.Visible;
     }
 
+    /// <summary>Hides the inventory screen. Call through <see cref="UIManager.CloseInventory"/>, which recaptures the mouse.</summary>
     public void Close()
     {
         isOpen = false;
         inventoryScreen.Hide();
         MouseFilter = MouseFilterEnum.Ignore;
-        Input.MouseMode = Input.MouseModeEnum.Captured;
     }
 
     /// <summary>The slot under <paramref name="position"/> (in this control's local space), or -1.</summary>
