@@ -26,6 +26,8 @@ public partial class BuildGrid : Node3D
     private const float HighlightEdgeNudge = 0.001f;
 
     private static readonly Dictionary<Vector3I, Structure> cells = new();
+    /// <summary>The level's <see cref="NoBuildVolume"/>s in the tree; any cell one touches can't be built in.</summary>
+    public static readonly List<NoBuildVolume> noBuildVolumes = new();
 
     private MeshInstance3D _meshInstance;
     private ImmediateMesh _immediateMesh;
@@ -420,17 +422,31 @@ public partial class BuildGrid : Node3D
         }
     }
 
-    /// <summary>True if every cell of the footprint is free.</summary>
+    /// <summary>True if every cell of the footprint is free and outside every <see cref="NoBuildVolume"/>.</summary>
     public static bool CanPlace(Vector3I anchor, IEnumerable<Vector3I> offsets, int quarterTurns)
     {
         foreach (Vector3I cell in FootprintCells(anchor, offsets, quarterTurns))
         {
-            if (cells.ContainsKey(cell))
+            if (cells.ContainsKey(cell) || IsNoBuild(cell))
             {
                 return false;
             }
         }
         return true;
+    }
+
+    /// <summary>True if any <see cref="NoBuildVolume"/> overlaps <paramref name="cell"/>. Sharing only a face doesn't count.</summary>
+    public static bool IsNoBuild(Vector3I cell)
+    {
+        var cellBox = new Aabb((Vector3)cell * CellSize, Vector3.One * CellSize);
+        foreach (NoBuildVolume volume in noBuildVolumes)
+        {
+            if (volume.WorldBox.Intersects(cellBox))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /// <summary>Registers every cell of <paramref name="structure"/>. Fails (registering nothing) if any is taken.</summary>
