@@ -13,7 +13,7 @@ config_version=5
 config/name="FactoryGame"
 config/description="A physics-based co-op automation puzzle game!"
 config/version="0.0"
-run/main_scene="res://dev/ui_test/ui_test.tscn"
+run/main_scene="res://gmp/ui/front_end.tscn"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
