@@ -47,6 +47,16 @@ project/assembly_name="GMPFramework"
 
 enabled=PackedStringArray("res://addons/Imposter/plugin.cfg", "res://addons/imgui-godot/plugin.cfg", "res://addons/limbo_console/plugin.cfg", "res://addons/sky_3d/plugin.cfg", "res://addons/structure_snap/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
 
+[file_customization]
+
+folder_colors={
+"res://game/": "teal",
+"res://game/assets/": "yellow",
+"res://game/definitions/": "purple",
+"res://game/scenes/": "orange",
+"res://game/scripts/": "blue"
+}
+
 [global_group]
 
 player_spawn=""
@@ -217,3 +227,4 @@ common/physics_interpolation=true
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+anti_aliasing/screen_space_roughness_limiter/enabled=false
