@@ -62,6 +62,7 @@ public partial class ShopUI : UIScreen
         closeButton.Pressed += () => UIManager.CloseScreen(this);
 
         Shop.StockChanged += OnStockChanged;
+        Shop.ResourcesChanged += OnResourcesChanged;
         BuildCatalogue();
     }
 
@@ -73,6 +74,7 @@ public partial class ShopUI : UIScreen
             fittingToViewport = false;
         }
         Shop.StockChanged -= OnStockChanged;
+        Shop.ResourcesChanged -= OnResourcesChanged;
         SetInventory(null);
     }
 
@@ -175,6 +177,15 @@ public partial class ShopUI : UIScreen
     private void OnStockChanged()
     {
         BuildCatalogue();
+    }
+
+    /// <summary>Turn-ins and purchases change what the player can afford.</summary>
+    private void OnResourcesChanged(string itemID, int amount)
+    {
+        if (selected != null)
+        {
+            RefreshCosts();
+        }
     }
 
     /// <summary>The blueprint's definition folder, e.g. "chutes" (top-level blueprints are "general").</summary>
@@ -353,10 +364,10 @@ public partial class ShopUI : UIScreen
 
     private void OnPurchasePressed()
     {
-        if (selected != null && Shop.TryPurchase(inventory, selected.itemID, quantity))
+        if (selected != null)
         {
-            // Paying changes the held currency, which raises no event of its own.
-            RefreshCosts();
+            // The host confirms the order; costs and the inventory refresh through their change events when it does.
+            Shop.TryPurchase(inventory, selected.itemID, quantity);
         }
     }
 }

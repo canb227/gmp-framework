@@ -130,6 +130,22 @@ public class Inventory
         return toRemove;
     }
 
+    /// <summary>How many more of <paramref name="itemID"/> fit: space left in its stacks plus empty slots.</summary>
+    public int RoomFor(string itemID)
+    {
+        ItemInfo item = ItemInfo.Fetch(itemID);
+        if (item == null) return 0;
+        int room = 0;
+        foreach (InventorySlot slot in slots)
+        {
+            if (slot.IsEmpty)
+                room += item.maxStackSize;
+            else if (slot.itemID == itemID)
+                room += Math.Max(0, item.maxStackSize - slot.Count);
+        }
+        return room;
+    }
+
     /// <summary>True if at least one more of <paramref name="itemID"/> fits (a free slot or a stack with space).</summary>
     public bool HasRoomFor(string itemID)
     {
