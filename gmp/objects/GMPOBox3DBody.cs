@@ -1,10 +1,6 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 public enum BodyTypeEnum
 {
@@ -69,7 +65,6 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
             {
                 this.Teleport(s.pos, s.rot);
             }
-
         }
         else
         {
@@ -85,6 +80,10 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         following = false;
         this.SetBodyType(authority == Lobby.selfPeerID ? authoredBodyType : BodyTypeEnum.Kinematic);
         RefreshPhysicsProcess();
+    }
+
+    public virtual void OnDespawned(DespawnReason reason)
+    {
     }
 
     // ---- physics processing ----

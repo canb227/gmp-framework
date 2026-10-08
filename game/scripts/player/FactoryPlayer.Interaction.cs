@@ -1,5 +1,4 @@
 using Godot;
-using Godot.Collections;
 
 /// <summary>
 /// FactoryPlayer: looks-at targeting. Raycasts from the camera each physics tick to find the item or
@@ -16,7 +15,7 @@ public partial class FactoryPlayer
     void HandleInteractionInput(InputEvent @event)
     {
         if (!@event.IsActionPressed(InputActions.interact)) return;
-        
+
         if (pickTarget is Interactable i)
         {
             Logging.Log($"You just pressed interact on {pickTarget.Name}!", "Player");

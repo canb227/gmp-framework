@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 
 public class SteamNetwork :  Network
 {
-         // Channel enum ids 0..15
     private const int MaxRecvPerChannel = 64;
 
     private bool _started;
@@ -16,7 +15,6 @@ public class SteamNetwork :  Network
     private Callback<SteamNetworkingMessagesSessionRequest_t> _onSessionRequest;
     private Callback<SteamNetworkingMessagesSessionFailed_t> _onSessionFailed;
 
-    public event Network.MessageSent MessageSentEvent;
     public event Network.MessageReceived MessageReceivedEvent;
     public event Network.PeerConnected PeerConnectedEvent;
     public event Network.PeerDisconnected PeerDisconnectedEvent;
@@ -38,9 +36,6 @@ public class SteamNetwork :  Network
         Logging.Log($"Steam messaging ready (SteamID {SelfId})", "NetworkSession");
         return Error.Ok;
     }
-
-    // SteamIDs are directly addressable, so there is nothing to map.
-    public void AddPeerIDToIPMapping(ulong peerID, string ip, int port) { }
 
     // Open a session to a peer by SteamID. We nudge it with a handshake; the peer
     // accepts the session and replies, at which point both sides fire PeerConnected.
@@ -72,7 +67,6 @@ public class SteamNetwork :  Network
         // same on both transports.
         if (peerID == SelfId)
         {
-            MessageSentEvent?.Invoke(peerID, ch, msg);
             MessageReceivedEvent?.Invoke(peerID, ch, msg);
             return Error.Ok;
         }
@@ -115,12 +109,10 @@ public class SteamNetwork :  Network
                 Logging.Error($"SendMessageToUser({peerID}) -> {r}", "NetworkWire");
                 return Error.Failed;
             }
-            MessageSentEvent?.Invoke(peerID, (Channel)channel, msg);
             return Error.Ok;
         }
         finally
         {
-            
             Marshal.FreeHGlobal(buf);
         }
     }

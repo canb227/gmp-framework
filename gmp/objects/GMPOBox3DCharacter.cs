@@ -1,12 +1,4 @@
 using Godot;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-
-
 
 public partial class GMPOBox3DCharacter : Node3D, GMPObject
 {
@@ -44,12 +36,9 @@ public partial class GMPOBox3DCharacter : Node3D, GMPObject
         {
             if (SyncHelpers.TryReadTransform(desiredState, out var s))
             {
-                Teleport(s.pos, s.rot);
+                Call(Box3DNames.teleport, [new Transform3D(Basis.FromEuler(s.rot), s.pos)]);
             }
-
         }
-
-
     }
 
     public virtual byte[] GenerateStateUpdate()
@@ -81,10 +70,5 @@ public partial class GMPOBox3DCharacter : Node3D, GMPObject
     public bool IsOnFloor()
     {
         return Call(Box3DNames.isOnFloor).AsBool();
-    }
-
-    private void Teleport(Vector3 position, Vector3 rotation)
-    {
-        Call(Box3DNames.teleport, [new Transform3D(Basis.FromEuler(rotation), position)]);
     }
 }

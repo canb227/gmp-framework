@@ -3,11 +3,6 @@ using Nerdbank.MessagePack;
 using Nerdbank.MessagePack.Godot;
 using PolyType;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Godot.Node;
 
 [GenerateShape]
@@ -76,14 +71,7 @@ public partial interface GMPObject
     /// <summary>Sets ProcessMode from <c>pauseable</c>. Named so it can never collide with Godot's <c>_Ready</c>.</summary>
     public virtual void ApplyProcessMode()
     {
-        if (pauseable)
-        {
-            (this as Node).ProcessMode = ProcessModeEnum.Pausable;
-        }
-        else
-        {
-            (this as Node).ProcessMode = ProcessModeEnum.Always;
-        }
+        (this as Node).ProcessMode = pauseable ? ProcessModeEnum.Pausable : ProcessModeEnum.Always;
     }
 
 
@@ -96,13 +84,9 @@ public partial interface GMPObject
     {
         this.id = init.id;
         this.authority = init.authority;
-        if (this.priority == 0 && init.priority!=0)
+        if (this.priority == 0)
         {
-            this.priority = init.priority;
-        }
-        else if (this.priority==0)
-        {
-            this.priority = 1;
+            this.priority = init.priority != 0 ? init.priority : 1;
         }
 
         this.pauseable = init.pauseable;
@@ -121,6 +105,11 @@ public partial interface GMPObject
     /// Override to switch between simulating (authority) and following replicated state.
     /// </summary>
     public virtual void OnAuthorityChanged()
+    {
+    }
+
+    /// <summary>Called on every peer just before this object is freed by a despawn, with why it was despawned.</summary>
+    public virtual void OnDespawned(DespawnReason reason)
     {
     }
 

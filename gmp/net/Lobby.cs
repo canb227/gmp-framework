@@ -5,7 +5,6 @@ using PolyType;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 /*
  * Lobby flow
@@ -42,8 +41,6 @@ public partial class Lobby : Node
     // Every known member, including self, keyed by peerID.
     public static Dictionary<ulong, PlayerInfo> members = new();
 
-    private static string _selfName = "Peer";
-
     private static List<(ulong, int)> outgoingTracker = new();
     private static List<(ulong, int)> incomingTracker = new();
     public static int incomingBandwidth = 0;
@@ -54,7 +51,6 @@ public partial class Lobby : Node
     public delegate void DisconnectedFromHost(ulong HostID);
     public delegate void ConnectedToHost(ulong HostID);
     public delegate void LobbyMembersChanged();
-    public delegate void LobbyMessage(ulong from, Channel ch, byte[] msg);
     public delegate void LobbyGameInfoChanged();
     public delegate void LobbyDoneLoading();
     public delegate void LobbyDonePreloading();
@@ -64,7 +60,6 @@ public partial class Lobby : Node
     public static event ConnectedToHost ConnectedToHostEvent;
     public static event DisconnectedFromHost DisconnectedFromHostEvent;
     public static event LobbyMembersChanged LobbyMembersChangedEvent;   // any add/remove/rename
-    public static event LobbyMessage LobbyMessageEvent;      // app payloads (chat, game data)
     public static event LobbyGameInfoChanged LobbyGameInfoChangedEvent;
 
     public static event LobbyDoneLoading LobbyDoneLoadingEvent;
@@ -140,7 +135,6 @@ public partial class Lobby : Node
     {
         network = net;
         selfPeerID = selfID;
-        _selfName = selfName;
 
         net.MessageReceivedEvent += OnIncomingNetworkMessage;
         net.PeerConnectedEvent += OnPeerConnected;
@@ -155,12 +149,7 @@ public partial class Lobby : Node
     {
         isHost = true;
         UseNetwork(net, selfID, selfName);
-        hostID = selfID;
-        PlayerInfo self = new();
-        self.PeerID = selfID;
-        self.Name= selfName;
-        self.IsHost = isHost;
-        members[selfID] = self;
+        AddOrUpdateMember(selfID, selfName, isHost: true);
         Error err = net.Host();
         LobbyMembersChangedEvent?.Invoke();
         Logging.Log($"hosting lobby as {selfName} (peer {selfID})", "NetworkSession");
@@ -216,12 +205,9 @@ public partial class Lobby : Node
 
         AddOrUpdateMember(peerID, NameFor(peerID), isHost: peerID == hostID);
 
-        // Introduce ourselves (display name) on every direct link so names propagate
-        // even across links the host never brokered.
+        // Introduce ourselves on every direct link so names propagate even across links the host never
+        // brokered. From the host this is the full roster, so the newcomer can mesh.
         SendRoster(peerID);
-        // The host answers a new link with the full roster so the newcomer can mesh.
-        if (isHost)
-            SendRoster(peerID);
 
         PeerConnectedEvent?.Invoke(peerID);
         if (discoveredHost)
@@ -252,8 +238,6 @@ public partial class Lobby : Node
                 break;
             case Channel.LOBBY_Control:
                 OnIncomingLobbyControlNetMessage(from, msg);
-                break;
-            default:
                 break;
         }
     }
@@ -339,8 +323,8 @@ public partial class Lobby : Node
     private static void OnIncomingRosterNetMessage(ulong from, byte[] data)
     {
         MessagePackSerializer s = new();
-        PlayerInfo[] members =s.Deserialize<PlayerInfo[],Witness>(data);
-        foreach (var m in members)
+        PlayerInfo[] roster = s.Deserialize<PlayerInfo[], Witness>(data);
+        foreach (var m in roster)
         {
             if (m.PeerID == selfPeerID)
                 continue;
@@ -387,7 +371,7 @@ public partial class Lobby : Node
     // ---- app-facing send -------------------------------------------------------
 
     /// <summary>Sends to every member including this peer; the local copy is delivered synchronously, before this returns.</summary>
-    public static Error SendToAllAndSelf(Channel ch, byte[] msg, int sendFlags = Network.k_nSteamNetworkingSend_Reliable, double fakelagSeconds = 0)
+    public static Error SendToAllAndSelf(Channel ch, byte[] msg, int sendFlags = Network.k_nSteamNetworkingSend_Reliable)
     {
         if (network == null || members.Count == 0)
             return Error.Unconfigured;
@@ -396,7 +380,7 @@ public partial class Lobby : Node
     }
 
     /// <summary>Sends to every member except this peer.</summary>
-    public static Error SendToAllExceptSelf(Channel ch, byte[] msg, int sendFlags = Network.k_nSteamNetworkingSend_Reliable, double fakelagSeconds = 0)
+    public static Error SendToAllExceptSelf(Channel ch, byte[] msg, int sendFlags = Network.k_nSteamNetworkingSend_Reliable)
     {
         if (network == null || members.Count <= 1)
             return Error.Unconfigured;
@@ -432,7 +416,7 @@ public partial class Lobby : Node
     }
 
     /// <summary>Sends to one member (sending to this peer's own id delivers synchronously).</summary>
-    public static Error Send(ulong to, Channel ch, byte[] msg, int sendFlags = Network.k_nSteamNetworkingSend_Reliable, double fakelagSeconds = 0)
+    public static Error Send(ulong to, Channel ch, byte[] msg, int sendFlags = Network.k_nSteamNetworkingSend_Reliable)
     {
         if (network == null)
             return Error.Unconfigured;

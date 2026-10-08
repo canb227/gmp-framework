@@ -2,8 +2,8 @@ using Godot;
 
 /// <summary>
 /// A screen on <see cref="UIManager"/>'s screen stack: a menu or overlay that takes the mouse (main menu, options,
-/// pause, shop). Open and close screens through UIManager, never by adding or freeing them directly, so it can keep
-/// the mouse mode, gameplay input blocking and Escape routing right.
+/// pause, shop); while one is open the player can't move or act. Open and close screens through UIManager, never
+/// by adding or freeing them directly, so it can keep the mouse mode, gameplay input blocking and Escape routing right.
 /// <para>
 /// Escape goes to the top screen's <see cref="Cancel"/>, which closes it by default. The hooks below are called by
 /// UIManager as the stack changes; all are optional.
@@ -11,9 +11,6 @@ using Godot;
 /// </summary>
 public partial class UIScreen : Control
 {
-    /// <summary>True if the player can't move or act while this screen is open (the default).</summary>
-    public virtual bool BlocksGameplay => true;
-
     /// <summary>Called once, after the screen has been added to the tree and pushed.</summary>
     public virtual void OnOpened() { }
 

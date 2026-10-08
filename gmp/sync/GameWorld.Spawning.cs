@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+/// <summary>Why a synced object was despawned, passed to <see cref="GMPObject.OnDespawned"/> on every peer.</summary>
+public enum DespawnReason { Removed, PickedUp, Consumed, Voided }
+
 /// <summary>
 /// GameWorld: scene spawning and despawning. Owns <see cref="SpawnScene"/>/<see cref="DespawnObject"/>
 /// and their RPC-target internals, GMPO init-data generation for a spawned node and its GMPObject
@@ -17,7 +20,6 @@ public partial class GameWorld
 
     private static GMPOInitData initDataNormalizer(GMPOInitData initData)
     {
-
         if (initData.id == 0)
         {
             initData.id = GenRandomID();
@@ -61,7 +63,6 @@ public partial class GameWorld
     /// <summary>Overload of <see cref="SpawnScene(string, Vector3, Vector3, GMPOInitData, byte[], NodePath)"/> taking an already-loaded <see cref="PackedScene"/>.</summary>
     public static ulong SpawnScene(PackedScene pck, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null, NodePath parent = null)
     {
-       // Logging.Log($"guh1 {parent}", "GameWorld");
         Node node = pck.Instantiate();
         initData = initDataNormalizer(initData);
         if (node is GMPObject rootGmpo)
@@ -76,37 +77,17 @@ public partial class GameWorld
         return initData.id;
     }
 
-
-
     [RPC]
     private void _SpawnScene(string scenePath, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null, string parent = null)
     {
-       // Logging.Log($"guh2 {parent}", "GameWorld");
         Node node = ResourceLoader.Load<PackedScene>(scenePath).Instantiate();
-        Node parentNode = null;
-        if (!string.IsNullOrEmpty(parent))
-        {
-            parentNode = GetNode(parent);
-        }
-
-        _SpawnInternal(node, position, rotation, initData, initState, childInit, parentNode);
-    }
-
-    private void _SpawnPackedScene(PackedScene pck, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null, NodePath parent = null)
-    {
-        Node node = pck.Instantiate();
-                Node parentNode = null;
-        if (parent != null && parent!="")
-        {
-            parentNode = GetNode(parent);
-        }
+        Node parentNode = string.IsNullOrEmpty(parent) ? null : GetNode(parent);
         _SpawnInternal(node, position, rotation, initData, initState, childInit, parentNode);
     }
 
     private void _SpawnInternal(Node node, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null, Node parent = null)
     {
         node.Name = node.GetType().ToString() + initData.id.ToString();
-        //Logging.Log($"guhfinal {parent}", "GameWorld");
         if (b3droot == null)
         {
             Logging.Error("attempted to spawn with no b3droot!", "GameWorld");
@@ -121,28 +102,12 @@ public partial class GameWorld
                 placed.Position = position;
                 placed.Rotation = rotation;
             }
-            if (parent == null)
-            {
-                b3droot.AddChild(node);
-            }
-            else
-            {
-                parent.AddChild(node);
-            }
+            (parent ?? b3droot).AddChild(node);
             if (node is GMPOBox3DBody box)
             {
                 box.Teleport(new Transform3D(Basis.FromEuler(rotation), position));
             }
-            else if (node is Node3D n)
-            {
-                n.Position = position;
-
-                n.Rotation = rotation;
-
-            }
         }
-
-
 
         if (node is GMPObject gmpo)
         {
@@ -177,29 +142,29 @@ public partial class GameWorld
                 syncedObjs.Add(gmpoChild.id, gmpoChild);
             }
         }
-
     }
 
     /// <summary>Despawns a previously-spawned synced object for every peer via RPC.</summary>
-    public static void DespawnObject(ulong id)
+    public static void DespawnObject(ulong id, DespawnReason reason = DespawnReason.Removed)
     {
-        RPCManager.RPC(instance, nameof(_DespawnObject), [id]);
+        RPCManager.RPC(instance, nameof(_DespawnObject), [id, reason]);
     }
 
     [RPC]
-    private void _DespawnObject(ulong id)
+    private void _DespawnObject(ulong id, DespawnReason reason)
     {
-        RemoveLocal(id);
+        RemoveLocal(id, reason);
     }
 
     /// <summary>
     /// Frees this peer's copy of a synced object without messaging anyone. For handlers that already
     /// run on every peer (e.g. an authority-broadcast outcome); otherwise use <see cref="DespawnObject"/>.
     /// </summary>
-    public static void RemoveLocal(ulong id)
+    public static void RemoveLocal(ulong id, DespawnReason reason = DespawnReason.Removed)
     {
         if (syncedObjs.TryGetValue(id, out GMPObject gmpo))
         {
+            gmpo.OnDespawned(reason);
             syncedObjs.Remove(id);
             heldBy.Remove(id);
             (gmpo as Node)?.QueueFree();

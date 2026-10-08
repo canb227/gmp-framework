@@ -12,9 +12,6 @@ public partial class GameWorld : Node3D
     public static GameWorld instance;
     public static GMPOBox3DWorld b3droot;
 
-    /// <summary>Box3D solver threads on machines with enough cores (fewer on small CPUs; see _Ready).</summary>
-    public const int SolverWorkers = 4;
-
     private static bool started = false;
     public static ulong tickNum = 0;
 
@@ -33,7 +30,6 @@ public partial class GameWorld : Node3D
         Logging.Log($"Atempting b3d init: {ClassDB.ClassExists("Box3DWorld")}", "GameWorld");
         if (ClassDB.ClassExists("Box3DWorld"))
         {
-
             // Attach the typed wrapper script, then re-fetch the object: the C# instance changes with the script.
             Node3D world = ClassDB.Instantiate("Box3DWorld").As<Node3D>();
             ulong worldId = world.GetInstanceId();
@@ -46,7 +42,7 @@ public partial class GameWorld : Node3D
             b3droot.asyncStep = false;
             // Solver threads (Box3D starts and owns them). Box3D does best on performance cores only, so stay well
             // under the logical core count; at 2000 bodies the solver was too light (~2 ms) to measure a gain.
-            b3droot.workerCount = 1;//System.Math.Clamp(System.Environment.ProcessorCount / 2, 1, SolverWorkers);
+            b3droot.workerCount = 1;
             AddChild(b3droot);
             Logging.Log($"Box3D solver workers: {b3droot.workerCount}", "GameWorld");
             // Box3D reports sleep per world, not per body; hand it to the body (it has no matching wake signal).
@@ -96,7 +92,6 @@ public partial class GameWorld : Node3D
     private static void Instance_LobbyDonePreloadingEvent()
     {
         Init();
-
     }
 
     private static void Instance_LobbyDoneLoadingEvent()
@@ -154,5 +149,4 @@ public partial class GameWorld : Node3D
             instance.GetTree().Paused = true;
         }
     }
-
 }

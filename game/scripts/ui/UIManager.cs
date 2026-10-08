@@ -40,17 +40,7 @@ public partial class UIManager : Node
     public static UIScreen TopScreen => screens.Count > 0 ? screens[^1] : null;
 
     /// <summary>True while an open screen keeps the player from moving or acting.</summary>
-    public static bool BlocksGameplayInput
-    {
-        get
-        {
-            foreach (UIScreen screen in screens)
-            {
-                if (screen.BlocksGameplay) return true;
-            }
-            return false;
-        }
-    }
+    public static bool BlocksGameplayInput => screens.Count > 0;
 
     /// <summary>True while the game should have the mouse: playing (a HUD is bound), no screen and no inventory open.</summary>
     public static bool GameplayHasMouse => Hud != null && screens.Count == 0 && !IsInventoryOpen;
@@ -95,10 +85,7 @@ public partial class UIManager : Node
     /// <summary>Pushes <paramref name="screen"/> (not yet in the tree) as the new top screen.</summary>
     public static void OpenScreen(UIScreen screen)
     {
-        if (screen.BlocksGameplay && IsInventoryOpen)
-        {
-            CloseInventory();
-        }
+        CloseInventory();
         UIScreen covered = TopScreen;
         screens.Add(screen);
         // Later children draw on top and get GUI input first.
@@ -122,11 +109,6 @@ public partial class UIManager : Node
         }
         TopScreen?.OnRevealed();
         RefreshMouseMode();
-    }
-
-    public static void CloseTopScreen()
-    {
-        if (TopScreen != null) CloseScreen(TopScreen);
     }
 
     public static void CloseAllScreens()
@@ -167,7 +149,7 @@ public partial class UIManager : Node
         if (IsOpen<ShopUI>()) return;
         ShopUI shop = OpenScreen<ShopUI>(ShopScene);
         shop.FitToViewport();
-        shop.Open(inventory);
+        shop.SetInventory(inventory);
     }
 
     /// <summary>Leaves the front end for the debug lobby scene in <paramref name="mode"/>.</summary>

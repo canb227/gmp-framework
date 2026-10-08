@@ -1,7 +1,4 @@
 using Godot;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 /// <summary>
 /// A pressable level prop: each accepted press spawns one item from each target spawner
@@ -13,34 +10,19 @@ public partial class BasicButton : Node3D, Interactable
 {
     [Export] public string displayName;
     [Export] public AnimationPlayer animator;
-    [Export] public Godot.Collections.Array<ObjectSpawner> targetObjectSpawner;
+    [Export] public Godot.Collections.Array<ObjectSpawner> targetObjectSpawner = new();
     /// <summary>Seconds after an accepted press during which further presses are ignored.</summary>
     [Export] public double pressCooldown = 0.5;
-    private List<ObjectSpawner> targetSpawnerList;
     /// <summary>Number of presses that took effect (used by the headless multiplayer test).</summary>
     public int acceptedPresses;
     private ulong lastAcceptedPressMs; // host only
-    
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-        targetSpawnerList = targetObjectSpawner.ToList();
-    }
 
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
-    {
-    }
+    public void onInteract(ulong playerID) => OnPressed();
 
-    /// <summary>Called by the pressing player; asks the host to accept the press.</summary>
+    /// <summary>Asks the host to accept a press.</summary>
     public void OnPressed()
     {
         RPCManager.RPCTo(Lobby.hostID, this, nameof(_RequestPress), []);
-    }
-
-    public void onInteract(ulong playerID)
-    {
-        OnPressed();
     }
 
     // Runs on the host. First press wins; presses inside the cooldown are dropped.
@@ -61,7 +43,7 @@ public partial class BasicButton : Node3D, Interactable
     {
         acceptedPresses++;
         animator.Play("button_press");
-        foreach (ObjectSpawner spawner in targetSpawnerList)
+        foreach (ObjectSpawner spawner in targetObjectSpawner)
         {
             spawner.SpawnOnce();
         }

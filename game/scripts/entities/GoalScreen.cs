@@ -33,18 +33,13 @@ public partial class GoalScreen : Node3D
             rowContainer.AddChild(row);
             rows.Add(row);
         }
-        ProgressManager.QuestStateUpdated += ProgressManager_QuestStateUpdated;
+        ProgressManager.QuestStateUpdated += Refresh;
         Refresh();
     }
 
     public override void _ExitTree()
     {
-        ProgressManager.QuestStateUpdated -= ProgressManager_QuestStateUpdated;
-    }
-
-    private void ProgressManager_QuestStateUpdated()
-    {
-        Refresh();
+        ProgressManager.QuestStateUpdated -= Refresh;
     }
 
     /// <summary>One displayed row: an item objective of a current quest.</summary>
@@ -52,16 +47,8 @@ public partial class GoalScreen : Node3D
 
     private static IEnumerable<Objective> CurrentObjectives()
     {
-        if (ProgressManager.currentQuests == null)
-        {
-            yield break;
-        }
         foreach (Quest quest in ProgressManager.currentQuests.Values)
         {
-            if (quest == null)
-            {
-                continue;
-            }
             foreach (var (itemID, required) in quest.itemSubmissionObjectives)
             {
                 quest.itemSubmissionProgress.TryGetValue(itemID, out int turnedIn);

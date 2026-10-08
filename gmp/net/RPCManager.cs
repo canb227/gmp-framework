@@ -240,7 +240,6 @@ public partial class RPCManager : Node
             {
                 method.method.Invoke(target, callArgs);
             }
-
         }
         catch (TargetInvocationException e)
         {

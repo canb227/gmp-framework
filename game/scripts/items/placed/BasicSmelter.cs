@@ -27,32 +27,25 @@ public partial class BasicSmelter : Structure
     public bool currentlyProcessing = false;
     public string itemInSmelter;
 
-
     public override void _PhysicsProcess(double delta)
     {
-        if (currentlyProcessing)
+        if (!runsMachineLogic) return;
+
+        List<PhysicalFactoryItem> itemsInInput = ItemsAtInputs().ToList();
+        if (!currentlyProcessing && itemsInInput.Count > 0)
         {
-            //play the animation on both host and client
-        }
-        if (!runsMachineLogic)
-        {
-            return;
-        }
-        IEnumerable<PhysicalFactoryItem> itemsInInput = ItemsAtInputs();
-        if (!currentlyProcessing && itemsInInput.Count()>0)
-        {
-            PhysicalFactoryItem selected = itemsInInput.ElementAt(Random.Shared.Next(itemsInInput.Count()));
-            if (recipes.TryGetValue(selected.itemID, out string ouputItemID))
+            PhysicalFactoryItem selected = itemsInInput[Random.Shared.Next(itemsInInput.Count)];
+            if (recipes.ContainsKey(selected.itemID))
             {
                 itemInSmelter = selected.itemID;
                 currentlyProcessing = true;
                 processTimeRemaining = processTime;
-                GameWorld.DespawnObject(selected.id);
+                GameWorld.DespawnObject(selected.id, DespawnReason.Consumed);
                 Consumed?.Invoke(selected.id);
             }
             else
             {
-                Logging.Log($"item {selected.itemID} has no receipe!", "Smelter");
+                Logging.Log($"item {selected.itemID} has no recipe!", "Smelter");
             }
         }
         else if (currentlyProcessing)
@@ -69,34 +62,3 @@ public partial class BasicSmelter : Structure
         }
     }
 }
-    //public override void _PhysicsProcess(double delta)
-    //{
-    //    if (!runsMachineLogic || hopperTrigger == null) return;
-
-    //    foreach (PhysicalFactoryItem item in ItemsInTrigger(hopperTrigger))
-    //    {
-    //        string input = item.itemID ?? "";
-    //        GameWorld.DespawnObject(item.id);
-    //        consumedCount++;
-    //        string output = recipes.TryGetValue(input, out string o) ? o : item.itemID;
-    //        queue.Enqueue((output, outputCounts.TryGetValue(input, out int n) ? Mathf.Max(1, n) : 1));
-    //        if (queue.Count == 1)
-    //        {
-    //            untilNextOutput = processTime;
-    //        }
-    //    }
-
-    //    if (queue.Count == 0) return;
-    //    untilNextOutput -= delta;
-    //    if (untilNextOutput <= 0)
-    //    {
-    //        (string output, int count) = queue.Dequeue();
-    //        for (int i = 0; output != null && i < count; i++)
-    //        {
-    //            Vector3 side = new((i - (count - 1) / 2f) * outputSpacing, 0, 0);
-    //            ItemInfo.SpawnInWorld(output, GlobalTransform * (outputPoint + side), GlobalRotation);
-    //            producedCount++;
-    //        }
-    //        untilNextOutput = processTime;
-    //    }
-    //}

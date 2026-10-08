@@ -2,9 +2,6 @@ using Godot;
 using PolyType;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 [GlobalClass]
 [GenerateShape]
@@ -31,14 +28,6 @@ public partial class ItemInfo : Resource
     [Export]
     public int maxStackSize = 1;
 
-
-
-    public ItemInfo()
-    {
-
-    }
-
-
     const string DefaultDroppedScene = "res://game/scenes/items/world/DefaultDroppedBox.tscn";
 
     /// <summary>
@@ -47,7 +36,6 @@ public partial class ItemInfo : Resource
     /// </summary>
     public static ulong SpawnInWorld(string itemID, Vector3 position, Vector3 rotation = default, NodePath parentPath = default)
     {
-        //Logging.Log($"guh0 {parentPath}", "GameWorld");
         ItemInfo item = Fetch(itemID);
         if (item?.droppedScene != null)
         {
@@ -72,15 +60,11 @@ public partial class ItemInfo : Resource
 
         if (!definitions.TryGetValue(itemID, out ItemInfo item))
         {
-            string path = FindItemDefinition(
-                "res://game/definitions",
-                itemID + ".tres"
-            );
-
             if (itemID.StartsWith("quest"))
             {
                 return null;
             }
+            string path = FindItemDefinition("res://game/definitions", itemID + ".tres");
             // Some props (e.g. spawner test items) have no definition.
             item = ResourceLoader.Load<ItemInfo>(path);
 
@@ -95,7 +79,6 @@ public partial class ItemInfo : Resource
         using var dir = DirAccess.Open(directoryPath);
         if (dir == null)
             return null;
-
 
         dir.ListDirBegin();
 
@@ -125,5 +108,4 @@ public partial class ItemInfo : Resource
 
         return null;
     }
-
 }

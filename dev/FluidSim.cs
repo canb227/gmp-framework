@@ -1,30 +1,11 @@
 using Godot;
 using Godot.Collections;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 [GlobalClass]
 public partial class FluidSim : GMPOSingleton
 {
-
-    public override void _Ready()
-    {
-
-    }
-
-    public override void _Process(double delta)
-    {
-
-    }
-
-    public override void _PhysicsProcess(double delta)
-    {
-
-    }
 
     public override void AfterInit()
     {

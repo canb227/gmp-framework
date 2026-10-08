@@ -102,11 +102,6 @@ public partial class UIManager
         return marker;
     }
 
-    /// <summary>Outlines <paramref name="target"/>'s meshes through walls until <see cref="ClearHighlight"/>.</summary>
-    public static void Highlight(Node3D target, Color? color = null) => XRayHighlight.Apply(target, color ?? WorldMarker.DefaultColor);
-
-    public static void ClearHighlight(Node3D target) => XRayHighlight.Remove(target);
-
     /// <summary>Removes every notification and marker at once (e.g. when leaving a game).</summary>
     public static void ClearNotifications()
     {

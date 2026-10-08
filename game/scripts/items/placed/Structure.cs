@@ -13,7 +13,6 @@ public partial record struct StructureState
     public int quarterTurns;
 }
 
-
 public partial class Structure : GMPOBox3DBody, Interactable
 {
     /// <summary>Cells this structure occupies, relative to its anchor cell before rotation. Always includes (0,0,0).</summary>
@@ -179,16 +178,13 @@ public partial class Structure : GMPOBox3DBody, Interactable
             return;
         }
         FactoryPlayer player = (FactoryPlayer)GameWorld.syncedObjs[playerID];
-        bool invCheck = player.inventory.HasRoomFor(blueprintItemID);
-    //    Logging.Log($"invcheck: {invCheck}", "Structure");
-        if (invCheck)
+        if (!player.inventory.HasRoomFor(blueprintItemID))
         {
-           // Logging.Log("requesting deconstruct", "Structure");
-            // Arbitrated by the item's authority so two players can't both pick it up.
-            BuildGrid.RequestDeconstruct(player,this);
+            Logging.Log("interaction failed i dunno", "Structure");
             return;
         }
-        Logging.Log("interaction failed i dunno", "Structure");
+        // Arbitrated by the item's authority so two players can't both pick it up.
+        BuildGrid.RequestDeconstruct(player, this);
     }
 
     public Structure()

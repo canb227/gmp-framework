@@ -263,7 +263,6 @@ public static class GameSettings
 
     static void ApplyGraphics()
     {
-        if (root == null) return;
         if (!loaded) return;
         ApplyWindow(force: false);
         if (!headless)

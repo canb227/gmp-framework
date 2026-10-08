@@ -92,7 +92,7 @@ public partial class PhysicsTuningStation : Node3D
     // Belts: every belt and wall collider of the segment's conveyors with its authored values.
     record BeltValues(ConveyorBelt belt, bool slope, float friction, float restitution, float speed, float climbSpeed);
     readonly List<BeltValues> belts = new();
-    readonly List<(Node3D shape, float friction)> wallShapes = new();
+    readonly List<Node3D> wallShapes = new();
     float authoredFlatFriction = 0.8f, authoredSlopeFriction = 1.2f, authoredBeltRestitution, authoredWallFriction = 0.1f;
 
     readonly Dictionary<Group, CanvasLayer> _layers = new();
@@ -127,7 +127,7 @@ public partial class PhysicsTuningStation : Node3D
         {
             BuildPanel(g);
         }
-        RefreshStatsText(0, 0, 0, 0, 0, 0, 0, 0);
+        _Stats(0, 0, 0, 0, 0, 0, 0, 0);
     }
 
     public override void _ExitTree()
@@ -251,11 +251,6 @@ public partial class PhysicsTuningStation : Node3D
     [RPC(requireAuthority = true)]
     private void _Stats(int alive, int spawned, int smelted, int smeltedLastMinute, int voided, int fallen, float avgTransit, float lastTransitTime)
     {
-        RefreshStatsText(alive, spawned, smelted, smeltedLastMinute, voided, fallen, avgTransit, lastTransitTime);
-    }
-
-    void RefreshStatsText(int alive, int spawned, int smelted, int smeltedLastMinute, int voided, int fallen, float avgTransit, float lastTransitTime)
-    {
         string transit = smelted > 0 ? $"{avgTransit:0.0} s avg (last {lastTransitTime:0.0} s)" : "-";
         statsText = $"smelted {smelted}  ({smeltedLastMinute} in last 60 s)\n"
             + $"transit {transit}\n"
@@ -296,19 +291,13 @@ public partial class PhysicsTuningStation : Node3D
         return d;
     }
 
-    static bool HasBelt(Structure s)
-    {
-        foreach (var _ in StructurePorts.Belts(s)) return true;
-        return false;
-    }
-
     /// <summary>Finds the belt and wall colliders of every conveyor beside this station and remembers their authored values.</summary>
     void CollectBelts()
     {
         bool flatSeen = false, slopeSeen = false, wallSeen = false;
         foreach (Node sibling in GetParent().GetChildren())
         {
-            if (sibling is not Structure s || !HasBelt(s))
+            if (sibling is not Structure s || !StructurePorts.Belts(s).Any())
             {
                 continue; // only conveyors are tuned
             }
@@ -331,9 +320,8 @@ public partial class PhysicsTuningStation : Node3D
                 string name = shape.Name;
                 if (name.StartsWith("Wall") || name.StartsWith("Lip"))
                 {
-                    float friction = shape.Get("friction").AsSingle();
-                    wallShapes.Add((shape, friction));
-                    if (!wallSeen) { authoredWallFriction = friction; wallSeen = true; }
+                    wallShapes.Add(shape);
+                    if (!wallSeen) { authoredWallFriction = shape.Get("friction").AsSingle(); wallSeen = true; }
                 }
             }
         }
@@ -356,7 +344,7 @@ public partial class PhysicsTuningStation : Node3D
             b.belt.climbSpeed = b.climbSpeed * speed;
             BuildGrid.RefreshBelt(b.belt);
         }
-        foreach ((Node3D shape, float _) in wallShapes)
+        foreach (Node3D shape in wallShapes)
         {
             shape.Set("friction", wall);
         }

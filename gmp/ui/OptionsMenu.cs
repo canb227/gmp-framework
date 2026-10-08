@@ -56,7 +56,7 @@ public partial class OptionsMenu : UIScreen
     void BuildGraphics()
     {
         Section(graphicsRows, "DISPLAY");
-        OptionButton windowMode = Choice(graphicsRows, "WINDOW MODE", ["Windowed", "Borderless", "Fullscreen"],
+        Choice(graphicsRows, "WINDOW MODE", ["Windowed", "Borderless", "Fullscreen"],
             (int)GameSettings.windowMode, i => { GameSettings.SetWindowMode((GameSettings.WindowModeSetting)i); RefreshResolution(); });
 
         List<Vector2I> resolutions = ResolutionChoices();

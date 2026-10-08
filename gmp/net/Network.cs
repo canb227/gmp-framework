@@ -1,7 +1,5 @@
 using Godot;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Threading.Channels;
 
 public enum Channel : byte
 {
@@ -37,14 +35,9 @@ public interface Network
     public const int k_nSteamNetworkingSend_NoDelay = 4;
     public const int k_nSteamNetworkingSend_Unreliable = 0;
     public const int k_nSteamNetworkingSend_Reliable = 8;
-    public const int k_nSteamNetworkingSend_UnreliableNoNagle = k_nSteamNetworkingSend_Unreliable | k_nSteamNetworkingSend_NoNagle;
-    public const int k_nSteamNetworkingSend_UnreliableNoDelay = k_nSteamNetworkingSend_Unreliable | k_nSteamNetworkingSend_NoDelay | k_nSteamNetworkingSend_NoNagle;
-    public const int k_nSteamNetworkingSend_ReliableNoNagle = k_nSteamNetworkingSend_Reliable | k_nSteamNetworkingSend_NoNagle;
 
 
-    public delegate void MessageSent(ulong to, Channel ch, byte[] msg);
     public delegate void MessageReceived(ulong from, Channel ch, byte[] msg);
-    public event MessageSent MessageSentEvent;
     public event MessageReceived MessageReceivedEvent;
 
     // Raised by the transport once a direct link to a peer is established and the
@@ -62,34 +55,4 @@ public interface Network
     public Error Connect(ulong peerID);
     public Error Disconnect();
     public void service();
-    public void AddPeerIDToIPMapping(ulong peerID, string ip, int port);
-
-    public static byte[] PtrToBytes(nint ptr, int length)
-    {
-        byte[] data = new byte[length];
-        Marshal.Copy(ptr, data, 0, length);
-        return data;
-    }
-    public static nint BytesToPtr(byte[] data)
-    {
-        nint ptr = Marshal.AllocHGlobal(data.Length);
-        Marshal.Copy(data, 0, ptr, data.Length);
-        return ptr;
-    }
-    public static byte[] StructToBytes<T>(T structure)
-    {
-        byte[] data = new byte[Marshal.SizeOf<T>()];
-        nint ptr = Marshal.AllocHGlobal(Marshal.SizeOf<T>());
-        Marshal.StructureToPtr<T>(structure, ptr, true);
-        Marshal.Copy(ptr, data, 0, Marshal.SizeOf<T>());
-        return data;
-    }
-    public static T BytesToStruct<T>(byte[] data)
-    {
-        nint ptr = Marshal.AllocHGlobal(data.Length);
-        Marshal.Copy(data, 0, ptr, data.Length);
-        return Marshal.PtrToStructure<T>(ptr);
-    }
-
-
 }

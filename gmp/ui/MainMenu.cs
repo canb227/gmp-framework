@@ -1,10 +1,4 @@
 using Godot;
-using Godot.Collections;
-using Godot.NativeInterop;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 
 // The front end's first screen, put up by UIManager over the empty boot scene. Routes to the
 // shared debug lobby (in LAN or Steam mode), options, or quit. Also honours the command-line
@@ -17,22 +11,13 @@ public partial class MainMenu : UIScreen
     public override void _Ready()
     {
         HiResUI.Fill(this);
-        Button("StartSteamButton").Pressed += () => OpenLobby(LobbyMode.Steam);
-        Button("StartLANButton").Pressed += () => OpenLobby(LobbyMode.Lan);
-        Button("OptionsButton").Pressed += UIManager.OpenOptions;
-        Button("QuitButton").Pressed += () => GetTree().Quit();
+        GetNode<Button>("%StartSteamButton").Pressed += () => UIManager.OpenLobby(LobbyMode.Steam);
+        GetNode<Button>("%StartLANButton").Pressed += () => UIManager.OpenLobby(LobbyMode.Lan);
+        GetNode<Button>("%OptionsButton").Pressed += UIManager.OpenOptions;
+        GetNode<Button>("%QuitButton").Pressed += () => GetTree().Quit();
 
         CallDeferred(nameof(HandleCmdline));
-
-
     }
-
-    
-
-    private Button Button(string name) =>
-        GetNode<Button>($"%{name}");
-
-    private static void OpenLobby(LobbyMode mode) => UIManager.OpenLobby(mode);
 
     // The bottom of the stack: Escape has nowhere to go back to.
     public override void Cancel() { }
@@ -55,7 +40,7 @@ public partial class MainMenu : UIScreen
             if (a == "--steam") steam = true;
             if (a == "--host" || a == "--join" || a == "--lan") lan = true;
         }
-        if (steam) OpenLobby(LobbyMode.Steam);
-        else if (lan) OpenLobby(LobbyMode.Lan);
+        if (steam) UIManager.OpenLobby(LobbyMode.Steam);
+        else if (lan) UIManager.OpenLobby(LobbyMode.Lan);
     }
 }

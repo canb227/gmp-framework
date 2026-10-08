@@ -2,9 +2,9 @@ using Godot;
 using System.Collections.Generic;
 
 /// <summary>
-/// Outlines an object so it shows through walls (<see cref="UIManager.Highlight"/>, or a <see cref="WorldMarker"/>
-/// with highlight on). Uses the stencil buffer (Godot 4.5+, Forward+/Mobile): each visible MeshInstance3D under the
-/// target gets a twin sharing its mesh, rendered with XRayMask.gdshader (marks the silhouette, through walls) and
+/// Outlines an object so it shows through walls (a <see cref="WorldMarker"/> with highlight on). Uses the stencil
+/// buffer (Godot 4.5+, Forward+/Mobile): each visible MeshInstance3D under the target gets a twin sharing its
+/// mesh, rendered with XRayMask.gdshader (marks the silhouette, through walls) and
 /// then XRayOutline.gdshader (a grown hull drawn only outside the marked silhouette). The target's own materials
 /// are left alone; the twins are children named <see cref="TwinName"/>, freed by <see cref="Remove"/>.
 /// <para>
@@ -23,8 +23,6 @@ public static class XRayHighlight
     const float WidthPixels = 4f;
 
     static readonly Dictionary<Node3D, List<MeshInstance3D>> twins = new();
-
-    public static bool IsHighlighted(Node3D target) => twins.ContainsKey(target);
 
     /// <summary>Outlines <paramref name="target"/> in <paramref name="color"/> (re-applies with the new colour if already outlined).</summary>
     public static void Apply(Node3D target, Color color)

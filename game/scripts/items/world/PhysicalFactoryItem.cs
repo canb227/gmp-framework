@@ -1,9 +1,6 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
 {
@@ -72,7 +69,7 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
         awakePriority = priority; // Init has resolved the scene/spawn priority by now
         // Level items can settle while the level loads, before this point, and Box3D won't report it again.
         if (authority == Lobby.selfPeerID && !this.IsAwake()) OnFellAsleep();
-        this.ApplyCentralForce(new Vector3(Random.Shared.Next(-5,5), Random.Shared.Next(-5,5), Random.Shared.Next(5,5)));
+        this.ApplyCentralForce(new Vector3(Random.Shared.Next(-5,5), Random.Shared.Next(-5,5), Random.Shared.Next(-5,5)));
     }
 
     public override void _ExitTree()
@@ -176,27 +173,28 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
         {
             player.ReceiveItem(itemID);
         }
-        GameWorld.RemoveLocal(id);
+        GameWorld.RemoveLocal(id, DespawnReason.PickedUp);
     }
 
     public void onInteract(ulong playerID)
     {
-        if (canBePickedUp)
+        if (!canBePickedUp) return;
+        FactoryPlayer player = (FactoryPlayer)GameWorld.syncedObjs[playerID];
+        if (player.inventory.HasRoomFor(itemID))
         {
-            FactoryPlayer player = (FactoryPlayer)GameWorld.syncedObjs[playerID];
-            if (player.inventory.HasRoomFor(itemID))
-            {
-                // Arbitrated by the item's authority so two players can't both pick it up.
-                RequestPickup((FactoryPlayer)GameWorld.syncedObjs[playerID]);
-            }
-
+            // Arbitrated by the item's authority so two players can't both pick it up.
+            RequestPickup(player);
         }
     }
 
-    public virtual void onTurnedIn()
+    /// <summary>An item dropped in a void is turned in: the host counts it toward quests and stores it as a resource.</summary>
+    public override void OnDespawned(DespawnReason reason)
     {
-        ProgressManager.TurnInForQuest(itemID);
-        Shop.AddResource(itemID, 1);
+        if (reason == DespawnReason.Voided && Lobby.isHost)
+        {
+            ProgressManager.TurnInForQuest(itemID);
+            Shop.AddResource(itemID, 1);
+        }
     }
 }
 

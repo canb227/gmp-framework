@@ -9,15 +9,13 @@ public partial class FactoryPlayer
 {
     const string DefaultHeldScene = "res://game/scenes/items/held/DefaultHeldBox.tscn";
 
-    HeldItem currentInHandItem;
     /// <summary>The held item's in-hand scene (a blueprint's ghost, the magnet rod, ...), or null.</summary>
-    public HeldItem heldItem => currentInHandItem;
+    public HeldItem heldItem { get; private set; }
 
     void HandleEquipmentInput(InputEvent @event)
     {
-        // Drop item (Q) — drop 1 from active hotbar slot
-        if (@event.IsActionPressed(InputActions.drop))
-            DropFromActiveSlot(1);
+        // Drop item (Q): one from the active hotbar slot
+        if (@event.IsActionPressed(InputActions.drop)) DropFromActiveSlot(1);
 
         SelectSlotFromNumberKeys(@event);
     }
@@ -25,30 +23,24 @@ public partial class FactoryPlayer
     /// <summary>Replaces the in-hand visual with the currently equipped item's (or clears it). Runs on every peer.</summary>
     public void UpdateEquippedItem()
     {
-        if (currentInHandItem != null)
-        {
-            currentInHandItem.QueueFree();
-            currentInHandItem = null;
-        }
+        heldItem?.QueueFree();
+        heldItem = null;
 
         string equippedID = inventory.GetEquippedItem();
         if (equippedID == null) return;
 
         ItemInfo equipped = ItemInfo.Fetch(equippedID);
-        if (equipped?.inHandScene != null)
+        if (equipped.inHandScene != null)
         {
-            currentInHandItem = equipped.inHandScene.Instantiate<HeldItem>();
+            heldItem = equipped.inHandScene.Instantiate<HeldItem>();
         }
-        else if (equipped != null)
+        else
         {
-            currentInHandItem = ResourceLoader.Load<PackedScene>(DefaultHeldScene).Instantiate<HeldItem>();
-            (currentInHandItem as DefaultHeldBox).boxInit(equipped.itemID);
+            heldItem = ResourceLoader.Load<PackedScene>(DefaultHeldScene).Instantiate<HeldItem>();
+            ((DefaultHeldBox)heldItem).boxInit(equipped.itemID);
         }
-        itemHolder.AddChild(currentInHandItem);
-        if (currentInHandItem is HeldItem tool)
-        {
-            tool.Equip(equipped, this);
-        }
+        itemHolder.AddChild(heldItem);
+        heldItem.Equip(equipped, this);
     }
 
     /// <summary>Spawns up to <paramref name="count"/> of the active hotbar item in front of the player.</summary>

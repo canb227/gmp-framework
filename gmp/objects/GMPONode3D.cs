@@ -1,12 +1,4 @@
 using Godot;
-using Nerdbank.MessagePack;
-using Nerdbank.MessagePack.Godot;
-using PolyType;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 [GlobalClass]
 public partial class GMPONode3D : Node3D, GMPObject
@@ -34,7 +26,6 @@ public partial class GMPONode3D : Node3D, GMPObject
 
     public virtual void AfterInit()
     {
-
     }
 
     public virtual byte[] GenerateStateUpdate()
@@ -44,7 +35,6 @@ public partial class GMPONode3D : Node3D, GMPObject
 
     public virtual void ApplyStateUpdate(byte[] update)
     {
-
         desiredState = update;
     }
 
@@ -58,5 +48,4 @@ public partial class GMPONode3D : Node3D, GMPObject
             }
         }
     }
-
 }

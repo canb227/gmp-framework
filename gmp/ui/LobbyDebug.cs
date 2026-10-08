@@ -158,7 +158,7 @@ public partial class LobbyDebug : Control
 
         ApplyModeChrome();
 
-        _backButton.Pressed += OnBackPressed;
+        _backButton.Pressed += UIManager.QuitToMainMenu; // resets lobby/network state; our Lobby events are unsubscribed in _ExitTree
         _hostButton.Pressed += OnHostPressed;
         _joinButton.Pressed += OnJoinPressed;
         _sendButton.Pressed += OnSendChat;
@@ -177,8 +177,7 @@ public partial class LobbyDebug : Control
         Lobby.LobbyGameInfoChangedEvent += RefreshGameInfo;
         Lobby.LobbyDoneLoadingEvent += DoneLoading;
 
-        // Chat (LOBBY_Chat) is not surfaced by Lobby's LobbyMessageEvent — it is read
-        // straight off the transport, wired in StartHost/StartJoin once _net exists.
+        // Chat (LOBBY_Chat) is read straight off the transport, wired in StartHost/StartJoin once _net exists.
 
         _peerValue.Text = ShortId(_selfId);
         _stateValue.Text = "Disconnected";
@@ -323,7 +322,7 @@ public partial class LobbyDebug : Control
             bool grabOk = !Lobby.isHost || (_grabRestError >= 0 && _grabRestError < 0.05f && _grabRestSpeed < 0.2f
                 && _grabMaxError >= 0 && _grabMaxError < 0.5f && _grabMaxPointSpeed > 1f && _grabMaxSpeed < _grabMaxPointSpeed * 1.2f);
             // Host only: HUD named the held magnet rod; sprinting reached (nearly) sprint speed.
-            FactoryPlayer self = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
+            FactoryPlayer self = LocalPlayer();
             bool uiOk = !Lobby.isHost || (_hudHeldName == "Magnet Rod" && self != null && _sprintMaxSpeed > self.sprintSpeed * 0.9f);
             // Every peer: the one HUD (UIManager's) is drawn and bound to its own player.
             string visibleHuds = UIManager.Hud is { } hud && hud.IsVisibleInTree() ? (hud.player.isLocal ? "self" : $"peer{hud.player.controllingPeerID % 1000}") : "none";
@@ -495,13 +494,6 @@ public partial class LobbyDebug : Control
         Lobby.SendStartGame();
     }
 
-    // Return to the main menu, resetting all lobby/network state so the next lobby
-    // starts clean. Unsubscribing from Lobby's events happens in _ExitTree.
-    private void OnBackPressed()
-    {
-        UIManager.QuitToMainMenu();
-    }
-
     // ---- host / join --------------------------------------------------------
 
     private void StartHost(int port)
@@ -577,7 +569,7 @@ public partial class LobbyDebug : Control
         string text = Encoding.UTF8.GetString(msg);
         string name = Lobby.members.TryGetValue(from, out var m) && !string.IsNullOrEmpty(m.Name)
             ? m.Name : ShortId(from);
-        AppendChat(name, text, "#e0e4ec");
+        _chatLog.AppendText($"\n[color=#e0e4ec]{name}:[/color] {text}");
         Log($"recv chat from {name}: \"{text}\"");
 
         if (_testMode && from != _selfId)
@@ -586,7 +578,7 @@ public partial class LobbyDebug : Control
 
     private void RefreshGameInfo()
     {
-        // GameInfo (level/mode/max players) changed on the wire. Nothing to render yet.
+        // GameInfo changed on the wire (the host's choices).
         _levelSelect.Select(Lobby.gameInfo.levelIdx);
         _starterItemsSelect.Select((int)Lobby.gameInfo.starterItems);
         _handGrabCheck.SetPressedNoSignal(Lobby.gameInfo.emptyHandGrab);
@@ -609,35 +601,21 @@ public partial class LobbyDebug : Control
     private void RefreshRoster()
     {
         _playersValue.Text = $"{Lobby.MemberCount} / {MaxPlayers}";
-        if (_playerRows == null)
-            return;
         foreach (Node child in _playerRows.GetChildren())
             child.QueueFree();
 
         foreach (var m in Lobby.members.Values.OrderBy(m => m.Name))
         {
             Node row = _rowScene.Instantiate();
-            var nameLabel = row.GetNodeOrNull<Label>("PlayerRow1Box/NameLabel");
-            var idLabel = row.GetNodeOrNull<Label>("PlayerRow1Box/PeerIDLabel");
-            var badge = row.GetNodeOrNull<Control>("PlayerRow1Box/Badge");
-            var badgeLabel = row.GetNodeOrNull<Label>("PlayerRow1Box/Badge/BadgeLabel");
-            var avatarLabel = row.GetNodeOrNull<Label>("PlayerRow1Box/Avatar/AvatarCenter/AvatarLabel");
-
             string display = !string.IsNullOrEmpty(m.Name) ? m.Name : $"Peer {ShortId(m.PeerID)}";
             if (m.PeerID == Lobby.selfPeerID) display += " (you)";
-            if (nameLabel != null) nameLabel.Text = display;
-            if (idLabel != null) idLabel.Text = ShortId(m.PeerID);
-            if (avatarLabel != null) avatarLabel.Text = display.Length > 0 ? display.Substring(0, 1).ToUpper() : "?";
-            if (badge != null) badge.Visible = m.IsHost;
-            if (badgeLabel != null) badgeLabel.Text = "HOST";
+            row.GetNode<Label>("PlayerRow1Box/NameLabel").Text = display;
+            row.GetNode<Label>("PlayerRow1Box/PeerIDLabel").Text = ShortId(m.PeerID);
+            row.GetNode<Label>("PlayerRow1Box/Avatar/AvatarCenter/AvatarLabel").Text = display.Substring(0, 1).ToUpper();
+            row.GetNode<Control>("PlayerRow1Box/Badge").Visible = m.IsHost;
 
             _playerRows.AddChild(row);
         }
-    }
-
-    private void AppendChat(string who, string text, string color)
-    {
-        _chatLog?.AppendText($"\n[color={color}]{who}:[/color] {text}");
     }
 
     private void Log(string line)
@@ -694,10 +672,7 @@ public partial class LobbyDebug : Control
         }
 
         if (name != null)
-        {
             _selfName = name;
-            _peerValue.Text = ShortId(_selfId);
-        }
 
         if (_mode == LobbyMode.Steam)
         {
@@ -842,7 +817,7 @@ public partial class LobbyDebug : Control
     // 8.2 host's ghost switches forms and its preview arrow follows; 9.0 every peer reads them; 9.2 host deconstructs the feeder.
     private void RunAlternateFormScenario(double t)
     {
-        FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
+        FactoryPlayer local = LocalPlayer();
         if (_altSubStep == 0 && t >= 7.6)
         {
             _altSubStep++;
@@ -932,7 +907,7 @@ public partial class LobbyDebug : Control
     private void RunResourceScenario(double t)
     {
         var items = GameWorld.syncedObjs.Values.OfType<PhysicalFactoryItem>();
-        FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
+        FactoryPlayer local = LocalPlayer();
         FactoryPlayer hostPlayer = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.controllingPeerID == Lobby.hostID);
 
         if (items.FirstOrDefault(i => i.Name == "JumpingChunk") is PhysicalFactoryItem jumper)
@@ -1080,7 +1055,7 @@ public partial class LobbyDebug : Control
         // definitions weren't held (GC finalizer disposing one while ItemInfo.Fetch reloaded it).
         if (Lobby.isHost && t >= 8.5 && t < 12.0)
         {
-            FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
+            FactoryPlayer local = LocalPlayer();
             if (local != null)
             {
                 local.inventory.ActiveHotbarSlot = (local.inventory.ActiveHotbarSlot + 1) % 8;
@@ -1115,8 +1090,8 @@ public partial class LobbyDebug : Control
         else if (_scenarioStep == 4 && t >= 5.0)
         {
             _scenarioStep++;
-            FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
-            if (local != null && HoldSeedBlueprint(local) && ItemInfo.Fetch(SeedItemId) is BlueprintItem blueprint)
+            FactoryPlayer local = LocalPlayer();
+            if (local != null && HoldBlueprint(local, SeedItemId) && ItemInfo.Fetch(SeedItemId) is BlueprintItem blueprint)
                 BuildGrid.RequestPlace(local, blueprint, TestBuildCell, 1);
         }
         else if (_scenarioStep == 5 && t >= 6.0)
@@ -1152,15 +1127,15 @@ public partial class LobbyDebug : Control
         else if (_scenarioStep == 6 && t >= 6.5)
         {
             _scenarioStep++;
-            FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
+            FactoryPlayer local = LocalPlayer();
             if (Lobby.isHost && local != null && BuildGrid.GetStructureAt(TestBuildCell) is Structure built)
                 BuildGrid.RequestDeconstruct(local, built);
         }
         else if (_scenarioStep == 7 && t >= 7.0)
         {
             _scenarioStep++;
-            FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
-            if (Lobby.isHost && local != null && HoldSeedBlueprint(local) && ItemInfo.Fetch(SeedItemId) is BlueprintItem blueprint && TryFindLevelWallCell(out Vector3I sunk))
+            FactoryPlayer local = LocalPlayer();
+            if (Lobby.isHost && local != null && HoldBlueprint(local, SeedItemId) && ItemInfo.Fetch(SeedItemId) is BlueprintItem blueprint && TryFindLevelWallCell(out Vector3I sunk))
             {
                 _embeddedAttempted = true;
                 BuildGrid.RequestPlace(local, blueprint, sunk, 0);
@@ -1169,9 +1144,9 @@ public partial class LobbyDebug : Control
         else if (_scenarioStep == 8 && t >= 7.3)
         {
             _scenarioStep++;
-            FactoryPlayer local = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
+            FactoryPlayer local = LocalPlayer();
             // Open floor in the museum (its floor's top is at y=0, a cell boundary, so the block rests flush).
-            if (Lobby.isHost && local != null && TryFindOpenFloorCell(out Vector3I floorCell) && HoldSeedBlueprint(local) && ItemInfo.Fetch(SeedItemId) is BlueprintItem blueprint)
+            if (Lobby.isHost && local != null && TryFindOpenFloorCell(out Vector3I floorCell) && HoldBlueprint(local, SeedItemId) && ItemInfo.Fetch(SeedItemId) is BlueprintItem blueprint)
                 BuildGrid.RequestPlace(local, blueprint, floorCell, 0);
         }
     }
@@ -1207,9 +1182,9 @@ public partial class LobbyDebug : Control
         return false;
     }
 
-    // Builds consume the blueprint in the active hotbar slot, so hold the seed blueprint wherever the bootstrap put it.
-    private static bool HoldSeedBlueprint(FactoryPlayer player) => HoldBlueprint(player, SeedItemId);
+    private static FactoryPlayer LocalPlayer() => GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
 
+    // Builds consume the blueprint in the active hotbar slot, so hold the blueprint wherever the bootstrap put it.
     private static bool HoldBlueprint(FactoryPlayer player, string itemID)
     {
         for (int i = 0; i < Inventory.HotbarSlots; i++)

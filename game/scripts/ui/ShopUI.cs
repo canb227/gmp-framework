@@ -61,7 +61,7 @@ public partial class ShopUI : UIScreen
         purchaseButton.Pressed += OnPurchasePressed;
         closeButton.Pressed += () => UIManager.CloseScreen(this);
 
-        Shop.StockChanged += OnStockChanged;
+        Shop.StockChanged += BuildCatalogue;
         Shop.ResourcesChanged += OnResourcesChanged;
         BuildCatalogue();
     }
@@ -73,7 +73,7 @@ public partial class ShopUI : UIScreen
             GetViewport().SizeChanged -= Refit;
             fittingToViewport = false;
         }
-        Shop.StockChanged -= OnStockChanged;
+        Shop.StockChanged -= BuildCatalogue;
         Shop.ResourcesChanged -= OnResourcesChanged;
         SetInventory(null);
     }
@@ -86,12 +86,6 @@ public partial class ShopUI : UIScreen
             GetViewport().SetInputAsHandled();
             UIManager.CloseScreen(this);
         }
-    }
-
-    /// <summary>Points the shop at <paramref name="playerInventory"/>, which purchases go into.</summary>
-    public void Open(Inventory playerInventory)
-    {
-        SetInventory(playerInventory);
     }
 
     public override void OnClosed()
@@ -126,7 +120,8 @@ public partial class ShopUI : UIScreen
         Position = (window - design * scale) / 2f;
     }
 
-    private void SetInventory(Inventory playerInventory)
+    /// <summary>Points the shop at <paramref name="playerInventory"/>, which purchases go into (null: none).</summary>
+    public void SetInventory(Inventory playerInventory)
     {
         if (inventory != null)
         {
@@ -174,19 +169,8 @@ public partial class ShopUI : UIScreen
         Select(stock.Contains(selected) ? selected : stock.FirstOrDefault());
     }
 
-    private void OnStockChanged()
-    {
-        BuildCatalogue();
-    }
-
     /// <summary>Turn-ins and purchases change what the player can afford.</summary>
-    private void OnResourcesChanged(string itemID, int amount)
-    {
-        if (selected != null)
-        {
-            RefreshCosts();
-        }
-    }
+    private void OnResourcesChanged(string itemID, int amount) => RefreshCosts();
 
     /// <summary>The blueprint's definition folder, e.g. "chutes" (top-level blueprints are "general").</summary>
     private static string CategoryOf(BlueprintItem item)
@@ -317,16 +301,11 @@ public partial class ShopUI : UIScreen
     /// <summary>Re-reads held counts into the catalogue cost column and the purchase widget.</summary>
     private void RefreshCosts()
     {
-        if (detailContent == null)
-        {
-            return; // before _Ready
-        }
-
         foreach (var (item, _, costLabel) in rows)
         {
             costLabel.Text = item.HasCost ? $"×{item.costAmount}" : "FREE";
-            bool short1 = !Shop.CanAfford(item, 1);
-            costLabel.AddThemeColorOverride("font_color", !item.HasCost ? Dim : short1 ? Shortfall : Accent);
+            bool unaffordable = !Shop.CanAfford(item, 1);
+            costLabel.AddThemeColorOverride("font_color", !item.HasCost ? Dim : unaffordable ? Shortfall : Accent);
         }
 
         if (selected == null)
@@ -364,10 +343,7 @@ public partial class ShopUI : UIScreen
 
     private void OnPurchasePressed()
     {
-        if (selected != null)
-        {
-            // The host confirms the order; costs and the inventory refresh through their change events when it does.
-            Shop.TryPurchase(inventory, selected.itemID, quantity);
-        }
+        // The host confirms the order; costs and the inventory refresh through their change events when it does.
+        Shop.TryPurchase(inventory, selected.itemID, quantity);
     }
 }

@@ -1,8 +1,6 @@
 using Godot;
 using System;
 
-
-//claude wrote this so its kinda wack
 /// <summary>
 /// The local player's HUD (PlayerHUD.tscn): hotbar, held-item name, crosshair hover labels, and the inventory
 /// screen. Created and bound by <see cref="UIManager.BindHud"/>; open/close the inventory through UIManager too,
@@ -75,13 +73,12 @@ public partial class InventoryUI : Control
 
         inventoryCenter = GetNode<Control>("InventoryScreen/InventoryCenter");
         inventoryPanel = GetNode<Control>("InventoryScreen/InventoryCenter/InventoryPanel");
-        var gridContainer = GetNode<GridContainer>("InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid");
-        inventoryGrid = gridContainer;
+        inventoryGrid = GetNode<GridContainer>("InventoryScreen/InventoryCenter/InventoryPanel/InventoryMargin/InventoryVBox/InventoryGrid");
         for (int i = 0; i < Inventory.TotalSlots - Inventory.HotbarSlots; i++)
         {
             int slotIndex = i + Inventory.HotbarSlots;
             string slotName = $"InvSlot{i + 1}";
-            var panel = gridContainer.GetNode<PanelContainer>(slotName);
+            var panel = inventoryGrid.GetNode<PanelContainer>(slotName);
             slotPanels[slotIndex] = panel;
             slotIcons[slotIndex] = panel.GetNode<TextureRect>("Icon");
             slotCounts[slotIndex] = panel.GetNode<Label>("StackCount");
@@ -93,7 +90,6 @@ public partial class InventoryUI : Control
 
         for (int i = 0; i < Inventory.TotalSlots; i++)
         {
-            if (slotPanels[i] == null) continue;
             slotPanels[i].MouseFilter = MouseFilterEnum.Pass;
             foreach (Node child in slotPanels[i].GetChildren())
             {
@@ -164,15 +160,15 @@ public partial class InventoryUI : Control
             return;
         }
 
-        tooltipName.Text = ItemInfo.Fetch(slot.itemID).displayName;
-        tooltipDescription.Text = ItemInfo.Fetch(slot.itemID).description;
+        ItemInfo item = ItemInfo.Fetch(slot.itemID);
+        tooltipName.Text = item.displayName;
+        tooltipDescription.Text = item.description;
         itemTooltip.Show();
     }
 
     public override void _ExitTree()
     {
-        if (inventory != null)
-            inventory.InventoryChanged -= RefreshAllSlots;
+        inventory.InventoryChanged -= RefreshAllSlots;
     }
 
     /// <summary>The crosshair labels: the target's name and the prompt below it. Null hides a line.</summary>
@@ -200,15 +196,8 @@ public partial class InventoryUI : Control
                 slotCounts[i].Text = slot.Count > 1 ? slot.Count.ToString() : "";
             }
 
-            if (i < Inventory.HotbarSlots)
-            {
-                slotPanels[i].AddThemeStyleboxOverride("panel",
-                    i == inventory.ActiveHotbarSlot ? activeStyle : normalStyle);
-            }
-            else
-            {
-                slotPanels[i].AddThemeStyleboxOverride("panel", normalStyle);
-            }
+            // The active slot is always a hotbar slot.
+            slotPanels[i].AddThemeStyleboxOverride("panel", i == inventory.ActiveHotbarSlot ? activeStyle : normalStyle);
         }
 
         // Name of the item in hand, shown above the hotbar.
@@ -270,8 +259,7 @@ public partial class InventoryUI : Control
     public override bool _CanDropData(Vector2 atPosition, Variant data)
     {
         if (data.VariantType != Variant.Type.Int) return false;
-        int targetSlot = GetSlotIndexAtPosition(atPosition);
-        return targetSlot >= 0;
+        return GetSlotIndexAtPosition(atPosition) >= 0;
     }
 
     public override void _DropData(Vector2 atPosition, Variant data)
@@ -284,11 +272,7 @@ public partial class InventoryUI : Control
         var source = inventory.GetSlot(sourceSlot);
         var target = inventory.GetSlot(targetSlot);
 
-        if (target.IsEmpty)
-        {
-            inventory.SwapSlots(sourceSlot, targetSlot);
-        }
-        else if (!source.IsEmpty && !target.IsEmpty && source.itemID == target.itemID)
+        if (!source.IsEmpty && !target.IsEmpty && source.itemID == target.itemID)
         {
             inventory.MergeSlots(sourceSlot, targetSlot);
         }
@@ -302,24 +286,21 @@ public partial class InventoryUI : Control
 
     public override void _Notification(int what)
     {
-        if (what == NotificationDragEnd)
+        // A slot dragged out of the inventory and released over nothing drops its whole stack.
+        if (what != NotificationDragEnd || IsDragSuccessful()) return;
+        var dragData = GetViewport().GuiGetDragData();
+        if (dragData.VariantType == Variant.Type.Int && isOpen)
         {
-            if (!IsDragSuccessful())
-            {
-                var dragData = GetViewport().GuiGetDragData();
-                if (dragData.VariantType == Variant.Type.Int && isOpen)
-                {
-                    int sourceSlot = dragData.AsInt32();
-                    DropEntireStack(sourceSlot);
-                }
-            }
+            DropEntireStack(dragData.AsInt32());
         }
     }
 
     void DropEntireStack(int slotIndex)
     {
         var slot = inventory.GetSlot(slotIndex);
-        if (slot.IsEmpty || ItemInfo.Fetch(slot.itemID).droppedScene == null) return;
+        if (slot.IsEmpty) return;
+        PackedScene droppedScene = ItemInfo.Fetch(slot.itemID).droppedScene;
+        if (droppedScene == null) return;
 
         var camera = player.camera;
         Vector3 dropPos = camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * 2f;
@@ -332,7 +313,7 @@ public partial class InventoryUI : Control
                 0,
                 (float)(Random.Shared.NextDouble() - 0.5) * 0.5f
             );
-            GameWorld.SpawnScene(ItemInfo.Fetch(slot.itemID).droppedScene.ResourcePath, dropPos + offset, dropRot);
+            GameWorld.SpawnScene(droppedScene.ResourcePath, dropPos + offset, dropRot);
         }
 
         inventory.ClearSlot(slotIndex);
@@ -362,7 +343,6 @@ public partial class InventoryUI : Control
         Vector2 canvasPoint = GetGlobalTransform() * position;
         for (int i = 0; i < Inventory.TotalSlots; i++)
         {
-            if (slotPanels[i] == null) continue;
             Vector2 local = slotPanels[i].GetGlobalTransform().AffineInverse() * canvasPoint;
             if (new Rect2(Vector2.Zero, slotPanels[i].Size).HasPoint(local))
                 return i;

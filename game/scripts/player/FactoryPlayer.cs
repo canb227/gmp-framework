@@ -13,8 +13,6 @@ using PolyType;
 public partial class FactoryPlayer : GMPOBox3DCharacter
 {
     public static bool displayPlayerDebugInfo = false;
-    public double distanceSinceStepSound = 0;
-    public double distancePerStepSound = 2;
     public int team;
     public bool isHuman;
     public ulong controllingPeerID;
@@ -63,7 +61,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         camera = GetNode<Camera3D>("Camera3D");
         cameraOffset = camera.Position;
         itemHolder = camera.GetNode<Node3D>("ItemHolder");
-        ReadyGrab();
+        grabNode = GetNode<Node3D>("%grabNode");
     }
 
     public override void AfterInit()
@@ -80,10 +78,9 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             PoseCamera(false);
             UIManager.BindHud(this);
             playerNameLabel.Hide();
-            body.GetNode<MeshInstance3D>("m").CastShadow=GeometryInstance3D.ShadowCastingSetting.ShadowsOnly;
-            //body.Hide();
+            body.GetNode<MeshInstance3D>("m").CastShadow = GeometryInstance3D.ShadowCastingSetting.ShadowsOnly;
             head.GetNode<MeshInstance3D>("head").CastShadow = GeometryInstance3D.ShadowCastingSetting.ShadowsOnly;
-            SubscribeGrabClaims();
+            GameWorld.ClaimGrantedEvent += OnClaimGranted;
             // Replicate every local inventory change (pickups, drops, drag-and-drop, bootstrap seed).
             inventory.InventoryChanged += SyncInventory;
         }
@@ -97,7 +94,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     public override void _ExitTree()
     {
         // Unconditional: on LeaveLobby selfPeerID is already cleared by the time this runs.
-        UnsubscribeGrabClaims();
+        GameWorld.ClaimGrantedEvent -= OnClaimGranted;
         UIManager.UnbindHud(this);
     }
 
@@ -119,12 +116,11 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         if (UIManager.BlocksGameplayInput) return;
         HandleMouseInput(@event);
         HandleScrollWheel(@event);
-        if (!UIManager.IsInventoryOpen && currentInHandItem != null && currentInHandItem.HandleInput(@event)) return;
+        if (!UIManager.IsInventoryOpen && heldItem != null && heldItem.HandleInput(@event)) return;
         HandleInteractionInput(@event);
         HandleEquipmentInput(@event);
         HandleGrabInput(@event);
     }
-
 
     /// <summary>Mouse look, and recapturing the mouse on a click (after the window lost it).</summary>
     void HandleMouseInput(InputEvent @event)
@@ -154,8 +150,8 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         if (step == 0) return;
 
         if (isGrabbing)
-            MoveGrabPoint(step);
-        else if (currentInHandItem == null || !currentInHandItem.HandleScroll(step))
+            SetGrabDistance(grabDistance - step * grabScrollStep);
+        else if (heldItem == null || !heldItem.HandleScroll(step))
             CycleHotbar(step);
     }
 
@@ -176,11 +172,6 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         UpdatePickTarget();
         ApplyMovement(delta);
         PoseCamera(false);
-        if (distanceSinceStepSound > distancePerStepSound)
-        {
-            //AudioManager.playRandomSound(this.GetPath(), ["res://game/assets/audio/impacts/footstep_concrete_000.ogg", "res://game/assets/audio/impacts/footstep_concrete_001.ogg", "res://game/assets/audio/impacts/footstep_concrete_002.ogg", "res://game/assets/audio/impacts/footstep_concrete_003.ogg", "res://game/assets/audio/impacts/footstep_concrete_004.ogg"],-45);
-            distanceSinceStepSound = 0;
-        }
     }
 
     void ApplyMovement(double delta)
@@ -191,7 +182,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         }
         else if (Input.IsActionJustPressed(InputActions.jump) && !UIManager.BlocksGameplayInput)
         {
-            Velocity = Velocity + JumpVector;
+            Velocity += JumpVector;
         }
 
         // No walking while a menu has the keyboard.
@@ -210,11 +201,6 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         }
         cachedVel = Velocity;
         Velocity = MoveAndSlide(Velocity, delta);
-        if (IsOnFloor())
-        {
-            distanceSinceStepSound += (Velocity.Length() * delta);
-        }
-
     }
 
     /// <summary>
@@ -290,7 +276,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         ImGui.Text($"On Floor: {IsOnFloor()}");
         ImGui.Text($"Active Hotbar Slot: {inventory.ActiveHotbarSlot}");
         ImGui.Text($"Pick Target: {pickTarget?.Name ?? "none"}");
-        ImGui.Text($"Grab Target: {grabTarget?.Name ?? "none"}");
+        ImGui.Text($"Grab Target: {grabbedItem?.Name ?? "none"}");
         ImGui.Checkbox("Empty-hand grab", ref emptyHandGrabEnabled);
         ImGui.Text($"Inventory Open: {UIManager.IsInventoryOpen}");
         ImGui.End();
