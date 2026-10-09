@@ -18,7 +18,6 @@ public partial class Console : Node
         LimboConsole.RegisterCommand(new Callable(this, "save"));
         LimboConsole.RegisterCommand(new Callable(this, "resync"));
         LimboConsole.RegisterCommand(new Callable(this, "load"));
-        LimboConsole.AddArgumentAutocompleteSource("load", 0, new Callable(this, "GetSaveNames"));
 
         // Keep debug windows (perf) drawing while the tree is paused, e.g. during world load.
         ProcessMode = ProcessModeEnum.Always;
@@ -45,10 +44,16 @@ public partial class Console : Node
 
     // ---- saves (host only; see GameWorld.Resync.cs) ----
 
+    // Names are files in this user's save folder; the pause menu and lobby browse for any file instead.
+    static string SavePath(string name)
+    {
+        return GameWorld.SaveDir + (name.EndsWith(GameWorld.SaveExtension) ? name : name + GameWorld.SaveExtension);
+    }
+
     public void save()
     {
-        string name = GameWorld.SaveToFile();
-        if (name != null) LimboConsole.Info($"Saved {name}");
+        string path = GameWorld.SaveDir + GameWorld.DefaultSaveName();
+        if (GameWorld.SaveToFile(path)) LimboConsole.Info($"Saved {path}");
         else LimboConsole.Error("Not saved: only the host can save, in a running game.");
     }
 
@@ -59,14 +64,7 @@ public partial class Console : Node
 
     public void load(string name)
     {
-        if (!GameWorld.LoadFromFile(name)) LimboConsole.Error($"Can't load '{name}': host only, in a running game, and the save must be readable.");
-    }
-
-    public Godot.Collections.Array GetSaveNames()
-    {
-        Godot.Collections.Array names = new();
-        foreach (string name in GameWorld.ListSaves()) names.Add(name);
-        return names;
+        if (!GameWorld.LoadFromFile(SavePath(name))) LimboConsole.Error($"Can't load '{name}': host only, in a running game, and the save must be readable.");
     }
 
     public void debugui(string which)

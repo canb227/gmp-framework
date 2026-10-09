@@ -1,7 +1,6 @@
 using Godot;
 using Steamworks;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -125,7 +124,7 @@ public partial class LobbyDebug : Control
     private Button _sendButton;
     private PackedScene _rowScene;
     private OptionButton _levelSelect;
-    private List<string> _saves = new();
+    private Button _loadGameButton;
     private OptionButton _starterItemsSelect;
     private CheckBox _handGrabCheck;
 
@@ -148,6 +147,7 @@ public partial class LobbyDebug : Control
         _hostValue = GetNode<Label>("%HostValue");
         _playersValue = GetNode<Label>("%PlayersValue");
         _levelSelect = GetNode<OptionButton>("%LevelOption");
+        _loadGameButton = GetNode<Button>("%LoadGameButton");
         _starterItemsSelect = GetNode<OptionButton>("%StarterItemsOption");
         _handGrabCheck = GetNode<CheckBox>("%HandGrabCheck");
 
@@ -166,6 +166,8 @@ public partial class LobbyDebug : Control
         _sendButton.Pressed += OnSendChat;
         _startButton.Pressed += OnStartGamePressed;
         _levelSelect.ItemSelected += _levelSelect_ItemSelected;
+        _loadGameButton.Pressed += OnLoadGamePressed;
+        _loadGameButton.Disabled = true; // host only: enabled in StartHost
         _starterItemsSelect.ItemSelected += _starterItemsSelect_ItemSelected;
         _handGrabCheck.Toggled += _handGrabCheck_Toggled;
         _chatInput.TextSubmitted += _ => OnSendChat();
@@ -188,12 +190,6 @@ public partial class LobbyDebug : Control
         {
             _levelSelect.AddItem(item.levelName);
         }
-        // Saves follow the levels: picking one starts from it instead (GameWorld.Resync.cs loads it once all are in).
-        _saves = GameWorld.ListSaves();
-        foreach (string save in _saves)
-        {
-            _levelSelect.AddItem("Save: " + save);
-        }
         _levelSelect.Select(2);
         _levelSelect_ItemSelected(2);
         // Item order matches the StarterItems enum.
@@ -210,17 +206,34 @@ public partial class LobbyDebug : Control
 
     private void _levelSelect_ItemSelected(long index)
     {
-        int levels = GameResources.LevelsList.Count;
-        if (index < levels)
-        {
-            Lobby.gameInfo.levelIdx = (int)index;
-            Lobby.gameInfo.saveName = null;
-        }
-        else
-        {
-            Lobby.gameInfo.saveName = _saves[(int)index - levels];
-        }
+        Lobby.gameInfo.levelIdx = (int)index;
         Lobby.SendGameInfoUpdate();
+    }
+
+    // Host: a game starts either from a level or from a save. With a save chosen the level list is off; pressing the
+    // button again clears the save and turns it back on.
+    private void OnLoadGamePressed()
+    {
+        if (!string.IsNullOrEmpty(Lobby.gameInfo.savePath))
+        {
+            SetSavePath(null);
+            return;
+        }
+        SaveFileDialog.Open(this, false, SetSavePath);
+    }
+
+    private void SetSavePath(string path)
+    {
+        Lobby.gameInfo.savePath = path;
+        Lobby.SendGameInfoUpdate();
+        RefreshSaveChoice();
+    }
+
+    private void RefreshSaveChoice()
+    {
+        bool fromSave = !string.IsNullOrEmpty(Lobby.gameInfo.savePath);
+        _levelSelect.Disabled = fromSave;
+        _loadGameButton.Text = fromSave ? $"SAVE: {Lobby.gameInfo.savePath.GetFile()}  (CLEAR)" : "LOAD GAME";
     }
 
     private void _starterItemsSelect_ItemSelected(long index)
@@ -528,6 +541,7 @@ public partial class LobbyDebug : Control
         Log($"hosting ({_mode}) as {_selfName}" + (_mode == LobbyMode.Steam ? "" : $" on port {port}"));
         RefreshRoster();
         _startButton.Disabled = false;
+        _loadGameButton.Disabled = false;
     }
 
     private void StartJoin()
@@ -599,6 +613,7 @@ public partial class LobbyDebug : Control
         _levelSelect.Select(Lobby.gameInfo.levelIdx);
         _starterItemsSelect.Select((int)Lobby.gameInfo.starterItems);
         _handGrabCheck.SetPressedNoSignal(Lobby.gameInfo.emptyHandGrab);
+        RefreshSaveChoice();
     }
 
     // Every peer has finished loading the game world — drop the lobby UI.

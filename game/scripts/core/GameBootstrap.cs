@@ -20,14 +20,14 @@ public static class GameBootstrap
     {
         if (Lobby.isHost)
         {
-            if (!string.IsNullOrEmpty(gameInfo.saveName))
+            if (!string.IsNullOrEmpty(gameInfo.savePath))
             {
-                if (GameWorld.ReadSaveFile(gameInfo.saveName) != null)
+                if (GameWorld.ReadSaveFile(gameInfo.savePath) != null)
                 {
                     return;
                 }
-                Logging.Error($"Can't read save {gameInfo.saveName}; starting the level instead", "GameBootstrap");
-                gameInfo.saveName = null;
+                Logging.Error($"Can't read save {gameInfo.savePath}; starting the level instead", "GameBootstrap");
+                gameInfo.savePath = null;
             }
             string levelPath = GameResources.LevelsList[gameInfo.levelIdx].levelPath;
             GameWorld.SpawnScene(levelPath);

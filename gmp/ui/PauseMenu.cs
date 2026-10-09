@@ -5,8 +5,8 @@ using Godot;
 /// Escape is pressed in game with nothing else open; Escape closes it again. It doesn't stop the simulation: in
 /// multiplayer everyone else keeps playing, and this player just stands still while it's open.
 /// <para>
-/// OPTIONS opens the options screen on top (the panel hides under it, the blur stays); SAVE GAME (host only) writes
-/// the game to a new save, listed in the lobby; QUIT leaves the session for the main menu. The UNUSED button is a
+/// OPTIONS opens the options screen on top (the panel hides under it, the blur stays); SAVE GAME (host only) opens
+/// the save browser (<see cref="SaveFileDialog"/>) to write the game to a file; QUIT leaves the session for the main menu. The UNUSED button is a
 /// disabled placeholder for a future entry.
 /// </para>
 /// </summary>
@@ -27,8 +27,7 @@ public partial class PauseMenu : UIScreen
 
     void OnSavePressed()
     {
-        string name = GameWorld.SaveToFile();
-        UIManager.ShowText(name != null ? "Game saved" : "Save failed");
+        SaveFileDialog.Open(this, true, path => UIManager.ShowText(GameWorld.SaveToFile(path) ? "Game saved" : "Save failed"));
     }
 
     public override void OnOpened() => GetNode<Button>("%OptionsButton").GrabFocus();

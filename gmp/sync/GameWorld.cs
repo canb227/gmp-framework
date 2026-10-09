@@ -108,9 +108,9 @@ public partial class GameWorld : Node3D
         instance.GetTree().Paused = frozenSyncId != 0;
         started = true;
         // Started from a save (chosen in the lobby): the host loads it into everyone now that all peers are in.
-        if (Lobby.isHost && !string.IsNullOrEmpty(Lobby.gameInfo.saveName))
+        if (Lobby.isHost && !string.IsNullOrEmpty(Lobby.gameInfo.savePath))
         {
-            LoadFromFile(Lobby.gameInfo.saveName);
+            LoadFromFile(Lobby.gameInfo.savePath);
         }
     }
 

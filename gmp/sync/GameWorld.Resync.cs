@@ -81,10 +81,10 @@ public partial class GameWorld
         return BeginFreeze(SyncMode.Resync, 0);
     }
 
-    /// <summary>Host: every peer rebuilds its world from save <paramref name="name"/>. False if it can't be read.</summary>
-    public static bool LoadFromFile(string name)
+    /// <summary>Host: every peer rebuilds its world from the save at <paramref name="path"/>. False if it can't be read.</summary>
+    public static bool LoadFromFile(string path)
     {
-        byte[] data = ReadSaveFile(name);
+        byte[] data = ReadSaveFile(path);
         if (data == null)
         {
             return false;
@@ -93,15 +93,10 @@ public partial class GameWorld
         return BeginFreeze(SyncMode.Load, 0);
     }
 
-    /// <summary>Host: writes the current world to a new save, named by the time; returns the name, or null on failure.</summary>
-    public static string SaveToFile()
+    /// <summary>Host: writes the current game to the file at <paramref name="path"/>. False if it couldn't.</summary>
+    public static bool SaveToFile(string path)
     {
-        if (!Lobby.isHost || !started)
-        {
-            return null;
-        }
-        string name = "save_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        return WriteSaveFile(name, GameSave.Capture(false)) ? name : null;
+        return Lobby.isHost && started && WriteSaveFile(path, GameSave.Capture(false));
     }
 
     static bool BeginFreeze(SyncMode mode, ulong joiner)

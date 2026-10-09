@@ -47,8 +47,15 @@ public partial class GameWorld
     /// <summary>Roots in this group are left out of snapshots (the game saves its players itself).</summary>
     public const string UnsavedGroup = "unsaved";
 
-    public const string SaveDir = "user://saves/";
+    /// <summary>This user's save folder (created at first run by <see cref="Global"/>); steam id 0 without Steam.</summary>
+    public static string SaveDir => "user://saves/" + Global.steamid + "/";
     public const string SaveExtension = ".sav";
+
+    /// <summary>A new save's suggested file name: the time, so saves sort by age.</summary>
+    public static string DefaultSaveName()
+    {
+        return "save_" + System.DateTime.Now.ToString("yyyyMMdd_HHmmss") + SaveExtension;
+    }
 
     /// <summary>Records every live spawned root and the state of each GMPObject in them.</summary>
     public static WorldSave SnapshotWorld()
@@ -168,11 +175,10 @@ public partial class GameWorld
 
     // ---- files ------------------------------------------------------------------
 
-    /// <summary>Writes <paramref name="data"/> compressed to <see cref="SaveDir"/>; false (logged) if it couldn't.</summary>
-    public static bool WriteSaveFile(string name, byte[] data)
+    /// <summary>Writes <paramref name="data"/> compressed to the file at <paramref name="path"/>; false (logged) if it couldn't.</summary>
+    public static bool WriteSaveFile(string path, byte[] data)
     {
-        DirAccess.MakeDirRecursiveAbsolute(SaveDir);
-        string path = SaveDir + name + SaveExtension;
+        DirAccess.MakeDirRecursiveAbsolute(path.GetBaseDir());
         // Write beside it and swap in, so a crash mid-write never leaves a half-written save.
         string temp = path + ".tmp";
         using (FileAccess file = FileAccess.Open(temp, FileAccess.ModeFlags.Write))
@@ -194,10 +200,9 @@ public partial class GameWorld
         return true;
     }
 
-    /// <summary>The uncompressed contents of save <paramref name="name"/>, or null (logged) if it can't be read.</summary>
-    public static byte[] ReadSaveFile(string name)
+    /// <summary>The uncompressed contents of the save at <paramref name="path"/>, or null (logged) if it can't be read.</summary>
+    public static byte[] ReadSaveFile(string path)
     {
-        string path = SaveDir + name + SaveExtension;
         if (!FileAccess.FileExists(path))
         {
             Logging.Error($"No save at {path}", "GameWorld");
@@ -212,26 +217,6 @@ public partial class GameWorld
             Logging.Error($"Save {path} is corrupt: {e.Message}", "GameWorld");
             return null;
         }
-    }
-
-    /// <summary>Save names (without extension), newest first: names are timestamps, so they sort by age.</summary>
-    public static List<string> ListSaves()
-    {
-        List<string> names = new();
-        if (!DirAccess.DirExistsAbsolute(SaveDir))
-        {
-            return names;
-        }
-        foreach (string file in DirAccess.GetFilesAt(SaveDir))
-        {
-            if (file.EndsWith(SaveExtension))
-            {
-                names.Add(file[..^SaveExtension.Length]);
-            }
-        }
-        names.Sort();
-        names.Reverse();
-        return names;
     }
 
     public static byte[] Compress(byte[] data)
