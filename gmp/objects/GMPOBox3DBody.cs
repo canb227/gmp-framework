@@ -42,6 +42,14 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     [Export]
     public float syncLerpRate { get; set; } = 10f;
 
+    [ExportGroup("Hover")]
+    /// <summary>Name shown under the crosshair while a player looks at this body; empty shows none.</summary>
+    [Export]
+    public string hoverName { get; set; }
+    /// <summary>Line shown below <see cref="hoverName"/>, e.g. "Press F to pick up!"; empty shows none.</summary>
+    [Export]
+    public string hoverText { get; set; }
+
     [ExportGroup("READONLY")]
     [Export]
     public ulong id { get; set; }

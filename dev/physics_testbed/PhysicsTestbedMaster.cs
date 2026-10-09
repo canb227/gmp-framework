@@ -24,7 +24,7 @@ public partial class PhysicsTestbedMaster : Node3D
     {
         foreach (PhysicsTuningStation station in PhysicsTuningStation.all)
         {
-            station.lever?.SetFromHost(on);
+            ((Activator)station.lever)?.SetFromAuthority(on);
         }
     }
 

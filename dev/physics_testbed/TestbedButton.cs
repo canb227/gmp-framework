@@ -4,7 +4,7 @@ using Godot;
 /// Physics-testbed push button. Panel buttons open their <see cref="station"/>'s panel for the local player only;
 /// master buttons ask <see cref="master"/> (the host) to act on every segment.
 /// </summary>
-public partial class TestbedButton : Node3D, Interactable
+public partial class TestbedButton : GMPOBox3DBody, Interactable
 {
     public enum ButtonAction { ItemPanel, BeltPanel, AllSpawnersOn, AllSpawnersOff, DeleteAllScrap }
 
@@ -12,17 +12,26 @@ public partial class TestbedButton : Node3D, Interactable
     [Export] public PhysicsTuningStation station;
     [Export] public PhysicsTestbedMaster master;
 
-    public string displayName => action switch
+    public TestbedButton()
     {
-        ButtonAction.ItemPanel => $"{station?.title} item tuning",
-        ButtonAction.BeltPanel => $"{station?.title} belt tuning",
-        ButtonAction.AllSpawnersOn => "All spawners on",
-        ButtonAction.AllSpawnersOff => "All spawners off",
-        _ => "Delete all scrap",
-    };
+        priority = -1; // never sends state updates
+    }
 
-    public string prompt => action is ButtonAction.ItemPanel or ButtonAction.BeltPanel
-        ? "Press F to open the panel." : "Press F to activate.";
+    public override void _Ready()
+    {
+        hoverName = action switch
+        {
+            ButtonAction.ItemPanel => $"{station?.title} item tuning",
+            ButtonAction.BeltPanel => $"{station?.title} belt tuning",
+            ButtonAction.AllSpawnersOn => "All spawners on",
+            ButtonAction.AllSpawnersOff => "All spawners off",
+            _ => "Delete all scrap",
+        };
+        hoverText = action is ButtonAction.ItemPanel or ButtonAction.BeltPanel
+            ? "Press F to open the panel." : "Press F to activate.";
+    }
+
+    public override byte[] GenerateStateUpdate() => null;
 
     public void onInteract(ulong playerID)
     {

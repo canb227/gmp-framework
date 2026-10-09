@@ -26,9 +26,6 @@ public partial class Structure : GMPOBox3DBody, Interactable
     /// <summary>The blueprint given back when this structure is deconstructed.</summary>
     [Export]
     public string blueprintItemID;
-    //Press {interact} to:
-    [Export]
-    public string interactionText = "deconstruct!";
 
     /// <summary>
     /// Where items go in and come out, besides the ends of its belts, which are ports already (see
@@ -45,8 +42,6 @@ public partial class Structure : GMPOBox3DBody, Interactable
 
     [Export]
     public bool interactable = true;
-
-    public string displayName => ItemInfo.Fetch(blueprintItemID)?.displayName ?? Name;
 
     /// <summary>Height of a conveyor belt's top above the floor of its cell.</summary>
     public const float BeltTopHeight = 0.15f;
@@ -236,6 +231,8 @@ public partial class Structure : GMPOBox3DBody, Interactable
     // Deliberately doesn't call base: a structure stays static on every peer instead of following as Kinematic.
     public override void AfterInit()
     {
+        if (string.IsNullOrEmpty(hoverName)) hoverName = ItemInfo.Fetch(blueprintItemID)?.displayName ?? Name;
+        if (string.IsNullOrEmpty(hoverText)) hoverText = "Press F to deconstruct!";
         if (!hasPlacement)
         {
             // Placed by hand in a level rather than built: derive the cell from where it stands.

@@ -21,9 +21,6 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
     public bool canBeInteractedWith;
 
     [Export]
-    public string interactionText = " pick up!";
-
-    [Export]
     public Godot.Collections.Array<ItemTags> tags;
 
     [ExportGroup("Sync")]
@@ -54,6 +51,9 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
     public override void _Ready()
     {
         base._Ready();
+        // Items without a definition resource (e.g. test props) fall back to their id.
+        if (string.IsNullOrEmpty(hoverName)) hoverName = ItemInfo.Fetch(itemID)?.displayName ?? itemID;
+        if (canBePickedUp && string.IsNullOrEmpty(hoverText)) hoverText = "Press F to pick up!";
         // Items with interaction tags report touches so TagInteractions can react (Box3D then signals both bodies
         // of a contact). Material-only tags don't need it: impact sounds come from the world's hit events.
         if (tags != null && TagInteractions.HasRulesFor(tags))

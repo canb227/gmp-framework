@@ -1,7 +1,7 @@
 """
 Puzzle-room machines and fixtures for the museum's Puzzle Rooms wing. Frame as the other families: Blender Z up,
 +Y front (Godot -Z), origin at the anchor cell centre with the floor at z = -1 unless noted. The colliders in
-tools/structures/scenes_rooms.py (and place_museum.py for the moving floors) are built from the same numbers.
+the room scenes (and PuzzleRooms.tscn for the moving floors) use the same numbers.
 
   turntable.glb          Carousel floor: 9 m radius disc, origin at its axis, top face at z = +0.4
   sweep_arm.glb          Carousel machine: pylon + boom holding a rubber blade 4 cm over the turntable,

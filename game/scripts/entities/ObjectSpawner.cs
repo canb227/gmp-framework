@@ -3,12 +3,12 @@ using System;
 
 /// <summary>
 /// Level prop that spawns items, each picked at random from <see cref="itemWeights"/> in proportion to its
-/// weight, at its position plus a little random jitter. <see cref="BasicButton"/> presses call
-/// <see cref="SpawnOnce"/>; a <see cref="Lever"/> sets <see cref="spawning"/>, which spawns one item every
-/// <see cref="spawnInterval"/> seconds while on. Controls change these on every peer (host-arbitrated), but
-/// only the host actually spawns, so each item is created once for everyone.
+/// weight, at its position plus a little random jitter. As a <see cref="Triggerable"/> it spawns one item when
+/// switched on, then one every <see cref="spawnInterval"/> seconds while it stays on: a push button's pulse gives
+/// one item, a lever a stream. Activators switch it on every peer, but only its authority (the host, for a level
+/// prop) actually spawns, so each item is created once for everyone.
 /// </summary>
-public partial class ObjectSpawner : Node3D
+public partial class ObjectSpawner : GMPONode3D, Triggerable
 {
     /// <summary>Item ids to spawn and their relative weights.</summary>
     [Export] public Godot.Collections.Dictionary<string, float> itemWeights = new();
@@ -17,20 +17,33 @@ public partial class ObjectSpawner : Node3D
     /// <summary>Items appear up to this far (m) from the spawner on each axis, so a stream doesn't stack up.</summary>
     [Export] public float spawnJitter = 0.5f;
 
-    /// <summary>Whether items keep spawning (set on every peer by a lever).</summary>
+    /// <summary>Whether items keep spawning (set on every peer by its activators).</summary>
     public bool spawning;
-    /// <summary>Items this peer has spawned (host only; used by the headless multiplayer test).</summary>
+    /// <summary>Items this peer has spawned (authority only; used by the headless multiplayer test).</summary>
     public int spawnedCount;
 
     double untilNextSpawn;
 
+    public ObjectSpawner()
+    {
+        priority = -1; // never sends state updates
+    }
+
+    public override byte[] GenerateStateUpdate() => null;
+
+    public void OnTrigger(bool active)
+    {
+        if (active && !spawning)
+        {
+            SpawnOnce();
+            untilNextSpawn = spawnInterval;
+        }
+        spawning = active;
+    }
+
     public override void _Process(double delta)
     {
-        if (!spawning || !Lobby.isHost)
-        {
-            untilNextSpawn = 0; // the first item comes straight away when switched on
-            return;
-        }
+        if (!spawning || authority != Lobby.selfPeerID) return;
         untilNextSpawn -= delta;
         if (untilNextSpawn <= 0)
         {
@@ -39,10 +52,10 @@ public partial class ObjectSpawner : Node3D
         }
     }
 
-    /// <summary>Spawns one item. Only the host spawns; elsewhere this does nothing.</summary>
+    /// <summary>Spawns one item. Only the authority spawns; elsewhere this does nothing.</summary>
     public void SpawnOnce()
     {
-        if (!Lobby.isHost) return;
+        if (authority != Lobby.selfPeerID) return;
         string itemID = ItemSpawner.PickWeighted(itemWeights);
         if (itemID == null) return;
         Vector3 jitter = new Vector3(Random.Shared.NextSingle(), Random.Shared.NextSingle(), Random.Shared.NextSingle()) * 2 - Vector3.One;

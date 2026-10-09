@@ -171,13 +171,13 @@ public partial class InventoryUI : Control
         inventory.InventoryChanged -= RefreshAllSlots;
     }
 
-    /// <summary>The crosshair labels: the target's name and the prompt below it. Null hides a line.</summary>
+    /// <summary>The crosshair labels: the target's name and the prompt below it. Null or empty hides a line.</summary>
     public void SetHoverInfo(string name, string prompt)
     {
-        hoverInfoName.Visible = name != null;
-        if (name != null) hoverInfoName.Text = name;
-        hoverInfoBelow.Visible = prompt != null;
-        if (prompt != null) hoverInfoBelow.Text = prompt;
+        hoverInfoName.Visible = !string.IsNullOrEmpty(name);
+        if (hoverInfoName.Visible) hoverInfoName.Text = name;
+        hoverInfoBelow.Visible = !string.IsNullOrEmpty(prompt);
+        if (hoverInfoBelow.Visible) hoverInfoBelow.Text = prompt;
     }
 
     void RefreshAllSlots()

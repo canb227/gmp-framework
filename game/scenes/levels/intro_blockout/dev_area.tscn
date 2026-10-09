@@ -395,7 +395,6 @@ itemID = "test"
 canBePickTarget = true
 canBeGrabbed = true
 canBeInteractedWith = true
-interactionText = "shove aside!"
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff/StartingScrap/Box3DBody" unique_id=1857490159]
 transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, -0.045993805, 0, 0)

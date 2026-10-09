@@ -3,7 +3,7 @@ Decorative props for the facility's lower level: the vast, dilapidated, overgrow
 factories under the test facility. Non-functional; some carry a looping "idle-loop" animation.
 
 Frame: Blender Z up, fronts (screens, doors, open sides) face -Y (Godot +Z), origin on the FLOOR at the prop's footprint centre (z = 0 is the ground; unlike
-the grid structures, whose origin is a cell centre). The decor scenes (tools/decor/gen_decor.py) give the solid
+the grid structures, whose origin is a cell centre). The decor scenes give the solid
 ones a bounding-box collider.
 
 Ruin props (a few metres):

@@ -20,8 +20,7 @@ public static class TagInteractions
         { (ItemTags.HOT, ItemTags.COLD), (self, other) => temperatureContacts++ },
         { (ItemTags.COLD, ItemTags.HOT), (self, other) => temperatureContacts++ },
 
-        // Resource behaviours (design stubs: they log the intended effect; see tools/items/gen_items.py for the
-        // gameplay each one is for). Each reaction runs on the item it changes.
+        // Resource behaviours (design stubs: they log the intended effect). Each reaction runs on the item it changes.
         { (ItemTags.FUEL, ItemTags.HOT), (self, other) => ReportReaction(self, other, "ignites: starts burning and becomes HOT") },
         { (ItemTags.VOLATILE, ItemTags.HOT), (self, other) => ReportReaction(self, other, "detonates: blast impulse to neighbours, destroyed") },
         { (ItemTags.VOLATILE, ItemTags.CHARGED), (self, other) => ReportReaction(self, other, "sparked: detonates") },

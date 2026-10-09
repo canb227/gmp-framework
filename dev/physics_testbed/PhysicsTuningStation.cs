@@ -17,7 +17,7 @@ using System.Linq;
 /// to its own copy (so they still hold if a player grabs it and becomes its authority). Stats are measured on the
 /// host (it runs the arm, smelter and void) and broadcast once a second.
 /// </summary>
-public partial class PhysicsTuningStation : Node3D
+public partial class PhysicsTuningStation : Node3D, Triggerable
 {
     [Export] public ScrapArm arm;
     [Export] public BasicSmelter smelter;
@@ -112,12 +112,11 @@ public partial class PhysicsTuningStation : Node3D
         if (arm != null)
         {
             arm.ItemSpawned += OnArmSpawned;
-            arm.running = lever?.pulled ?? false;
+            arm.running = lever?.active ?? false;
         }
         if (lever != null)
         {
-            lever.displayName = $"{title} spawner";
-            lever.Toggled += OnLeverToggled;
+            lever.hoverName = $"{title} spawner";
         }
         if (smelter != null)
         {
@@ -134,7 +133,6 @@ public partial class PhysicsTuningStation : Node3D
     {
         all.Remove(this);
         if (arm != null) arm.ItemSpawned -= OnArmSpawned;
-        if (lever != null) lever.Toggled -= OnLeverToggled;
         if (smelter != null) smelter.Consumed -= OnSmelterConsumed;
         if (openPanel?.station == this)
         {
@@ -399,8 +397,8 @@ public partial class PhysicsTuningStation : Node3D
         }
     }
 
-    // Every peer: the lever decides whether the arm runs.
-    void OnLeverToggled(bool pulled)
+    // Every peer: the lever (whose target this is) decides whether the arm runs.
+    public void OnTrigger(bool pulled)
     {
         if (arm != null)
         {

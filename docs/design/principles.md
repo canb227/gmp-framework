@@ -25,7 +25,7 @@ grounds out, cracks and decays), and those are the late-game puzzles.
 
 ## 2. Spread difficulty deliberately (1–5)
 
-Rate every item (see `gen_items.py`, field `difficulty`) and keep a spread. Around half should be 1–2 (just
+Rate every item and keep a spread. Around half should be 1–2 (just
 move it). Some should be 3 (one design constraint, e.g. no drops). A few should be 4–5 (several constraints
 that interact). Colour the display by difficulty so players read the curve at a glance.
 

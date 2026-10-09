@@ -107,7 +107,8 @@ billboard = 1
 font_size = 44
 outline_size = 10
 
-[node name="SpawnLever" parent="Station" instance=ExtResource("11_lever")]
+[node name="SpawnLever" parent="Station" node_paths=PackedStringArray("targets") instance=ExtResource("11_lever")]
+targets = [NodePath("..")]
 position = Vector3(3.3, 0.8, 1.2)
 
 [node name="LeverLabel" type="Label3D" parent="Station"]

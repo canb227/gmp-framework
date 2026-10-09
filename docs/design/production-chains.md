@@ -55,11 +55,11 @@ toolkits.
 
 ## Implementation checklist
 
-- Items: add rows to `ITEMS` in `tools/items/gen_items.py` (physics, tags, difficulty, source, behaviour,
-  challenge). Add models to `build_items.py` (`PIECES_SPEC`), then run `run.py build items`,
-  `run.py icons items --only ...` and `gen_items.py`.
+- Items: add models to `build_items.py` (`PIECES_SPEC`), then run `run.py build items` and
+  `run.py icons items --only ...`. Copy an existing item's definition (`game/definitions/`) and world scene
+  (`game/scenes/items/world/`) and edit them in Godot.
 - Tags: append to `ItemTags.cs` only (the values are stored in scenes). Add pair rules to `TagInteractions.cs`
   (they log until implemented).
-- Machines: models in a family under `game/assets/models/machines/...`, scenes in `tools/structures/scenes_*.py`
-  (register them in `gen_scenes.py`), then run the collider check.
+- Machines: models in a family under `game/assets/models/machines/...`, scenes in `game/scenes/structures/`.
+  Keep colliders inside the structure's cells.
 - Room: see puzzle-rooms.md.

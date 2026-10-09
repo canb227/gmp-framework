@@ -39,6 +39,7 @@ height = 0.18
 body_type = 0
 box_size = Vector3(0.6, 1.6, 0.9)
 script = ExtResource("1_lever")
+toggle = true
 handle = NodePath("Pivot")
 
 [node name="Base" type="MeshInstance3D" parent="."]

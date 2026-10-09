@@ -186,8 +186,8 @@ public partial class LobbyDebug : Control
         {
             _levelSelect.AddItem(item.levelName);
         }
-        _levelSelect.Select(3);
-        _levelSelect_ItemSelected(3);
+        _levelSelect.Select(2);
+        _levelSelect_ItemSelected(2);
         // Item order matches the StarterItems enum.
         _starterItemsSelect.AddItem("None");
         _starterItemsSelect.AddItem("Only single magnet rod");
@@ -278,13 +278,13 @@ public partial class LobbyDebug : Control
             bool buildOk = buildState == "1:1->1:1" && _snapOk && collisionOk;
             ulong claimAuthority = GameWorld.syncedObjs.TryGetValue(TestCubeId, out GMPObject cube) ? cube.authority : 0;
             bool claimOk = claimAuthority != 0 && claimAuthority != Lobby.hostID && Lobby.members.ContainsKey(claimAuthority);
-            BasicButton button = FindTestButton();
-            ObjectSpawner spawner = button?.targetObjectSpawner.FirstOrDefault();
-            Lever lever = FindTestLever();
+            Activator button = FindTestButton();
+            ObjectSpawner spawner = button?.targets.OfType<ObjectSpawner>().FirstOrDefault();
+            Activator lever = FindTestLever();
             // Every peer agrees on 2 presses and 2 lever flips (pulled, then pushed back: spawner off). Host only: each
             // press spawned exactly one item, and the lever spawned a stream (0.5 s apart) for its ~2 s, then stopped.
             string buttonState = button == null || lever == null ? "missing"
-                : $"{button.acceptedPresses}:lever{lever.acceptedToggles}:{lever.pulled}:{spawner?.spawning}";
+                : $"{button.acceptedActivations}:lever{lever.acceptedActivations}:{lever.active}:{spawner?.spawning}";
             int leverStream = _leverSpawned - _buttonSpawned;
             // Host only, reported but not required: how much ore rode the spawner room's line into its void. Big ore
             // (a rolling sphere) can stall on the slope or bounce off the start belt, which is left for later.
@@ -788,7 +788,7 @@ public partial class LobbyDebug : Control
     // 11.0 host notes the total, which must not grow afterwards.
     private void RunLeverScenario(double t)
     {
-        ObjectSpawner spawner = FindTestButton()?.targetObjectSpawner.FirstOrDefault();
+        ObjectSpawner spawner = FindTestButton()?.targets.OfType<ObjectSpawner>().FirstOrDefault();
         if (_leverSubStep == 0 && t >= 5.0)
         {
             _leverSubStep++;
@@ -798,12 +798,12 @@ public partial class LobbyDebug : Control
         {
             _leverSubStep++;
             bool firstJoiner = !Lobby.isHost && Lobby.selfPeerID == Lobby.members.Keys.Where(k => k != Lobby.hostID).Min();
-            if (firstJoiner) FindTestLever()?.OnPressed();
+            if (firstJoiner) FindTestLever()?.onInteract(Lobby.selfPeerID);
         }
         else if (_leverSubStep == 2 && t >= 10.0)
         {
             _leverSubStep++;
-            if (Lobby.isHost) FindTestLever()?.OnPressed();
+            if (Lobby.isHost) FindTestLever()?.onInteract(Lobby.selfPeerID);
         }
         else if (_leverSubStep == 3 && t >= 11.0)
         {
@@ -1073,7 +1073,7 @@ public partial class LobbyDebug : Control
         else if (_scenarioStep == 1 && t >= 2.0)
         {
             _scenarioStep++;
-            FindTestButton()?.OnPressed();
+            FindTestButton()?.onInteract(Lobby.selfPeerID);
         }
         else if (_scenarioStep == 2 && t >= 3.0)
         {
@@ -1085,7 +1085,7 @@ public partial class LobbyDebug : Control
         {
             _scenarioStep++;
             if (Lobby.isHost)
-                FindTestButton()?.OnPressed();
+                FindTestButton()?.onInteract(Lobby.selfPeerID);
         }
         else if (_scenarioStep == 4 && t >= 5.0)
         {
@@ -1198,8 +1198,8 @@ public partial class LobbyDebug : Control
         return false;
     }
 
-    private static Lever FindTestLever() => GameWorld.b3droot?.FindChild("SpawnLever", true, false) as Lever;
-    private static BasicButton FindTestButton() => GameWorld.b3droot?.FindChild("Button", true, false) as BasicButton;
+    private static Activator FindTestLever() => GameWorld.b3droot?.FindChild("SpawnLever", true, false) as Activator;
+    private static Activator FindTestButton() => GameWorld.b3droot?.FindChild("Button", true, false) as Activator;
 
     private void AutoChat()
     {

@@ -3,8 +3,8 @@ using Godot;
 /// <summary>
 /// A floor conveyor that shapes itself to the belts feeding it. It always carries items out through its front; what
 /// changes is where they get on. Its scene holds one form per <see cref="Shape"/>: the straight, fed from behind, and
-/// the two turns, fed from the left or right side. Each form is a static sub-body with its own model, belt and walls
-/// (tools/structures/scenes_conveyors.py), and only the current one is enabled and visible: Box3D ignores shape nodes
+/// the two turns, fed from the left or right side. Each form is a static sub-body with its own model, belt and walls,
+/// and only the current one is enabled and visible: Box3D ignores shape nodes
 /// added or removed at runtime, so a whole sub-body is switched instead.
 /// <para>
 /// The build grid picks the form (BuildGrid.BeltShapes.cs) from the output ports that meet its input ports: fed from

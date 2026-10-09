@@ -452,14 +452,14 @@ mesh = SubResource("BoxMesh_pet1e")
 [node name="SpawnButton" type="Node3D" parent="ObjectSpawnerDisplay" unique_id=2106932011]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8255463, 1.6260744, 5.36835)
 
-[node name="Button" type="Box3DBody" parent="ObjectSpawnerDisplay/SpawnButton" unique_id=158277334 node_paths=PackedStringArray("animator", "targetObjectSpawner")]
+[node name="Button" type="Box3DBody" parent="ObjectSpawnerDisplay/SpawnButton" unique_id=158277334 node_paths=PackedStringArray("animator", "targets")]
 body_type = 0
 shape_type = 1
 sphere_radius = 0.1
 script = ExtResource("15_aqpx8")
 displayName = "Button"
 animator = NodePath("AnimationPlayer")
-targetObjectSpawner = [NodePath("../../ObjectSpawner")]
+targets = [NodePath("../../ObjectSpawner")]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="ObjectSpawnerDisplay/SpawnButton/Button" unique_id=1650227249]
 libraries/ = SubResource("AnimationLibrary_ju7n5")
@@ -475,10 +475,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8763647, 0)
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ObjectSpawnerDisplay/SpawnButton/ButtonBody" unique_id=979029047]
 mesh = SubResource("BoxMesh_c5vbb")
 
-[node name="SpawnLever" parent="ObjectSpawnerDisplay" unique_id=1709115799 node_paths=PackedStringArray("targetObjectSpawner") instance=ExtResource("sp_lever")]
+[node name="SpawnLever" parent="ObjectSpawnerDisplay" unique_id=1709115799 node_paths=PackedStringArray("targets") instance=ExtResource("sp_lever")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -6.8255463, 0.8, 3.4)
 displayName = "Spawn Lever"
-targetObjectSpawner = [NodePath("../ObjectSpawner")]
+targets = [NodePath("../ObjectSpawner")]
 
 [node name="SpawnerConveyorLine" type="Node3D" parent="ObjectSpawnerDisplay" unique_id=1564043353]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.90613, 0, 0)
