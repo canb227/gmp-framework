@@ -15,6 +15,10 @@ public partial class Console : Node
     {
         LimboConsole.RegisterCommand(new Callable(this,"debugui"));
         LimboConsole.AddArgumentAutocompleteSource("debugui", 0, new Callable(this,"GetDebuguiOptions"));
+        LimboConsole.RegisterCommand(new Callable(this, "save"));
+        LimboConsole.RegisterCommand(new Callable(this, "resync"));
+        LimboConsole.RegisterCommand(new Callable(this, "load"));
+        LimboConsole.AddArgumentAutocompleteSource("load", 0, new Callable(this, "GetSaveNames"));
 
         // Keep debug windows (perf) drawing while the tree is paused, e.g. during world load.
         ProcessMode = ProcessModeEnum.Always;
@@ -37,6 +41,32 @@ public partial class Console : Node
         GraphicsDebug.Process(this, delta);
         ItemsDebug.Process(this, delta);
         QuestsDebug.Process();
+    }
+
+    // ---- saves (host only; see GameWorld.Resync.cs) ----
+
+    public void save()
+    {
+        string name = GameWorld.SaveToFile();
+        if (name != null) LimboConsole.Info($"Saved {name}");
+        else LimboConsole.Error("Not saved: only the host can save, in a running game.");
+    }
+
+    public void resync()
+    {
+        if (!GameWorld.Resync()) LimboConsole.Error("Can't resync now: host only, in a running game, one at a time.");
+    }
+
+    public void load(string name)
+    {
+        if (!GameWorld.LoadFromFile(name)) LimboConsole.Error($"Can't load '{name}': host only, in a running game, and the save must be readable.");
+    }
+
+    public Godot.Collections.Array GetSaveNames()
+    {
+        Godot.Collections.Array names = new();
+        foreach (string name in GameWorld.ListSaves()) names.Add(name);
+        return names;
     }
 
     public void debugui(string which)

@@ -1,6 +1,7 @@
 using Godot;
 using Steamworks;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -124,6 +125,7 @@ public partial class LobbyDebug : Control
     private Button _sendButton;
     private PackedScene _rowScene;
     private OptionButton _levelSelect;
+    private List<string> _saves = new();
     private OptionButton _starterItemsSelect;
     private CheckBox _handGrabCheck;
 
@@ -186,6 +188,12 @@ public partial class LobbyDebug : Control
         {
             _levelSelect.AddItem(item.levelName);
         }
+        // Saves follow the levels: picking one starts from it instead (GameWorld.Resync.cs loads it once all are in).
+        _saves = GameWorld.ListSaves();
+        foreach (string save in _saves)
+        {
+            _levelSelect.AddItem("Save: " + save);
+        }
         _levelSelect.Select(2);
         _levelSelect_ItemSelected(2);
         // Item order matches the StarterItems enum.
@@ -202,7 +210,16 @@ public partial class LobbyDebug : Control
 
     private void _levelSelect_ItemSelected(long index)
     {
-        Lobby.gameInfo.levelIdx = (int)index;
+        int levels = GameResources.LevelsList.Count;
+        if (index < levels)
+        {
+            Lobby.gameInfo.levelIdx = (int)index;
+            Lobby.gameInfo.saveName = null;
+        }
+        else
+        {
+            Lobby.gameInfo.saveName = _saves[(int)index - levels];
+        }
         Lobby.SendGameInfoUpdate();
     }
 

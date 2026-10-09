@@ -148,6 +148,31 @@ public partial class ProgressManager : Node
         QuestStateUpdated?.Invoke();
     }
 
+    // ---- saves -----------------------------------------------------------------
+
+    /// <summary>
+    /// Replaces quest state with a restored save's (see <see cref="GameSave"/>): the completed quests, and each quest in
+    /// progress with its turn-ins. Runs on each restoring peer, all with the host's data.
+    /// </summary>
+    public static void LoadSave(List<string> completed, Dictionary<string, Dictionary<string, int>> progress)
+    {
+        completedQuests.Clear();
+        completedQuests.AddRange(completed);
+        currentQuests.Clear();
+        foreach (var (questID, turnedIn) in progress)
+        {
+            if (!allQuests.TryGetValue(questID, out Quest quest)) continue;
+
+            quest.itemSubmissionProgress.Clear();
+            foreach (var (itemID, count) in turnedIn)
+            {
+                quest.itemSubmissionProgress[itemID] = count;
+            }
+            currentQuests[questID] = quest;
+        }
+        QuestStateUpdated?.Invoke();
+    }
+
     // ---- late joiners -----------------------------------------------------------
 
     // Host: the quest lists, then each quest's progress.

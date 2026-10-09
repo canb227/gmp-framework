@@ -68,7 +68,7 @@ public partial class GameWorld
         if (node is GMPObject rootGmpo)
         {
             // Carry the scene's own "pauseable" setting (Init applies it on every peer).
-            initData.pauseable |= rootGmpo.pauseable;
+            initData.pauseable = rootGmpo.pauseable;
         }
         Dictionary<string, GMPOInitData> childInit = childGMPORegisterGenerator(node, initData);
         node.Free();
@@ -85,8 +85,26 @@ public partial class GameWorld
         _SpawnInternal(node, position, rotation, initData, initState, childInit, parentNode);
     }
 
-    private void _SpawnInternal(Node node, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null, Node parent = null)
+    /// <summary>
+    /// Spawns a scene on this peer only, with the given ids (no RPC). For rebuilding a world every peer agrees on,
+    /// e.g. restoring a save; <paramref name="childStates"/> holds the initState of child GMPObjects by id.
+    /// </summary>
+    public static Node SpawnLocal(string scenePath, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null, Node parent = null, Dictionary<ulong, byte[]> childStates = null)
     {
+        Node node = ResourceLoader.Load<PackedScene>(scenePath).Instantiate();
+        return instance._SpawnInternal(node, position, rotation, initData, initState, childInit, parent, childStates) ? node : null;
+    }
+
+    /// <summary>Adds an instanced scene to the world and registers its GMPObjects. False if it was ignored as a duplicate.</summary>
+    private bool _SpawnInternal(Node node, Vector3 position, Vector3 rotation, GMPOInitData initData, byte[] initState = null, Dictionary<string, GMPOInitData> childInit = null, Node parent = null, Dictionary<ulong, byte[]> childStates = null)
+    {
+        if (node is GMPObject && syncedObjs.ContainsKey(initData.id))
+        {
+            // A spawn this peer already has, e.g. one that reached it both inside a restored save and as the original RPC.
+            Logging.Warn($"Ignored spawn of {node.GetType()} {initData.id}: an object with that id already exists", "GameWorld");
+            node.Free();
+            return false;
+        }
         node.Name = node.GetType().ToString() + initData.id.ToString();
         if (b3droot == null)
         {
@@ -135,13 +153,15 @@ public partial class GameWorld
                 string rel = node.GetPathTo(c);
                 if (!childInit.TryGetValue(rel, out GMPOInitData ci))
                 {
-                    Logging.Warn($"No init data for child GMPObject at '{rel}' under {node}; it will not be synced.", "GameWorld");
+                    // Only a restored save leaves one out: the child was despawned before the save was taken.
+                    c.QueueFree();
                     continue;
                 }
-                gmpoChild.Init(ci, null);
+                gmpoChild.Init(ci, childStates?.GetValueOrDefault(ci.id));
                 syncedObjs.Add(gmpoChild.id, gmpoChild);
             }
         }
+        return true;
     }
 
     /// <summary>Despawns a previously-spawned synced object for every peer via RPC.</summary>

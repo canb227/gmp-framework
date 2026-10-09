@@ -54,9 +54,20 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     /// <summary>True on the peer that controls this player (its authority).</summary>
     public bool isLocal => authority == Lobby.selfPeerID;
 
+    /// <summary>The controlling player's lobby name, shown over the avatar; kept for saves after they leave.</summary>
+    public string playerName { get; private set; } = "";
+
+    public void SetPlayerName(string name)
+    {
+        playerName = name ?? "";
+        playerNameLabel.Text = playerName;
+    }
+
     public override void _Ready()
     {
         base._Ready();
+        // Saved by GameSave as players, not as part of the world.
+        AddToGroup(GameWorld.UnsavedGroup);
         gravity = gravityDirection * gravityMagnitude;
         camera = GetNode<Camera3D>("Camera3D");
         cameraOffset = camera.Position;
@@ -67,7 +78,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     public override void AfterInit()
     {
         playerNameLabel = GetNode<Label3D>("label");
-        playerNameLabel.Text = Lobby.members[controllingPeerID].Name;
+        SetPlayerName(Lobby.members.TryGetValue(controllingPeerID, out PlayerInfo info) ? info.Name : "");
         if (isLocal)
         {
             camera.Current = true;

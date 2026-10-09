@@ -22,6 +22,8 @@ public partial class GameWorld : Node3D
         Lobby.ConnectedToHostEvent += Instance_ConnectedToHostEvent;
         Lobby.LobbyDoneLoadingEvent += Instance_LobbyDoneLoadingEvent;
         Lobby.LobbyDonePreloadingEvent += Instance_LobbyDonePreloadingEvent;
+        Lobby.PeerConnectedEvent += OnPeerLinked;
+        Lobby.PeerDisconnectedEvent += OnPeerUnlinked;
         GetTree().Paused = true;
         // Full (gen2) collections then run in the background instead of stopping the game; gen0/gen1 collections
         // still pause it, so per-frame allocations should stay low. Needs background GC, which is on by default.
@@ -36,6 +38,8 @@ public partial class GameWorld : Node3D
             world.SetScript(GD.Load<Script>("res://gmp/objects/GMPOBox3DWorld.cs"));
             b3droot = (GMPOBox3DWorld)InstanceFromId(worldId);
             b3droot.debugDraw = false;
+            // GameWorld itself runs while paused (it carries the network); physics stops with the tree.
+            b3droot.ProcessMode = ProcessModeEnum.Pausable;
             // Solve each step on Box3D's step thread while the engine renders; results land at the next tick.
             // Any Box3D call (body API, raycasts, queries) waits for an in-flight step, so make them from
             // _PhysicsProcess, where the step has had a whole frame to finish, not from _Process.
@@ -69,6 +73,7 @@ public partial class GameWorld : Node3D
                 System.GC.Collect(0, System.GCCollectionMode.Forced, blocking: true, compacting: false);
             }
         }
+        TryFinishRestore();
         DrawDebugUI();
     }
 
@@ -99,8 +104,14 @@ public partial class GameWorld : Node3D
         // Collect the loading garbage now, while the loading screen is still up, so play starts with a clean heap
         // instead of paying for it in the first collection mid-game.
         System.GC.Collect(System.GC.MaxGeneration, System.GCCollectionMode.Forced, blocking: true, compacting: true);
-        instance.GetTree().Paused = false;
+        // Stay paused if the host already froze everyone (loading a save can start before this peer finished).
+        instance.GetTree().Paused = frozenSyncId != 0;
         started = true;
+        // Started from a save (chosen in the lobby): the host loads it into everyone now that all peers are in.
+        if (Lobby.isHost && !string.IsNullOrEmpty(Lobby.gameInfo.saveName))
+        {
+            LoadFromFile(Lobby.gameInfo.saveName);
+        }
     }
 
     private static void Instance_ConnectedToHostEvent(ulong HostID)
@@ -129,10 +140,31 @@ public partial class GameWorld : Node3D
     /// </summary>
     public static void ResetSession()
     {
-        foreach (Node root in spawnedRoots)
+        ClearWorld();
+        ResetResync();
+        tickNum = 0;
+        started = false;
+        maxTickSize = baseMaxTickSize;
+        if (instance != null)
         {
+            instance.GetTree().Paused = true;
+        }
+    }
+
+    /// <summary>
+    /// Frees every spawned root and clears the registries and pending sync data, leaving the network alone. Roots
+    /// leave the tree at once (and are freed later), so a restore can respawn the same names in the same frame.
+    /// </summary>
+    public static void ClearWorld()
+    {
+        // Newest first: a root spawned under another root goes before its parent, and removing a parent's last
+        // child is cheap.
+        for (int i = spawnedRoots.Count - 1; i >= 0; i--)
+        {
+            Node root = spawnedRoots[i];
             if (IsInstanceValid(root))
             {
+                root.GetParent()?.RemoveChild(root);
                 root.QueueFree();
             }
         }
@@ -141,12 +173,5 @@ public partial class GameWorld : Node3D
         heldBy.Clear();
         BuildGrid.ResetSession();
         ResetStateSync();
-        tickNum = 0;
-        started = false;
-        maxTickSize = baseMaxTickSize;
-        if (instance != null)
-        {
-            instance.GetTree().Paused = true;
-        }
     }
 }

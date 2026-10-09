@@ -34,6 +34,13 @@ public partial class Lever : GMPOActivator
         if (handle != null) handle.RotationDegrees = new Vector3(pushedAngle, 0, 0);
     }
 
+    // A loaded lever is already in place: no swing.
+    public override void LoadState(byte[] state)
+    {
+        base.LoadState(state);
+        if (handle != null) handle.RotationDegrees = new Vector3(active ? pulledAngle : pushedAngle, 0, 0);
+    }
+
     public override void OnActivated()
     {
         if (handle == null) return;

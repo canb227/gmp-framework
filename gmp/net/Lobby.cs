@@ -334,6 +334,12 @@ public partial class Lobby : Node
         LobbyMembersChangedEvent?.Invoke();
     }
 
+    /// <summary>A peer that joined a running game has been sent the world (see GameWorld.Resync.cs): start it like a finished load.</summary>
+    public static void FinishJoining()
+    {
+        LobbyDoneLoadingEvent?.Invoke();
+    }
+
     public static void SendStartGame()
     {
         Logging.Log($"Host is starting the game", "Lobby");

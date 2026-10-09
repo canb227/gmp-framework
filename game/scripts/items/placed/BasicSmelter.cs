@@ -1,4 +1,5 @@
 using Godot;
+using PolyType;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,14 @@ using System.Linq;
 /// its own authority, so in that race it could be both kept and ground.
 /// </para>
 /// </summary>
+/// <summary>What a save keeps of a <see cref="BasicSmelter"/>: the item it was part way through (its input is already gone).</summary>
+[GenerateShape]
+public partial record struct SmelterSave
+{
+    public string itemInSmelter;
+    public double processTimeRemaining;
+}
+
 public partial class BasicSmelter : Structure
 {
     /// <summary>Seconds to grind one input item; queued items are ground one after another.</summary>
@@ -26,6 +35,19 @@ public partial class BasicSmelter : Structure
 
     public bool currentlyProcessing = false;
     public string itemInSmelter;
+
+    public override byte[] SaveState()
+    {
+        return currentlyProcessing ? GMPObject.serializer.Serialize(new SmelterSave { itemInSmelter = itemInSmelter, processTimeRemaining = processTimeRemaining }) : null;
+    }
+
+    public override void LoadState(byte[] state)
+    {
+        SmelterSave s = GMPObject.serializer.Deserialize<SmelterSave>(state);
+        currentlyProcessing = true;
+        itemInSmelter = s.itemInSmelter;
+        processTimeRemaining = s.processTimeRemaining;
+    }
 
     public override void _PhysicsProcess(double delta)
     {

@@ -1,4 +1,12 @@
 using Godot;
+using PolyType;
+
+/// <summary>What a save keeps of a <see cref="DefaultDroppedBox"/> beyond its transform.</summary>
+[GenerateShape]
+public partial record struct DroppedBoxSave
+{
+    public string itemID;
+}
 
 public partial class DefaultDroppedBox : PhysicalFactoryItem
 {
@@ -26,6 +34,17 @@ public partial class DefaultDroppedBox : PhysicalFactoryItem
         {
             ApplyItem(itemID);
         }
+    }
+
+    // The item a box stands for is set by RPC after it spawns, so a save keeps it.
+    public override byte[] SaveState()
+    {
+        return string.IsNullOrEmpty(itemID) ? null : GMPObject.serializer.Serialize(new DroppedBoxSave { itemID = itemID });
+    }
+
+    public override void LoadState(byte[] state)
+    {
+        ApplyItem(GMPObject.serializer.Deserialize<DroppedBoxSave>(state).itemID);
     }
 
     void ApplyItem(string itemID)

@@ -1,5 +1,13 @@
 using Godot;
+using PolyType;
 using System;
+
+/// <summary>What a save keeps of an <see cref="ObjectSpawner"/>: that it was left spawning (saved only then).</summary>
+[GenerateShape]
+public partial record struct ObjectSpawnerSave
+{
+    public bool spawning;
+}
 
 /// <summary>
 /// Level prop that spawns items, each picked at random from <see cref="itemWeights"/> in proportion to its
@@ -30,6 +38,17 @@ public partial class ObjectSpawner : GMPONode3D, Triggerable
     }
 
     public override byte[] GenerateStateUpdate() => null;
+
+    public override byte[] SaveState()
+    {
+        return spawning ? GMPObject.serializer.Serialize(new ObjectSpawnerSave { spawning = true }) : null;
+    }
+
+    public override void LoadState(byte[] state)
+    {
+        spawning = GMPObject.serializer.Deserialize<ObjectSpawnerSave>(state).spawning;
+        untilNextSpawn = spawnInterval;
+    }
 
     public void OnTrigger(bool active)
     {

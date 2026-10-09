@@ -13,6 +13,10 @@ Where things live:
 - Structure scenes: `game/scenes/structures/`.
 - Items: definitions (physics, tags, text) in `game/definitions/`, world scenes in `game/scenes/items/world/`.
 - Archived (hidden from Godot, see `archive/README.md`): the Object Museum level and its wings.
+- Saves, mid-game joins and desync recovery: `gmp/sync/GameWorld.Save.cs` (world snapshot, files) and
+  `GameWorld.Resync.cs` (freeze protocol), `game/scripts/core/GameSave.cs` (players, shop, quests). A GMPObject
+  with runtime state beyond its regular state update (timers, contents, toggles) must override `SaveState` and
+  `LoadState`, or a load resets it. GMPObjects must never be reparented.
 
 No Godot editor or .NET is available in the cloud container, so C# and scenes can't be run there. Say so
 when you hand work off.

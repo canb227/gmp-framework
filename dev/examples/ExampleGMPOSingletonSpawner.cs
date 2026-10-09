@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 public partial class ExampleGMPOSingletonSpawner : Node, GMPObject
 {
     public int priority { get; set; }
-    public bool pauseable { get; set; }
+    public bool pauseable { get; set; } = true;
     public ulong id { get; set; }
     public ulong authority { get; set; }
     public ulong owner { get; set; }

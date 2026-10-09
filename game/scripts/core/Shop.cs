@@ -180,6 +180,32 @@ public partial class Shop : Node
         }
     }
 
+    // ---- saves ------------------------------------------------------------------
+
+    /// <summary>
+    /// Replaces stock and resources with a restored save's (see <see cref="GameSave"/>). Runs on each restoring peer,
+    /// all with the host's data, so they stay in agreement.
+    /// </summary>
+    public static void LoadSave(List<string> savedStock, Dictionary<string, int> savedResources)
+    {
+        stock.Clear();
+        stock.AddRange(savedStock);
+        StockChanged?.Invoke();
+        foreach (string itemID in resources.Keys.ToList())
+        {
+            if (!savedResources.ContainsKey(itemID))
+            {
+                resources.Remove(itemID);
+                ResourcesChanged?.Invoke(itemID, 0);
+            }
+        }
+        foreach (var (itemID, amount) in savedResources)
+        {
+            resources[itemID] = amount;
+            ResourcesChanged?.Invoke(itemID, amount);
+        }
+    }
+
     // ---- late joiners ---------------------------------------------------------
 
     // Host: the same messages that built this state, replayed to the new peer.

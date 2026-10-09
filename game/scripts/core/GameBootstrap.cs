@@ -15,11 +15,20 @@ public static class GameBootstrap
     ];
     public const int StartingBlueprintCount = 99;
 
-    /// <summary>Host spawns the selected level for everyone.</summary>
+    /// <summary>Host spawns the selected level for everyone, unless starting from a save (loaded once all peers are in).</summary>
     public static void Preload(GameInfo gameInfo)
     {
         if (Lobby.isHost)
         {
+            if (!string.IsNullOrEmpty(gameInfo.saveName))
+            {
+                if (GameWorld.ReadSaveFile(gameInfo.saveName) != null)
+                {
+                    return;
+                }
+                Logging.Error($"Can't read save {gameInfo.saveName}; starting the level instead", "GameBootstrap");
+                gameInfo.saveName = null;
+            }
             string levelPath = GameResources.LevelsList[gameInfo.levelIdx].levelPath;
             GameWorld.SpawnScene(levelPath);
         }
@@ -27,6 +36,12 @@ public static class GameBootstrap
 
     /// <summary>Each peer spawns its own player and seeds its starting inventory.</summary>
     public static void Init()
+    {
+        SpawnLocalPlayer();
+    }
+
+    /// <summary>Spawns this peer's player for everyone, with the starter items from the game settings.</summary>
+    public static void SpawnLocalPlayer()
     {
         PlayerSync init = new PlayerSync();
         init.controllingPeerID = Lobby.selfPeerID;

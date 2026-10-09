@@ -53,7 +53,17 @@ public partial class UIManager : Node
         screenLayer = AddLayer("Screens", ScreenLayer);
         ReadyHud();
         ReadyNotifications();
+        GameWorld.FrozenChanged += OnFrozenChanged;
         CallDeferred(nameof(ShowFrontEndIfBooting));
+    }
+
+    static HudToast syncingToast;
+
+    /// <summary>A notice while the world is frozen for a join, resync or load (see GameWorld.Resync.cs).</summary>
+    static void OnFrozenChanged(bool frozen)
+    {
+        if (IsInstanceValid(syncingToast)) syncingToast.Dismiss(true);
+        syncingToast = frozen ? ShowText("Syncing world...", HudAnchor.Center, 0f) : null;
     }
 
     CanvasLayer AddLayer(string name, int layer)

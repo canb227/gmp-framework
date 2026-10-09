@@ -1,4 +1,12 @@
 using Godot;
+using PolyType;
+
+/// <summary>What a save keeps of a <see cref="GMPOActivator"/>: that a toggle was left on (saved only then).</summary>
+[GenerateShape]
+public partial record struct ActivatorSave
+{
+    public bool active;
+}
 
 /// <summary>
 /// Base for node <see cref="Activator"/>s (buttons, levers): declares the activator's exported settings and state,
@@ -50,6 +58,19 @@ public partial class GMPOActivator : GMPOBox3DBody, Activator
     public override void OnAuthorityChanged() { }
 
     public override byte[] GenerateStateUpdate() => null;
+
+    // Only this activator's own state: its targets save theirs, so nothing is re-triggered (that could spawn mid-restore).
+    // Nor is OnActivated called: a load restores the state, it doesn't press anything. Subclasses that show their
+    // state (a lever's handle) override LoadState to snap to it.
+    public override byte[] SaveState()
+    {
+        return toggle && active ? GMPObject.serializer.Serialize(new ActivatorSave { active = true }) : null;
+    }
+
+    public override void LoadState(byte[] state)
+    {
+        active = GMPObject.serializer.Deserialize<ActivatorSave>(state).active;
+    }
 
     /// <summary>Sets <see cref="GMPOBox3DBody.hoverText"/> for the current state.</summary>
     protected virtual void UpdateHoverText()

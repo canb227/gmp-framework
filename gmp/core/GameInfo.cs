@@ -30,6 +30,8 @@ public partial record GameInfo
     public StarterItems starterItems = StarterItems.All;
     /// <summary>Players can grab items with an empty hand (A/B test against the single-item magnet rod).</summary>
     public bool emptyHandGrab = true;
+    /// <summary>A save file name in <c>GameWorld.SaveDir</c> to start from instead of the level; empty starts fresh.</summary>
+    public string saveName;
     public Dictionary<ulong, PlayerInfo> Players;
     public ulong tick;
 }

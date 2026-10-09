@@ -79,7 +79,9 @@ public partial class GameWorld
 
     public override void _PhysicsProcess(double delta)
     {
-        if (!started)
+        // Paused (loading, or frozen for a resync): the world isn't moving, so there is nothing to send or apply.
+        // Received states wait in pendingStates; a restore clears them.
+        if (!started || GetTree().Paused)
         {
             return;
         }
