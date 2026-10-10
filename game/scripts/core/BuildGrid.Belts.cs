@@ -71,8 +71,8 @@ public partial class BuildGrid
     /// <summary>Takes <paramref name="structure"/>'s belts out of their lines (from <see cref="Structure._ExitTree"/>).</summary>
     public static void UnregisterBelts(Structure structure) => RemoveBelts(structure);
 
-    // Registers the structure's belts (only the current form's, for a conveyor) and returns them, or null if it has none.
-    private static List<BeltEntry> AddBelts(Structure structure)
+    // Registers the structure's belts (only the current form's, for a conveyor).
+    private static void AddBelts(Structure structure)
     {
         List<BeltEntry> entries = null;
         ConveyorBelt only = (structure as ConveyorStructure)?.activeBelt;
@@ -102,7 +102,6 @@ public partial class BuildGrid
         {
             beltsByStructure[structure] = entries;
         }
-        return entries;
     }
 
     // Unregisters the structure's belts, rebuilding the rest of their lines, and returns them, or null if it had none.

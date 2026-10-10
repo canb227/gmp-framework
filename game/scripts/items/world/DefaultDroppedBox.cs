@@ -1,6 +1,12 @@
 using Godot;
 using PolyType;
-using System;
+
+/// <summary>What a save keeps of a <see cref="DefaultDroppedBox"/> beyond its transform.</summary>
+[GenerateShape]
+public partial record struct DroppedBoxSave
+{
+    public string itemID;
+}
 
 public partial class DefaultDroppedBox : PhysicalFactoryItem
 {
@@ -10,20 +16,8 @@ public partial class DefaultDroppedBox : PhysicalFactoryItem
     [Export]
     public CompressedTexture2D icon = null;
 
-
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-    }
-
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
-    {
-    }
-
     public void boxInit(string itemID)
     {
-
         RPCManager.RPC(this, nameof(_boxInit), [itemID]);
     }
     [RPC]
@@ -42,11 +36,21 @@ public partial class DefaultDroppedBox : PhysicalFactoryItem
         }
     }
 
+    // The item a box stands for is set by RPC after it spawns, so a save keeps it.
+    public override byte[] SaveState()
+    {
+        return string.IsNullOrEmpty(itemID) ? null : GMPObject.serializer.Serialize(new DroppedBoxSave { itemID = itemID });
+    }
+
+    public override void LoadState(byte[] state)
+    {
+        ApplyItem(GMPObject.serializer.Deserialize<DroppedBoxSave>(state).itemID);
+    }
+
     void ApplyItem(string itemID)
     {
         this.itemID = itemID;
         ItemInfo item = ItemInfo.Fetch(itemID);
-
         this.labelName = item.displayName;
         this.icon = item.icon;
         GetNode<Label3D>("%L1").Text = labelName;

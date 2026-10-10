@@ -1,0 +1,76 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://mvvurq2q1heq" path="res://game/assets/models/conveyors/conveyor_splitter_switch.glb" id="1_r"]
+[ext_resource type="Script" uid="uid://b10te24frnknc" path="res://game/scripts/items/placed/Structure.cs" id="2_r"]
+[ext_resource type="Script" uid="uid://djjc1nh5u0bg" path="res://game/scripts/items/placed/ConveyorBelt.cs" id="3_r"]
+[ext_resource type="Script" uid="uid://dj3nflyr2gxmx" path="res://game/scripts/entities/Lever.cs" id="4_r"]
+
+[node name="ConveyorSplitterSwitch" type="Box3DBody"]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("2_r")
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, 1), Vector3i(1, 0, 1)])
+placementOffset = Vector3(0.5, 0.5, 0.5)
+blueprintItemID = "blueprint_conveyor_splitter_switch"
+tags = Array[int]([5])
+
+[node name="Model" parent="." instance=ExtResource("1_r")]
+
+[node name="Belt" type="Node3D" parent="."]
+script = ExtResource("3_r")
+points = PackedVector3Array(0, -0.85, 1, 0, -0.85, -1)
+visual = NodePath("../Model/Belt")
+width = 1.68
+speed = 2.0
+friction = 0.8
+returnDepth = 0.085
+returnWidth = 1.624
+
+[node name="LipL0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 2)
+friction = 0.1
+user_material_id = 3
+position = Vector3(-0.827, -0.9725, 0)
+
+[node name="LipR0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.03, 0.055, 2)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0.827, -0.9725, 0)
+
+[node name="WallL0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 1)
+friction = 0.1
+user_material_id = 3
+position = Vector3(-0.895, -0.8, 0.5)
+
+[node name="WallR0" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(0.11, 0.4, 1)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0.895, -0.8, 0.5)
+
+[node name="FrontWall" type="Box3DCollisionShape" parent="."]
+box_size = Vector3(1.9, 0.34, 0.07)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0, -0.72, -0.955)
+
+[node name="ArmBody" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+transform = Transform3D(0.83867, 0, 0.54464, 0, 1, 0, -0.54464, 0, 0.83867, 0, -0.85, -0.35)
+
+[node name="Paddle" type="Box3DCollisionShape" parent="ArmBody"]
+box_size = Vector3(1.94, 0.3, 0.06)
+friction = 0.1
+user_material_id = 3
+position = Vector3(0, 0.19, 0)
+
+[node name="LeverBody" type="Box3DBody" parent="." node_paths=PackedStringArray("handle")]
+body_type = 0
+box_size = Vector3(0.45, 0.5, 0.12)
+script = ExtResource("4_r")
+handle = NodePath("../Model/Lever")
+hoverName = "Splitter Switch"
+position = Vector3(0.45, -0.37, -0.95)

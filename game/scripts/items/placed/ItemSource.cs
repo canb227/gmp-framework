@@ -1,10 +1,15 @@
 using Godot;
-using System;
+using PolyType;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
+/// <summary>What a save keeps of an <see cref="ItemSource"/>: how much of each item is left.</summary>
+[GenerateShape]
+public partial record struct ItemSourceSave
+{
+    public Dictionary<string, int> itemCounts;
+}
+
+/// <summary>A stock of items for a <see cref="ScrapArm"/> to take from. A count of -1 means unlimited.</summary>
 public partial class ItemSource : Structure
 {
     [Export]
@@ -16,36 +21,31 @@ public partial class ItemSource : Structure
     [Export]
     public Node3D spawnLocation;
 
-    public void SpawnItem()
+    public override byte[] SaveState()
     {
-        string item = ItemSpawner.PickWeighted(itemWeights);
-        if (itemCounts[item] > 0 || itemCounts[item] == -1)
+        if (itemCounts == null) return null;
+        Dictionary<string, int> counts = new();
+        foreach (var (item, count) in itemCounts)
         {
-            ConsumeOne(item);
-            GameWorld.SpawnScene(ItemInfo.Fetch(item).droppedScene, spawnLocation.GlobalPosition);
+            counts[item] = count;
         }
-        else if (itemCounts[item] == 0)
+        return GMPObject.serializer.Serialize(new ItemSourceSave { itemCounts = counts });
+    }
+
+    public override void LoadState(byte[] state)
+    {
+        foreach (var (item, count) in GMPObject.serializer.Deserialize<ItemSourceSave>(state).itemCounts)
         {
-            //no mor
+            itemCounts[item] = count;
         }
-
-
     }
 
     public string GetItem()
     {
-        //Logging.Log("attmpting get item", "ItemSource");
         string item = ItemSpawner.PickWeighted(itemWeights);
-        if (itemCounts[item] > 0 || itemCounts[item] == -1)
-        {
-            ConsumeOne(item);
-            return item;
-        }
-        else
-        {
-            //no mor
-            return null;
-        }
+        if (itemCounts[item] == 0) return null;
+        ConsumeOne(item);
+        return item;
     }
 
     // A count of -1 means unlimited and is never decremented.

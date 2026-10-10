@@ -24,24 +24,16 @@ public partial class BuildGrid : Node3D
     private const float DrawExtent = 200.0f;
     private const float HighlightRaycastRange = 20.0f;
     private const float HighlightEdgeNudge = 0.001f;
-    // Occupied cells the placement ray enters closer than this are ignored when picking a face to snap to.
-    private const float PlacementMinCellDistance = 1.0f;
 
     private static readonly Dictionary<Vector3I, Structure> cells = new();
+    /// <summary>The level's <see cref="NoBuildVolume"/>s in the tree; any cell one touches can't be built in.</summary>
+    public static readonly List<NoBuildVolume> noBuildVolumes = new();
 
     private MeshInstance3D _meshInstance;
     private ImmediateMesh _immediateMesh;
     private bool _meshBuilt = false;
 
     private MeshInstance3D _highlightMeshInstance;
-
-
-    public static readonly Vector3I[] neighbors8 =
-    {
-    new(-1, 0, -1), new(0, 0, -1), new(1, 0, -1),
-    new(-1, 0,  0),                new(1, 0,  0),
-    new(-1, 0,  1), new(0, 0,  1), new(1, 0,  1),
-};
 
     public override void _Ready()
     {
@@ -88,18 +80,11 @@ public partial class BuildGrid : Node3D
     public override void _Process(double delta)
     {
         UpdateReveal((float)delta);
-        if (enabled)
+        if (enabled && !_meshBuilt)
         {
-            if (!_meshBuilt)
-            {
-                BuildGridMesh();
-            }
-            _meshInstance.Visible = true;
+            BuildGridMesh();
         }
-        else
-        {
-            _meshInstance.Visible = false;
-        }
+        _meshInstance.Visible = enabled;
     }
 
     /// <summary>
@@ -108,23 +93,7 @@ public partial class BuildGrid : Node3D
     /// </summary>
     private void UpdateHighlight()
     {
-        if (highlightLookedAtCell)
-        {
-            UpdateHighlightedCell();
-        }
-        else
-        {
-            _highlightMeshInstance.Visible = false;
-            highlightedCell = null;
-        }
-    }
-
-    public static void Toggle() => enabled = !enabled;
-    public static void ToggleHighlight() => highlightLookedAtCell = !highlightLookedAtCell;
-
-    private void UpdateHighlightedCell()
-    {
-        Camera3D camera = GetViewport().GetCamera3D();
+        Camera3D camera = highlightLookedAtCell ? GetViewport().GetCamera3D() : null;
         if (camera != null && TryGetLookedAtCell(camera, HighlightRaycastRange, out Vector3I cell))
         {
             highlightedCell = cell;
@@ -137,6 +106,9 @@ public partial class BuildGrid : Node3D
             highlightedCell = null;
         }
     }
+
+    public static void Toggle() => enabled = !enabled;
+    public static void ToggleHighlight() => highlightLookedAtCell = !highlightLookedAtCell;
 
     /// <summary>
     /// Raycasts along the camera's view and returns the empty-side cell of the surface it hits: the cell
@@ -450,12 +422,12 @@ public partial class BuildGrid : Node3D
         }
     }
 
-    /// <summary>True if every cell of the footprint is free.</summary>
+    /// <summary>True if every cell of the footprint is free and outside every <see cref="NoBuildVolume"/>.</summary>
     public static bool CanPlace(Vector3I anchor, IEnumerable<Vector3I> offsets, int quarterTurns)
     {
         foreach (Vector3I cell in FootprintCells(anchor, offsets, quarterTurns))
         {
-            if (cells.ContainsKey(cell))
+            if (cells.ContainsKey(cell) || IsNoBuild(cell))
             {
                 return false;
             }
@@ -463,10 +435,23 @@ public partial class BuildGrid : Node3D
         return true;
     }
 
+    /// <summary>True if any <see cref="NoBuildVolume"/> overlaps <paramref name="cell"/>. Sharing only a face doesn't count.</summary>
+    public static bool IsNoBuild(Vector3I cell)
+    {
+        var cellBox = new Aabb((Vector3)cell * CellSize, Vector3.One * CellSize);
+        foreach (NoBuildVolume volume in noBuildVolumes)
+        {
+            if (volume.WorldBox.Intersects(cellBox))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /// <summary>Registers every cell of <paramref name="structure"/>. Fails (registering nothing) if any is taken.</summary>
     public static bool Occupy(Structure structure, out List<Vector3I> placedIn)
     {
-        
         if (!CanPlace(structure.anchor, structure.cellOffsets, structure.quarterTurns))
         {
             placedIn = null;
@@ -498,7 +483,4 @@ public partial class BuildGrid : Node3D
     {
         return cells.TryGetValue(cell, out Structure s) ? s : null;
     }
-
-    /// <summary>Number of occupied cells (used by the headless multiplayer test).</summary>
-    public static int occupiedCellCount => cells.Count;
 }

@@ -35,14 +35,6 @@ public class Inventory
         InventoryChanged?.Invoke();
     }
 
-    public void SetSlot(int index, string itemID, int count)
-    {
-        if (index < 0 || index >= TotalSlots) return;
-        slots[index].itemID = itemID;
-        slots[index].Count = count;
-        InventoryChanged?.Invoke();
-    }
-
     public void ClearSlot(int index)
     {
         if (index < 0 || index >= TotalSlots) return;
@@ -83,7 +75,6 @@ public class Inventory
     public int AddItem(string itemID, int count = 1)
     {
         ItemInfo item = ItemInfo.Fetch(itemID);
-        GD.Print($"loaded {item.itemID} by searching for {itemID}", "Inventory");
         if (item == null || count <= 0) return count;
         int remaining = count;
 
@@ -130,10 +121,25 @@ public class Inventory
         return toRemove;
     }
 
+    /// <summary>How many more of <paramref name="itemID"/> fit: space left in its stacks plus empty slots.</summary>
+    public int RoomFor(string itemID)
+    {
+        ItemInfo item = ItemInfo.Fetch(itemID);
+        if (item == null) return 0;
+        int room = 0;
+        foreach (InventorySlot slot in slots)
+        {
+            if (slot.IsEmpty)
+                room += item.maxStackSize;
+            else if (slot.itemID == itemID)
+                room += Math.Max(0, item.maxStackSize - slot.Count);
+        }
+        return room;
+    }
+
     /// <summary>True if at least one more of <paramref name="itemID"/> fits (a free slot or a stack with space).</summary>
     public bool HasRoomFor(string itemID)
     {
-
         ItemInfo item = ItemInfo.Fetch(itemID);
         if (item == null) return false;
         foreach (InventorySlot slot in slots)
@@ -146,7 +152,7 @@ public class Inventory
 
     public string GetEquippedItem()
     {
-        if (ActiveHotbarSlot == -1 ) return null;
+        if (ActiveHotbarSlot == -1) return null;
         var slot = slots[ActiveHotbarSlot];
         return slot.IsEmpty ? null : slot.itemID;
     }

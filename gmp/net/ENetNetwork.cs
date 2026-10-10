@@ -1,7 +1,6 @@
 using Godot;
 using Godot.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 // Point-to-point transport backed by Godot's built-in low-level ENet
 // (ENetConnection / ENetPacketPeer). It knows nothing about lobby topology: it can
@@ -24,7 +23,7 @@ using System.Linq;
 public class ENetNetwork : Network
 {
     // ENet needs a fixed channel count on both ends of every link. The Channel enum
-    // uses ids up to 15, so 16 channels cover it.
+    // uses ids up to 16; 64 leaves headroom.
     private const int ChannelCount = 64;
     private const int MaxInbound = 32;
     private const Channel DirChannel = Channel.NET_tba; // (2) transport endpoint directory
@@ -52,13 +51,9 @@ public class ENetNetwork : Network
     private readonly System.Collections.Generic.Dictionary<ulong, (string ip, int port)> _endpoints = new();
     private readonly HashSet<ulong> _pendingConnects = new(); // Connect() requests awaiting an endpoint
 
-    public event Network.MessageSent MessageSentEvent;
     public event Network.MessageReceived MessageReceivedEvent;
     public event Network.PeerConnected PeerConnectedEvent;
     public event Network.PeerDisconnected PeerDisconnectedEvent;
-
-    public ulong SelfPeerID => _selfPeerID;
-    public int ListenPort => _listenPort;
 
     public ENetNetwork(ulong selfPeerID, int listenPort, string selfIp = "127.0.0.1")
     {
@@ -84,16 +79,8 @@ public class ENetNetwork : Network
         return Error.Ok;
     }
 
-    // Register how to reach a peerID. Part of the Network contract; Lobby no longer
-    // needs it (endpoints propagate via the directory) but a transport-aware caller
-    // may still seed a mapping directly. Resolves any pending Connect for that peer.
-    public void AddPeerIDToIPMapping(ulong peerID, string ip, int port)
-    {
-        LearnEndpoint(peerID, ip, port);
-    }
-
     // Dial a peer by id. If we already know its endpoint, dial now; otherwise defer
-    // until the directory supplies it (or AddPeerIDToIPMapping seeds it).
+    // until the directory supplies it.
     public Error Connect(ulong peerID)
     {
         if (_byId.ContainsKey(peerID) || peerID == _selfPeerID)
@@ -155,9 +142,8 @@ public class ENetNetwork : Network
 
     public Error Send(ulong peerID, Channel ch, byte[] msg, int SENDFLAGS = Network.k_nSteamNetworkingSend_Reliable)
     {
-        if (peerID == SelfPeerID)
+        if (peerID == _selfPeerID)
         {
-            MessageSentEvent?.Invoke(peerID, ch, msg);
             MessageReceivedEvent?.Invoke(peerID, ch, msg);
             return Error.Ok;
         }
@@ -169,9 +155,7 @@ public class ENetNetwork : Network
         int flags = (SENDFLAGS & Network.k_nSteamNetworkingSend_Reliable) != 0
             ? (int)ENetPacketPeer.FlagReliable
             : 0;
-        Error err = link.Peer.Send((int)ch, msg, flags);
-        MessageSentEvent?.Invoke(peerID, ch, msg);
-        return err;
+        return link.Peer.Send((int)ch, msg, flags);
     }
 
     public Error Broadcast(List<ulong> peerIDs, Channel ch, byte[] msg, int SENDFLAGS = Network.k_nSteamNetworkingSend_Reliable)

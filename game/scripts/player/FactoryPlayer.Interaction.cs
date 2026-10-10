@@ -1,31 +1,21 @@
 using Godot;
-using Godot.Collections;
 
 /// <summary>
-/// FactoryPlayer: looks-at targeting. Raycasts from the camera each physics tick to find the item or
-/// button, lever or structure under the crosshair, shows the hover labels, and handles the "interact" action
+/// FactoryPlayer: looks-at targeting. Raycasts from the camera each physics tick to find the item,
+/// activator (button, lever) or structure under the crosshair, shows the HUD hover labels, and handles the "interact" action
 /// (pick up an item / press a button / flip a lever / deconstruct a structure).
 /// </summary>
 public partial class FactoryPlayer
 {
     [Export] public float pickRange = 5f;
 
-    /// <summary>The PhysicalFactoryItem, BasicButton, Lever or Structure currently under the crosshair, or null.</summary>
-    public Node3D pickTarget { get; private set; }
-
-    Label hoverInfoName;
-    Label hoverInfoBelow;
-
-    void ReadyInteraction()
-    {
-        hoverInfoName = hud.GetNode<Label>("%HoverInfoName");
-        hoverInfoBelow = hud.GetNode<Label>("%HoverInfoBelow");
-    }
+    /// <summary>The body (item, activator, structure...) currently under the crosshair, or null.</summary>
+    public GMPOBox3DBody pickTarget { get; private set; }
 
     void HandleInteractionInput(InputEvent @event)
     {
         if (!@event.IsActionPressed(InputActions.interact)) return;
-        
+
         if (pickTarget is Interactable i)
         {
             Logging.Log($"You just pressed interact on {pickTarget.Name}!", "Player");
@@ -48,60 +38,13 @@ public partial class FactoryPlayer
     void UpdatePickTarget()
     {
         RayHit ray = GameWorld.Raycast(camera.GlobalPosition, camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * pickRange);
-        Node hit = ray.collider;
-
-        if (hit is PhysicalFactoryItem item)
+        // A hit on a structure's belt line or plain child body resolves to the structure.
+        GMPOBox3DBody target = ray.collider as GMPOBox3DBody;
+        if (target is not Interactable && string.IsNullOrEmpty(target?.hoverName) && string.IsNullOrEmpty(target?.hoverText))
         {
-            pickTarget = item;
-            hoverInfoName.Show();
-            // Items without a definition resource (e.g. test props) fall back to their id.
-            hoverInfoName.Text = ItemInfo.Fetch(item.itemID)?.displayName ?? item.itemID;
-            if (item.canBePickedUp)
-            {
-                hoverInfoBelow.Show();
-                hoverInfoBelow.Text = "Press F to " + item.interactionText;
-            }
-            else
-            {
-                hoverInfoBelow.Hide();
-            }
+            target = BuildGrid.FindStructure(ray);
         }
-        else if (hit is BasicButton button)
-        {
-            pickTarget = button;
-            hoverInfoName.Hide();
-            hoverInfoBelow.Show();
-            hoverInfoBelow.Text = "Press F to Activate.";
-        }
-        else if (hit is Lever lever)
-        {
-            pickTarget = lever;
-            hoverInfoName.Show();
-            hoverInfoName.Text = lever.displayName;
-            hoverInfoBelow.Show();
-            hoverInfoBelow.Text = lever.pulled ? "Press F to push." : "Press F to pull.";
-        }
-        else if (hit is TestbedButton testbedButton)
-        {
-            pickTarget = testbedButton;
-            hoverInfoName.Show();
-            hoverInfoName.Text = testbedButton.displayName;
-            hoverInfoBelow.Show();
-            hoverInfoBelow.Text = testbedButton.prompt;
-        }
-        else if (BuildGrid.FindStructure(ray) is Structure structure)
-        {
-            pickTarget = structure;
-            hoverInfoName.Show();
-            hoverInfoName.Text = structure.displayName;
-            hoverInfoBelow.Show();
-            hoverInfoBelow.Text = "Press F to " + structure.interactionText;
-        }
-        else
-        {
-            pickTarget = null;
-            hoverInfoName.Hide();
-            hoverInfoBelow.Hide();
-        }
+        pickTarget = target;
+        UIManager.SetHoverInfo(target?.hoverName, target?.hoverText);
     }
 }

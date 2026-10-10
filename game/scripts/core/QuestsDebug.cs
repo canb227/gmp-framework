@@ -24,8 +24,7 @@ public static class QuestsDebug
         ImGui.SetNextWindowSize(new Vec2(420, 360), ImGuiCond.FirstUseEver);
         ImGui.Begin("debugui quests", ref displayQuestsDebugInfo);
 
-        ProgressManager progress = ProgressManager.instance;
-        if (progress == null)
+        if (ProgressManager.instance == null)
         {
             ImGui.TextDisabled("No ProgressManager.");
             ImGui.End();
@@ -38,17 +37,17 @@ public static class QuestsDebug
 
         if (showAllQuests)
         {
-            RenderAllQuests(progress);
+            RenderAllQuests();
         }
         else
         {
-            RenderCurrentAndCompleted(progress);
+            RenderCurrentAndCompleted();
         }
 
         ImGui.End();
     }
 
-    private static void RenderCurrentAndCompleted(ProgressManager progress)
+    private static void RenderCurrentAndCompleted()
     {
         // Copy: Complete changes currentQuests mid-loop.
         foreach (var (questID, quest) in ProgressManager.currentQuests.ToList())
@@ -56,7 +55,7 @@ public static class QuestsDebug
             ImGui.PushID(questID);
             if (ImGui.CollapsingHeader($"{quest.questName ?? questID}###{questID}", ImGuiTreeNodeFlags.DefaultOpen))
             {
-                RenderQuest(progress, questID, quest, active: true);
+                RenderQuest(questID, quest, active: true);
             }
             ImGui.PopID();
         }
@@ -74,7 +73,7 @@ public static class QuestsDebug
         }
     }
 
-    private static void RenderAllQuests(ProgressManager progress)
+    private static void RenderAllQuests()
     {
         foreach (var (questID, quest) in ProgressManager.allQuests.OrderBy(kv => kv.Key).ToList())
         {
@@ -83,7 +82,7 @@ public static class QuestsDebug
             ImGui.PushID(questID);
             if (ImGui.CollapsingHeader($"{quest.questName ?? questID}  [{status}]###{questID}"))
             {
-                RenderQuest(progress, questID, quest, active);
+                RenderQuest(questID, quest, active);
             }
             ImGui.PopID();
         }
@@ -94,7 +93,7 @@ public static class QuestsDebug
     }
 
     /// <summary>One quest's details; the Complete button only works on <paramref name="active"/> (current) quests.</summary>
-    private static void RenderQuest(ProgressManager progress, string questID, Quest quest, bool active)
+    private static void RenderQuest(string questID, Quest quest, bool active)
     {
         ImGui.Indent();
         ImGui.BeginDisabled(!active);

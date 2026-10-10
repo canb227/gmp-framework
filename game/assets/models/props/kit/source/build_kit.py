@@ -2,7 +2,7 @@
 Level-building kit for the ruined facility: modular pieces on a 4 m module (two 2 m grid cells), in the same
 salvaged-facility look as the structures and the decor props (white panels on dark frames, concrete, rust,
 moss). Origin on the floor at the piece's centre; +Y (Godot -Z) runs along corridors and catwalks. The
-colliders live in tools/decor/gen_decor.py (KIT) and use the same numbers.
+colliders in the kit scenes use the same numbers.
 
   kit_floor, kit_floor_cracked              4x4 m floor slab (top at z 0, 0.3 thick)
   kit_wall, kit_wall_damaged, kit_wall_window, kit_doorway

@@ -25,15 +25,9 @@ public partial class Global : Node
 
         if (!lanOnly)
         {
-            switch (OS.GetName())
+            if (OS.GetName() == "Linux")
             {
-                case "Windows":
-                    break;
-                case "Linux":
-                    RegisterSteamApiResolver();
-                    break;
-                default:
-                    break;
+                RegisterSteamApiResolver();
             }
 
             SteamInit();
@@ -67,11 +61,6 @@ public partial class Global : Node
             Logging.Log("Connection to Steam successful.", "SteamAPI");
             Logging.Log($"Steam ID: {steamid}", "SteamAPI");
         }
-    }
-
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
-    {
     }
 
     public bool SteamInit()

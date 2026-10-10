@@ -7,14 +7,12 @@ using PolyType;
 /// and state sync; features live in partial-class files alongside it:
 /// FactoryPlayer.Interaction.cs (looks-at target + interact), FactoryPlayer.Grab.cs (physics grab tool),
 /// and FactoryPlayer.Equipment.cs (hotbar, in-hand item, dropping). A held <see cref="HeldItem"/> (magnet
-/// rod, blueprint preview, ...) gets first refusal on input. The inventory screen is
-/// <see cref="InventoryUI"/> (the PlayerHUD root).
+/// rod, blueprint preview, ...) gets first refusal on input. The HUD and every menu belong to
+/// <see cref="UIManager"/>, which binds the HUD to the local player when it spawns.
 /// </summary>
 public partial class FactoryPlayer : GMPOBox3DCharacter
 {
     public static bool displayPlayerDebugInfo = false;
-    public double distanceSinceStepSound = 0;
-    public double distancePerStepSound = 2;
     public int team;
     public bool isHuman;
     public ulong controllingPeerID;
@@ -42,7 +40,6 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     [Export] Node3D itemHolder;
 
     Label3D playerNameLabel;
-    public InventoryUI hud;
 
     /// <summary>Look pitch in radians; yaw is the body's own rotation.</summary>
     float lookPitch;
@@ -57,22 +54,31 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     /// <summary>True on the peer that controls this player (its authority).</summary>
     public bool isLocal => authority == Lobby.selfPeerID;
 
+    /// <summary>The controlling player's lobby name, shown over the avatar; kept for saves after they leave.</summary>
+    public string playerName { get; private set; } = "";
+
+    public void SetPlayerName(string name)
+    {
+        playerName = name ?? "";
+        playerNameLabel.Text = playerName;
+    }
+
     public override void _Ready()
     {
         base._Ready();
+        // Saved by GameSave as players, not as part of the world.
+        AddToGroup(GameWorld.UnsavedGroup);
         gravity = gravityDirection * gravityMagnitude;
         camera = GetNode<Camera3D>("Camera3D");
         cameraOffset = camera.Position;
         itemHolder = camera.GetNode<Node3D>("ItemHolder");
-        hud = GetNode<InventoryUI>("PlayerHUD");
-        ReadyInteraction();
-        ReadyGrab();
+        grabNode = GetNode<Node3D>("%grabNode");
     }
 
     public override void AfterInit()
     {
         playerNameLabel = GetNode<Label3D>("label");
-        playerNameLabel.Text = Lobby.members[controllingPeerID].Name;
+        SetPlayerName(Lobby.members.TryGetValue(controllingPeerID, out PlayerInfo info) ? info.Name : "");
         if (isLocal)
         {
             camera.Current = true;
@@ -81,23 +87,17 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             camera.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
             cameraPosed = true;
             PoseCamera(false);
-            Input.MouseMode = Input.MouseModeEnum.Captured;
+            UIManager.BindHud(this);
             playerNameLabel.Hide();
-            body.GetNode<MeshInstance3D>("m").CastShadow=GeometryInstance3D.ShadowCastingSetting.ShadowsOnly;
-            //body.Hide();
+            body.GetNode<MeshInstance3D>("m").CastShadow = GeometryInstance3D.ShadowCastingSetting.ShadowsOnly;
             head.GetNode<MeshInstance3D>("head").CastShadow = GeometryInstance3D.ShadowCastingSetting.ShadowsOnly;
-            SubscribeGrabClaims();
+            GameWorld.ClaimGrantedEvent += OnClaimGranted;
             // Replicate every local inventory change (pickups, drops, drag-and-drop, bootstrap seed).
             inventory.InventoryChanged += SyncInventory;
         }
         else
         {
             camera.Current = false;
-            // Every player scene carries a HUD, and Controls draw on screen whatever their parent, so other
-            // players' HUDs would cover this peer's own (whichever is last in the tree wins).
-            // Nothing on it is seen or used for them, so it needn't refresh either.
-            hud.Hide();
-            hud.ProcessMode = ProcessModeEnum.Disabled;
         }
         UpdateEquippedItem();
     }
@@ -105,7 +105,8 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     public override void _ExitTree()
     {
         // Unconditional: on LeaveLobby selfPeerID is already cleared by the time this runs.
-        UnsubscribeGrabClaims();
+        GameWorld.ClaimGrantedEvent -= OnClaimGranted;
+        UIManager.UnbindHud(this);
     }
 
     // ---- input ------------------------------------------------------------
@@ -122,30 +123,22 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     {
         if (!isLocal) return;
 
-        if (HandleShopInput(@event)) return;
-        if (HandlePauseInput(@event)) return;
-        if (HandleMouseAndMenuInput(@event)) return;
+        // Menus (pause, shop, ...) take every input while open; UIManager handles Escape and the inventory key.
+        if (UIManager.BlocksGameplayInput) return;
+        HandleMouseInput(@event);
         HandleScrollWheel(@event);
-        if (!hud.isOpen && currentInHandItem != null && currentInHandItem.HandleInput(@event)) return;
+        if (!UIManager.IsInventoryOpen && heldItem != null && heldItem.HandleInput(@event)) return;
         HandleInteractionInput(@event);
         HandleEquipmentInput(@event);
         HandleGrabInput(@event);
     }
 
-
-    /// <summary>Mouse capture, mouse look, Escape (closes the inventory) and the inventory key. Returns true if the event was consumed.</summary>
-    bool HandleMouseAndMenuInput(InputEvent @event)
+    /// <summary>Mouse look, and recapturing the mouse on a click (after the window lost it).</summary>
+    void HandleMouseInput(InputEvent @event)
     {
-        if (@event is InputEventMouseButton mb && mb.Pressed && !hud.isOpen)
+        if (@event is InputEventMouseButton mb && mb.Pressed)
         {
-            Input.MouseMode = Input.MouseModeEnum.Captured;
-        }
-
-        // Escape with nothing open is the pause menu's (HandlePauseInput).
-        if (@event is InputEventKey key && key.Pressed && key.Keycode == Key.Escape && hud.isOpen)
-        {
-            hud.Close();
-            return true;
+            UIManager.RefreshMouseMode();
         }
 
         if (@event is InputEventMouseMotion motion && Input.MouseMode == Input.MouseModeEnum.Captured)
@@ -157,28 +150,19 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
                 Mathf.DegToRad(-89f), Mathf.DegToRad(89f));
             PoseCamera(false);
         }
-
-        if (@event.IsActionPressed(InputActions.inventory))
-        {
-            if (hud.isOpen)
-                hud.Close();
-            else
-                hud.Open();
-        }
-        return false;
     }
 
     /// <summary>The scroll wheel moves the grab point while grabbing, otherwise cycles the hotbar.</summary>
     void HandleScrollWheel(InputEvent @event)
     {
-        if (hud.isOpen) return;
+        if (UIManager.IsInventoryOpen) return;
 
         int step = @event.IsActionPressed(InputActions.scrollDown) ? +1 : @event.IsActionPressed(InputActions.scrollUp) ? -1 : 0;
         if (step == 0) return;
 
         if (isGrabbing)
-            MoveGrabPoint(step);
-        else if (currentInHandItem == null || !currentInHandItem.HandleScroll(step))
+            SetGrabDistance(grabDistance - step * grabScrollStep);
+        else if (heldItem == null || !heldItem.HandleScroll(step))
             CycleHotbar(step);
     }
 
@@ -199,11 +183,6 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         UpdatePickTarget();
         ApplyMovement(delta);
         PoseCamera(false);
-        if (distanceSinceStepSound > distancePerStepSound)
-        {
-            //AudioManager.playRandomSound(this.GetPath(), ["res://game/assets/audio/impacts/footstep_concrete_000.ogg", "res://game/assets/audio/impacts/footstep_concrete_001.ogg", "res://game/assets/audio/impacts/footstep_concrete_002.ogg", "res://game/assets/audio/impacts/footstep_concrete_003.ogg", "res://game/assets/audio/impacts/footstep_concrete_004.ogg"],-45);
-            distanceSinceStepSound = 0;
-        }
     }
 
     void ApplyMovement(double delta)
@@ -212,13 +191,13 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         {
             Velocity += gravity * (float)delta;
         }
-        else if (Input.IsActionJustPressed(InputActions.jump) && !menuHasInput)
+        else if (Input.IsActionJustPressed(InputActions.jump) && !UIManager.BlocksGameplayInput)
         {
-            Velocity = Velocity + JumpVector;
+            Velocity += JumpVector;
         }
 
         // No walking while a menu has the keyboard.
-        Vector2 inputDir = menuHasInput ? Vector2.Zero : Input.GetVector(InputActions.left, InputActions.right, InputActions.forward, InputActions.backward);
+        Vector2 inputDir = UIManager.BlocksGameplayInput ? Vector2.Zero : Input.GetVector(InputActions.left, InputActions.right, InputActions.forward, InputActions.backward);
         Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
         if (direction != Vector3.Zero)
         {
@@ -233,11 +212,6 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         }
         cachedVel = Velocity;
         Velocity = MoveAndSlide(Velocity, delta);
-        if (IsOnFloor())
-        {
-            distanceSinceStepSound += (Velocity.Length() * delta);
-        }
-
     }
 
     /// <summary>
@@ -313,8 +287,9 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         ImGui.Text($"On Floor: {IsOnFloor()}");
         ImGui.Text($"Active Hotbar Slot: {inventory.ActiveHotbarSlot}");
         ImGui.Text($"Pick Target: {pickTarget?.Name ?? "none"}");
-        ImGui.Text($"Grab Target: {grabTarget?.Name ?? "none"}");
-        ImGui.Text($"Inventory Open: {hud.isOpen}");
+        ImGui.Text($"Grab Target: {grabbedItem?.Name ?? "none"}");
+        ImGui.Checkbox("Empty-hand grab", ref emptyHandGrabEnabled);
+        ImGui.Text($"Inventory Open: {UIManager.IsInventoryOpen}");
         ImGui.End();
     }
 }

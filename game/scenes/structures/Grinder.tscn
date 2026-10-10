@@ -10,7 +10,7 @@ cell = Vector3i(0, 2, 1)
 face = 1
 size = Vector2i(2, 1)
 volume = NodePath("Trigger")
-spawn = null
+spawn = NodePath("")
 
 [sub_resource type="Resource" id="Port_hopper_top"]
 script = ExtResource("port_script")
@@ -18,13 +18,13 @@ cell = Vector3i(0, 3, 0)
 face = 4
 size = Vector2i(2, 2)
 volume = NodePath("Trigger")
-spawn = null
+spawn = NodePath("")
 
 [sub_resource type="Resource" id="Port_mouth"]
 script = ExtResource("port_script")
 kind = 1
 size = Vector2i(2, 1)
-volume = null
+volume = NodePath("")
 spawn = NodePath("OutputSpawn")
 
 [node name="Grinder" type="Box3DBody" unique_id=490650604]

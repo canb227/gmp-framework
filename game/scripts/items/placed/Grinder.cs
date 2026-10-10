@@ -38,7 +38,7 @@ public partial class Grinder : Structure
         foreach (PhysicalFactoryItem item in ItemsAtInputs())
         {
             string input = item.itemID ?? "";
-            GameWorld.DespawnObject(item.id);
+            GameWorld.DespawnObject(item.id, DespawnReason.Consumed);
             consumedCount++;
             string output = recipes.TryGetValue(input, out string o) ? o : item.itemID;
             queue.Enqueue((output, outputCounts.TryGetValue(input, out int n) ? Mathf.Max(1, n) : 1));

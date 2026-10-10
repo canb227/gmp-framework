@@ -11,16 +11,24 @@ public static class GameBootstrap
     public const string PlayerScene = "res://game/scenes/player/FactoryPlayer.tscn";
     public static readonly string[] StartingBlueprints =
     [
-        "blueprint_conveyor", "blueprint_conveyor_slope", "blueprint_smelter", "blueprint_scrap_grabber", "blueprint_conveyor_loader", "scrap_ball", "scrap_ingot",
+        "blueprint_conveyor", "blueprint_conveyor_slope", "blueprint_conveyor_loader", "scrap_ball", 
     ];
     public const int StartingBlueprintCount = 99;
-    public const bool giveStarterItems = false;
 
-    /// <summary>Host spawns the selected level for everyone.</summary>
+    /// <summary>Host spawns the selected level for everyone, unless starting from a save (loaded once all peers are in).</summary>
     public static void Preload(GameInfo gameInfo)
     {
         if (Lobby.isHost)
         {
+            if (!string.IsNullOrEmpty(gameInfo.savePath))
+            {
+                if (GameWorld.ReadSaveFile(gameInfo.savePath) != null)
+                {
+                    return;
+                }
+                Logging.Error($"Can't read save {gameInfo.savePath}; starting the level instead", "GameBootstrap");
+                gameInfo.savePath = null;
+            }
             string levelPath = GameResources.LevelsList[gameInfo.levelIdx].levelPath;
             GameWorld.SpawnScene(levelPath);
         }
@@ -29,7 +37,12 @@ public static class GameBootstrap
     /// <summary>Each peer spawns its own player and seeds its starting inventory.</summary>
     public static void Init()
     {
-       // ImpactAudio.Ensure();
+        SpawnLocalPlayer();
+    }
+
+    /// <summary>Spawns this peer's player for everyone, with the starter items from the game settings.</summary>
+    public static void SpawnLocalPlayer()
+    {
         PlayerSync init = new PlayerSync();
         init.controllingPeerID = Lobby.selfPeerID;
         init.isHuman = true;
@@ -37,13 +50,20 @@ public static class GameBootstrap
         ulong pid = GameWorld.SpawnScene(PlayerScene, spawnPos, default, default, GMPObject.serializer.Serialize(init));
         FactoryPlayer player = GameWorld.syncedObjs[pid] as FactoryPlayer;
 
-        if (giveStarterItems)
+        FactoryPlayer.emptyHandGrabEnabled = Lobby.gameInfo.emptyHandGrab;
+        switch (Lobby.gameInfo.starterItems)
         {
-            player.inventory.AddItem("magnet_rod", 1);
-            foreach (string blueprint in StartingBlueprints)
-            {
-                player.inventory.AddItem(blueprint, StartingBlueprintCount);
-            }
+            case StarterItems.SingleMagnetRod:
+                player.inventory.AddItem("magnet_rod_single", 1);
+                break;
+            case StarterItems.All:
+                player.inventory.AddItem("magnet_rod", 1);
+                player.inventory.AddItem("magnet_rod_single", 1);
+                foreach (string blueprint in StartingBlueprints)
+                {
+                    player.inventory.AddItem(blueprint, StartingBlueprintCount);
+                }
+                break;
         }
 
         player.UpdateEquippedItem();

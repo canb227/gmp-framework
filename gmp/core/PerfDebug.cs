@@ -103,10 +103,34 @@ public static class PerfDebug
             ImGui.Text($"Adapter: {RenderingServer.GetVideoAdapterName()}");
         }
 
-        if (ImGui.CollapsingHeader("Physics", ImGuiTreeNodeFlags.DefaultOpen))
+        // Godot's Physics3D monitors read 0: the engine runs the Dummy physics server and Box3D owns the simulation.
+        if (ImGui.CollapsingHeader("Physics (Box3D)", ImGuiTreeNodeFlags.DefaultOpen))
         {
-            ImGui.Text($"3D active bodies: {Mon(Performance.Monitor.Physics3DActiveObjects):0}");
-            ImGui.Text($"3D collision pairs: {Mon(Performance.Monitor.Physics3DCollisionPairs):0} | Islands: {Mon(Performance.Monitor.Physics3DIslandCount):0}");
+            GMPOBox3DWorld world = GameWorld.b3droot;
+            if (!GodotObject.IsInstanceValid(world))
+            {
+                ImGui.Text("No Box3D world");
+            }
+            else
+            {
+                ImGui.Text($"Step: {world.GetStepTimeMs():0.00} ms | Awake bodies: {world.GetAwakeBodyCount()} | Workers: {world.workerCount}");
+                if (ImGui.TreeNodeEx("Counters", ImGuiTreeNodeFlags.DefaultOpen))
+                {
+                    foreach (var (key, value) in world.GetCounters())
+                    {
+                        ImGui.Text($"{key}: {value}");
+                    }
+                    ImGui.TreePop();
+                }
+                if (ImGui.TreeNode("Step profile (ms)"))
+                {
+                    foreach (var (key, value) in world.GetProfile())
+                    {
+                        ImGui.Text($"{key}: {value.AsDouble():0.000}");
+                    }
+                    ImGui.TreePop();
+                }
+            }
         }
 
         if (ImGui.CollapsingHeader("Objects & memory", ImGuiTreeNodeFlags.DefaultOpen))

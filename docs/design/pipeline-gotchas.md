@@ -3,23 +3,16 @@
 ## Godot files
 - **UIDs use a base-34 alphabet: `a-y` then `0-8`, never `z` or `9`** (Godot's off-by-one, kept for
   compatibility; see `core/io/resource_uid.cpp`). Godot reads `z` as `0`, then rewrites every uid holding a `z`
-  in every file it saves, and a human had to clean that up once. `scenegen.uid_text` is right now. Generators must
-  also **reuse a file's existing uid** instead of re-deriving it (gen_decor, gen_items and place_museum do).
-- **Every generated asset needs its sidecar**: each `.glb`/`.png` needs a `.import` (`ensure_import` /
-  `icon_uid`), and each new `.cs`/`.gd`/`.gdshader` needs a `.uid`. Models placed straight into the museum
-  never went through `ensure_import`, so six room glbs had none. Check before handing off:
+  in every file it saves, and a human had to clean that up once. When editing a .tscn by text, keep existing uids.
+- **Every asset needs its sidecar**: each `.glb`/`.png` needs a `.import`, and each new `.cs`/`.gd`/`.gdshader`
+  needs a `.uid`. Six room glbs once had none. Check before handing off:
   `for f in $(git ls-files 'game/*.glb'); do [ -f $f.import ] || echo $f; done`.
-- **Keep ext_resource ids stable** when regenerating a scene someone has edited by hand. `place_museum.py` keeps
-  existing `hall_` ids, because hand-placed nodes (e.g. `SpawnerConveyorLine`) reference them.
-- **Godot adds `unique_id=` to nodes** on save. Regenerated nodes lose them, which is harmless.
-- **Transform3D text is row-major** in .tscn: `Transform3D(xx, xy, xz, yx, ...)` gives rows, not columns. Use
-  the `xf(cols, pos)` helper in `place_museum.py`.
-- **Write float properties with a decimal point** (`scenegen.ff`: `40.0`, not `40`). A C# `[Export] float/double`
-  set from an integer literal in a .tscn silently doesn't take, and Godot drops it on the next save: the
-  Carousel's `degreesPerSecond = 40` and spawner intervals `6`, `3`, `2` never applied until this was fixed.
-- **Hand edits inside generated wings are lost on regeneration.** Port them into the generator (e.g. the Structure Hall
-  demo spawners were set to `iron_ore` in the editor, and `SLOW_SPAWNER` carries it now). Compare an editor-saved
-  scene semantically (node by node), not by text diff: Godot reorders properties and drops defaults on save.
+- **Transform3D text is row-major** in .tscn: `Transform3D(xx, xy, xz, yx, ...)` gives rows, not columns.
+- **Write float properties with a decimal point** when editing a .tscn by text (`40.0`, not `40`). A C#
+  `[Export] float/double` set from an integer literal silently doesn't take, and Godot drops it on the next save:
+  the Carousel's `degreesPerSecond = 40` and spawner intervals `6`, `3`, `2` never applied until this was fixed.
+- Compare an editor-saved scene semantically (node by node), not by text diff: Godot reorders properties and
+  drops defaults on save.
 - **Typed dictionaries** in scenes: `itemWeights = Dictionary[String, float]({"a": 1.0})`.
 - **Label3D** text needs `\n` escaped as `\\n` in the file. Wrapping needs `autowrap_mode = 3` plus `width` in
   pixels (metres ÷ `pixel_size`). With yaw 0 a label faces +Z, and yaw 1 faces +X.
@@ -44,13 +37,6 @@
 - **Additive field or glass materials render opaque in the Blender previews.** Hide them (`--hide Heat,Glass`) to
   see inside.
 
-## Review renders (`tools/structures/view_hall.py`)
-- The viewer must clear animation data on imported objects, or keyframes snap parts back to the model origin.
-- `ROOM_ANGLE=<deg>` shows the Tumbler turned. `top`, `lab` and `wing` are preset views, or pass `cam:target`.
-- The viewer reads the wing scenes and their MultiMeshes, importing each .glb once and copying it, so a
-  wing renders in about 30 s (it used to re-import every instance and took 10+ minutes).
-- Billboard labels come out mirrored in these renders but face the camera in Godot.
-
 ## Environment
 - There's no Godot or .NET in the cloud container, so C# can't be compiled or scenes run. Say so in PRs.
 - `excalidraw.com` is blocked by the network policy.
@@ -59,19 +45,18 @@
 ## Decor and kit
 - Decor props put their origin on the floor, not at a cell centre, and their fronts face Blender -Y (Godot +Z).
   Kit pieces use a 4 m module.
-- `gen_decor.py` builds bounding-box colliders from glb node translation and scale, ignoring rotation. Any
-  prop whose bounds would make a bad collider (a tree canopy, a catwalk, a hollow tower) needs hand-set boxes in `CUSTOM`/`KIT`.
+- Props whose bounds would make a bad collider (a tree canopy, a catwalk, a hollow tower) need hand-set boxes.
 - A Box3DBody's own shape is always centred on its origin, so colliders offset from the root are separate
   child bodies.
 
 ## Performance and scene size
 - **Godot warns when a text scene gets large** (FileSystem > On Save > Warn on Saving Large Text Resources);
-  ObjectMuseum.tscn hit 790 KB with ~1,800 MeshInstance3D boxes. The fixes, in place_museum.py:
-  - **Batch boxes into MultiMeshes** (`Hall.batch`): one MultiMeshInstance3D per material per exhibit group.
+  ObjectMuseum.tscn hit 790 KB with ~1,800 MeshInstance3D boxes. The fixes:
+  - **Batch boxes into MultiMeshes**: one MultiMeshInstance3D per material per exhibit group.
     The tscn stores 12 floats per box, and the draw costs one call per MultiMesh. A MultiMesh buffer is row-major 3x4
     (`basis row, origin` x3), the same order as Transform3D text.
   - **Colliders don't need meshes**: a static Box3DBody alone collides, and its look comes from the MultiMesh.
-  - **Split big generated levels into sub-scenes** (one per wing), instanced from the level. Keep
+  - **Split big levels into sub-scenes** (one per wing), instanced from the level. Keep
     NodePaths relative (`../Body`) so they survive the split.
   - Boxes on a moving body go in a MultiMesh *under that body* so they move with it.
   - Don't embed ArrayMesh data in a level `.tscn` (TestFacility.tscn is 39 MB from 128 inline ArrayMeshes).
@@ -79,8 +64,8 @@
 - **Models (salvage_lib)**: static parts are merged into one `Body` node on export (`merge_static`). Nodes stay
   separate if they animate, if a scene addresses them (names are found by scanning `game/**/*.tscn|cs`
   for `parent="Model/..."`), if they use belt/glass/field materials, or if they're listed in `EXPORT_KEEP`.
-  Each material left on a node is one draw call. **After a model rebuild, rerun the scene generators**:
-  `index=` overrides on model children are computed from the glb's node order.
+  Each material left on a node is one draw call. **After a model rebuild, check the scenes that use it**:
+  `index=` overrides on model children follow the glb's node order, which a rebuild can change.
 - **Realism for cheap**: `Builder.box` chamfers edges (`BEVEL`, 12 mm by default; `bevel=0` for faces that butt
   against neighbours, like kit seams). Chamfers are painted toward `C_WEAR` for worn edges. Face-area
   WeightedNormal keeps the big faces flat-shaded. Vertex colours are per face, so glTF splits vertices at every

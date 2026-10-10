@@ -1,0 +1,1406 @@
+[gd_scene format=3 uid="uid://4ffe6g4v2hm8"]
+
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/basic/ConveyorSplitter.tscn" id="hall_0"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/basic/ConveyorSplitterSwitch.tscn" id="hall_1"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/basic/ConveyorLoader.tscn" id="hall_2"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/advanced/ConveyorAdvanced.tscn" id="hall_3"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/advanced/ConveyorAdvancedSlope.tscn" id="hall_6"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/advanced/ConveyorAdvancedSlopeDown.tscn" id="hall_7"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/advanced/ConveyorAdvancedLoader.tscn" id="hall_8"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/magnetic/ConveyorMagnetic.tscn" id="hall_9"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/magnetic/ConveyorMagneticWall.tscn" id="hall_12"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/magnetic/ConveyorMagneticWallTurnRight.tscn" id="hall_13"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/magnetic/ConveyorMagneticWallTurnLeft.tscn" id="hall_14"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/magnetic/ConveyorMagneticCeiling.tscn" id="hall_15"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/magnetic/ConveyorMagneticCeilingTurnRight.tscn" id="hall_16"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/magnetic/ConveyorMagneticCeilingTurnLeft.tscn" id="hall_17"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/launchers/LaunchRamp.tscn" id="hall_18"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/launchers/Cannon.tscn" id="hall_19"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/launchers/Catapult.tscn" id="hall_20"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHStraight.tscn" id="hall_21"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHTurnRight.tscn" id="hall_22"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHTurnLeft.tscn" id="hall_23"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteVStraight.tscn" id="hall_24"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteVTurn.tscn" id="hall_25"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHopperUp.tscn" id="hall_26"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteDropperDown.tscn" id="hall_27"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHopper2x2.tscn" id="hall_28"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteHopper3x3.tscn" id="hall_29"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHStraight.tscn" id="hall_30"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHTurnRight.tscn" id="hall_31"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHTurnLeft.tscn" id="hall_32"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvVStraight.tscn" id="hall_33"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvVTurn.tscn" id="hall_34"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHopperUp.tscn" id="hall_35"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvDropperDown.tscn" id="hall_36"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHopper2x2.tscn" id="hall_37"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/chutes/ChuteAdvHopper3x3.tscn" id="hall_38"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/sorting/FilterBasic.tscn" id="hall_39"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/sorting/FilterArm.tscn" id="hall_40"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/fields/AntigravProjector.tscn" id="hall_41"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/fields/ZeroPointProjector.tscn" id="hall_42"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/processing/PlatePress.tscn" id="hall_43"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/processing/RodExtruder.tscn" id="hall_44"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/processing/Polisher.tscn" id="hall_45"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/Smelter.tscn" id="hall_46"]
+[ext_resource type="PackedScene" uid="uid://bywvnipt62y5r" path="res://game/scenes/structures/ItemVoid.tscn" id="hall_47"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/SpawnTube.tscn" id="hall_48"]
+[ext_resource type="PackedScene" uid="uid://dxbidpuifub02" path="res://game/scenes/structures/ItemSpawner.tscn" id="hall_49"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/basic/Conveyor.tscn" id="hall_50"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/basic/ConveyorSlope.tscn" id="hall_51"]
+[ext_resource type="Texture2D" uid="uid://c1etlsqa07tlx" path="res://game/assets/textures/floor_1/floor_1_diffuseOriginal.png" id="hall_52"]
+
+[sub_resource type="StandardMaterial3D" id="hall_mat_panel"]
+albedo_color = Color(0.78, 0.78, 0.76, 1)
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="hall_mat_frame"]
+albedo_color = Color(0.07, 0.075, 0.08, 1)
+metallic = 0.6
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="hall_mat_hazard"]
+albedo_color = Color(0.85, 0.62, 0.06, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="hall_mat_floor"]
+albedo_color = Color(0.42, 0.43, 0.45, 1)
+albedo_texture = ExtResource("hall_52")
+uv1_scale = Vector3(0.25, 0.25, 0.25)
+uv1_triplanar = true
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="hall_box_panel"]
+material = SubResource("hall_mat_panel")
+
+[sub_resource type="BoxMesh" id="hall_box_frame"]
+material = SubResource("hall_mat_frame")
+
+[sub_resource type="BoxMesh" id="hall_box_hazard"]
+material = SubResource("hall_mat_hazard")
+
+[sub_resource type="BoxMesh" id="hall_box_floor"]
+material = SubResource("hall_mat_floor")
+
+[sub_resource type="MultiMesh" id="hall_mm_54"]
+transform_format = 1
+instance_count = 1
+mesh = SubResource("hall_box_floor")
+buffer = PackedFloat32Array(96, 0, 0, 88, 0, 1, 0, -0.5, 0, 0, 120, 0)
+
+[sub_resource type="MultiMesh" id="hall_mm_55"]
+transform_format = 1
+instance_count = 172
+mesh = SubResource("hall_box_frame")
+buffer = PackedFloat32Array(96.1, 0, 0, 88, 0, 0.15, 0, 8.075, 0, 0, 0.5, 60, 96.1, 0, 0, 88, 0, 0.3, 0, 0.15, 0, 0, 0.5, 60, 0.2, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 44, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 48, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 52, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 56, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 60, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 64, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 68, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 72, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 76, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 80, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 84, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 88, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 92, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 96, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 100, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 104, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 108, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 112, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 116, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 120, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 124, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 128, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 132, 0, 8, 0, 4, 0, 0, 0.5, 60, 0.2, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.5, 60, 96.1, 0, 0, 88, 0, 0.15, 0, 8.075, 0, 0, 0.5, -60, 96.1, 0, 0, 88, 0, 0.3, 0, 0.15, 0, 0, 0.5, -60, 0.2, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 44, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 48, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 52, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 56, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 60, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 64, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 68, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 72, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 76, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 80, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 84, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 88, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 92, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 96, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 100, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 104, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 108, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 112, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 116, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 120, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 124, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 128, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 132, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.2, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.5, -60, 0.5, 0, 0, 136, 0, 0.15, 0, 8.075, 0, 0, 120.1, 0, 0.5, 0, 0, 136, 0, 0.3, 0, 0.15, 0, 0, 120.1, 0, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, -60, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, -56, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, -52, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, -48, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, -44, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, -40, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, -36, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, -32, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, -28, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, -24, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, -20, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, -16, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, -12, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, -8, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, -4, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, 0, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, 4, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, 8, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, 12, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, 16, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, 20, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, 24, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, 28, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, 32, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, 36, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, 40, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, 44, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, 48, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, 52, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, 56, 0.5, 0, 0, 136, 0, 8, 0, 4, 0, 0, 0.2, 60, 0.5, 0, 0, 40, 0, 0.15, 0, 8.075, 0, 0, 44.1, 38, 0.5, 0, 0, 40, 0, 0.3, 0, 0.15, 0, 0, 44.1, 38, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, 16, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, 20, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, 24, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, 28, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, 32, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, 36, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, 40, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, 44, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, 48, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, 52, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, 56, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, 60, 0.5, 0, 0, 40, 0, 0.15, 0, 8.075, 0, 0, 44.1, -38, 0.5, 0, 0, 40, 0, 0.3, 0, 0.15, 0, 0, 44.1, -38, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -60, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -56, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -52, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -48, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -44, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -40, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -36, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -32, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -28, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -24, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -20, 0.5, 0, 0, 40, 0, 8, 0, 4, 0, 0, 0.2, -16, 0.4, 0, 0, 40, 0, 1, 0, 7.5, 0, 0, 32, 0, 0.4, 0, 0, 81, 0, 0.15, 0, 4.075, 0, 0, 18.1, 51, 0.4, 0, 0, 81, 0, 0.3, 0, 0.15, 0, 0, 18.1, 51, 0.4, 0, 0, 81, 0, 4, 0, 2, 0, 0, 0.2, 42, 0.4, 0, 0, 81, 0, 4, 0, 2, 0, 0, 0.2, 46.5, 0.4, 0, 0, 81, 0, 4, 0, 2, 0, 0, 0.2, 51, 0.4, 0, 0, 81, 0, 4, 0, 2, 0, 0, 0.2, 55.5, 0.4, 0, 0, 81, 0, 4, 0, 2, 0, 0, 0.2, 60, 0.4, 0, 0, 119, 0, 0.15, 0, 4.075, 0, 0, 18.1, 51, 0.4, 0, 0, 119, 0, 0.3, 0, 0.15, 0, 0, 18.1, 51, 0.4, 0, 0, 119, 0, 4, 0, 2, 0, 0, 0.2, 42, 0.4, 0, 0, 119, 0, 4, 0, 2, 0, 0, 0.2, 46.5, 0.4, 0, 0, 119, 0, 4, 0, 2, 0, 0, 0.2, 51, 0.4, 0, 0, 119, 0, 4, 0, 2, 0, 0, 0.2, 55.5, 0.4, 0, 0, 119, 0, 4, 0, 2, 0, 0, 0.2, 60, 0.4, 0, 0, 87, 0, 0.15, 0, 4.075, 0, 0, 18.1, -51, 0.4, 0, 0, 87, 0, 0.3, 0, 0.15, 0, 0, 18.1, -51, 0.4, 0, 0, 87, 0, 4, 0, 2, 0, 0, 0.2, -60, 0.4, 0, 0, 87, 0, 4, 0, 2, 0, 0, 0.2, -55.5, 0.4, 0, 0, 87, 0, 4, 0, 2, 0, 0, 0.2, -51, 0.4, 0, 0, 87, 0, 4, 0, 2, 0, 0, 0.2, -46.5, 0.4, 0, 0, 87, 0, 4, 0, 2, 0, 0, 0.2, -42, 18.1, 0, 0, 127, 0, 0.15, 0, 4.075, 0, 0, 0.4, 21, 18.1, 0, 0, 127, 0, 0.3, 0, 0.15, 0, 0, 0.4, 21, 0.2, 0, 0, 118, 0, 4, 0, 2, 0, 0, 0.4, 21, 0.2, 0, 0, 122.5, 0, 4, 0, 2, 0, 0, 0.4, 21, 0.2, 0, 0, 127, 0, 4, 0, 2, 0, 0, 0.4, 21, 0.2, 0, 0, 131.5, 0, 4, 0, 2, 0, 0, 0.4, 21, 0.2, 0, 0, 136, 0, 4, 0, 2, 0, 0, 0.4, 21, 18.1, 0, 0, 127, 0, 0.15, 0, 4.075, 0, 0, 0.4, -1, 18.1, 0, 0, 127, 0, 0.3, 0, 0.15, 0, 0, 0.4, -1, 0.2, 0, 0, 118, 0, 4, 0, 2, 0, 0, 0.4, -1, 0.2, 0, 0, 122.5, 0, 4, 0, 2, 0, 0, 0.4, -1, 0.2, 0, 0, 127, 0, 4, 0, 2, 0, 0, 0.4, -1, 0.2, 0, 0, 131.5, 0, 4, 0, 2, 0, 0, 0.4, -1, 0.2, 0, 0, 136, 0, 4, 0, 2, 0, 0, 0.4, -1, 18.1, 0, 0, 127, 0, 0.15, 0, 4.075, 0, 0, 0.4, -21, 18.1, 0, 0, 127, 0, 0.3, 0, 0.15, 0, 0, 0.4, -21, 0.2, 0, 0, 118, 0, 4, 0, 2, 0, 0, 0.4, -21, 0.2, 0, 0, 122.5, 0, 4, 0, 2, 0, 0, 0.4, -21, 0.2, 0, 0, 127, 0, 4, 0, 2, 0, 0, 0.4, -21, 0.2, 0, 0, 131.5, 0, 4, 0, 2, 0, 0, 0.4, -21, 0.2, 0, 0, 136, 0, 4, 0, 2, 0, 0, 0.4, -21, 18.1, 0, 0, 127, 0, 0.15, 0, 4.075, 0, 0, 0.4, 41, 18.1, 0, 0, 127, 0, 0.3, 0, 0.15, 0, 0, 0.4, 41, 0.2, 0, 0, 118, 0, 4, 0, 2, 0, 0, 0.4, 41, 0.2, 0, 0, 122.5, 0, 4, 0, 2, 0, 0, 0.4, 41, 0.2, 0, 0, 127, 0, 4, 0, 2, 0, 0, 0.4, 41, 0.2, 0, 0, 131.5, 0, 4, 0, 2, 0, 0, 0.4, 41, 0.2, 0, 0, 136, 0, 4, 0, 2, 0, 0, 0.4, 41, 18.1, 0, 0, 127, 0, 0.15, 0, 4.075, 0, 0, 0.4, -39, 18.1, 0, 0, 127, 0, 0.3, 0, 0.15, 0, 0, 0.4, -39, 0.2, 0, 0, 118, 0, 4, 0, 2, 0, 0, 0.4, -39, 0.2, 0, 0, 122.5, 0, 4, 0, 2, 0, 0, 0.4, -39, 0.2, 0, 0, 127, 0, 4, 0, 2, 0, 0, 0.4, -39, 0.2, 0, 0, 131.5, 0, 4, 0, 2, 0, 0, 0.4, -39, 0.2, 0, 0, 136, 0, 4, 0, 2, 0, 0, 0.4, -39)
+
+[sub_resource type="MultiMesh" id="hall_mm_56"]
+transform_format = 1
+instance_count = 13
+mesh = SubResource("hall_box_panel")
+buffer = PackedFloat32Array(96, 0, 0, 88, 0, 8, 0, 4, 0, 0, 0.4, 60, 96, 0, 0, 88, 0, 8, 0, 4, 0, 0, 0.4, -60, 0.4, 0, 0, 136, 0, 8, 0, 4, 0, 0, 120, 0, 0.4, 0, 0, 40, 0, 8, 0, 4, 0, 0, 44, 38, 0.4, 0, 0, 40, 0, 8, 0, 4, 0, 0, 44, -38, 0.3, 0, 0, 81, 0, 4, 0, 2, 0, 0, 18, 51, 0.3, 0, 0, 119, 0, 4, 0, 2, 0, 0, 18, 51, 0.3, 0, 0, 87, 0, 4, 0, 2, 0, 0, 18, -51, 18, 0, 0, 127, 0, 4, 0, 2, 0, 0, 0.3, 21, 18, 0, 0, 127, 0, 4, 0, 2, 0, 0, 0.3, -1, 18, 0, 0, 127, 0, 4, 0, 2, 0, 0, 0.3, -21, 18, 0, 0, 127, 0, 4, 0, 2, 0, 0, 0.3, 41, 18, 0, 0, 127, 0, 4, 0, 2, 0, 0, 0.3, -39)
+
+[sub_resource type="MultiMesh" id="hall_mm_57"]
+transform_format = 1
+instance_count = 2
+mesh = SubResource("hall_box_frame")
+buffer = PackedFloat32Array(0.3, 0, 0, 128.7, 0, 6.5, 0, 3.25, 0, 0, 0.3, -29, 2, 0, 0, 127.85, 0, 0.3, 0, 6.15, 0, 0, 0.3, -29)
+
+[sub_resource type="MultiMesh" id="hall_mm_58"]
+transform_format = 1
+instance_count = 37
+mesh = SubResource("hall_box_hazard")
+buffer = PackedFloat32Array(39, 0, 0, 61, 0, 0.01, 0, 0.007, 0, 0, 0.25, 60.375, 39, 0, 0, 61, 0, 0.01, 0, 0.007, 0, 0, 0.25, 41.625, 0.25, 0, 0, 41.625, 0, 0.01, 0, 0.007, 0, 0, 19, 51, 0.25, 0, 0, 80.375, 0, 0.01, 0, 0.007, 0, 0, 19, 51, 37, 0, 0, 100, 0, 0.01, 0, 0.007, 0, 0, 0.25, 60.375, 37, 0, 0, 100, 0, 0.01, 0, 0.007, 0, 0, 0.25, 41.625, 0.25, 0, 0, 81.625, 0, 0.01, 0, 0.007, 0, 0, 19, 51, 0.25, 0, 0, 118.375, 0, 0.01, 0, 0.007, 0, 0, 19, 51, 15, 0, 0, 127, 0, 0.01, 0, 0.007, 0, 0, 0.25, 60.375, 15, 0, 0, 127, 0, 0.01, 0, 0.007, 0, 0, 0.25, 41.625, 0.25, 0, 0, 119.625, 0, 0.01, 0, 0.007, 0, 0, 19, 51, 0.25, 0, 0, 134.375, 0, 0.01, 0, 0.007, 0, 0, 19, 51, 45, 0, 0, 64, 0, 0.01, 0, 0.007, 0, 0, 0.25, -39.625, 45, 0, 0, 64, 0, 0.01, 0, 0.007, 0, 0, 0.25, -60.375, 0.25, 0, 0, 41.625, 0, 0.01, 0, 0.007, 0, 0, 21, -50, 0.25, 0, 0, 86.375, 0, 0.01, 0, 0.007, 0, 0, 21, -50, 47, 0, 0, 111, 0, 0.01, 0, 0.007, 0, 0, 0.25, -39.625, 47, 0, 0, 111, 0, 0.01, 0, 0.007, 0, 0, 0.25, -60.375, 0.25, 0, 0, 87.625, 0, 0.01, 0, 0.007, 0, 0, 21, -50, 0.25, 0, 0, 134.375, 0, 0.01, 0, 0.007, 0, 0, 21, -50, 17, 0, 0, 126, 0, 0.01, 0, 0.007, 0, 0, 0.25, 40.375, 17, 0, 0, 126, 0, 0.01, 0, 0.007, 0, 0, 0.25, 21.625, 0.25, 0, 0, 117.625, 0, 0.01, 0, 0.007, 0, 0, 19, 31, 0.25, 0, 0, 134.375, 0, 0.01, 0, 0.007, 0, 0, 19, 31, 17, 0, 0, 126, 0, 0.01, 0, 0.007, 0, 0, 0.25, 20.375, 17, 0, 0, 126, 0, 0.01, 0, 0.007, 0, 0, 0.25, -0.375, 0.25, 0, 0, 117.625, 0, 0.01, 0, 0.007, 0, 0, 21, 10, 0.25, 0, 0, 134.375, 0, 0.01, 0, 0.007, 0, 0, 21, 10, 17, 0, 0, 126, 0, 0.01, 0, 0.007, 0, 0, 0.25, -1.625, 17, 0, 0, 126, 0, 0.01, 0, 0.007, 0, 0, 0.25, -20.375, 0.25, 0, 0, 117.625, 0, 0.01, 0, 0.007, 0, 0, 19, -11, 0.25, 0, 0, 134.375, 0, 0.01, 0, 0.007, 0, 0, 19, -11, 0.34, 0, 0, 128.7, 0, 0.15, 0, 1.075, 0, 0, 0.34, -29, 17, 0, 0, 126, 0, 0.01, 0, 0.007, 0, 0, 0.25, -21.625, 17, 0, 0, 126, 0, 0.01, 0, 0.007, 0, 0, 0.25, -38.375, 0.25, 0, 0, 117.625, 0, 0.01, 0, 0.007, 0, 0, 17, -30, 0.25, 0, 0, 134.375, 0, 0.01, 0, 0.007, 0, 0, 17, -30)
+
+[sub_resource type="MultiMesh" id="hall_mm_59"]
+transform_format = 1
+instance_count = 12
+mesh = SubResource("hall_box_frame")
+buffer = PackedFloat32Array(10, 0, 0, 53, 0, 2, 0, 1, 0, 0, 2, -11, 0.3, 0, 0, 62.3, 0, 2, 0, 1, 0, 0, 0.3, -13.7, 0.3, 0, 0, 67.7, 0, 2, 0, 1, 0, 0, 0.3, -13.7, 0.3, 0, 0, 62.3, 0, 2, 0, 1, 0, 0, 0.3, -8.3, 0.3, 0, 0, 67.7, 0, 2, 0, 1, 0, 0, 0.3, -8.3, 12.1, 0, 0, 94, 0, 0.15, 0, 6.075, 0, 0, 0.5, -2.2, 12.1, 0, 0, 94, 0, 0.3, 0, 0.15, 0, 0, 0.5, -2.2, 0.2, 0, 0, 88, 0, 6, 0, 3, 0, 0, 0.5, -2.2, 0.2, 0, 0, 92, 0, 6, 0, 3, 0, 0, 0.5, -2.2, 0.2, 0, 0, 96, 0, 6, 0, 3, 0, 0, 0.5, -2.2, 0.2, 0, 0, 100, 0, 6, 0, 3, 0, 0, 0.5, -2.2, 12, 0, 0, 94, 0, 0.3, 0, 6.15, 0, 0, 2.6, -1.1)
+
+[sub_resource type="MultiMesh" id="hall_mm_60"]
+transform_format = 1
+instance_count = 2
+mesh = SubResource("hall_box_hazard")
+buffer = PackedFloat32Array(38, 0, 0, 63, 0, 0.01, 0, 0.007, 0, 0, 0.25, 21.825, 10, 0, 0, 53, 0, 0.01, 0, 0.007, 0, 0, 0.25, -12.175)
+
+[sub_resource type="MultiMesh" id="hall_mm_61"]
+transform_format = 1
+instance_count = 1
+mesh = SubResource("hall_box_panel")
+buffer = PackedFloat32Array(12, 0, 0, 94, 0, 6, 0, 3, 0, 0, 0.4, -2.2)
+
+[node name="StructureHall" type="Node3D"]
+
+[node name="HallFloor" type="Box3DBody" parent="."]
+body_type = 0
+box_size = Vector3(96, 1, 120)
+position = Vector3(88, -0.5, 0)
+
+[node name="Architecture" type="Node3D" parent="."]
+
+[node name="WallNorth" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(96, 8, 0.4)
+position = Vector3(88, 4, 60)
+
+[node name="WallSouth" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(96, 8, 0.4)
+position = Vector3(88, 4, -60)
+
+[node name="WallEast" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(0.4, 8, 120)
+position = Vector3(136, 4, 0)
+
+[node name="WallWestN" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(0.4, 8, 44)
+position = Vector3(40, 4, 38)
+
+[node name="WallWestS" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(0.4, 8, 44)
+position = Vector3(40, 4, -38)
+
+[node name="EntranceBeam" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(0.4, 1, 32)
+position = Vector3(40, 7.5, 0)
+
+[node name="HallTitle" type="Label3D" parent="Architecture"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 40.6, 9.2, 0)
+double_sided = false
+pixel_size = 0.03
+font_size = 128
+outline_size = 12
+text = "STRUCTURE HALL"
+
+[node name="HallSubtitle" type="Label3D" parent="Architecture"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 40.6, 7.8, 0)
+double_sided = false
+pixel_size = 0.02
+font_size = 64
+outline_size = 12
+text = "new machines by category  -  demo lines in the middle"
+
+[node name="HallTitleInside" type="Label3D" parent="Architecture"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 39.4, 9.2, 0)
+double_sided = false
+pixel_size = 0.03
+font_size = 128
+outline_size = 12
+text = "STRUCTURE HALL"
+
+[node name="PartitionN" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(0.3, 4, 18)
+position = Vector3(81, 2, 51)
+
+[node name="PartitionN2" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(0.3, 4, 18)
+position = Vector3(119, 2, 51)
+
+[node name="PartitionS" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(0.3, 4, 18)
+position = Vector3(87, 2, -51)
+
+[node name="PartitionE" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(18, 4, 0.3)
+position = Vector3(127, 2, 21)
+
+[node name="PartitionE2" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(18, 4, 0.3)
+position = Vector3(127, 2, -1)
+
+[node name="PartitionE3" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(18, 4, 0.3)
+position = Vector3(127, 2, -21)
+
+[node name="PartitionE4" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(18, 4, 0.3)
+position = Vector3(127, 2, 41)
+
+[node name="PartitionE5" type="Box3DBody" parent="Architecture"]
+body_type = 0
+box_size = Vector3(18, 4, 0.3)
+position = Vector3(127, 2, -39)
+
+[node name="Bays" type="Node3D" parent="."]
+
+[node name="Conveyors" type="Node3D" parent="Bays"]
+
+[node name="ConveyorSplitter" parent="Bays/Conveyors" instance=ExtResource("hall_0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 1, 49)
+
+[node name="ConveyorSplitterLabel" type="Label3D" parent="Bays/Conveyors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 2.7, 49)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Splitter Conveyor"
+
+[node name="ConveyorSplitterSwitch" parent="Bays/Conveyors" instance=ExtResource("hall_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 1, 49)
+
+[node name="ConveyorSplitterSwitchLabel" type="Label3D" parent="Bays/Conveyors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 2.7, 49)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Switchable Splitter"
+
+[node name="ConveyorLoader" parent="Bays/Conveyors" instance=ExtResource("hall_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, 1, 49)
+
+[node name="ConveyorLoaderLabel" type="Label3D" parent="Bays/Conveyors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, 2.7, 49)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Loader Conveyor"
+
+[node name="ConveyorAdvanced" parent="Bays/Conveyors" instance=ExtResource("hall_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55, 1, 49)
+
+[node name="ConveyorAdvancedLabel" type="Label3D" parent="Bays/Conveyors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55, 2.7, 49)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Advanced Conveyor"
+
+[node name="ConveyorAdvancedSlope" parent="Bays/Conveyors" instance=ExtResource("hall_6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 67, 1, 51)
+
+[node name="ConveyorAdvancedSlopeLabel" type="Label3D" parent="Bays/Conveyors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 67, 4.7, 50)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Advanced Slanted Conveyor"
+
+[node name="ConveyorAdvancedSlopeDown" parent="Bays/Conveyors" instance=ExtResource("hall_7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 71, 1, 51)
+
+[node name="ConveyorAdvancedSlopeDownLabel" type="Label3D" parent="Bays/Conveyors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 71, 4.7, 50)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Advanced Slanted Conveyor (down)"
+
+[node name="ConveyorAdvancedLoader" parent="Bays/Conveyors" instance=ExtResource("hall_8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 75, 1, 49)
+
+[node name="ConveyorAdvancedLoaderLabel" type="Label3D" parent="Bays/Conveyors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 75, 2.7, 49)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Advanced Loader Conveyor"
+
+[node name="ConveyorsSign" type="Label3D" parent="Bays/Conveyors"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 61, 6.4, 59.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "CONVEYORS"
+
+[node name="Magnetic" type="Node3D" parent="Bays"]
+
+[node name="ConveyorMagnetic" parent="Bays/Magnetic" instance=ExtResource("hall_9")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 83, 1, 51)
+
+[node name="ConveyorMagneticLabel" type="Label3D" parent="Bays/Magnetic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 83, 2.7, 51)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Magnetic Conveyor"
+
+[node name="ConveyorMagneticWall" parent="Bays/Magnetic" instance=ExtResource("hall_12")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 95, 1, 51)
+
+[node name="ConveyorMagneticWallLabel" type="Label3D" parent="Bays/Magnetic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 95, 2.7, 51)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Magnetic Wall Conveyor"
+
+[node name="ConveyorMagneticWallTurnRight" parent="Bays/Magnetic" instance=ExtResource("hall_13")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 99, 1, 51)
+
+[node name="ConveyorMagneticWallTurnRightLabel" type="Label3D" parent="Bays/Magnetic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 99, 2.7, 51)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Magnetic Wall Conveyor Turn"
+
+[node name="ConveyorMagneticWallTurnLeft" parent="Bays/Magnetic" instance=ExtResource("hall_14")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 103, 1, 51)
+
+[node name="ConveyorMagneticWallTurnLeftLabel" type="Label3D" parent="Bays/Magnetic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 103, 2.7, 51)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Magnetic Wall Conveyor Turn (left)"
+
+[node name="ConveyorMagneticCeiling" parent="Bays/Magnetic" instance=ExtResource("hall_15")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 107, 1, 51)
+
+[node name="ConveyorMagneticCeilingLabel" type="Label3D" parent="Bays/Magnetic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 107, 2.7, 51)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Magnetic Ceiling Conveyor"
+
+[node name="ConveyorMagneticCeilingTurnRight" parent="Bays/Magnetic" instance=ExtResource("hall_16")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 111, 1, 51)
+
+[node name="ConveyorMagneticCeilingTurnRightLabel" type="Label3D" parent="Bays/Magnetic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 111, 2.7, 51)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Magnetic Ceiling Conveyor Turn"
+
+[node name="ConveyorMagneticCeilingTurnLeft" parent="Bays/Magnetic" instance=ExtResource("hall_17")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 115, 1, 51)
+
+[node name="ConveyorMagneticCeilingTurnLeftLabel" type="Label3D" parent="Bays/Magnetic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 115, 2.7, 51)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Magnetic Ceiling Conveyor Turn (left)"
+
+[node name="MagneticSign" type="Label3D" parent="Bays/Magnetic"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 100, 6.4, 59.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "MAGNETIC CONVEYORS"
+
+[node name="Launchers" type="Node3D" parent="Bays"]
+
+[node name="LaunchRamp" parent="Bays/Launchers" instance=ExtResource("hall_18")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 121, 1, 53)
+
+[node name="LaunchRampLabel" type="Label3D" parent="Bays/Launchers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 121, 4.7, 51)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Launch Ramp"
+
+[node name="Cannon" parent="Bays/Launchers" instance=ExtResource("hall_19")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 125, 1, 51)
+
+[node name="CannonLabel" type="Label3D" parent="Bays/Launchers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 125, 4.7, 50)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Cannon"
+
+[node name="Catapult" parent="Bays/Launchers" instance=ExtResource("hall_20")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 129, 1, 53)
+
+[node name="CatapultLabel" type="Label3D" parent="Bays/Launchers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 129, 4.7, 51)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Catapult"
+
+[node name="LaunchersSign" type="Label3D" parent="Bays/Launchers"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 127, 6.4, 59.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "LAUNCHERS"
+
+[node name="Chutes" type="Node3D" parent="Bays"]
+
+[node name="ChuteHStraight" parent="Bays/Chutes" instance=ExtResource("hall_21")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 43, 1, -47)
+
+[node name="ChuteHStraightLabel" type="Label3D" parent="Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Chute"
+
+[node name="ChuteHTurnRight" parent="Bays/Chutes" instance=ExtResource("hall_22")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 47, 1, -47)
+
+[node name="ChuteHTurnRightLabel" type="Label3D" parent="Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Chute Turn"
+
+[node name="ChuteHTurnLeft" parent="Bays/Chutes" instance=ExtResource("hall_23")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 51, 1, -47)
+
+[node name="ChuteHTurnLeftLabel" type="Label3D" parent="Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Chute Turn (left)"
+
+[node name="ChuteVStraight" parent="Bays/Chutes" instance=ExtResource("hall_24")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 55, 1, -47)
+
+[node name="ChuteVStraightLabel" type="Label3D" parent="Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Vertical Chute"
+
+[node name="ChuteVTurn" parent="Bays/Chutes" instance=ExtResource("hall_25")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 59, 1, -47)
+
+[node name="ChuteVTurnLabel" type="Label3D" parent="Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Chute Elbow"
+
+[node name="ChuteHopperUp" parent="Bays/Chutes" instance=ExtResource("hall_26")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 63, 1, -47)
+
+[node name="ChuteHopperUpLabel" type="Label3D" parent="Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 63, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Chute Hopper"
+
+[node name="ChuteDropperDown" parent="Bays/Chutes" instance=ExtResource("hall_27")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 67, 1, -47)
+
+[node name="ChuteDropperDownLabel" type="Label3D" parent="Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 67, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Chute Dropper"
+
+[node name="ChuteHopper2x2" parent="Bays/Chutes" instance=ExtResource("hall_28")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 73, 1, -49)
+
+[node name="ChuteHopper2x2Label" type="Label3D" parent="Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, 4.7, -48)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Large Chute Hopper"
+
+[node name="ChuteHopper3x3" parent="Bays/Chutes" instance=ExtResource("hall_29")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 79, 1, -49)
+
+[node name="ChuteHopper3x3Label" type="Label3D" parent="Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 79, 4.7, -49)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Huge Chute Hopper"
+
+[node name="ChutesSign" type="Label3D" parent="Bays/Chutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 64, 6.4, -59.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "CHUTES"
+
+[node name="PoweredChutes" type="Node3D" parent="Bays"]
+
+[node name="ChuteAdvHStraight" parent="Bays/PoweredChutes" instance=ExtResource("hall_30")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 89, 1, -47)
+
+[node name="ChuteAdvHStraightLabel" type="Label3D" parent="Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 89, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Chute"
+
+[node name="ChuteAdvHTurnRight" parent="Bays/PoweredChutes" instance=ExtResource("hall_31")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 93, 1, -47)
+
+[node name="ChuteAdvHTurnRightLabel" type="Label3D" parent="Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 93, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Chute Turn"
+
+[node name="ChuteAdvHTurnLeft" parent="Bays/PoweredChutes" instance=ExtResource("hall_32")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 97, 1, -47)
+
+[node name="ChuteAdvHTurnLeftLabel" type="Label3D" parent="Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 97, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Chute Turn (left)"
+
+[node name="ChuteAdvVStraight" parent="Bays/PoweredChutes" instance=ExtResource("hall_33")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 101, 1, -47)
+
+[node name="ChuteAdvVStraightLabel" type="Label3D" parent="Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 101, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Vertical Chute"
+
+[node name="ChuteAdvVTurn" parent="Bays/PoweredChutes" instance=ExtResource("hall_34")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 105, 1, -47)
+
+[node name="ChuteAdvVTurnLabel" type="Label3D" parent="Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 105, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Chute Elbow"
+
+[node name="ChuteAdvHopperUp" parent="Bays/PoweredChutes" instance=ExtResource("hall_35")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 109, 1, -47)
+
+[node name="ChuteAdvHopperUpLabel" type="Label3D" parent="Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 109, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Chute Hopper"
+
+[node name="ChuteAdvDropperDown" parent="Bays/PoweredChutes" instance=ExtResource("hall_36")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 113, 1, -47)
+
+[node name="ChuteAdvDropperDownLabel" type="Label3D" parent="Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 113, 2.7, -47)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Chute Dropper"
+
+[node name="ChuteAdvHopper2x2" parent="Bays/PoweredChutes" instance=ExtResource("hall_37")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 119, 1, -49)
+
+[node name="ChuteAdvHopper2x2Label" type="Label3D" parent="Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 118, 4.7, -48)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Large Chute Hopper"
+
+[node name="ChuteAdvHopper3x3" parent="Bays/PoweredChutes" instance=ExtResource("hall_38")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 125, 1, -49)
+
+[node name="ChuteAdvHopper3x3Label" type="Label3D" parent="Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 125, 4.7, -49)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Huge Chute Hopper"
+
+[node name="PoweredChutesSign" type="Label3D" parent="Bays/PoweredChutes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 111, 6.4, -59.6)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "POWERED CHUTES"
+
+[node name="Sorting" type="Node3D" parent="Bays"]
+
+[node name="FilterBasic" parent="Bays/Sorting" instance=ExtResource("hall_39")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 125, 1, 23)
+
+[node name="FilterBasicLabel" type="Label3D" parent="Bays/Sorting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 125, 4.7, 23)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Basic Filter"
+
+[node name="FilterArm" parent="Bays/Sorting" instance=ExtResource("hall_40")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 125, 1, 27)
+
+[node name="FilterArmLabel" type="Label3D" parent="Bays/Sorting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 125, 4.7, 27)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Filter Arm"
+
+[node name="SortingSign" type="Label3D" parent="Bays/Sorting"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 133.6, 6.4, 31)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "SORTING"
+
+[node name="Fields" type="Node3D" parent="Bays"]
+
+[node name="AntigravProjector" parent="Bays/Fields" instance=ExtResource("hall_41")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 125, 1, 1)
+
+[node name="Field" parent="Bays/Fields/AntigravProjector/Model" index="2"]
+scale = Vector3(1, 1, 2)
+
+[node name="FieldTrigger" parent="Bays/Fields/AntigravProjector"]
+box_size = Vector3(1.9, 1.9, 4)
+position = Vector3(0, 0, -3)
+
+[node name="AntigravProjectorLabel" type="Label3D" parent="Bays/Fields"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 125, 2.7, 1)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Antigravity Projector"
+
+[node name="ZeroPointProjector" parent="Bays/Fields" instance=ExtResource("hall_42")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 125, 1, 5)
+
+[node name="Field" parent="Bays/Fields/ZeroPointProjector/Model" index="2"]
+scale = Vector3(1, 1, 2)
+
+[node name="FieldTrigger" parent="Bays/Fields/ZeroPointProjector"]
+box_size = Vector3(1.6, 1.6, 4)
+position = Vector3(0, 0, -3)
+
+[node name="ZeroPointProjectorLabel" type="Label3D" parent="Bays/Fields"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 125, 2.7, 5)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Zero Point Projector"
+
+[node name="FieldsSign" type="Label3D" parent="Bays/Fields"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 133.6, 6.4, 10)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "FIELDS"
+
+[node name="Processing" type="Node3D" parent="Bays"]
+
+[node name="PlatePress" parent="Bays/Processing" instance=ExtResource("hall_43")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 127, 1, -19)
+
+[node name="PlatePressLabel" type="Label3D" parent="Bays/Processing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 126, 2.7, -19)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Plate Press"
+
+[node name="RodExtruder" parent="Bays/Processing" instance=ExtResource("hall_44")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 127, 1, -15)
+
+[node name="RodExtruderLabel" type="Label3D" parent="Bays/Processing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 126, 2.7, -15)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Rod Extruder"
+
+[node name="Polisher" parent="Bays/Processing" instance=ExtResource("hall_45")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 127, 1, -9)
+
+[node name="PolisherLabel" type="Label3D" parent="Bays/Processing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 126, 2.7, -10)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Polishing Machine"
+
+[node name="ProcessingSign" type="Label3D" parent="Bays/Processing"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 133.6, 6.4, -11)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "PROCESSING"
+
+[node name="Utilities" type="Node3D" parent="Bays"]
+
+[node name="Smelter" parent="Bays/Utilities" instance=ExtResource("hall_46")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 127, 1, -35)
+
+[node name="SmelterLabel" type="Label3D" parent="Bays/Utilities"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 126, 4.7, -36)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Smelter"
+
+[node name="ItemVoid" parent="Bays/Utilities" instance=ExtResource("hall_47")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 127, 1, -29)
+
+[node name="SpawnTube" parent="Bays/Utilities" instance=ExtResource("hall_48")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 127, 3, -29)
+
+[node name="SpawnTubeLabel" type="Label3D" parent="Bays/Utilities"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 127, 6.7, -29)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Spawn Tube (developer only)"
+
+[node name="TubeGantryPost" type="Box3DBody" parent="Bays/Utilities"]
+body_type = 0
+box_size = Vector3(0.3, 6.5, 0.3)
+position = Vector3(128.7, 3.25, -29)
+
+[node name="TubeGantryArm" type="Box3DBody" parent="Bays/Utilities"]
+body_type = 0
+box_size = Vector3(2, 0.3, 0.3)
+position = Vector3(127.85, 6.15, -29)
+
+[node name="UtilitiesSign" type="Label3D" parent="Bays/Utilities"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 133.6, 6.4, -30)
+double_sided = false
+pixel_size = 0.02
+font_size = 96
+outline_size = 12
+text = "UTILITIES"
+
+[node name="Demos" type="Node3D" parent="."]
+
+[node name="SmeltingLine" type="Node3D" parent="Demos"]
+
+[node name="SmeltingLineTitle" type="Label3D" parent="Demos/SmeltingLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 3.2, 25)
+billboard = 1
+pixel_size = 0.012
+font_size = 64
+outline_size = 12
+text = "Demo: Smelting & Plate Line"
+
+[node name="ItemSpawner" parent="Demos/SmeltingLine" instance=ExtResource("hall_49")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 49, 1, 25)
+itemWeights = Dictionary[String, float]({"iron_ore": 1.0})
+interval = 4.0
+
+[node name="ItemSpawnerLabel" type="Label3D" parent="Demos/SmeltingLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49, 2.7, 25)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Item Spawner"
+
+[node name="Conveyor" parent="Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 51, 1, 25)
+
+[node name="Conveyor2" parent="Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 53, 1, 25)
+
+[node name="ConveyorSlope" parent="Demos/SmeltingLine" instance=ExtResource("hall_51")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 55, 1, 25)
+
+[node name="Conveyor3" parent="Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 59, 3, 25)
+
+[node name="Smelter2" parent="Demos/SmeltingLine" instance=ExtResource("hall_46")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 61, 1, 25)
+
+[node name="Smelter2Label" type="Label3D" parent="Demos/SmeltingLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 62, 4.7, 26)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Smelter"
+
+[node name="Conveyor4" parent="Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 65, 1, 25)
+
+[node name="Conveyor5" parent="Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 67, 1, 25)
+
+[node name="PlatePress2" parent="Demos/SmeltingLine" instance=ExtResource("hall_43")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 69, 1, 25)
+
+[node name="PlatePress2Label" type="Label3D" parent="Demos/SmeltingLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 2.7, 25)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Plate Press"
+
+[node name="Conveyor6" parent="Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 73, 1, 25)
+
+[node name="Polisher2" parent="Demos/SmeltingLine" instance=ExtResource("hall_45")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 75, 1, 25)
+
+[node name="Polisher2Label" type="Label3D" parent="Demos/SmeltingLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 76, 2.7, 26)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Polishing Machine"
+
+[node name="ConveyorSplitterSwitch2" parent="Demos/SmeltingLine" instance=ExtResource("hall_1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 79, 1, 25)
+
+[node name="ConveyorSplitterSwitch2Label" type="Label3D" parent="Demos/SmeltingLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 79, 2.7, 25)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Switchable Splitter"
+
+[node name="Conveyor7" parent="Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 79, 1, 27)
+
+[node name="Conveyor8" parent="Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 79, 1, 29)
+
+[node name="ItemVoid2" parent="Demos/SmeltingLine" instance=ExtResource("hall_47")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 79, 1, 31)
+
+[node name="Conveyor9" parent="Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 79, 1, 23)
+
+[node name="Conveyor10" parent="Demos/SmeltingLine" instance=ExtResource("hall_50")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 79, 1, 21)
+
+[node name="ItemVoid3" parent="Demos/SmeltingLine" instance=ExtResource("hall_47")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 79, 1, 19)
+
+[node name="RodLine" type="Node3D" parent="Demos"]
+
+[node name="RodLineTitle" type="Label3D" parent="Demos/RodLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 3.2, 5)
+billboard = 1
+pixel_size = 0.012
+font_size = 64
+outline_size = 12
+text = "Demo: Sorted Rod Line"
+
+[node name="ItemSpawner2" parent="Demos/RodLine" instance=ExtResource("hall_49")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 49, 1, 5)
+itemWeights = Dictionary[String, float]({"iron_ore": 1.0})
+interval = 4.0
+
+[node name="ItemSpawner2Label" type="Label3D" parent="Demos/RodLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49, 2.7, 5)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Item Spawner"
+
+[node name="ConveyorAdvanced2" parent="Demos/RodLine" instance=ExtResource("hall_3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 51, 1, 5)
+
+[node name="ConveyorAdvanced3" parent="Demos/RodLine" instance=ExtResource("hall_3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 53, 1, 5)
+
+[node name="FilterBasic2" parent="Demos/RodLine" instance=ExtResource("hall_39")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 55, 1, 5)
+
+[node name="FilterBasic2Label" type="Label3D" parent="Demos/RodLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55, 4.7, 5)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Basic Filter"
+
+[node name="Conveyor11" parent="Demos/RodLine" instance=ExtResource("hall_50")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 55, 1, 7)
+
+[node name="Conveyor12" parent="Demos/RodLine" instance=ExtResource("hall_50")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 55, 1, 9)
+
+[node name="ItemVoid4" parent="Demos/RodLine" instance=ExtResource("hall_47")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 55, 1, 11)
+
+[node name="FilterArm2" parent="Demos/RodLine" instance=ExtResource("hall_40")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 51, 1, 9)
+
+[node name="FilterArm2Label" type="Label3D" parent="Demos/RodLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, 4.7, 9)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Filter Arm"
+
+[node name="ConveyorAdvanced4" parent="Demos/RodLine" instance=ExtResource("hall_3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 57, 1, 5)
+
+[node name="RodExtruder2" parent="Demos/RodLine" instance=ExtResource("hall_44")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 59, 1, 5)
+
+[node name="RodExtruder2Label" type="Label3D" parent="Demos/RodLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 2.7, 5)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Rod Extruder"
+
+[node name="ConveyorAdvanced5" parent="Demos/RodLine" instance=ExtResource("hall_3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 63, 1, 5)
+
+[node name="ConveyorAdvancedLoader2" parent="Demos/RodLine" instance=ExtResource("hall_8")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 65, 1, 5)
+
+[node name="ConveyorAdvancedLoader2Label" type="Label3D" parent="Demos/RodLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65, 2.7, 5)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Advanced Loader Conveyor"
+
+[node name="Conveyor13" parent="Demos/RodLine" instance=ExtResource("hall_50")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 67, 1, 5)
+
+[node name="Conveyor14" parent="Demos/RodLine" instance=ExtResource("hall_50")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 67, 1, 7)
+
+[node name="Conveyor15" parent="Demos/RodLine" instance=ExtResource("hall_50")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 67, 1, 9)
+
+[node name="ItemVoid5" parent="Demos/RodLine" instance=ExtResource("hall_47")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 67, 1, 11)
+
+[node name="LaunchLine" type="Node3D" parent="Demos"]
+
+[node name="LaunchLineTitle" type="Label3D" parent="Demos/LaunchLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 3.2, -11)
+billboard = 1
+pixel_size = 0.012
+font_size = 64
+outline_size = 12
+text = "Demo: Launch & Catch"
+
+[node name="Deck" type="Box3DBody" parent="Demos/LaunchLine"]
+body_type = 0
+box_size = Vector3(10, 2, 2)
+position = Vector3(53, 1, -11)
+
+[node name="ItemSpawner3" parent="Demos/LaunchLine" instance=ExtResource("hall_49")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 49, 3, -11)
+itemWeights = Dictionary[String, float]({"iron_ore": 1.0})
+interval = 4.0
+
+[node name="ItemSpawner3Label" type="Label3D" parent="Demos/LaunchLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49, 4.7, -11)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Item Spawner"
+
+[node name="Conveyor16" parent="Demos/LaunchLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 51, 3, -11)
+
+[node name="LaunchRamp2" parent="Demos/LaunchLine" instance=ExtResource("hall_18")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 53, 3, -11)
+
+[node name="LaunchRamp2Label" type="Label3D" parent="Demos/LaunchLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55, 6.7, -11)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Launch Ramp"
+
+[node name="ChuteHopper3x32" parent="Demos/LaunchLine" instance=ExtResource("hall_29")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 65, 3, -11)
+
+[node name="ChuteHopper3x32Label" type="Label3D" parent="Demos/LaunchLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65, 6.7, -11)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Huge Chute Hopper"
+
+[node name="Pillar" type="Box3DBody" parent="Demos/LaunchLine"]
+body_type = 0
+box_size = Vector3(0.3, 2, 0.3)
+position = Vector3(62.3, 1, -13.7)
+
+[node name="Pillar2" type="Box3DBody" parent="Demos/LaunchLine"]
+body_type = 0
+box_size = Vector3(0.3, 2, 0.3)
+position = Vector3(67.7, 1, -13.7)
+
+[node name="Pillar3" type="Box3DBody" parent="Demos/LaunchLine"]
+body_type = 0
+box_size = Vector3(0.3, 2, 0.3)
+position = Vector3(62.3, 1, -8.3)
+
+[node name="Pillar4" type="Box3DBody" parent="Demos/LaunchLine"]
+body_type = 0
+box_size = Vector3(0.3, 2, 0.3)
+position = Vector3(67.7, 1, -8.3)
+
+[node name="ChuteVTurn2" parent="Demos/LaunchLine" instance=ExtResource("hall_25")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 65, 1, -11)
+
+[node name="ChuteHStraight2" parent="Demos/LaunchLine" instance=ExtResource("hall_21")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 67, 1, -11)
+
+[node name="ChuteHStraight3" parent="Demos/LaunchLine" instance=ExtResource("hall_21")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 69, 1, -11)
+
+[node name="ChuteHTurnLeft2" parent="Demos/LaunchLine" instance=ExtResource("hall_23")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 71, 1, -11)
+
+[node name="ChuteHStraight4" parent="Demos/LaunchLine" instance=ExtResource("hall_21")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 71, 1, -13)
+
+[node name="ItemVoid6" parent="Demos/LaunchLine" instance=ExtResource("hall_47")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 71, 1, -15)
+
+[node name="CannonLine" type="Node3D" parent="Demos"]
+
+[node name="CannonLineTitle" type="Label3D" parent="Demos/CannonLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 3.2, -23)
+billboard = 1
+pixel_size = 0.012
+font_size = 64
+outline_size = 12
+text = "Demo: Cannon & Chute Tower"
+
+[node name="ConveyorAdvanced6" parent="Demos/CannonLine" instance=ExtResource("hall_3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 77, 1, -23)
+
+[node name="ConveyorAdvanced7" parent="Demos/CannonLine" instance=ExtResource("hall_3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 79, 1, -23)
+
+[node name="Cannon2" parent="Demos/CannonLine" instance=ExtResource("hall_19")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 81, 1, -23)
+
+[node name="Cannon2Label" type="Label3D" parent="Demos/CannonLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 82, 4.7, -23)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Cannon"
+
+[node name="ChuteAdvHopperUp2" parent="Demos/CannonLine" instance=ExtResource("hall_35")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 91, 5, -23)
+
+[node name="ChuteAdvVStraight2" parent="Demos/CannonLine" instance=ExtResource("hall_33")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 91, 3, -23)
+
+[node name="ChuteAdvVTurn2" parent="Demos/CannonLine" instance=ExtResource("hall_34")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 91, 1, -23)
+
+[node name="ChuteAdvHStraight2" parent="Demos/CannonLine" instance=ExtResource("hall_30")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 93, 1, -23)
+
+[node name="ChuteAdvHStraight3" parent="Demos/CannonLine" instance=ExtResource("hall_30")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 95, 1, -23)
+
+[node name="ItemVoid7" parent="Demos/CannonLine" instance=ExtResource("hall_47")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 97, 1, -23)
+
+[node name="TowerLabel" type="Label3D" parent="Demos/CannonLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 91, 7.2, -23)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Powered Chute Tower"
+
+[node name="CatapultLine" type="Node3D" parent="Demos"]
+
+[node name="CatapultLineTitle" type="Label3D" parent="Demos/CatapultLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 3.2, -33)
+billboard = 1
+pixel_size = 0.012
+font_size = 64
+outline_size = 12
+text = "Demo: Catapult"
+
+[node name="Conveyor17" parent="Demos/CatapultLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 75, 1, -33)
+
+[node name="Conveyor18" parent="Demos/CatapultLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 77, 1, -33)
+
+[node name="Catapult2" parent="Demos/CatapultLine" instance=ExtResource("hall_20")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 79, 1, -33)
+
+[node name="Catapult2Label" type="Label3D" parent="Demos/CatapultLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 81, 4.7, -33)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Catapult"
+
+[node name="ItemVoid8" parent="Demos/CatapultLine" instance=ExtResource("hall_47")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 95, 1, -33)
+
+[node name="FieldLine" type="Node3D" parent="Demos"]
+
+[node name="FieldLineTitle" type="Label3D" parent="Demos/FieldLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 3.2, 15)
+billboard = 1
+pixel_size = 0.012
+font_size = 64
+outline_size = 12
+text = "Demo: Field Projectors"
+
+[node name="AntigravProjector2" parent="Demos/FieldLine" instance=ExtResource("hall_41")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 89, 1, 25)
+
+[node name="Field" parent="Demos/FieldLine/AntigravProjector2/Model" index="2"]
+scale = Vector3(1, 1, 2)
+
+[node name="FieldTrigger" parent="Demos/FieldLine/AntigravProjector2"]
+box_size = Vector3(1.9, 1.9, 4)
+position = Vector3(0, 0, -3)
+
+[node name="AntigravProjector2Label" type="Label3D" parent="Demos/FieldLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 89, 2.7, 25)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Antigravity Projector"
+
+[node name="ItemSpawner4" parent="Demos/FieldLine" instance=ExtResource("hall_49")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 93, 1, 23)
+itemWeights = Dictionary[String, float]({"iron_ore": 1.0})
+interval = 4.0
+
+[node name="Conveyor19" parent="Demos/FieldLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 91, 1, 25)
+
+[node name="Conveyor20" parent="Demos/FieldLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 93, 1, 25)
+
+[node name="Conveyor21" parent="Demos/FieldLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 95, 1, 25)
+
+[node name="Conveyor22" parent="Demos/FieldLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 97, 1, 25)
+
+[node name="ItemVoid9" parent="Demos/FieldLine" instance=ExtResource("hall_47")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 99, 1, 25)
+
+[node name="ZeroPointProjector2" parent="Demos/FieldLine" instance=ExtResource("hall_42")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 89, 1, 15)
+
+[node name="Field" parent="Demos/FieldLine/ZeroPointProjector2/Model" index="2"]
+scale = Vector3(1, 1, 2)
+
+[node name="FieldTrigger" parent="Demos/FieldLine/ZeroPointProjector2"]
+box_size = Vector3(1.6, 1.6, 4)
+position = Vector3(0, 0, -3)
+
+[node name="ZeroPointProjector2Label" type="Label3D" parent="Demos/FieldLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 89, 2.7, 15)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Zero Point Projector"
+
+[node name="Conveyor23" parent="Demos/FieldLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 91, 1, 15)
+
+[node name="Conveyor24" parent="Demos/FieldLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 93, 1, 15)
+
+[node name="Conveyor25" parent="Demos/FieldLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 95, 1, 15)
+
+[node name="Conveyor26" parent="Demos/FieldLine" instance=ExtResource("hall_50")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 97, 1, 15)
+
+[node name="ItemVoid10" parent="Demos/FieldLine" instance=ExtResource("hall_47")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 99, 1, 15)
+
+[node name="MagneticTunnel" type="Node3D" parent="Demos"]
+
+[node name="MagneticTunnelTitle" type="Label3D" parent="Demos/MagneticTunnel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 3.2, -1)
+billboard = 1
+pixel_size = 0.012
+font_size = 64
+outline_size = 12
+text = "Demo: Magnetic Tunnel"
+
+[node name="ConveyorMagnetic2" parent="Demos/MagneticTunnel" instance=ExtResource("hall_9")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 89, 1, -1)
+
+[node name="ConveyorMagnetic3" parent="Demos/MagneticTunnel" instance=ExtResource("hall_9")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 91, 1, -1)
+
+[node name="ConveyorMagnetic4" parent="Demos/MagneticTunnel" instance=ExtResource("hall_9")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 93, 1, -1)
+
+[node name="ConveyorMagnetic5" parent="Demos/MagneticTunnel" instance=ExtResource("hall_9")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 95, 1, -1)
+
+[node name="ConveyorMagnetic6" parent="Demos/MagneticTunnel" instance=ExtResource("hall_9")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 97, 1, -1)
+
+[node name="ConveyorMagnetic7" parent="Demos/MagneticTunnel" instance=ExtResource("hall_9")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 99, 1, -1)
+
+[node name="ConveyorMagneticWall2" parent="Demos/MagneticTunnel" instance=ExtResource("hall_12")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 89, 3, -1)
+
+[node name="ConveyorMagneticWall3" parent="Demos/MagneticTunnel" instance=ExtResource("hall_12")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 91, 3, -1)
+
+[node name="ConveyorMagneticWall4" parent="Demos/MagneticTunnel" instance=ExtResource("hall_12")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 93, 3, -1)
+
+[node name="ConveyorMagneticWall5" parent="Demos/MagneticTunnel" instance=ExtResource("hall_12")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 95, 3, -1)
+
+[node name="ConveyorMagneticWall6" parent="Demos/MagneticTunnel" instance=ExtResource("hall_12")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 97, 3, -1)
+
+[node name="ConveyorMagneticWall7" parent="Demos/MagneticTunnel" instance=ExtResource("hall_12")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 99, 3, -1)
+
+[node name="ConveyorMagneticCeiling2" parent="Demos/MagneticTunnel" instance=ExtResource("hall_15")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 89, 5, -1)
+
+[node name="ConveyorMagneticCeiling3" parent="Demos/MagneticTunnel" instance=ExtResource("hall_15")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 91, 5, -1)
+
+[node name="ConveyorMagneticCeiling4" parent="Demos/MagneticTunnel" instance=ExtResource("hall_15")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 93, 5, -1)
+
+[node name="ConveyorMagneticCeiling5" parent="Demos/MagneticTunnel" instance=ExtResource("hall_15")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 95, 5, -1)
+
+[node name="ConveyorMagneticCeiling6" parent="Demos/MagneticTunnel" instance=ExtResource("hall_15")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 97, 5, -1)
+
+[node name="ConveyorMagneticCeiling7" parent="Demos/MagneticTunnel" instance=ExtResource("hall_15")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 99, 5, -1)
+
+[node name="TunnelWall" type="Box3DBody" parent="Demos/MagneticTunnel"]
+body_type = 0
+box_size = Vector3(12, 6, 0.4)
+position = Vector3(94, 3, -2.2)
+
+[node name="TunnelRoof" type="Box3DBody" parent="Demos/MagneticTunnel"]
+body_type = 0
+box_size = Vector3(12, 0.3, 2.6)
+position = Vector3(94, 6.15, -1.1)
+
+[node name="TunnelLabel" type="Label3D" parent="Demos/MagneticTunnel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 94, 7.2, -1)
+billboard = 1
+pixel_size = 0.008
+font_size = 40
+outline_size = 12
+text = "Floor / Wall / Ceiling magnetic belts"
+
+[node name="BoxesFloor" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("hall_mm_54")
+
+[node name="BoxesFrame" type="MultiMeshInstance3D" parent="Architecture"]
+multimesh = SubResource("hall_mm_55")
+
+[node name="BoxesPanel" type="MultiMeshInstance3D" parent="Architecture"]
+multimesh = SubResource("hall_mm_56")
+
+[node name="BoxesFrame" type="MultiMeshInstance3D" parent="Bays"]
+multimesh = SubResource("hall_mm_57")
+
+[node name="BoxesHazard" type="MultiMeshInstance3D" parent="Bays"]
+multimesh = SubResource("hall_mm_58")
+
+[node name="BoxesFrame" type="MultiMeshInstance3D" parent="Demos"]
+multimesh = SubResource("hall_mm_59")
+
+[node name="BoxesHazard" type="MultiMeshInstance3D" parent="Demos"]
+multimesh = SubResource("hall_mm_60")
+
+[node name="BoxesPanel" type="MultiMeshInstance3D" parent="Demos"]
+multimesh = SubResource("hall_mm_61")

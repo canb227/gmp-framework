@@ -79,27 +79,19 @@ public partial class GameWorld
 
     public override void _PhysicsProcess(double delta)
     {
-        if (started)
-        {
-            tickNum++;
-        }
-        else
+        // Paused (loading, or frozen for a resync): the world isn't moving, so there is nothing to send or apply.
+        // Received states wait in pendingStates; a restore clears them.
+        if (!started || GetTree().Paused)
         {
             return;
         }
+        tickNum++;
         foreach ((ulong id, (ulong sender, byte[] state)) in pendingStates)
         {
-            if (syncedObjs.TryGetValue(id, out GMPObject gmpo))
+            // Only the object's current authority may move it (drops stragglers after a Claim).
+            if (syncedObjs.TryGetValue(id, out GMPObject gmpo) && gmpo.authority == sender)
             {
-                // Only the object's current authority may move it (drops stragglers after a Claim).
-                if (gmpo.authority == sender)
-                {
-                    gmpo.ApplyStateUpdate(state);
-                }
-            }
-            else
-            {
-                //Logging.Warn($"State update for unknown object {id} (not spawned yet, or already despawned)", "GameWorld");
+                gmpo.ApplyStateUpdate(state);
             }
         }
         pendingStates.Clear();
@@ -139,16 +131,13 @@ public partial class GameWorld
                 e.priorityAccumulator = 0;
                 continue;
             }
-            if (tickSize + update.Length <= maxTickSize)
-            {
-                tickSize += update.Length;
-                pendingOutgoingTick.updates.Add((e.id, update));
-                e.priorityAccumulator = 0;
-            }
-            else
+            if (tickSize + update.Length > maxTickSize)
             {
                 break;
             }
+            tickSize += update.Length;
+            pendingOutgoingTick.updates.Add((e.id, update));
+            e.priorityAccumulator = 0;
         }
         if (pendingOutgoingTick.updates.Count > 0)
         {
@@ -156,6 +145,5 @@ public partial class GameWorld
             Lobby.SendToAllExceptSelf(Channel.GAME_State, pack.Serialize<WorldTickMessage>(pendingOutgoingTick));
             pendingOutgoingTick = new();
         }
-
     }
 }

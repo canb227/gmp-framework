@@ -1,6 +1,6 @@
 """
 Resource and product item models (world items: the physical pieces that ride the belts). Origin at the item's
-centre of mass; Blender Z is Godot Y. Each model matches its collider in tools/items/gen_items.py:
+centre of mass; Blender Z is Godot Y. Each model matches its collider in the item's world scene (game/scenes/items/world/):
 
   box (x, y, z)      -> the model spans Blender (x, z, y) around the origin
   sphere r           -> a lump of radius ~r

@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bo34hju0lbyq8" path="res://game/scenes/entities/devScrapSource.tscn" id="1_u7xt8"]
 [ext_resource type="Material" uid="uid://bxp2j5qppx4lp" path="res://game/assets/materials/tile_floor.tres" id="2_jhkrf"]
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="2_s0g2q"]
 [ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="3_5cgpr"]
 [ext_resource type="PackedScene" uid="uid://r064irodompm" path="res://game/scenes/items/world/metals/scrap_piece_barrel.tscn" id="3_68s35"]
 [ext_resource type="Texture2D" uid="uid://c06b1j8wdtii5" path="res://game/assets/textures/circuit_board.jpeg" id="3_d2mjd"]
@@ -17,6 +18,7 @@
 [ext_resource type="PackedScene" uid="uid://dxv3vfkutt1i6" path="res://game/scenes/structures/special/store.tscn" id="7_ihq8k"]
 [ext_resource type="Material" uid="uid://bosg7vc1hulq8" path="res://game/assets/materials/temp_metal.tres" id="8_kuy7m"]
 [ext_resource type="PackedScene" uid="uid://bywvnipt62y5r" path="res://game/scenes/structures/ItemVoid.tscn" id="9_kuy7m"]
+[ext_resource type="Script" uid="uid://cltf2fbu2l28o" path="res://game/scripts/core/NoBuildVolume.cs" id="10_6ag5b"]
 [ext_resource type="Texture2D" uid="uid://dfssoii6t84gn" path="res://game/assets/textures/wall_basic_1/wall_basic_1_diffuseOriginal.png" id="12_ihq8k"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vchc8"]
@@ -196,6 +198,12 @@ albedo_texture = ExtResource("3_d2mjd")
 [sub_resource type="BoxMesh" id="BoxMesh_4x2dv"]
 material = SubResource("StandardMaterial3D_tt1o4")
 size = Vector3(1, 0.1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_68s35"]
+transparency = 1
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(1, 0.14500004, 0.100000024, 0.015686275)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pet1e"]
 albedo_texture = ExtResource("7_fgl2k")
@@ -385,6 +393,11 @@ density = 20.0
 friction = 0.5
 restitution = 0.2
 transform = Transform3D(1, 0, 0, 0, 0.37616295, -0.92655355, 0, 0.92655355, 0.37616295, 52.09257, 1.6898992, 0.37166092)
+script = ExtResource("2_s0g2q")
+itemID = "test"
+canBePickTarget = true
+canBeGrabbed = true
+canBeInteractedWith = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff/StartingScrap/Box3DBody" unique_id=1857490159]
 transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, -0.045993805, 0, 0)
@@ -593,6 +606,13 @@ omni_range = 15.0
 [node name="GoalScreen" parent="WorldStuff" unique_id=923969412 instance=ExtResource("3_yv5q0")]
 box_size = Vector3(3, 2.6, 0.14)
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -8.277921, 2.0336442, 0.4161811)
+
+[node name="NoBuildVolume" type="CSGBox3D" parent="WorldStuff" unique_id=303080488]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.516238, 9.446808, -1.0191422)
+size = Vector3(8.207981, 46.41278, 103.54518)
+material = SubResource("StandardMaterial3D_68s35")
+script = ExtResource("10_6ag5b")
+metadata/_custom_type_script = "uid://cltf2fbu2l28o"
 
 [node name="store" parent="." unique_id=1931553037 instance=ExtResource("7_ihq8k")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 1, -5)

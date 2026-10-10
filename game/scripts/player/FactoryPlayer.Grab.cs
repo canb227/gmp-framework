@@ -44,8 +44,9 @@ public partial class FactoryPlayer
     /// <summary>...for this long (s), e.g. when it's pinned behind a wall.</summary>
     [Export] float grabBreakTime = 0.5f;
 
-    PhysicalFactoryItem grabTarget;
-    bool isGrabbing => grabTarget != null;
+    /// <summary>The item this player is holding with the grab, or null.</summary>
+    public PhysicalFactoryItem grabbedItem { get; private set; }
+    bool isGrabbing => grabbedItem != null;
 
     Node3D grabNode;
     float grabDistance;
@@ -59,24 +60,20 @@ public partial class FactoryPlayer
     static readonly Vector3 grabGravity = ProjectSettings.GetSetting("physics/3d/default_gravity_vector").AsVector3()
         * ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
 
+    /// <summary>
+    /// A/B test switch: when false, an empty hand no longer grabs; only a tool can start a grab (the single-item
+    /// magnet rod, <see cref="MagnetRod.singleItemGrab"/>). Toggled in the "debugui player" window.
+    /// </summary>
+    public static bool emptyHandGrabEnabled = true;
+
     /// <summary>Holds the grab button down regardless of input (used by the headless multiplayer test).</summary>
     public bool forceGrabHeld;
-    public PhysicalFactoryItem grabbedItem => grabTarget;
     /// <summary>Where a grabbed item is held.</summary>
     public Vector3 grabPoint => grabNode.GlobalPosition;
 
-    void ReadyGrab()
-    {
-        grabNode = GetNode<Node3D>("%grabNode");
-    }
-
-    // Subscribed from AfterInit on the local player; unsubscribed from _ExitTree.
-    void SubscribeGrabClaims() => GameWorld.ClaimGrantedEvent += OnClaimGranted;
-    void UnsubscribeGrabClaims() => GameWorld.ClaimGrantedEvent -= OnClaimGranted;
-
     void HandleGrabInput(InputEvent @event)
     {
-        if (@event.IsActionPressed(InputActions.primary))
+        if (emptyHandGrabEnabled && @event.IsActionPressed(InputActions.primary))
         {
             bool emptyHand = inventory.ActiveHotbarSlot == -1 || inventory.slots[inventory.ActiveHotbarSlot].IsEmpty;
             if (emptyHand && pickTarget is PhysicalFactoryItem item && item.canBeGrabbed)
@@ -102,16 +99,12 @@ public partial class FactoryPlayer
         if (isGrabbing) EndGrab();
     }
 
+    // Subscribed from AfterInit on the local player; unsubscribed from _ExitTree.
     void OnClaimGranted(ulong id, ulong newAuthority)
     {
-        if (!pendingGrabClaims.Remove(id, out PhysicalFactoryItem item))
-        {
-            return;
-        }
-        if (newAuthority != Lobby.selfPeerID || !IsInstanceValid(item))
-        {
-            return; // someone else got it first
-        }
+        if (!pendingGrabClaims.Remove(id, out PhysicalFactoryItem item)) return;
+        if (newAuthority != Lobby.selfPeerID || !IsInstanceValid(item)) return; // someone else got it first
+
         // Granted, but if the button was released or we moved on in the meantime, hand it back.
         if (!isGrabbing && (Input.IsActionPressed(InputActions.primary) || forceGrabHeld))
         {
@@ -125,7 +118,7 @@ public partial class FactoryPlayer
 
     void StartGrab(PhysicalFactoryItem item)
     {
-        grabTarget = item;
+        grabbedItem = item;
         // Hold it where it is (distance-wise) rather than yanking it to a fixed point.
         float distance = (item.GlobalPosition - camera.GlobalPosition).Dot(-camera.GlobalTransform.Basis.Z);
         SetGrabDistance(distance);
@@ -136,14 +129,8 @@ public partial class FactoryPlayer
 
     void EndGrab()
     {
-        GameWorld.Release(grabTarget);
-        grabTarget = null;
-    }
-
-    /// <summary>Moves the grab point one step nearer (+1) or further (-1), within limits.</summary>
-    void MoveGrabPoint(int step)
-    {
-        SetGrabDistance(grabDistance - step * grabScrollStep);
+        GameWorld.Release(grabbedItem);
+        grabbedItem = null;
     }
 
     void SetGrabDistance(float distance)
@@ -156,10 +143,10 @@ public partial class FactoryPlayer
     void ApplyGrabForce(double delta)
     {
         if (!isGrabbing) return;
-        if (!IsInstanceValid(grabTarget) || grabTarget.authority != Lobby.selfPeerID)
+        if (!IsInstanceValid(grabbedItem) || grabbedItem.authority != Lobby.selfPeerID)
         {
             // Despawned (e.g. picked up, or fell in a void) or taken over while held.
-            grabTarget = null;
+            grabbedItem = null;
             return;
         }
 
@@ -170,20 +157,20 @@ public partial class FactoryPlayer
         grabPointVelocity = grabPointVelocity.Lerp(rawTargetVelocity, 1f - Mathf.Exp(-dt / grabFollowSmoothing));
         Vector3 targetVelocity = grabPointVelocity;
 
-        Vector3 error = target - grabTarget.GlobalPosition;
+        Vector3 error = target - grabbedItem.GlobalPosition;
         Vector3 pull = error * grabPositionGain;
         if (pull.Length() > grabMaxPullSpeed) pull = pull.Normalized() * grabMaxPullSpeed;
         Vector3 wantedVelocity = targetVelocity + pull;
 
-        Vector3 velocity = grabTarget.GetLinearVelocity();
+        Vector3 velocity = grabbedItem.GetLinearVelocity();
         // Correct at most 90% of the velocity difference per tick, whatever the gain: this keeps the loop stable.
         float response = Mathf.Min(grabVelocityGain, 0.9f / dt);
         Vector3 accel = (wantedVelocity - velocity) * response - grabGravity;
 
-        float mass = grabTarget.GetMass();
+        float mass = grabbedItem.GetMass();
         Vector3 force = accel * mass;
         if (force.Length() > grabStrength) force = force.Normalized() * grabStrength;
-        grabTarget.ApplyCentralForce(force);
+        grabbedItem.ApplyCentralForce(force);
 
         DampGrabSpin(dt);
 
@@ -197,10 +184,10 @@ public partial class FactoryPlayer
     // Removes a fraction of the held item's spin each tick (an angular impulse of I * delta-omega).
     void DampGrabSpin(float dt)
     {
-        Vector3 spin = grabTarget.GetAngularVelocity();
+        Vector3 spin = grabbedItem.GetAngularVelocity();
         if (spin.LengthSquared() < 1e-6f) return;
-        Basis inertia = grabTarget.GetInertiaTensor();
+        Basis inertia = grabbedItem.GetInertiaTensor();
         Vector3 deltaSpin = -spin * Mathf.Min(1f, grabSpinDamping * dt);
-        grabTarget.ApplyAngularImpulse(inertia * deltaSpin);
+        grabbedItem.ApplyAngularImpulse(inertia * deltaSpin);
     }
 }

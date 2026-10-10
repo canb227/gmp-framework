@@ -240,7 +240,6 @@ public partial class RPCManager : Node
             {
                 method.method.Invoke(target, callArgs);
             }
-
         }
         catch (TargetInvocationException e)
         {
@@ -256,7 +255,8 @@ public partial class RPCManager : Node
         }
     }
 
-    // Walks the type hierarchy so private [RPC] methods declared on base classes are found too.
+    // Walks the type hierarchy so private [RPC] methods declared on base classes are found too, then the
+    // implemented interfaces, so an interface's default [RPC] methods (e.g. Activator's) are found as well.
     private static RpcMethod FindRpcMethod(Type type, string name)
     {
         if (methodCache.TryGetValue((type, name), out RpcMethod cached))
@@ -265,16 +265,26 @@ public partial class RPCManager : Node
         RpcMethod found = null;
         for (Type t = type; t != null && found == null; t = t.BaseType)
         {
-            foreach (MethodInfo m in t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly))
-            {
-                if (m.Name == name && m.GetCustomAttribute<RPCAttribute>() is RPCAttribute attribute)
-                {
-                    found = new RpcMethod(m, m.GetParameters(), attribute.requireAuthority);
-                    break;
-                }
-            }
+            found = FindDeclaredRpcMethod(t, name);
+        }
+        foreach (Type i in type.GetInterfaces())
+        {
+            if (found != null) break;
+            found = FindDeclaredRpcMethod(i, name);
         }
         methodCache[(type, name)] = found;
         return found;
+    }
+
+    private static RpcMethod FindDeclaredRpcMethod(Type t, string name)
+    {
+        foreach (MethodInfo m in t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly))
+        {
+            if (m.Name == name && m.GetCustomAttribute<RPCAttribute>() is RPCAttribute attribute)
+            {
+                return new RpcMethod(m, m.GetParameters(), attribute.requireAuthority);
+            }
+        }
+        return null;
     }
 }

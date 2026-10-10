@@ -2,8 +2,8 @@
 
 [ext_resource type="PackedScene" path="res://game/scenes/entities/devScrapSource.tscn" id="1_source"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/processing/ScrapArm.tscn" id="2_arm"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/Conveyor.tscn" id="3_straight"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/ConveyorSlope.tscn" id="6_slope"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/basic/Conveyor.tscn" id="3_straight"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/basic/ConveyorSlope.tscn" id="6_slope"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/Smelter.tscn" id="7_smelter"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/ItemVoid.tscn" id="8_void"]
 [ext_resource type="Script" path="res://dev/physics_testbed/PhysicsTuningStation.cs" id="9_station"]
@@ -107,7 +107,8 @@ billboard = 1
 font_size = 44
 outline_size = 10
 
-[node name="SpawnLever" parent="Station" instance=ExtResource("11_lever")]
+[node name="SpawnLever" parent="Station" node_paths=PackedStringArray("targets") instance=ExtResource("11_lever")]
+targets = [NodePath("..")]
 position = Vector3(3.3, 0.8, 1.2)
 
 [node name="LeverLabel" type="Label3D" parent="Station"]

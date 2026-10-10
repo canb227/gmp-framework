@@ -79,7 +79,7 @@ body_type = 0
 box_size = Vector3(0.12, 0.52, 0.34)
 script = ExtResource("4_r")
 handle = NodePath("../Model/Lever")
-displayName = "Dropper Door"
+hoverName = "Dropper Door"
 position = Vector3(0.91, 0.36, 0)
 
 [node name="Hold" type="Box3DBody" parent="."]

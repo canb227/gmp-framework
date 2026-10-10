@@ -1,9 +1,6 @@
 using PolyType;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 [GenerateShape]
 public partial record LevelInfo : IEquatable<LevelInfo>
@@ -22,11 +19,19 @@ public partial record LevelInfo : IEquatable<LevelInfo>
 
 
 
+/// <summary>What each player starts with (chosen in the debug lobby).</summary>
+public enum StarterItems { None, SingleMagnetRod, All }
+
 //Literally every single piece of data that you need to start a game MUST go in here.
 [GenerateShape]
 public partial record GameInfo
 {
     public int levelIdx;
+    public StarterItems starterItems = StarterItems.All;
+    /// <summary>Players can grab items with an empty hand (A/B test against the single-item magnet rod).</summary>
+    public bool emptyHandGrab = true;
+    /// <summary>A save file to start from instead of the level (chosen with the lobby's Load Game); empty starts fresh.</summary>
+    public string savePath;
     public Dictionary<ulong, PlayerInfo> Players;
     public ulong tick;
 }

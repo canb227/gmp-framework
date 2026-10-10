@@ -82,12 +82,11 @@ layout_mode = 2
 text = "OPTIONS"
 alignment = 0
 
-[node name="UnusedButton1" type="Button" parent="Center/Panel/Margin/Layout"]
+[node name="SaveButton" type="Button" parent="Center/Panel/Margin/Layout"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
-disabled = true
-text = "UNUSED"
+text = "SAVE GAME"
 alignment = 0
 
 [node name="UnusedButton2" type="Button" parent="Center/Panel/Margin/Layout"]

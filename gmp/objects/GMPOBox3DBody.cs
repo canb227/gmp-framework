@@ -1,10 +1,6 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 public enum BodyTypeEnum
 {
@@ -41,10 +37,18 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     [Export]
     public int priority { get; set; }
     [Export]
-    public bool pauseable { get; set; }
+    public bool pauseable { get; set; } = true;
     /// <summary>How quickly non-authority copies close the gap to replicated state (1/s); 0 snaps.</summary>
     [Export]
     public float syncLerpRate { get; set; } = 10f;
+
+    [ExportGroup("Hover")]
+    /// <summary>Name shown under the crosshair while a player looks at this body; empty shows none.</summary>
+    [Export]
+    public string hoverName { get; set; }
+    /// <summary>Line shown below <see cref="hoverName"/>, e.g. "Press F to pick up!"; empty shows none.</summary>
+    [Export]
+    public string hoverText { get; set; }
 
     [ExportGroup("READONLY")]
     [Export]
@@ -69,7 +73,6 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
             {
                 this.Teleport(s.pos, s.rot);
             }
-
         }
         else
         {
@@ -85,6 +88,10 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         following = false;
         this.SetBodyType(authority == Lobby.selfPeerID ? authoredBodyType : BodyTypeEnum.Kinematic);
         RefreshPhysicsProcess();
+    }
+
+    public virtual void OnDespawned(DespawnReason reason)
+    {
     }
 
     // ---- physics processing ----
@@ -137,6 +144,15 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     public virtual byte[] GenerateStateUpdate()
     {
         return SyncHelpers.WriteTransform(this);
+    }
+
+    public virtual byte[] SaveState()
+    {
+        return null;
+    }
+
+    public virtual void LoadState(byte[] state)
+    {
     }
 
     public virtual void ApplyStateUpdate(byte[] update)

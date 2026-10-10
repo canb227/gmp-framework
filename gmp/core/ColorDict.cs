@@ -1,8 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Godot;
 
 public class ColorDict
@@ -156,9 +152,4 @@ public class ColorDict
         { "YELLOW", Colors.Yellow },
         { "YELLOWGREEN", Colors.YellowGreen }
     };
-    
-    public static Color GetRandomColor()
-    {
-        return NamedColors.ElementAt(Random.Shared.Next(0, ColorDict.NamedColors.Count)).Value;
-    }
 }

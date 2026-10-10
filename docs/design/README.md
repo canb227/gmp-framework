@@ -10,11 +10,12 @@ matches your task before starting; each is short and self-contained.
 | [production-chains.md](production-chains.md) | designing a resource → product chain around an item tag: the recipe, a worked template and the two shipped chains |
 | [puzzle-rooms.md](puzzle-rooms.md) | building a walk-in puzzle room: what a room needs, the six shipped rooms and what each taught |
 | [physics-cookbook.md](physics-cookbook.md) | tuning numbers: friction, slope, spin, density and hinge thresholds that make a behaviour happen (or not) |
-| [pipeline-gotchas.md](pipeline-gotchas.md) | touching the generators, Blender scripts, .tscn/.import files or Box3D nodes: traps that cost time |
+| [pipeline-gotchas.md](pipeline-gotchas.md) | touching Blender scripts, .tscn/.import files or Box3D nodes: traps that cost time |
 
 Where the actual content lives:
-- Items (physics, tags, text): `tools/items/gen_items.py`, which also generates `tools/items/README.md`.
-- Structures, museum and rooms: `tools/structures/` (see its README) and `tools/blender/run.py` (model families).
+- Items (physics, tags, text): `game/definitions/` (`.tres`) and `game/scenes/items/world/`.
+- Structures and rooms: `game/scenes/structures/` (the museum and its puzzle rooms are in `archive/museum/`); models via
+  `tools/blender/run.py` (model families).
 - Tag rules: `game/scripts/items/ItemTags.cs` and `game/scripts/items/TagInteractions.cs`.
 - Room motion: `game/scripts/entities/RotatingRoom.cs`.
 

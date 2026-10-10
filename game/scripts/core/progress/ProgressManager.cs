@@ -3,8 +3,6 @@ using PolyType;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 [GenerateShapeFor<Dictionary<string, (string, int)>>]
 public partial class Witness;
@@ -23,12 +21,19 @@ public partial struct ProgressData
     }
 }
 
+/// <summary>
+/// Quests: every defined quest (<see cref="allQuests"/>), the ones in progress (<see cref="currentQuests"/>) with
+/// their turn-in progress, and the ones done (<see cref="completedQuests"/>).
+/// <para>
+/// Multiplayer: the lobby host owns quest state. Only the host turns items in and completes quests, broadcasting
+/// each change to every peer, itself included; it also puts unlocked blueprints on sale (the <see cref="Shop"/>
+/// shares that itself). A peer that connects later is sent the whole state.
+/// </para>
+/// </summary>
 public partial class ProgressManager : Node
 {
-    public static Dictionary<string, int> extraItemStorage = new();
-    public static Dictionary<string,Quest> allQuests = new();
+    public static Dictionary<string, Quest> allQuests = new();
     public static List<string> completedQuests = new();
-
     public static Dictionary<string, Quest> currentQuests = new();
     public static ProgressManager instance;
 
@@ -38,38 +43,28 @@ public partial class ProgressManager : Node
     public override void _Ready()
     {
         instance = this;
-        ItemVoid.AnyItemDespawned += OnItemDespawned;
+        Lobby.PeerConnectedEvent += SendStateTo;
         loadQuestsFromFile();
-        // load game progress from file
-        // fix any discrepencies between quests in file and quests in game
-        currentQuests.Add("quest_intro_00",allQuests["quest_intro_00"]);
+        currentQuests.Add("quest_intro_00", allQuests["quest_intro_00"]);
         QuestStateUpdated?.Invoke();
     }
 
-    private void OnItemDespawned(ItemVoid @void, string itemID)
+    public override void _ExitTree()
     {
-    //    bool usedForQuest = false;
-    //    foreach (var kvp in currentQuests.ToList())
-    //    {
-    //        Quest quest = kvp.Value;
-    //        if (quest.itemSubmissionObjectives.TryGetValue(itemID, out int required))
-    //        {
-    //            usedForQuest = true;
-    //            quest.itemSubmissionProgress.TryGetValue(itemID, out int turnedIn);
-    //            quest.itemSubmissionProgress[itemID] = Math.Min(turnedIn + 1, required);
-    //            if (AllObjectivesMet(quest))
-    //            {
-    //                CompleteQuest(kvp.Key);
-    //            }
-    //            QuestStateUpdated?.Invoke();
-    //        }
-    //    }
-    //    if (!usedForQuest || usedForQuest)
-    //    {
-    //        extraItemStorage[itemID] = extraItemStorage.GetValueOrDefault(itemID, 0) + 1;
-    //    }
+        Lobby.PeerConnectedEvent -= SendStateTo;
     }
 
+    public static void loadQuestsFromFile()
+    {
+        allQuests.Clear();
+        foreach (string questFile in ResourceLoader.ListDirectory("res://game/definitions/quests/"))
+        {
+            if (questFile.EndsWith(".tres") && ResourceLoader.Load<Quest>("res://game/definitions/quests/" + questFile) is Quest quest)
+            {
+                allQuests.Add(quest.questID, quest);
+            }
+        }
+    }
 
     public static bool AllObjectivesMet(Quest quest)
     {
@@ -84,73 +79,130 @@ public partial class ProgressManager : Node
         return true;
     }
 
+    // ---- turn-ins ---------------------------------------------------------------
 
+    /// <summary>Host only: counts one <paramref name="itemID"/> toward every quest in progress that wants it, for everyone.</summary>
+    internal static void TurnInForQuest(string itemID)
+    {
+        foreach (var (questID, quest) in currentQuests.ToList())
+        {
+            if (!quest.itemSubmissionObjectives.TryGetValue(itemID, out int required)) continue;
+
+            quest.itemSubmissionProgress.TryGetValue(itemID, out int turnedIn);
+            if (turnedIn < required)
+            {
+                RPCManager.RPC(instance, nameof(_SetProgress), [questID, itemID, turnedIn + 1]);
+            }
+            if (AllObjectivesMet(quest))
+            {
+                CompleteQuest(questID);
+            }
+        }
+    }
+
+    [RPC(requireAuthority = true)]
+    private void _SetProgress(string questID, string itemID, int turnedIn)
+    {
+        if (currentQuests.TryGetValue(questID, out Quest quest))
+        {
+            quest.itemSubmissionProgress[itemID] = turnedIn;
+            QuestStateUpdated?.Invoke();
+        }
+    }
+
+    // ---- completion -------------------------------------------------------------
+
+    /// <summary>
+    /// Host only: completes <paramref name="questID"/> for everyone (if it's in progress), whatever its objectives
+    /// say, and puts its unlocked blueprints on sale.
+    /// </summary>
     public static void CompleteQuest(string questID)
     {
-        if (!currentQuests.TryGetValue(questID, out Quest quest))
+        if (!currentQuests.TryGetValue(questID, out Quest quest)) return;
+
+        RPCManager.RPC(instance, nameof(_Complete), [questID]);
+        foreach (string unlockItemID in quest.onCompleteUnlockedItems)
         {
-            return;
+            Shop.AddAvailableItem(unlockItemID);
         }
+    }
+
+    [RPC(requireAuthority = true)]
+    private void _Complete(string questID)
+    {
+        if (!currentQuests.Remove(questID, out Quest quest)) return;
+
         foreach (var (itemID, required) in quest.itemSubmissionObjectives)
         {
             quest.itemSubmissionProgress[itemID] = required;
         }
         completedQuests.Add(questID);
         QuestCompleted?.Invoke(questID);
-        currentQuests.Remove(questID);
-        foreach (var unlockQuestID in quest.onCompleteUnlockQuests)
+        foreach (string unlockQuestID in quest.onCompleteUnlockQuests)
         {
             if (allQuests.TryGetValue(unlockQuestID, out Quest unlocked) && !completedQuests.Contains(unlockQuestID))
             {
                 currentQuests.TryAdd(unlockQuestID, unlocked);
             }
         }
-        foreach (var unlockItemID in quest.onCompleteUnlockedItems)
-        {
-            ShopUI.AddAvailableItem(unlockItemID);
-        }
-
         QuestStateUpdated?.Invoke();
     }
 
-    public static void loadQuestsFromFile()
-    {
-        allQuests.Clear();
-        string[] questFiles = ResourceLoader.ListDirectory("res://game/definitions/quests/");
-        foreach (string questFile in questFiles)
-        {
-            if (questFile.EndsWith(".tres"))
-            {
-                Quest quest = ResourceLoader.Load<Quest>("res://game/definitions/quests/" + questFile);
-                if (quest != null)
-                {
-                    allQuests.Add(quest.questID, quest);
-                }
-            }
-        }
+    // ---- saves -----------------------------------------------------------------
 
+    /// <summary>
+    /// Replaces quest state with a restored save's (see <see cref="GameSave"/>): the completed quests, and each quest in
+    /// progress with its turn-ins. Runs on each restoring peer, all with the host's data.
+    /// </summary>
+    public static void LoadSave(List<string> completed, Dictionary<string, Dictionary<string, int>> progress)
+    {
+        completedQuests.Clear();
+        completedQuests.AddRange(completed);
+        currentQuests.Clear();
+        foreach (var (questID, turnedIn) in progress)
+        {
+            if (!allQuests.TryGetValue(questID, out Quest quest)) continue;
+
+            quest.itemSubmissionProgress.Clear();
+            foreach (var (itemID, count) in turnedIn)
+            {
+                quest.itemSubmissionProgress[itemID] = count;
+            }
+            currentQuests[questID] = quest;
+        }
+        QuestStateUpdated?.Invoke();
     }
 
-    internal static void TurnInForQuest(string itemID)
+    // ---- late joiners -----------------------------------------------------------
+
+    // Host: the quest lists, then each quest's progress.
+    void SendStateTo(ulong peerID)
     {
-        foreach (var kvp in currentQuests.ToList())
+        if (!Lobby.isHost) return;
+        RPCManager.RPCTo(peerID, this, nameof(_SetQuestLists), [completedQuests.ToArray(), currentQuests.Keys.ToArray()]);
+        foreach (var (questID, quest) in currentQuests)
         {
-            Quest quest = kvp.Value;
-            if (quest.itemSubmissionObjectives.TryGetValue(itemID, out int required))
+            foreach (var (itemID, turnedIn) in quest.itemSubmissionProgress)
             {
-                quest.itemSubmissionProgress.TryGetValue(itemID, out int turnedIn);
-                quest.itemSubmissionProgress[itemID] = Math.Min(turnedIn + 1, required);
-                if (AllObjectivesMet(quest))
-                {
-                    CompleteQuest(kvp.Key);
-                }
-                QuestStateUpdated?.Invoke();
+                RPCManager.RPCTo(peerID, this, nameof(_SetProgress), [questID, itemID, turnedIn]);
             }
         }
     }
 
-    internal static void AddResource(string itemID, int v)
+    [RPC(requireAuthority = true)]
+    private void _SetQuestLists(string[] completed, string[] current)
     {
-        extraItemStorage[itemID] = extraItemStorage.GetValueOrDefault(itemID, 0) + v;
+        completedQuests.Clear();
+        completedQuests.AddRange(completed);
+        currentQuests.Clear();
+        foreach (string questID in current)
+        {
+            if (allQuests.TryGetValue(questID, out Quest quest))
+            {
+                quest.itemSubmissionProgress.Clear(); // the host sends the real progress next
+                currentQuests[questID] = quest;
+            }
+        }
+        QuestStateUpdated?.Invoke();
     }
 }

@@ -3,11 +3,6 @@ using Nerdbank.MessagePack;
 using Nerdbank.MessagePack.Godot;
 using PolyType;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Godot.Node;
 
 [GenerateShape]
@@ -73,17 +68,30 @@ public partial interface GMPObject
     /// <summary>Called on non-authority peers when a state update arrives from the authority, and on <b>every</b> peer (authority included) by <see cref="Init"/> with the spawn-time <c>initState</c>. The transform-synced bases just store it into <see cref="desiredState"/>; overrides may apply it immediately (e.g. FactoryPlayer).</summary>
     public void ApplyStateUpdate(byte[] update);
 
+    /// <summary>
+    /// Runtime state a save must keep beyond the regular state update, e.g. a machine's progress or a lever's
+    /// position; null (the default) for none. Saves already keep <see cref="GenerateStateUpdate"/>'s output (handed back
+    /// as the spawn <c>initState</c>), so this is only what that leaves out. Read back by <see cref="LoadState"/>.
+    /// </summary>
+    public virtual byte[] SaveState()
+    {
+        return null;
+    }
+
+    /// <summary>
+    /// Called on every restoring peer with what <see cref="SaveState"/> returned, after the whole saved world has been
+    /// spawned (so other saved objects can be looked up). Not called when <see cref="SaveState"/> returned null.
+    /// Set state silently: no event hooks, sounds, animations or spawns, which would replay on every load and join
+    /// (and a spawn would race the other peers' restores). Snap visuals straight to the restored state.
+    /// </summary>
+    public virtual void LoadState(byte[] state)
+    {
+    }
+
     /// <summary>Sets ProcessMode from <c>pauseable</c>. Named so it can never collide with Godot's <c>_Ready</c>.</summary>
     public virtual void ApplyProcessMode()
     {
-        if (pauseable)
-        {
-            (this as Node).ProcessMode = ProcessModeEnum.Pausable;
-        }
-        else
-        {
-            (this as Node).ProcessMode = ProcessModeEnum.Always;
-        }
+        (this as Node).ProcessMode = pauseable ? ProcessModeEnum.Pausable : ProcessModeEnum.Always;
     }
 
 
@@ -96,13 +104,9 @@ public partial interface GMPObject
     {
         this.id = init.id;
         this.authority = init.authority;
-        if (this.priority == 0 && init.priority!=0)
+        if (this.priority == 0)
         {
-            this.priority = init.priority;
-        }
-        else if (this.priority==0)
-        {
-            this.priority = 1;
+            this.priority = init.priority != 0 ? init.priority : 1;
         }
 
         this.pauseable = init.pauseable;
@@ -121,6 +125,11 @@ public partial interface GMPObject
     /// Override to switch between simulating (authority) and following replicated state.
     /// </summary>
     public virtual void OnAuthorityChanged()
+    {
+    }
+
+    /// <summary>Called on every peer just before this object is freed by a despawn, with why it was despawned.</summary>
+    public virtual void OnDespawned(DespawnReason reason)
     {
     }
 
