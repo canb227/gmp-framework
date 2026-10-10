@@ -1,15 +1,18 @@
 [gd_scene format=4 uid="uid://xv4gtujbywwp"]
 
 [ext_resource type="PackedScene" uid="uid://bo34hju0lbyq8" path="res://game/scenes/entities/devScrapSource.tscn" id="1_u7xt8"]
-[ext_resource type="PackedScene" uid="uid://bkhap70rv8wga" path="res://game/scenes/items/world/metals/scrap_ball.tscn" id="2_27y12"]
 [ext_resource type="Material" uid="uid://bxp2j5qppx4lp" path="res://game/assets/materials/tile_floor.tres" id="2_jhkrf"]
 [ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="3_5cgpr"]
+[ext_resource type="PackedScene" uid="uid://r064irodompm" path="res://game/scenes/items/world/metals/scrap_piece_barrel.tscn" id="3_68s35"]
 [ext_resource type="Texture2D" uid="uid://c06b1j8wdtii5" path="res://game/assets/textures/circuit_board.jpeg" id="3_d2mjd"]
 [ext_resource type="PackedScene" uid="uid://bbar65lo2cmrc" path="res://game/scenes/items/world/resources/electronics.tscn" id="3_ma3am"]
 [ext_resource type="PackedScene" uid="uid://1xxnu441im5p" path="res://game/scenes/entities/GoalScreen.tscn" id="3_yv5q0"]
 [ext_resource type="Material" uid="uid://ksxtasgoycp6" path="res://game/assets/materials/basic_wall.tres" id="4_5cgpr"]
+[ext_resource type="PackedScene" uid="uid://dgsvqf0go4aka" path="res://game/scenes/items/world/metals/scrap_piece_bar.tscn" id="4_b0sfj"]
 [ext_resource type="Material" uid="uid://chvh6g63q2ucw" path="res://game/assets/materials/glass.tres" id="5_euj40"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/Conveyor.tscn" id="5_g5s5b"]
+[ext_resource type="PackedScene" uid="uid://86ay41csogvr" path="res://game/scenes/items/world/metals/scrap_piece_box.tscn" id="5_jjh62"]
+[ext_resource type="PackedScene" uid="uid://c7eysh6j3fipd" path="res://game/scenes/items/world/metals/scrap_piece_sheet.tscn" id="6_qiak6"]
 [ext_resource type="Texture2D" uid="uid://cff3ql7psjvfh" path="res://game/assets/textures/door_temp.png" id="7_fgl2k"]
 [ext_resource type="PackedScene" uid="uid://dxv3vfkutt1i6" path="res://game/scenes/structures/special/store.tscn" id="7_ihq8k"]
 [ext_resource type="Material" uid="uid://bosg7vc1hulq8" path="res://game/assets/materials/temp_metal.tres" id="8_kuy7m"]
@@ -387,34 +390,67 @@ transform = Transform3D(1, 0, 0, 0, 0.37616295, -0.92655355, 0, 0.92655355, 0.37
 transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, -0.045993805, 0, 0)
 mesh = SubResource("BoxMesh_pet1e")
 
+[node name="scrap_piece_barrel5" parent="WorldStuff/StartingScrap" unique_id=1636194786 instance=ExtResource("3_68s35")]
+transform = Transform3D(-0.7071068, 0, -0.7071067, 0, 1, 0, 0.7071067, 0, -0.7071068, 85.53984, 1, -3.9099045)
+
+[node name="scrap_piece_barrel6" parent="WorldStuff/StartingScrap" unique_id=1317355097 instance=ExtResource("3_68s35")]
+transform = Transform3D(-0.7071068, 0, -0.7071067, -0.35355335, 0.8660254, 0.3535534, 0.61237234, 0.5, -0.61237246, 85.53984, 2, -4.9099045)
+
+[node name="scrap_piece_barrel8" parent="WorldStuff/StartingScrap" unique_id=322266681 instance=ExtResource("3_68s35")]
+transform = Transform3D(-0.7071068, 0, -0.7071067, -0.35355335, 0.8660254, 0.3535534, 0.61237234, 0.5, -0.61237246, 85.53984, 2, 4.0900955)
+
+[node name="scrap_piece_barrel7" parent="WorldStuff/StartingScrap" unique_id=2100474406 instance=ExtResource("3_68s35")]
+transform = Transform3D(-0.7071068, 0, -0.7071067, 0, 1, 0, 0.7071067, 0, -0.7071068, 85.53984, 1, 5.0900955)
+
 [node name="GroundScrap" type="Node3D" parent="WorldStuff" unique_id=185693050]
 
-[node name="scrap_ball" parent="WorldStuff/GroundScrap" unique_id=1636194786 instance=ExtResource("2_27y12")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+[node name="scrap_piece_bar" parent="WorldStuff/GroundScrap" unique_id=1403341873 instance=ExtResource("4_b0sfj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2, -20)
 
-[node name="scrap_ball2" parent="WorldStuff/GroundScrap" unique_id=996712473 instance=ExtResource("2_27y12")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1)
+[node name="scrap_piece_barrel" parent="WorldStuff/GroundScrap" unique_id=919377779 instance=ExtResource("3_68s35")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2, 9)
 
-[node name="scrap_ball3" parent="WorldStuff/GroundScrap" unique_id=624016425 instance=ExtResource("2_27y12")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -1)
+[node name="scrap_piece_box" parent="WorldStuff/GroundScrap" unique_id=897810522 instance=ExtResource("5_jjh62")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 0, -19)
 
-[node name="scrap_ball4" parent="WorldStuff/GroundScrap" unique_id=1804620655 instance=ExtResource("2_27y12")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0)
+[node name="scrap_piece_sheet" parent="WorldStuff/GroundScrap" unique_id=1577307255 instance=ExtResource("6_qiak6")]
+transform = Transform3D(1, 0, 0, 0, 0.9659258, 0.25881904, 0, -0.25881904, 0.9659258, 14, 2, -10)
 
-[node name="scrap_ball5" parent="WorldStuff/GroundScrap" unique_id=1923039328 instance=ExtResource("2_27y12")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1)
+[node name="scrap_piece_bar4" parent="WorldStuff/GroundScrap" unique_id=2014250329 instance=ExtResource("4_b0sfj")]
+transform = Transform3D(-0.49999988, 0, 0.8660254, 0, 1, 0, -0.8660254, 0, -0.49999988, 10.509644, 7, 21.533148)
 
-[node name="scrap_ball6" parent="WorldStuff/GroundScrap" unique_id=991859797 instance=ExtResource("2_27y12")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, -1)
+[node name="scrap_piece_barrel4" parent="WorldStuff/GroundScrap" unique_id=814947876 instance=ExtResource("3_68s35")]
+transform = Transform3D(-0.49999988, 0, 0.8660254, 0, 1, 0, -0.8660254, 0, -0.49999988, 35.624382, 7, 7.0331492)
 
-[node name="scrap_ball7" parent="WorldStuff/GroundScrap" unique_id=1200419461 instance=ExtResource("2_27y12")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1, 1)
+[node name="scrap_piece_box4" parent="WorldStuff/GroundScrap" unique_id=412422746 instance=ExtResource("5_jjh62")]
+transform = Transform3D(-0.49999988, 0, 0.8660254, 0, 1, 0, -0.8660254, 0, -0.49999988, 5.3756733, 5, 10.640845)
 
-[node name="scrap_ball8" parent="WorldStuff/GroundScrap" unique_id=451142094 instance=ExtResource("2_27y12")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1, 0)
+[node name="scrap_piece_sheet4" parent="WorldStuff/GroundScrap" unique_id=920564037 instance=ExtResource("6_qiak6")]
+transform = Transform3D(-0.49999997, -0.22414389, 0.8365163, 0, 0.96592605, 0.2588191, -0.86602545, 0.12940952, -0.48296288, 18.169897, 7, 14.8011)
 
-[node name="scrap_ball9" parent="WorldStuff/GroundScrap" unique_id=72094707 instance=ExtResource("2_27y12")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1, -1)
+[node name="scrap_piece_sheet3" parent="WorldStuff/GroundScrap" unique_id=1328835438 instance=ExtResource("6_qiak6")]
+transform = Transform3D(-0.25881904, 0.25, -0.93301266, 0, 0.96592593, 0.25881907, 0.96592593, 0.066987306, -0.25000003, 26.96833, 5, 1.0490494)
+
+[node name="scrap_piece_box3" parent="WorldStuff/GroundScrap" unique_id=2133897782 instance=ExtResource("5_jjh62")]
+transform = Transform3D(-0.25881904, 0, -0.9659258, 0, 1, 0, 0.9659258, 0, -0.25881904, 33.07347, 3, 13.03768)
+
+[node name="scrap_piece_barrel3" parent="WorldStuff/GroundScrap" unique_id=1611257707 instance=ExtResource("3_68s35")]
+transform = Transform3D(-0.25881904, 0, -0.9659258, 0, 1, 0, 0.9659258, 0, -0.25881904, 9.133377, 5, -5.8003635)
+
+[node name="scrap_piece_bar3" parent="WorldStuff/GroundScrap" unique_id=1760754971 instance=ExtResource("4_b0sfj")]
+transform = Transform3D(-0.25881904, 0, -0.9659258, 0, 1, 0, 0.9659258, 0, -0.25881904, 37.145226, 5, 1.705389)
+
+[node name="scrap_piece_sheet2" parent="WorldStuff/GroundScrap" unique_id=1173351123 instance=ExtResource("6_qiak6")]
+transform = Transform3D(-0.7071069, 0.18301271, -0.68301266, 0, 0.96592605, 0.2588191, 0.7071068, 0.18301272, -0.6830127, 29.560661, 4, -5.0606594)
+
+[node name="scrap_piece_box2" parent="WorldStuff/GroundScrap" unique_id=890169217 instance=ExtResource("5_jjh62")]
+transform = Transform3D(-0.7071068, 0, -0.7071067, 0, 1, 0, 0.7071067, 0, -0.7071068, 28.853554, 2, 8.374367)
+
+[node name="scrap_piece_barrel2" parent="WorldStuff/GroundScrap" unique_id=1056509777 instance=ExtResource("3_68s35")]
+transform = Transform3D(-0.7071068, 0, -0.7071067, 0, 1, 0, 0.7071067, 0, -0.7071068, 17.539845, 4, -19.909904)
+
+[node name="scrap_piece_bar2" parent="WorldStuff/GroundScrap" unique_id=886704995 instance=ExtResource("4_b0sfj")]
+transform = Transform3D(-0.7071068, 0, -0.7071067, 0, 1, 0, 0.7071067, 0, -0.7071068, 38.04594, 4, 0.5961957)
 
 [node name="GroundElectronic" type="Node3D" parent="WorldStuff" unique_id=815242465]
 

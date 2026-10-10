@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://86ay41csogvr"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_p2nin"]
+[ext_resource type="Material" uid="uid://bosg7vc1hulq8" path="res://game/assets/materials/temp_metal.tres" id="2_823cy"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_pet1e"]
+material = ExtResource("2_823cy")
+size = Vector3(0.5, 0.5, 0.5)
+
+[node name="scrap_piece_box" type="Box3DBody" unique_id=1636194786]
+box_size = Vector3(0.5, 0.5, 0.5)
+density = 10.0
+friction = 0.9
+restitution = 0.2
+script = ExtResource("1_p2nin")
+itemID = "scrap_ball"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([3, 22])
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=160940852]
+mesh = SubResource("BoxMesh_pet1e")
