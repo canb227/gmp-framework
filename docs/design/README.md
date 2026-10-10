@@ -17,7 +17,7 @@ Where the actual content lives:
 - Structures and rooms: `game/scenes/structures/` (the museum and its puzzle rooms are in `archive/museum/`); models via
   `tools/blender/run.py` (model families).
 - Tag rules: `game/scripts/items/ItemTags.cs` and `game/scripts/items/TagInteractions.cs`.
-- Room motion: `game/scripts/entities/RotatingRoom.cs`.
+- Moving kinematic parts: turn or move the body's node every physics tick (`game/scripts/items/placed/Recycler.cs`).
 
 Status note (as of this writing): nothing here has been verified in Godot. Tag rules only log, there are no
 recipes, and puzzle-room products are frozen display models. Physics properties and colliders are real.

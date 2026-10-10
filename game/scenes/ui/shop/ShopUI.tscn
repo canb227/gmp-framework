@@ -3,6 +3,7 @@
 [ext_resource type="Theme" path="res://game/scenes/ui/shop/shop_theme.tres" id="1_theme"]
 [ext_resource type="Script" uid="uid://dyk6e1h888ir6" path="res://game/scripts/ui/ShopUI.cs" id="2_script"]
 [ext_resource type="Shader" uid="uid://b7kcy5nv6urww" path="res://gmp/ui/theme/screen_overlay.gdshader" id="3_overlay"]
+[ext_resource type="Script" path="res://game/scripts/ui/CurrencyBar.cs" id="4_currency_bar"]
 
 [sub_resource type="ShaderMaterial" id="overlay_mat"]
 shader = ExtResource("3_overlay")
@@ -66,6 +67,14 @@ text = "FABRICATION SUPPLY  //  TERMINAL 07"
 layout_mode = 2
 theme_type_variation = &"ShopTitle"
 text = "STRUCTURE REQUISITION"
+
+[node name="Balances" type="HBoxContainer" parent="Margin/Root/Header" unique_id=1416803522]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/separation = 40
+script = ExtResource("4_currency_bar")
+iconSize = 56
+fontSize = 34
 
 [node name="Status" type="Label" parent="Margin/Root/Header" unique_id=789119107]
 unique_name_in_owner = true
@@ -224,76 +233,10 @@ layout_mode = 2
 theme_type_variation = &"ShopDim"
 text = "REQUISITION"
 
-[node name="CostRow" type="PanelContainer" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget" unique_id=1082897718]
+[node name="CostList" type="VBoxContainer" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget" unique_id=1082897718]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"ShopIconWell"
-
-[node name="CostLine" type="HBoxContainer" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow" unique_id=1976328014]
-layout_mode = 2
-theme_override_constants/separation = 24
-
-[node name="CostIcon" type="TextureRect" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine" unique_id=558242588]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(80, 80)
-layout_mode = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="CostNameColumn" type="VBoxContainer" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine" unique_id=1896288990]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-theme_override_constants/separation = 0
-
-[node name="CostName" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine/CostNameColumn" unique_id=357928952]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Scrap Ball"
-
-[node name="CostEach" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine/CostNameColumn" unique_id=95226198]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"ShopDim"
-text = "2 PER UNIT"
-
-[node name="TotalColumn" type="VBoxContainer" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine" unique_id=1713516949]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-size_flags_vertical = 4
-theme_override_constants/separation = 0
-
-[node name="TotalHeader" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine/TotalColumn" unique_id=1882420194]
-layout_mode = 2
-theme_type_variation = &"ShopDim"
-text = "REQUIRED"
-horizontal_alignment = 2
-
-[node name="CostTotal" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine/TotalColumn" unique_id=1353938383]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 44
-text = "2"
-horizontal_alignment = 2
-
-[node name="HaveColumn" type="VBoxContainer" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine" unique_id=2146833576]
-custom_minimum_size = Vector2(260, 0)
-layout_mode = 2
-size_flags_vertical = 4
-theme_override_constants/separation = 0
-
-[node name="HaveHeader" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine/HaveColumn" unique_id=987846268]
-layout_mode = 2
-theme_type_variation = &"ShopDim"
-text = "IN INVENTORY"
-horizontal_alignment = 2
-
-[node name="CostHave" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget/CostRow/CostLine/HaveColumn" unique_id=1809372417]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 44
-text = "0"
-horizontal_alignment = 2
+theme_override_constants/separation = 12
 
 [node name="FreeLabel" type="Label" parent="Margin/Root/Body/DetailPanel/DetailContent/PurchaseWidget" unique_id=609388241]
 unique_name_in_owner = true

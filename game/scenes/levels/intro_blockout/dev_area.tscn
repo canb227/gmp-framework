@@ -11,7 +11,7 @@
 [ext_resource type="Material" uid="uid://ksxtasgoycp6" path="res://game/assets/materials/basic_wall.tres" id="4_5cgpr"]
 [ext_resource type="PackedScene" uid="uid://dgsvqf0go4aka" path="res://game/scenes/items/world/metals/scrap_piece_bar.tscn" id="4_b0sfj"]
 [ext_resource type="Material" uid="uid://chvh6g63q2ucw" path="res://game/assets/materials/glass.tres" id="5_euj40"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/Conveyor.tscn" id="5_g5s5b"]
+[ext_resource type="PackedScene" uid="uid://b40raq5uwf0mw" path="res://game/scenes/structures/conveyors/Conveyor.tscn" id="5_g5s5b"]
 [ext_resource type="PackedScene" uid="uid://86ay41csogvr" path="res://game/scenes/items/world/metals/scrap_piece_box.tscn" id="5_jjh62"]
 [ext_resource type="PackedScene" uid="uid://c7eysh6j3fipd" path="res://game/scenes/items/world/metals/scrap_piece_sheet.tscn" id="6_qiak6"]
 [ext_resource type="Texture2D" uid="uid://cff3ql7psjvfh" path="res://game/assets/textures/door_temp.png" id="7_fgl2k"]
@@ -20,6 +20,10 @@
 [ext_resource type="PackedScene" uid="uid://bywvnipt62y5r" path="res://game/scenes/structures/ItemVoid.tscn" id="9_kuy7m"]
 [ext_resource type="Script" uid="uid://cltf2fbu2l28o" path="res://game/scripts/core/NoBuildVolume.cs" id="10_6ag5b"]
 [ext_resource type="Texture2D" uid="uid://dfssoii6t84gn" path="res://game/assets/textures/wall_basic_1/wall_basic_1_diffuseOriginal.png" id="12_ihq8k"]
+[ext_resource type="Texture2D" uid="uid://c8knlhvemp8jf" path="res://game/assets/textures/grass_1/grass_ao.png" id="15_ubgps"]
+[ext_resource type="Script" uid="uid://c64akhdf23fdq" path="res://game/scripts/entities/PricedButton.cs" id="30_priced"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/broken/BrokenSmelter.tscn" id="31_brokensmelter"]
+[ext_resource type="PackedScene" uid="uid://ci3gdnftondij" path="res://game/scenes/structures/special/RecyclerBroken.tscn" id="32_brokenrecycler"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vchc8"]
 
@@ -205,10 +209,91 @@ cull_mode = 2
 shading_mode = 0
 albedo_color = Color(1, 0.14500004, 0.100000024, 0.015686275)
 
+[sub_resource type="Animation" id="Animation_3rl5m"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:enabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_dudsn"]
+resource_name = "button_press"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.76666665, 1),
+"transitions": PackedFloat32Array(0.08537787, 0.96593666, 0.96593666, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, -0.2354753, 0), Vector3(0, -0.2354753, 0), Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:enabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_is778"]
+_data = {
+&"RESET": SubResource("Animation_3rl5m"),
+&"button_press": SubResource("Animation_dudsn")
+}
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vchc8"]
+albedo_color = Color(1.4954206, 0, 0.26787823, 1)
+metallic = 1.0
+metallic_texture = ExtResource("15_ubgps")
+roughness = 0.7
+uv1_scale = Vector3(2, 2, 2)
+
+[sub_resource type="SphereMesh" id="SphereMesh_2k66h"]
+material = SubResource("StandardMaterial3D_vchc8")
+radius = 0.1
+height = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0nhbu"]
+albedo_color = Color(0.4392157, 0.3372549, 0.3764706, 1)
+metallic_specular = 1.0
+roughness = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_r1731"]
+material = SubResource("StandardMaterial3D_0nhbu")
+size = Vector3(0.5, 1.5, 0.5)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pet1e"]
 albedo_texture = ExtResource("7_fgl2k")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vchc8"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_br3rc"]
 albedo_color = Color(0, 0, 0, 1)
 metallic_specular = 0.0
 
@@ -274,7 +359,7 @@ _surfaces = [{
 "aabb": AABB(49.949997, -12.500001, -19.500002, 35.550003, 23, 40),
 "attribute_data": PackedByteArray("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"),
 "format": 34359738391,
-"material": SubResource("StandardMaterial3D_vchc8"),
+"material": SubResource("StandardMaterial3D_br3rc"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 408,
@@ -357,33 +442,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 5, 45)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 5, 47)
 
 [node name="ScrapSources" type="Node3D" parent="WorldStuff" unique_id=437613743]
-
-[node name="DevScrapSource" parent="WorldStuff/ScrapSources" unique_id=867740511 instance=ExtResource("1_u7xt8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37, 1, -45)
-
-[node name="DevScrapSource8" parent="WorldStuff/ScrapSources" unique_id=266776303 instance=ExtResource("1_u7xt8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35, 1, -47)
-
-[node name="DevScrapSource9" parent="WorldStuff/ScrapSources" unique_id=129975551 instance=ExtResource("1_u7xt8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35, 1, -49)
-
-[node name="DevScrapSource2" parent="WorldStuff/ScrapSources" unique_id=1067809286 instance=ExtResource("1_u7xt8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37, 1, -43)
-
-[node name="DevScrapSource3" parent="WorldStuff/ScrapSources" unique_id=775898569 instance=ExtResource("1_u7xt8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 1, -41)
-
-[node name="DevScrapSource4" parent="WorldStuff/ScrapSources" unique_id=53453322 instance=ExtResource("1_u7xt8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 41, 1, -41)
-
-[node name="DevScrapSource5" parent="WorldStuff/ScrapSources" unique_id=31311764 instance=ExtResource("1_u7xt8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 1, -41)
-
-[node name="DevScrapSource6" parent="WorldStuff/ScrapSources" unique_id=1571177923 instance=ExtResource("1_u7xt8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 1, -39)
-
-[node name="DevScrapSource7" parent="WorldStuff/ScrapSources" unique_id=1548073199 instance=ExtResource("1_u7xt8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 1, -39)
 
 [node name="StartingScrap" type="Node3D" parent="WorldStuff" unique_id=491458326]
 
@@ -614,6 +672,72 @@ material = SubResource("StandardMaterial3D_68s35")
 script = ExtResource("10_6ag5b")
 metadata/_custom_type_script = "uid://cltf2fbu2l28o"
 
+[node name="RepairSmelterButton" type="Node3D" parent="WorldStuff" unique_id=681842689]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.2441916, 1.6260744, -30.95596)
+
+[node name="Button" type="Box3DBody" parent="WorldStuff/RepairSmelterButton" unique_id=1401352437 node_paths=PackedStringArray("animator", "targets")]
+body_type = 0
+shape_type = 1
+sphere_radius = 0.1
+script = ExtResource("30_priced")
+cost = Dictionary[int, int]({
+0: 10
+})
+animator = NodePath("AnimationPlayer")
+targets = [NodePath("../../BrokenSmelter")]
+hoverName = "Repair broken smelter"
+hoverText = "Cost is 10 scrap"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="WorldStuff/RepairSmelterButton/Button" unique_id=127676560]
+libraries/ = SubResource("AnimationLibrary_is778")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff/RepairSmelterButton/Button" unique_id=212504266]
+mesh = SubResource("SphereMesh_2k66h")
+
+[node name="ButtonBody" type="Box3DBody" parent="WorldStuff/RepairSmelterButton" unique_id=1980672406]
+body_type = 0
+box_size = Vector3(0.5, 1.5, 0.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8763647, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff/RepairSmelterButton/ButtonBody" unique_id=25745241]
+mesh = SubResource("BoxMesh_r1731")
+
+[node name="BrokenSmelter" parent="WorldStuff" unique_id=1738204615 instance=ExtResource("31_brokensmelter")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1, -30)
+hoverName = "Broken Smelter"
+hoverText = "Repair this at the nearby button "
+
+[node name="RecyclerBroken" parent="WorldStuff" unique_id=1829331707 instance=ExtResource("32_brokenrecycler")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 35, 0, -33)
+
+[node name="Repair Source Button" type="Node3D" parent="WorldStuff" unique_id=846980836]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.471584, 1.6260744, -24.871767)
+
+[node name="Button" type="Box3DBody" parent="WorldStuff/Repair Source Button" unique_id=502930267 node_paths=PackedStringArray("animator", "targets")]
+body_type = 0
+shape_type = 1
+sphere_radius = 0.1
+script = ExtResource("30_priced")
+cost = Dictionary[int, int]({
+0: 5
+})
+animator = NodePath("AnimationPlayer")
+targets = [NodePath("../../RecyclerBroken")]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="WorldStuff/Repair Source Button/Button" unique_id=1829506108]
+libraries/ = SubResource("AnimationLibrary_is778")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff/Repair Source Button/Button" unique_id=386839181]
+mesh = SubResource("SphereMesh_2k66h")
+
+[node name="ButtonBody" type="Box3DBody" parent="WorldStuff/Repair Source Button" unique_id=2064060396]
+body_type = 0
+box_size = Vector3(0.5, 1.5, 0.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8763647, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff/Repair Source Button/ButtonBody" unique_id=1180870346]
+mesh = SubResource("BoxMesh_r1731")
+
 [node name="store" parent="." unique_id=1931553037 instance=ExtResource("7_ihq8k")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 1, -5)
 
@@ -624,438 +748,439 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 
 [node name="CSGBakedMeshInstance3D" type="MeshInstance3D" parent="WorldBody" unique_id=1697685873]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+visible = false
 mesh = SubResource("ArrayMesh_jkpwr")
 
 [node name="Node3D" type="Node3D" parent="." unique_id=2006237166]
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="Node3D" unique_id=1196497492]
+[node name="CSGMesh3D" type="CSGMesh3D" parent="." unique_id=1328661696]
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="CSGMesh3D" unique_id=1196497492]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, -0.5, 0)
 size = Vector3(58, 1, 100)
 material = ExtResource("2_jhkrf")
 
-[node name="CSGBox3D29" type="CSGBox3D" parent="Node3D" unique_id=1566032804]
+[node name="CSGBox3D29" type="CSGBox3D" parent="CSGMesh3D" unique_id=1566032804]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5, 10.5, 101.5)
 size = Vector3(48, 1, 99)
 material = ExtResource("2_jhkrf")
 
-[node name="CSGBox3D33" type="CSGBox3D" parent="Node3D" unique_id=346684233]
+[node name="CSGBox3D33" type="CSGBox3D" parent="CSGMesh3D" unique_id=346684233]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5, 19.5, 149)
 size = Vector3(48, 17, 4)
 material = ExtResource("3_5cgpr")
 
-[node name="CSGBox3D32" type="CSGBox3D" parent="Node3D" unique_id=759434791]
+[node name="CSGBox3D32" type="CSGBox3D" parent="CSGMesh3D" unique_id=759434791]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5, 28.5, 101.5)
 size = Vector3(48, 1, 99)
 material = ExtResource("2_jhkrf")
 
-[node name="CSGBox3D30" type="CSGBox3D" parent="Node3D" unique_id=417821444]
+[node name="CSGBox3D30" type="CSGBox3D" parent="CSGMesh3D" unique_id=417821444]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 19, 101)
 size = Vector3(1, 18, 100)
 material = ExtResource("2_jhkrf")
 
-[node name="CSGBox3D31" type="CSGBox3D" parent="Node3D" unique_id=1249969537]
+[node name="CSGBox3D31" type="CSGBox3D" parent="CSGMesh3D" unique_id=1249969537]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 19.5, 101)
 size = Vector3(1, 19, 100)
 material = ExtResource("2_jhkrf")
 
-[node name="CSGBox3D8" type="CSGBox3D" parent="Node3D" unique_id=753283477]
+[node name="CSGBox3D8" type="CSGBox3D" parent="CSGMesh3D" unique_id=753283477]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, -19.5, 0)
 size = Vector3(2, 37, 100)
 material = ExtResource("2_jhkrf")
 
-[node name="CSGBox3D9" type="CSGBox3D" parent="Node3D" unique_id=86779887]
+[node name="CSGBox3D9" type="CSGBox3D" parent="CSGMesh3D" unique_id=86779887]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, -19.5, 0)
 size = Vector3(2, 37, 100)
 material = ExtResource("2_jhkrf")
 
-[node name="CSGBox3D14" type="CSGBox3D" parent="Node3D" unique_id=1033241195]
+[node name="CSGBox3D14" type="CSGBox3D" parent="CSGMesh3D" unique_id=1033241195]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, -36.5, 0)
 size = Vector3(10, 3, 96)
 material = ExtResource("2_jhkrf")
 
-[node name="CSGBox3D12" type="CSGBox3D" parent="Node3D" unique_id=276277740]
+[node name="CSGBox3D12" type="CSGBox3D" parent="CSGMesh3D" unique_id=276277740]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, -19.5, -49)
 size = Vector3(10, 37, 2)
 material = ExtResource("2_jhkrf")
 
-[node name="CSGBox3D13" type="CSGBox3D" parent="Node3D" unique_id=1224860472]
+[node name="CSGBox3D13" type="CSGBox3D" parent="CSGMesh3D" unique_id=1224860472]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, -19.5, 49)
 size = Vector3(10, 37, 2)
 material = ExtResource("2_jhkrf")
 
-[node name="EastWall" type="CSGBox3D" parent="Node3D" unique_id=855440881]
+[node name="EastWall" type="CSGBox3D" parent="CSGMesh3D" unique_id=855440881]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 14, -51)
 size = Vector3(103, 30, 2)
 material = ExtResource("3_5cgpr")
 
-[node name="CSGBox3D5" type="CSGBox3D" parent="Node3D/EastWall" unique_id=1560510895]
+[node name="CSGBox3D5" type="CSGBox3D" parent="CSGMesh3D/EastWall" unique_id=1560510895]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, -9.5, -2.5)
 operation = 2
 size = Vector3(17, 11, 7)
 material = ExtResource("3_5cgpr")
 
-[node name="CSGBox3D6" type="CSGBox3D" parent="Node3D/EastWall" unique_id=1923365976]
+[node name="CSGBox3D6" type="CSGBox3D" parent="CSGMesh3D/EastWall" unique_id=1923365976]
 transform = Transform3D(-1, -4.371139e-08, -4.371138e-08, -4.3711385e-08, 1, -8.742278e-08, 4.371139e-08, -8.742278e-08, -1, 20, 2.5, 0.5)
 operation = 2
 size = Vector3(5, 5, 4)
 material = ExtResource("3_5cgpr")
 
-[node name="CSGBox3D7" type="CSGBox3D" parent="Node3D/EastWall" unique_id=966175685]
+[node name="CSGBox3D7" type="CSGBox3D" parent="CSGMesh3D/EastWall" unique_id=966175685]
 transform = Transform3D(-1, -4.371139e-08, -4.371138e-08, -4.3711385e-08, 1, -8.742278e-08, 4.371139e-08, -8.742278e-08, -1, 20, 2.5, 0)
 size = Vector3(5, 5, 1)
 material = SubResource("StandardMaterial3D_pet1e")
 
-[node name="WestWall" type="CSGBox3D" parent="Node3D" unique_id=975389807]
+[node name="WestWall" type="CSGBox3D" parent="CSGMesh3D" unique_id=975389807]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 14, 51)
 size = Vector3(103, 30, 2)
 material = ExtResource("3_5cgpr")
 
-[node name="CSGBox3D6" type="CSGBox3D" parent="Node3D/WestWall" unique_id=246057135]
+[node name="CSGBox3D6" type="CSGBox3D" parent="CSGMesh3D/WestWall" unique_id=246057135]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -11.5, 0)
 operation = 2
 size = Vector3(5, 5, 4)
 material = ExtResource("3_5cgpr")
 
-[node name="CSGBox3D12" type="CSGBox3D" parent="Node3D/WestWall" unique_id=2064269079]
+[node name="CSGBox3D12" type="CSGBox3D" parent="CSGMesh3D/WestWall" unique_id=2064269079]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 5.5, 0)
 operation = 2
 size = Vector3(47, 17, 4)
 material = ExtResource("3_5cgpr")
 
-[node name="CSGBox3D7" type="CSGBox3D" parent="Node3D/WestWall" unique_id=546992940]
+[node name="CSGBox3D7" type="CSGBox3D" parent="CSGMesh3D/WestWall" unique_id=546992940]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -11.5, 0.5)
 size = Vector3(5, 5, 1)
 material = SubResource("StandardMaterial3D_pet1e")
 
-[node name="CSGBox3D8" type="CSGBox3D" parent="Node3D/WestWall" unique_id=1069959799]
+[node name="CSGBox3D8" type="CSGBox3D" parent="CSGMesh3D/WestWall" unique_id=1069959799]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, -11.5, 0)
 operation = 2
 size = Vector3(5, 5, 4)
 material = ExtResource("3_5cgpr")
 
-[node name="CSGBox3D10" type="CSGBox3D" parent="Node3D/WestWall" unique_id=378887152]
+[node name="CSGBox3D10" type="CSGBox3D" parent="CSGMesh3D/WestWall" unique_id=378887152]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42, -11.5, 0)
 operation = 2
 size = Vector3(5, 5, 4)
 material = ExtResource("3_5cgpr")
 
-[node name="CSGBox3D11" type="CSGBox3D" parent="Node3D/WestWall" unique_id=1570948864]
+[node name="CSGBox3D11" type="CSGBox3D" parent="CSGMesh3D/WestWall" unique_id=1570948864]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42, -11.5, 0.5)
 size = Vector3(5, 5, 1)
 material = SubResource("StandardMaterial3D_pet1e")
 
-[node name="CSGBox3D9" type="CSGBox3D" parent="Node3D/WestWall" unique_id=663843855]
+[node name="CSGBox3D9" type="CSGBox3D" parent="CSGMesh3D/WestWall" unique_id=663843855]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, -11.5, 0.5)
 size = Vector3(5, 5, 1)
 material = SubResource("StandardMaterial3D_pet1e")
 
-[node name="StartingBox" type="CSGBox3D" parent="Node3D" unique_id=1808608512]
+[node name="StartingBox" type="CSGBox3D" parent="CSGMesh3D" unique_id=1808608512]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 96, 7, 9.000044)
 size = Vector3(23, 17, 1)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D19" type="CSGBox3D" parent="Node3D/StartingBox" unique_id=1869590341]
+[node name="CSGBox3D19" type="CSGBox3D" parent="CSGMesh3D/StartingBox" unique_id=1869590341]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.386902e-05, 7.5)
 size = Vector3(23, 17, 1)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D17" type="CSGBox3D" parent="Node3D/StartingBox" unique_id=969372504]
+[node name="CSGBox3D17" type="CSGBox3D" parent="CSGMesh3D/StartingBox" unique_id=969372504]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, -0.5, 4)
 size = Vector3(1, 16, 7)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D20" type="CSGBox3D" parent="Node3D/StartingBox" unique_id=1041660249]
+[node name="CSGBox3D20" type="CSGBox3D" parent="CSGMesh3D/StartingBox" unique_id=1041660249]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 3.4999998)
 size = Vector3(23, 1, 8)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D25" type="CSGBox3D" parent="Node3D/StartingBox" unique_id=1832282221]
+[node name="CSGBox3D25" type="CSGBox3D" parent="CSGMesh3D/StartingBox" unique_id=1832282221]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -9, 4.0000005)
 size = Vector3(22, 1, 7)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D25" type="CSGBox3D" parent="Node3D/StartingBox/CSGBox3D25" unique_id=1393576925]
+[node name="CSGBox3D25" type="CSGBox3D" parent="CSGMesh3D/StartingBox/CSGBox3D25" unique_id=1393576925]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 operation = 2
 size = Vector3(15, 3, 3)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D26" type="CSGBox3D" parent="Node3D/StartingBox" unique_id=1593103137]
+[node name="CSGBox3D26" type="CSGBox3D" parent="CSGMesh3D/StartingBox" unique_id=1593103137]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -9, 4.0000005)
 size = Vector3(16, 1, 3)
 material = ExtResource("5_euj40")
 
-[node name="CSGBox3D24" type="CSGBox3D" parent="Node3D/StartingBox" unique_id=1681329585]
+[node name="CSGBox3D24" type="CSGBox3D" parent="CSGMesh3D/StartingBox" unique_id=1681329585]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, -16.5, 4.000001)
 size = Vector3(1, 16, 7)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D39" type="CSGBox3D" parent="Node3D/StartingBox" unique_id=1625214612]
+[node name="CSGBox3D39" type="CSGBox3D" parent="CSGMesh3D/StartingBox" unique_id=1625214612]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, -8, 4.000001)
 size = Vector3(1, 33, 7)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D39" type="CSGBox3D" parent="Node3D/StartingBox/CSGBox3D39" unique_id=779724118]
+[node name="CSGBox3D39" type="CSGBox3D" parent="CSGMesh3D/StartingBox/CSGBox3D39" unique_id=779724118]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0.99999976)
 operation = 2
 size = Vector3(3, 3, 4)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D40" type="CSGBox3D" parent="Node3D/StartingBox/CSGBox3D39" unique_id=537032140]
+[node name="CSGBox3D40" type="CSGBox3D" parent="CSGMesh3D/StartingBox/CSGBox3D39" unique_id=537032140]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -6, 1.0000001)
 operation = 2
 size = Vector3(3, 3, 4)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D23" type="CSGBox3D" parent="Node3D/StartingBox" unique_id=553340603]
+[node name="CSGBox3D23" type="CSGBox3D" parent="CSGMesh3D/StartingBox" unique_id=553340603]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -17.000044, 7.500001)
 size = Vector3(23, 17, 1)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D22" type="CSGBox3D" parent="Node3D/StartingBox" unique_id=398298405]
+[node name="CSGBox3D22" type="CSGBox3D" parent="CSGMesh3D/StartingBox" unique_id=398298405]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -17, 9.536743e-07)
 size = Vector3(23, 17, 1)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D21" type="CSGBox3D" parent="Node3D/StartingBox" unique_id=1658632119]
+[node name="CSGBox3D21" type="CSGBox3D" parent="CSGMesh3D/StartingBox" unique_id=1658632119]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -25, 3.5000012)
 size = Vector3(23, 1, 8)
 material = ExtResource("4_5cgpr")
 
-[node name="StartingBridge" type="CSGBox3D" parent="Node3D" unique_id=59490992]
+[node name="StartingBridge" type="CSGBox3D" parent="CSGMesh3D" unique_id=59490992]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 68, -12, 0.5)
 size = Vector3(35, 40, 1)
-material = SubResource("StandardMaterial3D_vchc8")
+material = SubResource("StandardMaterial3D_br3rc")
 
-[node name="StartingBridge5" type="CSGBox3D" parent="Node3D/StartingBridge" unique_id=715425001]
+[node name="StartingBridge5" type="CSGBox3D" parent="CSGMesh3D/StartingBridge" unique_id=715425001]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.449997, -6.854534e-07, -11)
 size = Vector3(1, 40, 21)
-material = SubResource("StandardMaterial3D_vchc8")
+material = SubResource("StandardMaterial3D_br3rc")
 
-[node name="StartingBridge10" type="CSGBox3D" parent="Node3D/StartingBridge" unique_id=272810473]
+[node name="StartingBridge10" type="CSGBox3D" parent="CSGMesh3D/StartingBridge" unique_id=272810473]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.550003, -6.556511e-07, -5.5)
 size = Vector3(1, 40, 10)
-material = SubResource("StandardMaterial3D_vchc8")
+material = SubResource("StandardMaterial3D_br3rc")
 
-[node name="StartingBridge3" type="CSGBox3D" parent="Node3D/StartingBridge" unique_id=2074355681]
+[node name="StartingBridge3" type="CSGBox3D" parent="CSGMesh3D/StartingBridge" unique_id=2074355681]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55000305, -19.5, -10.5)
 size = Vector3(35, 1, 22)
-material = SubResource("StandardMaterial3D_vchc8")
+material = SubResource("StandardMaterial3D_br3rc")
 
-[node name="StartingBridge4" type="CSGBox3D" parent="Node3D/StartingBridge" unique_id=672524918]
+[node name="StartingBridge4" type="CSGBox3D" parent="CSGMesh3D/StartingBridge" unique_id=672524918]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55000305, 19.5, -11)
 size = Vector3(35, 1, 21)
-material = SubResource("StandardMaterial3D_vchc8")
+material = SubResource("StandardMaterial3D_br3rc")
 
-[node name="StartingBridge2" type="CSGBox3D" parent="Node3D/StartingBridge" unique_id=1232076782]
+[node name="StartingBridge2" type="CSGBox3D" parent="CSGMesh3D/StartingBridge" unique_id=1232076782]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55000305, -9.834766e-07, -22)
 size = Vector3(35, 40, 1)
-material = SubResource("StandardMaterial3D_vchc8")
+material = SubResource("StandardMaterial3D_br3rc")
 
-[node name="StartingBridge6" type="CSGBox3D" parent="Node3D/StartingBridge" unique_id=24629354]
+[node name="StartingBridge6" type="CSGBox3D" parent="CSGMesh3D/StartingBridge" unique_id=24629354]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.050003, -5.5000005, -11.5)
 size = Vector3(6, 3.5, 1)
 material = SubResource("StandardMaterial3D_jkpwr")
 
-[node name="StartingBridge7" type="CSGBox3D" parent="Node3D/StartingBridge" unique_id=2049282640]
+[node name="StartingBridge7" type="CSGBox3D" parent="CSGMesh3D/StartingBridge" unique_id=2049282640]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.050003, 4.4999995, -11.5)
 size = Vector3(6, 3.5, 1)
 material = SubResource("StandardMaterial3D_jkpwr")
 
-[node name="StartingBridge8" type="CSGBox3D" parent="Node3D/StartingBridge" unique_id=597117404]
+[node name="StartingBridge8" type="CSGBox3D" parent="CSGMesh3D/StartingBridge" unique_id=597117404]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.050003, -0.50000036, -11.5)
 size = Vector3(4, 13.5, 1)
 material = SubResource("StandardMaterial3D_jkpwr")
 
-[node name="StartingBridge9" type="CSGBox3D" parent="Node3D/StartingBridge" unique_id=14211998]
+[node name="StartingBridge9" type="CSGBox3D" parent="CSGMesh3D/StartingBridge" unique_id=14211998]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.950001, -0.50000036, -11.5)
 size = Vector3(24, 5, 1)
 material = SubResource("StandardMaterial3D_jkpwr")
 
-[node name="StartingBridge9" type="CSGBox3D" parent="Node3D/StartingBridge/StartingBridge9" unique_id=86312518]
+[node name="StartingBridge9" type="CSGBox3D" parent="CSGMesh3D/StartingBridge/StartingBridge9" unique_id=86312518]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -1)
 size = Vector3(24, 1, 1)
 material = SubResource("StandardMaterial3D_jkpwr")
 
-[node name="StartingBridge10" type="CSGBox3D" parent="Node3D/StartingBridge/StartingBridge9" unique_id=1685673289]
+[node name="StartingBridge10" type="CSGBox3D" parent="CSGMesh3D/StartingBridge/StartingBridge9" unique_id=1685673289]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.9999999, -0.99999976)
 size = Vector3(24, 1, 1)
 material = SubResource("StandardMaterial3D_jkpwr")
 
-[node name="Door1" type="CSGBox3D" parent="Node3D/StartingBridge" unique_id=1209596032]
+[node name="Door1" type="CSGBox3D" parent="CSGMesh3D/StartingBridge" unique_id=1209596032]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.050003, -5.4999986, -14)
 operation = 2
 size = Vector3(3, 3, 4)
 material = ExtResource("4_5cgpr")
 
-[node name="Door2" type="CSGBox3D" parent="Node3D/StartingBridge" unique_id=1632050739]
+[node name="Door2" type="CSGBox3D" parent="CSGMesh3D/StartingBridge" unique_id=1632050739]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.050003, 4.5000014, -14)
 operation = 2
 size = Vector3(3, 3, 4)
 material = ExtResource("4_5cgpr")
 
-[node name="SouthWall" type="CSGBox3D" parent="Node3D" unique_id=805846516]
+[node name="SouthWall" type="CSGBox3D" parent="CSGMesh3D" unique_id=805846516]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 50, 13, -6.556708e-08)
 size = Vector3(1, 100, 33)
 material = ExtResource("3_5cgpr")
 
-[node name="CSGBox3D3" type="CSGBox3D" parent="Node3D/SouthWall" unique_id=115302278]
+[node name="CSGBox3D3" type="CSGBox3D" parent="CSGMesh3D/SouthWall" unique_id=115302278]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2017644e-05, 11.000001)
 operation = 2
 size = Vector3(3, 3, 4)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D5" type="CSGBox3D" parent="Node3D/SouthWall" unique_id=604519110]
+[node name="CSGBox3D5" type="CSGBox3D" parent="CSGMesh3D/SouthWall" unique_id=604519110]
 transform = Transform3D(0.9659258, 1.131334e-08, 0.25881904, -1.131334e-08, 1, -1.489429e-09, -0.25881904, -1.489429e-09, 0.9659258, 1.414814, 43.50003, 2.352952)
 operation = 2
 size = Vector3(10, 12, 6)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D4" type="CSGBox3D" parent="Node3D/SouthWall" unique_id=36537147]
+[node name="CSGBox3D4" type="CSGBox3D" parent="CSGMesh3D/SouthWall" unique_id=36537147]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -45.99997, 7.500003)
 operation = 2
 size = Vector3(3, 11, 11)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D6" type="CSGBox3D" parent="Node3D/SouthWall" unique_id=399487560]
+[node name="CSGBox3D6" type="CSGBox3D" parent="CSGMesh3D/SouthWall" unique_id=399487560]
 transform = Transform3D(-4.371139e-08, 4.371139e-08, 1, 1, 0, 4.3711385e-08, 0, 1, -4.371139e-08, -0.25, -3.9999998, -3.25)
 operation = 2
 size = Vector3(5, 5, 4)
 material = ExtResource("3_5cgpr")
 
-[node name="CSGBox3D10" type="CSGBox3D" parent="Node3D/SouthWall" unique_id=1814575933]
+[node name="CSGBox3D10" type="CSGBox3D" parent="CSGMesh3D/SouthWall" unique_id=1814575933]
 transform = Transform3D(-4.371139e-08, 4.371139e-08, 1, 1, 0, 4.3711385e-08, 0, 1, -4.371139e-08, 0.25, -3.9999998, -3.25)
 size = Vector3(5, 5, 1)
 material = SubResource("StandardMaterial3D_pet1e")
 
-[node name="NorthWall" type="CSGBox3D" parent="Node3D" unique_id=1169488944]
+[node name="NorthWall" type="CSGBox3D" parent="CSGMesh3D" unique_id=1169488944]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -50.5, 14, -7.649493e-07)
 size = Vector3(2, 100, 30)
 material = ExtResource("3_5cgpr")
 
-[node name="CSGBox3D12" type="CSGBox3D" parent="Node3D/NorthWall" unique_id=963875168]
+[node name="CSGBox3D12" type="CSGBox3D" parent="CSGMesh3D/NorthWall" unique_id=963875168]
 transform = Transform3D(-4.371139e-08, 0, 1, 1, -4.371139e-08, 4.371139e-08, 4.371139e-08, 1, 1.9106855e-15, 0, 5.500007, 11.999999)
 operation = 2
 size = Vector3(5, 5, 4)
 material = ExtResource("3_5cgpr")
 
-[node name="CSGBox3D13" type="CSGBox3D" parent="Node3D/NorthWall" unique_id=1957751593]
+[node name="CSGBox3D13" type="CSGBox3D" parent="CSGMesh3D/NorthWall" unique_id=1957751593]
 transform = Transform3D(-4.371139e-08, 0, 1, 1, -4.371139e-08, 4.371139e-08, 4.371139e-08, 1, 1.9106855e-15, 0, 5.500007, 11.999997)
 size = Vector3(5, 5, 1)
 material = SubResource("StandardMaterial3D_pet1e")
 
-[node name="CSGBox3D14" type="CSGBox3D" parent="Node3D/NorthWall" unique_id=1594889264]
+[node name="CSGBox3D14" type="CSGBox3D" parent="CSGMesh3D/NorthWall" unique_id=1594889264]
 transform = Transform3D(-4.371139e-08, 0, 1, 1, -4.371139e-08, 4.371139e-08, 4.371139e-08, 1, 1.9106855e-15, 0, -34.499992, -0.9999981)
 operation = 2
 size = Vector3(7, 7, 4)
 material = ExtResource("3_5cgpr")
 
-[node name="CSGBox3D15" type="CSGBox3D" parent="Node3D/NorthWall" unique_id=187756638]
+[node name="CSGBox3D15" type="CSGBox3D" parent="CSGMesh3D/NorthWall" unique_id=187756638]
 transform = Transform3D(-4.371139e-08, 0, 1, 1, -4.371139e-08, 4.371139e-08, 4.371139e-08, 1, 1.9106855e-15, 0, -34.499992, -1.0000019)
 size = Vector3(7, 7, 1)
 material = SubResource("StandardMaterial3D_pet1e")
 
-[node name="CSGBox3D16" type="CSGBox3D" parent="Node3D" unique_id=279986922]
+[node name="CSGBox3D16" type="CSGBox3D" parent="CSGMesh3D" unique_id=279986922]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -40.5, 11.500001, -25.5)
 size = Vector3(22, 49, 1)
 material = ExtResource("3_5cgpr")
 
-[node name="CSGBox3D27" type="CSGBox3D" parent="Node3D" unique_id=1391940039]
+[node name="CSGBox3D27" type="CSGBox3D" parent="CSGMesh3D" unique_id=1391940039]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 33.5, 13.499999, -4)
 size = Vector3(32, 5, 1)
 material = ExtResource("8_kuy7m")
 
-[node name="WalkwaySupport" type="CSGBox3D" parent="Node3D" unique_id=1151817777]
+[node name="WalkwaySupport" type="CSGBox3D" parent="CSGMesh3D" unique_id=1151817777]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 20, 6.999999, -4.0000005)
 size = Vector3(5, 5, 14)
 material = ExtResource("8_kuy7m")
 
-[node name="CSGBox3D34" type="CSGBox3D" parent="Node3D/WalkwaySupport" unique_id=1085474239]
+[node name="CSGBox3D34" type="CSGBox3D" parent="CSGMesh3D/WalkwaySupport" unique_id=1085474239]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, -0.5, 0)
 operation = 2
 size = Vector3(4, 4, 14)
 material = ExtResource("8_kuy7m")
 
-[node name="CSGBox3D35" type="CSGBox3D" parent="Node3D/WalkwaySupport" unique_id=1462204160]
+[node name="CSGBox3D35" type="CSGBox3D" parent="CSGMesh3D/WalkwaySupport" unique_id=1462204160]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0)
 operation = 2
 size = Vector3(4, 3, 14)
 material = ExtResource("8_kuy7m")
 
-[node name="CSGBox3D36" type="CSGBox3D" parent="Node3D/WalkwaySupport" unique_id=1599431949]
+[node name="CSGBox3D36" type="CSGBox3D" parent="CSGMesh3D/WalkwaySupport" unique_id=1599431949]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5000007, 0)
 operation = 2
 size = Vector3(3, 4, 14)
 material = ExtResource("8_kuy7m")
 
-[node name="CSGBox3D28" type="CSGBox3D" parent="Node3D" unique_id=197582029]
+[node name="CSGBox3D28" type="CSGBox3D" parent="CSGMesh3D" unique_id=197582029]
 transform = Transform3D(-4.371139e-08, -1, 4.371139e-08, 0, -4.371139e-08, -1, 1, -4.371139e-08, 1.9106855e-15, 20, 13.499999, -28.5)
 size = Vector3(44, 5, 1)
 material = ExtResource("8_kuy7m")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Node3D" unique_id=1449409735]
+[node name="CSGBox3D" type="CSGBox3D" parent="CSGMesh3D" unique_id=1449409735]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, -1, 0)
 size = Vector3(33, 1, 100)
 material = ExtResource("2_jhkrf")
 
-[node name="CSGBox3D7" type="CSGBox3D" parent="Node3D" unique_id=1339098875]
+[node name="CSGBox3D7" type="CSGBox3D" parent="CSGMesh3D" unique_id=1339098875]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16381264, 28.48885, 0.23780823)
 size = Vector3(99, 1, 100)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D15" type="CSGBox3D" parent="Node3D" unique_id=1735644355]
+[node name="CSGBox3D15" type="CSGBox3D" parent="CSGMesh3D" unique_id=1735644355]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -49, 0)
 
-[node name="CSGCylinder3D" type="CSGCylinder3D" parent="Node3D" unique_id=1637450199]
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="CSGMesh3D" unique_id=1637450199]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -14, 24, 27.1875)
 radius = 1.0
 height = 48.125
 
-[node name="CSGCylinder3D3" type="CSGCylinder3D" parent="Node3D" unique_id=117919231]
+[node name="CSGCylinder3D3" type="CSGCylinder3D" parent="CSGMesh3D" unique_id=117919231]
 transform = Transform3D(0, -1.0000001, -4.371139e-08, 0, -4.371139e-08, 1, -1.0000001, 0, -8.881784e-16, -35.53125, 12, -0.8125)
 radius = 1.0
 height = 33.0625
 
-[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="Node3D" unique_id=802083644]
+[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="CSGMesh3D" unique_id=802083644]
 transform = Transform3D(0.83651626, 0.48296294, -0.258819, 0.22414389, 0.1294095, 0.96592593, 0.5, -0.8660254, -4.6923518e-08, -32.59215, 23.305435, 28.83562)
 radius = 1.0
 height = 59.265625
 
-[node name="CSGSphere3D" type="CSGSphere3D" parent="Node3D" unique_id=1377843712]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48, 0, -53)
+[node name="CSGSphere3D" type="CSGSphere3D" parent="CSGMesh3D" unique_id=1377843712]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 131.8497, 0, -53)
 radius = 13.0
 radial_segments = 32
 rings = 12
 material = ExtResource("8_kuy7m")
 
-[node name="CSGSphere3D2" type="CSGSphere3D" parent="Node3D" unique_id=1286503416]
+[node name="CSGSphere3D2" type="CSGSphere3D" parent="CSGMesh3D" unique_id=1286503416]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, 4, 41)
 radius = 5.0
 material = SubResource("StandardMaterial3D_c5vbb")
 
-[node name="CSGSphere3D3" type="CSGSphere3D" parent="Node3D" unique_id=1793448790]
+[node name="CSGSphere3D3" type="CSGSphere3D" parent="CSGMesh3D" unique_id=1793448790]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 4, 49)
 radius = 5.0
 material = SubResource("StandardMaterial3D_c5vbb")
 
-[node name="CSGBox3D35" type="CSGBox3D" parent="Node3D" unique_id=901685708]
+[node name="CSGBox3D35" type="CSGBox3D" parent="CSGMesh3D" unique_id=901685708]
 transform = Transform3D(-4.371139e-08, -1, 4.371139e-08, 0, -4.371139e-08, -1, 1, -4.371139e-08, 1.9106855e-15, 33.5, 1.9999996, 40.5)
 size = Vector3(19, 32, 4)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D36" type="CSGBox3D" parent="Node3D" unique_id=1249161656]
+[node name="CSGBox3D36" type="CSGBox3D" parent="CSGMesh3D" unique_id=1249161656]
 transform = Transform3D(-4.371139e-08, -1, 4.371139e-08, 0, -4.371139e-08, -1, 1, -4.371139e-08, 1.9106855e-15, 45, 1.5000002, 30.5)
 size = Vector3(1, 5, 3)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D37" type="CSGBox3D" parent="Node3D" unique_id=1103962428]
+[node name="CSGBox3D37" type="CSGBox3D" parent="CSGMesh3D" unique_id=1103962428]
 transform = Transform3D(-4.371139e-08, -1, 4.371139e-08, 0, -4.371139e-08, -1, 1, -4.371139e-08, 1.9106855e-15, 45, 1.0000002, 29.5)
 size = Vector3(1, 5, 2)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D38" type="CSGBox3D" parent="Node3D" unique_id=433511673]
+[node name="CSGBox3D38" type="CSGBox3D" parent="CSGMesh3D" unique_id=433511673]
 transform = Transform3D(-4.371139e-08, -1, 4.371139e-08, 0, -4.371139e-08, -1, 1, -4.371139e-08, 1.9106855e-15, 45, 0.50000024, 28.5)
 size = Vector3(1, 5, 1)
 material = ExtResource("4_5cgpr")
-
-[node name="CSGMesh3D" type="CSGMesh3D" parent="." unique_id=1328661696]

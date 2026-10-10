@@ -5,11 +5,12 @@ using System.Linq;
 
 /// <summary>
 /// Shop terminal UI (ShopUI.tscn): a catalogue of purchasable structure blueprints on the left; selecting one
-/// shows its details on the right, with a purchase widget at the bottom (unit cost vs. how much of the cost item
-/// the players hold, an order-quantity selector, and a Purchase button).
+/// shows its details on the right, with a purchase widget at the bottom (per currency in its price: the cost vs. how
+/// much the players' bank holds; an order-quantity selector, and a Purchase button). The header shows every
+/// discovered currency's bank (<see cref="CurrencyBar"/>). Only stock whose currencies are all discovered is listed.
 /// Laid out for a fixed 2560x1440 screen so it can later be rendered in a SubViewport on an in-world display.
 /// A view over <see cref="Shop"/>, which holds the stock, prices and the purchase itself; every open shop rebuilds
-/// when the stock changes. Opened as a screen by <see cref="UIManager.OpenShop"/>; Exit, Escape or interact close it.
+/// when the stock changes or a currency is discovered. Opened as a screen by <see cref="UIManager.OpenShop"/>; Exit, Escape or interact close it.
 /// </summary>
 public partial class ShopUI : UIScreen
 {
@@ -20,14 +21,15 @@ public partial class ShopUI : UIScreen
 
     private Inventory inventory;
     private readonly ButtonGroup rowGroup = new();
-    private readonly List<(BlueprintItem item, Button row, Label costLabel)> rows = new();
+    private readonly List<(BlueprintItem item, Button row, HBoxContainer costBox)> rows = new();
     private BlueprintItem selected;
     private int quantity = 1;
     private VBoxContainer itemList;
     private Label listCount, emptyDetail, detailCategory, detailName, detailStats, detailDescription;
-    private Label costName, costEach, costTotal, costHave, freeLabel, quantityLabel;
-    private Control detailContent, costRow;
-    private TextureRect detailIcon, costIcon;
+    private Label freeLabel, quantityLabel;
+    private Control detailContent;
+    private VBoxContainer costList;
+    private TextureRect detailIcon;
     private Button minusButton, plusButton, maxButton, purchaseButton, closeButton;
 
     public override void _Ready()
@@ -41,12 +43,7 @@ public partial class ShopUI : UIScreen
         detailName = GetNode<Label>("%DetailName");
         detailStats = GetNode<Label>("%DetailStats");
         detailDescription = GetNode<Label>("%DetailDescription");
-        costRow = GetNode<Control>("%CostRow");
-        costIcon = GetNode<TextureRect>("%CostIcon");
-        costName = GetNode<Label>("%CostName");
-        costEach = GetNode<Label>("%CostEach");
-        costTotal = GetNode<Label>("%CostTotal");
-        costHave = GetNode<Label>("%CostHave");
+        costList = GetNode<VBoxContainer>("%CostList");
         freeLabel = GetNode<Label>("%FreeLabel");
         quantityLabel = GetNode<Label>("%Quantity");
         minusButton = GetNode<Button>("%MinusButton");
@@ -62,7 +59,8 @@ public partial class ShopUI : UIScreen
         closeButton.Pressed += () => UIManager.CloseScreen(this);
 
         Shop.StockChanged += BuildCatalogue;
-        Shop.ResourcesChanged += OnResourcesChanged;
+        Shop.CurrencyDiscovered += BuildCatalogue;
+        Shop.BalancesChanged += RefreshCosts;
         BuildCatalogue();
     }
 
@@ -74,7 +72,8 @@ public partial class ShopUI : UIScreen
             fittingToViewport = false;
         }
         Shop.StockChanged -= BuildCatalogue;
-        Shop.ResourcesChanged -= OnResourcesChanged;
+        Shop.CurrencyDiscovered -= BuildCatalogue;
+        Shop.BalancesChanged -= RefreshCosts;
         SetInventory(null);
     }
 
@@ -137,7 +136,7 @@ public partial class ShopUI : UIScreen
 
     // ---- catalogue -------------------------------------------------------------
 
-    /// <summary>Rebuilds the list from <see cref="Shop.Stock"/>, keeping the selection if it's still on sale.</summary>
+    /// <summary>Rebuilds the list from the available <see cref="Shop.Stock"/>, keeping the selection if it's still listed.</summary>
     private void BuildCatalogue()
     {
         foreach (Node child in itemList.GetChildren())
@@ -148,7 +147,7 @@ public partial class ShopUI : UIScreen
         rows.Clear();
 
         // Grouped by definition folder, groups in order of first appearance, items in the order they were added.
-        List<BlueprintItem> stock = Shop.Stock.Select(id => ItemInfo.Fetch(id) as BlueprintItem).Where(i => i != null).ToList();
+        List<BlueprintItem> stock = Shop.Stock.Select(id => ItemInfo.Fetch(id) as BlueprintItem).Where(i => i != null && Shop.IsAvailable(i)).ToList();
         bool first = true;
         foreach (var group in stock.GroupBy(CategoryOf))
         {
@@ -168,9 +167,6 @@ public partial class ShopUI : UIScreen
 
         Select(stock.Contains(selected) ? selected : stock.FirstOrDefault());
     }
-
-    /// <summary>Turn-ins and purchases change what the player can afford.</summary>
-    private void OnResourcesChanged(string itemID, int amount) => RefreshCosts();
 
     /// <summary>The blueprint's definition folder, e.g. "chutes" (top-level blueprints are "general").</summary>
     private static string CategoryOf(BlueprintItem item)
@@ -221,23 +217,15 @@ public partial class ShopUI : UIScreen
             TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis,
             MouseFilter = MouseFilterEnum.Ignore,
         });
-        Label costLabel = new()
-        {
-            VerticalAlignment = VerticalAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Right,
-            CustomMinimumSize = new Vector2(80, 0),
-            MouseFilter = MouseFilterEnum.Ignore,
-        };
-        if (item.HasCost)
-        {
-            line.AddChild(Icon(ItemInfo.Fetch(item.costItemID)?.icon, 44));
-        }
-        line.AddChild(costLabel);
+        // Filled by RefreshCosts: an icon and amount per currency in the price.
+        HBoxContainer costBox = new() { MouseFilter = MouseFilterEnum.Ignore };
+        costBox.AddThemeConstantOverride("separation", 12);
+        line.AddChild(costBox);
 
         margin.AddChild(line);
         row.AddChild(margin);
         itemList.AddChild(row);
-        rows.Add((item, row, costLabel));
+        rows.Add((item, row, costBox));
     }
 
     /// <summary>Display name without the "Blueprint: " prefix every entry here would share.</summary>
@@ -298,14 +286,22 @@ public partial class ShopUI : UIScreen
         RefreshCosts();
     }
 
-    /// <summary>Re-reads held counts into the catalogue cost column and the purchase widget.</summary>
+    /// <summary>Re-reads the banks into the catalogue cost column and the purchase widget.</summary>
     private void RefreshCosts()
     {
-        foreach (var (item, _, costLabel) in rows)
+        foreach (var (item, _, costBox) in rows)
         {
-            costLabel.Text = item.HasCost ? $"×{item.costAmount}" : "FREE";
-            bool unaffordable = !Shop.CanAfford(item, 1);
-            costLabel.AddThemeColorOverride("font_color", !item.HasCost ? Dim : unaffordable ? Shortfall : Accent);
+            Clear(costBox);
+            if (!Shop.HasCost(item.cost))
+            {
+                costBox.AddChild(CostLabel("FREE", Dim));
+            }
+            foreach (var (currency, amount) in item.cost)
+            {
+                if (amount <= 0) continue;
+                costBox.AddChild(Icon(Shop.Currencies[currency].icon, 44));
+                costBox.AddChild(CostLabel($"×{amount}", Shop.Balance(currency) >= amount ? Accent : Shortfall));
+            }
         }
 
         if (selected == null)
@@ -317,28 +313,80 @@ public partial class ShopUI : UIScreen
         minusButton.Disabled = quantity <= 1;
         plusButton.Disabled = quantity >= maxOrder;
 
-        costRow.Visible = selected.HasCost;
-        freeLabel.Visible = !selected.HasCost;
-        bool affordable = true;
-        if (selected.HasCost)
+        freeLabel.Visible = !Shop.HasCost(selected.cost);
+        Clear(costList);
+        string shortOf = null; // the first currency the order is short of
+        foreach (var (currency, amount) in selected.cost)
         {
-            ItemInfo costItem = ItemInfo.Fetch(selected.costItemID);
-            int total = Shop.TotalCost(selected, quantity);
-            int held = Shop.HeldCurrency(selected.costItemID);
-            affordable = Shop.CanAfford(selected, quantity);
-
-            costIcon.Texture = costItem?.icon;
-            costName.Text = costItem?.displayName ?? selected.costItemID;
-            costEach.Text = $"{selected.costAmount} PER UNIT";
-            costTotal.Text = total.ToString();
-            costHave.Text = held.ToString();
-            costHave.AddThemeColorOverride("font_color", affordable ? Accent : Shortfall);
+            if (amount <= 0) continue;
+            int total = amount * quantity;
+            int held = Shop.Balance(currency);
+            if (held < total)
+            {
+                shortOf ??= Shop.Currencies[currency].name;
+            }
+            costList.AddChild(CostRow(currency, amount, total, held));
         }
 
+        bool affordable = shortOf == null;
         purchaseButton.Disabled = !affordable;
-        purchaseButton.Text = affordable
-            ? $"PURCHASE  ×{quantity}"
-            : $"INSUFFICIENT {(ItemInfo.Fetch(selected.costItemID)?.displayName ?? selected.costItemID).ToUpperInvariant()}";
+        purchaseButton.Text = affordable ? $"PURCHASE  ×{quantity}" : $"INSUFFICIENT {shortOf.ToUpperInvariant()}";
+    }
+
+    /// <summary>One currency of the selected price: icon and name, unit cost, the order's total, and the bank.</summary>
+    private static Control CostRow(Currency currency, int each, int total, int held)
+    {
+        CurrencyInfo info = Shop.Currencies[currency];
+        PanelContainer well = new() { ThemeTypeVariation = "ShopIconWell" };
+        HBoxContainer line = new();
+        line.AddThemeConstantOverride("separation", 24);
+        well.AddChild(line);
+
+        line.AddChild(Icon(info.icon, 80));
+        VBoxContainer nameColumn = new() { SizeFlagsHorizontal = SizeFlags.ExpandFill, SizeFlagsVertical = SizeFlags.ShrinkCenter };
+        nameColumn.AddThemeConstantOverride("separation", 0);
+        nameColumn.AddChild(new Label { Text = info.name });
+        nameColumn.AddChild(new Label { Text = $"{each} PER UNIT", ThemeTypeVariation = "ShopDim" });
+        line.AddChild(nameColumn);
+        line.AddChild(NumberColumn("REQUIRED", total, 220, null));
+        line.AddChild(NumberColumn("IN BANK", held, 260, held >= total ? Accent : Shortfall));
+        return well;
+    }
+
+    private static VBoxContainer NumberColumn(string header, int value, int width, Color? color)
+    {
+        VBoxContainer column = new() { CustomMinimumSize = new Vector2(width, 0), SizeFlagsVertical = SizeFlags.ShrinkCenter };
+        column.AddThemeConstantOverride("separation", 0);
+        column.AddChild(new Label { Text = header, ThemeTypeVariation = "ShopDim", HorizontalAlignment = HorizontalAlignment.Right });
+        Label number = new() { Text = value.ToString(), HorizontalAlignment = HorizontalAlignment.Right };
+        number.AddThemeFontSizeOverride("font_size", 44);
+        if (color != null)
+        {
+            number.AddThemeColorOverride("font_color", color.Value);
+        }
+        column.AddChild(number);
+        return column;
+    }
+
+    private static Label CostLabel(string text, Color color)
+    {
+        Label label = new()
+        {
+            Text = text,
+            VerticalAlignment = VerticalAlignment.Center,
+            MouseFilter = MouseFilterEnum.Ignore,
+        };
+        label.AddThemeColorOverride("font_color", color);
+        return label;
+    }
+
+    private static void Clear(Node parent)
+    {
+        foreach (Node child in parent.GetChildren())
+        {
+            parent.RemoveChild(child);
+            child.QueueFree();
+        }
     }
 
     private void OnPurchasePressed()

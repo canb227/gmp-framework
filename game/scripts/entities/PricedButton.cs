@@ -1,38 +1,46 @@
 using Godot;
+using System.Linq;
 
 /// <summary>
-/// A <see cref="BasicButton"/> whose presses cost <see cref="costAmount"/> of the Shop resource <see cref="costItemID"/>.
+/// A <see cref="BasicButton"/> whose presses cost <see cref="cost"/>, paid from the Shop's currency banks.
 /// The host takes the payment when it accepts a press; a press the players can't pay for is refused.
 /// </summary>
 public partial class PricedButton : BasicButton
 {
-    /// <summary>Item id of the Shop resource the press is paid in.</summary>
-    [Export] public string costItemID;
-    [Export] public int costAmount = 1;
+    /// <summary>What a press costs: any amount of any number of currencies.</summary>
+    [Export] public Godot.Collections.Dictionary<Currency, int> cost = new();
 
     public override void _EnterTree()
     {
-        Shop.ResourcesChanged += OnResourcesChanged;
+        Shop.BalancesChanged += UpdateHoverText;
     }
 
     public override void _ExitTree()
     {
-        Shop.ResourcesChanged -= OnResourcesChanged;
+        Shop.BalancesChanged -= UpdateHoverText;
     }
-
-    void OnResourcesChanged(string itemID, int amount) => UpdateHoverText();
 
     protected override void UpdateHoverText()
     {
         base.UpdateHoverText();
-        string currency = ItemInfo.Fetch(costItemID)?.displayName ?? costItemID;
-        hoverText += $" Costs {costAmount} {currency} (have {Shop.HeldCurrency(costItemID)}).";
+        string have = string.Join(", ", cost.Keys.Select(c => $"{Shop.Balance(c)} {Shop.Currencies[c].name}"));
+        hoverText += $" Costs {Shop.CostText(cost)} (have {have}).";
     }
 
     public override bool TryAccept(ulong presser)
     {
-        if (Shop.HeldCurrency(costItemID) < costAmount) return false;
-        Shop.AddResource(costItemID, -costAmount);
+        if (!HasLiveTarget()) return false; // e.g. a broken structure already repaired: don't charge for nothing
+        if (!Shop.CanAfford(cost)) return false;
+        Shop.Spend(cost);
         return true;
+    }
+
+    bool HasLiveTarget()
+    {
+        foreach (Node target in targets)
+        {
+            if (IsInstanceValid(target) && !target.IsQueuedForDeletion()) return true;
+        }
+        return false;
     }
 }

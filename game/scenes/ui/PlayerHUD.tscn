@@ -3,6 +3,7 @@
 [ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://gmp/ui/theme/menu_theme.tres" id="2_theme"]
 [ext_resource type="Shader" uid="uid://b7kcy5nv6urww" path="res://gmp/ui/theme/screen_overlay.gdshader" id="3_overlay"]
 [ext_resource type="Script" uid="uid://c5mov8x8q3i6s" path="res://game/scripts/player/InventoryUI.cs" id="inv_ui_script"]
+[ext_resource type="Script" path="res://game/scripts/ui/CurrencyBar.cs" id="currency_bar_script"]
 
 [sub_resource type="ShaderMaterial" id="overlay_mat"]
 shader = ExtResource("3_overlay")
@@ -392,6 +393,17 @@ theme_override_font_sizes/font_size = 30
 horizontal_alignment = 1
 vertical_alignment = 1
 uppercase = true
+
+[node name="CurrencyBar" type="HBoxContainer" parent="." unique_id=1907245513]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 40.0
+offset_right = 48.0
+offset_bottom = 88.0
+mouse_filter = 2
+theme_override_constants/separation = 40
+script = ExtResource("currency_bar_script")
+outlineSize = 8
 
 [node name="InventoryScreen" type="ColorRect" parent="." unique_id=310733976]
 unique_name_in_owner = true

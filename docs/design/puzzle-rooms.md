@@ -32,9 +32,10 @@ Puzzle rooms live in the museum's Puzzle Rooms wing (west of the original floor,
 
 ## Recipes
 
-- **Moving floors and rooms:** a kinematic `Box3DBody` (`body_type = 1`) with `RotatingRoom.cs`. Use stepped mode
-  (`stepDegrees`, `turnSeconds`, `holdSeconds`) or `continuous = true` with `degreesPerSecond`. It drives angular
-  velocity, so contacts are carried. Every collider must be a child `Box3DCollisionShape` of that body, and
+- **Moving floors and rooms:** a kinematic `Box3DBody` (`body_type = 1`), moved by setting its node's transform
+  every physics tick from a script (see `Recycler.SpinRollers`); Box3D takes the motion from the node and carries
+  contacts. Setting its angular velocity does nothing: Box3D drives kinematic bodies from their node transform, so
+  a body whose node stays put stays put. Every collider must be a child `Box3DCollisionShape` of that body, and
   meshes are plain children. Structure scenes can't ride on it (they are separate static bodies), so put
   model-only instances plus child colliders on the moving body.
 - **The root body's own shape:** every `Box3DBody` has one at its origin. For a moving room, set it to a tiny sphere

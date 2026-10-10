@@ -80,7 +80,8 @@ public interface Activator : GMPObject, Interactable
         active = on;
         foreach (Node target in targets)
         {
-            if (target is not Triggerable t) continue;
+            // Skip targets that are gone (e.g. a repaired broken structure), whose wrappers outlive the node.
+            if (!GodotObject.IsInstanceValid(target) || target.IsQueuedForDeletion() || target is not Triggerable t) continue;
             t.OnTrigger(toggle ? on : true);
             if (!toggle) t.OnTrigger(false);
         }

@@ -13,7 +13,6 @@
 [ext_resource type="PackedScene" uid="uid://bgy7sre10s0nd" path="res://game/assets/models/items/scrap_ball.glb" id="hall_96"]
 [ext_resource type="PackedScene" uid="uid://3weirepco6gq" path="res://game/assets/models/items/magnet_core.glb" id="hall_114"]
 [ext_resource type="PackedScene" uid="uid://yuvwj1i6fh5k" path="res://game/assets/models/items/quartz_shards.glb" id="hall_120"]
-[ext_resource type="Script" uid="uid://bbi5j80nrjgnp" path="res://game/scripts/entities/RotatingRoom.cs" id="hall_136"]
 [ext_resource type="PackedScene" uid="uid://qdoh516uv8xb" path="res://game/assets/models/conveyors_magnetic/conveyor_mag_straight.glb" id="hall_137"]
 [ext_resource type="PackedScene" uid="uid://cjxadvw16m7qe" path="res://game/assets/models/props/spawner.glb" id="hall_138"]
 [ext_resource type="PackedScene" uid="uid://ciueileresd63" path="res://game/assets/models/props/item_void.glb" id="hall_139"]
@@ -530,11 +529,6 @@ body_type = 1
 shape_type = 1
 sphere_radius = 0.05
 position = Vector3(-80, 7.5, -30)
-script = ExtResource("hall_136")
-axis = Vector3(1, 0, 0)
-stepDegrees = 90.0
-turnSeconds = 4.0
-holdSeconds = 6.0
 
 [node name="FaceYNCol" type="Box3DCollisionShape" parent="Tumbler/Room"]
 box_size = Vector3(10.6, 0.3, 10.6)
@@ -986,10 +980,6 @@ body_type = 1
 shape_type = 1
 sphere_radius = 0.05
 position = Vector3(-80, 0.6, 30)
-script = ExtResource("hall_136")
-axis = Vector3(0, 1, 0)
-continuous = true
-degreesPerSecond = 40.0
 
 [node name="Disc" parent="Carousel/Turntable" instance=ExtResource("hall_140")]
 
@@ -2188,10 +2178,6 @@ body_type = 1
 shape_type = 1
 sphere_radius = 0.05
 transform = Transform3D(0.99619, 0.08716, 0, -0.08716, 0.99619, 0, 0, 0, 1, -125, 2.5, 37)
-script = ExtResource("hall_136")
-axis = Vector3(1, 0, 0)
-continuous = true
-degreesPerSecond = 90.0
 
 [node name="Drum" parent="TarPit/CoatingDrum" instance=ExtResource("hall_155")]
 

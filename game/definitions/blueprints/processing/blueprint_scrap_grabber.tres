@@ -8,8 +8,9 @@
 [resource]
 script = ExtResource("1_bp")
 structureScene = ExtResource("4_b8abr")
-costItemID = "scrap_ball"
-costAmount = 5
+cost = Dictionary[int, int]({
+0: 5
+})
 itemID = "blueprint_scrap_grabber"
 displayName = "Blueprint: Scrap Grabber Arm"
 description = "A grabber arm bodged together from ruin salvage: oil drum, wheel hub, scaffold pipe and a taped-on camera. Picks items off a neighbouring belt."

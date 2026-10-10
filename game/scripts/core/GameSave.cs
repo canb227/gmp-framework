@@ -24,7 +24,10 @@ public partial record SaveGame
     public GameInfo gameInfo;
     public WorldSave world;
     public List<string> shopStock = new();
-    public Dictionary<string, int> shopResources = new();
+    /// <summary>Currency banks by currency name.</summary>
+    public Dictionary<string, int> shopBalances = new();
+    /// <summary>Items turned in to the void, by item id.</summary>
+    public Dictionary<string, int> shopDeposits = new();
     public List<string> completedQuests = new();
     /// <summary>Quests in progress: quest id to items turned in so far.</summary>
     public Dictionary<string, Dictionary<string, int>> questProgress = new();
@@ -41,7 +44,7 @@ public partial record SaveGame
 /// </summary>
 public static class GameSave
 {
-    public const int Version = 1;
+    public const int Version = 2;
 
     /// <summary>Players the last restore couldn't match to anyone here; written back into the next save.</summary>
     static List<PlayerSave> absentPlayers = new();
@@ -58,7 +61,8 @@ public static class GameSave
             gameInfo = Lobby.gameInfo,
             world = GameWorld.SnapshotWorld(),
             shopStock = Shop.Stock.ToList(),
-            shopResources = new(Shop.Resources),
+            shopBalances = Shop.SaveBalances(),
+            shopDeposits = new(Shop.Deposited),
             completedQuests = new(ProgressManager.completedQuests),
             questProgress = ProgressManager.currentQuests.ToDictionary(
                 q => q.Key, q => q.Value.itemSubmissionProgress.ToDictionary(p => p.Key, p => p.Value)),
@@ -139,7 +143,7 @@ public static class GameSave
             Lobby.gameInfo = save.gameInfo;
         }
         GameWorld.RestoreWorld(save.world);
-        Shop.LoadSave(save.shopStock, save.shopResources);
+        Shop.LoadSave(save.shopStock, save.shopBalances, save.shopDeposits);
         ProgressManager.LoadSave(save.completedQuests, save.questProgress);
         foreach (PlayerSave p in save.players)
         {

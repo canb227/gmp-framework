@@ -23,6 +23,10 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
     [Export]
     public Godot.Collections.Array<ItemTags> tags;
 
+    /// <summary>What this is worth when turned in to the void, by currency (empty: nothing, though the deposit still counts).</summary>
+    [Export]
+    public Godot.Collections.Dictionary<Currency, int> currencyValue = new();
+
     [ExportGroup("Sync")]
     /// <summary>
     /// Sync <see cref="GMPObject.priority"/> while Box3D has this item asleep. While it's awake the item uses its
@@ -187,13 +191,13 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
         }
     }
 
-    /// <summary>An item dropped in a void is turned in: the host counts it toward quests and stores it as a resource.</summary>
+    /// <summary>An item dropped in a void is turned in: the host counts it toward quests and deposits it in the shop for its <see cref="currencyValue"/>.</summary>
     public override void OnDespawned(DespawnReason reason)
     {
         if (reason == DespawnReason.Voided && Lobby.isHost)
         {
             ProgressManager.TurnInForQuest(itemID);
-            Shop.AddResource(itemID, 1);
+            Shop.Deposit(itemID, currencyValue);
         }
     }
 }
