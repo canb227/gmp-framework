@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://dj3nflyr2gxmx" path="res://dev/scriptStorage/Lever.cs" id="1_lever"]
+[ext_resource type="Script" uid="uid://dj3nflyr2gxmx" path="res://game/scripts/entities/Lever.cs" id="1_lever"]
 
 
 [sub_resource type="StandardMaterial3D" id="mat_base"]

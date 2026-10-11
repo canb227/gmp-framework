@@ -49,9 +49,6 @@ public partial class MagnetRod : HeldItem
     /// <summary>Shown only while the magnet is pulling (the coil's glow); hidden otherwise.</summary>
     [Export] public Node3D activeIndicator;
 
-    /// <summary>Holds the magnet on regardless of input (used by the headless multiplayer test).</summary>
-    public bool forceActive;
-
     /// <summary>Items currently being pulled (this peer is their authority and holder).</summary>
     public IReadOnlyCollection<PhysicalFactoryItem> captured => capturedItems;
 
@@ -133,13 +130,9 @@ public partial class MagnetRod : HeldItem
             if (activeIndicator != null) activeIndicator.Visible = player.grabbedItem != null;
             return;
         }
-        if (active && !forceActive && !Input.IsActionPressed(InputActions.primary))
+        if (active && !Input.IsActionPressed(InputActions.primary))
         {
             SetActive(false);
-        }
-        else if (!active && forceActive)
-        {
-            SetActive(true);
         }
         if (!active) return;
 

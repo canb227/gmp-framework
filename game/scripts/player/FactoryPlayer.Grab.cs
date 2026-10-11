@@ -66,8 +66,6 @@ public partial class FactoryPlayer
     /// </summary>
     public static bool emptyHandGrabEnabled = true;
 
-    /// <summary>Holds the grab button down regardless of input (used by the headless multiplayer test).</summary>
-    public bool forceGrabHeld;
     /// <summary>Where a grabbed item is held.</summary>
     public Vector3 grabPoint => grabNode.GlobalPosition;
 
@@ -106,7 +104,7 @@ public partial class FactoryPlayer
         if (newAuthority != Lobby.selfPeerID || !IsInstanceValid(item)) return; // someone else got it first
 
         // Granted, but if the button was released or we moved on in the meantime, hand it back.
-        if (!isGrabbing && (Input.IsActionPressed(InputActions.primary) || forceGrabHeld))
+        if (!isGrabbing && Input.IsActionPressed(InputActions.primary))
         {
             StartGrab(item);
         }

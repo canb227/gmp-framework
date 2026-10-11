@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dxbidpuifub02"]
 
-[ext_resource type="Script" uid="uid://cjnb1fn7lniwe" path="res://dev/scriptStorage/ItemSpawner.cs" id="1_llroo"]
+[ext_resource type="Script" uid="uid://cjnb1fn7lniwe" path="res://game/scripts/structures/special/ItemSpawner.cs" id="1_llroo"]
 [ext_resource type="PackedScene" uid="uid://cjxadvw16m7qe" path="res://game/assets/models/props/spawner.glb" id="2_cthkx"]
 
 [node name="ItemSpawner" type="Box3DBody" unique_id=1113125691]

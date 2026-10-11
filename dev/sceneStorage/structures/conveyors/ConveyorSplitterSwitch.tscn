@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://mvvurq2q1heq" path="res://game/assets/models/conveyors/conveyor_splitter_switch.glb" id="1_r"]
 [ext_resource type="Script" uid="uid://b10te24frnknc" path="res://game/scripts/structures/Structure.cs" id="2_r"]
 [ext_resource type="Script" uid="uid://djjc1nh5u0bg" path="res://game/scripts/structures/logistics/conveyors/ConveyorBelt.cs" id="3_r"]
-[ext_resource type="Script" uid="uid://dj3nflyr2gxmx" path="res://dev/scriptStorage/Lever.cs" id="4_2dgxc"]
+[ext_resource type="Script" uid="uid://dj3nflyr2gxmx" path="res://game/scripts/entities/Lever.cs" id="4_2dgxc"]
 
 [node name="ConveyorSplitterSwitch" type="Box3DBody" unique_id=694125640]
 body_type = 0

@@ -24,9 +24,6 @@ public partial class BuildGrid
     /// </summary>
     public static PlacementBlockers placementBlockers = PlacementBlockers.LevelGeometry;
 
-    /// <summary>Place requests the host refused because of a physical overlap (used by the headless multiplayer test).</summary>
-    public static int collisionRefusals;
-
     record PendingPlacement(PlacementProbe probe, string blueprintItemID, bool alternate, ulong requester, ulong playerObjectId);
     static readonly List<PendingPlacement> pendingPlacements = new(); // host only
 
@@ -38,7 +35,6 @@ public partial class BuildGrid
             p.probe.Free();
         }
         pendingPlacements.Clear();
-        collisionRefusals = 0;
         ResetBeltLines();
     }
 
@@ -122,7 +118,6 @@ public partial class BuildGrid
         {
             if ((overlaps & placementBlockers) != 0)
             {
-                collisionRefusals++;
                 Logging.Log($"Refused {p.blueprintItemID} at {probe.anchor}: overlaps {probe.DescribeOverlaps(placementBlockers)}", "BuildGrid");
             }
             Refund(p.blueprintItemID, p.requester, p.playerObjectId);

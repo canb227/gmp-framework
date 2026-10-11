@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://x20gjm1mp7b5" path="res://game/assets/models/chutes/chute_adv_dropper_down.glb" id="1_r"]
 [ext_resource type="Script" uid="uid://b10te24frnknc" path="res://game/scripts/structures/Structure.cs" id="2_r"]
 [ext_resource type="Script" uid="uid://2hhnc7f4qnm3" path="res://game/scripts/structures/StructurePort.cs" id="3_r"]
-[ext_resource type="Script" uid="uid://dj3nflyr2gxmx" path="res://dev/scriptStorage/Lever.cs" id="4_r"]
+[ext_resource type="Script" uid="uid://dj3nflyr2gxmx" path="res://game/scripts/entities/Lever.cs" id="4_r"]
 
 [sub_resource type="Resource" id="Port_0"]
 script = ExtResource("3_r")

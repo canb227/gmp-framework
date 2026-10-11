@@ -669,7 +669,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8763647, 0)
 mesh = SubResource("BoxMesh_r1731")
 
 [node name="BrokenSmelter" parent="WorldStuff" unique_id=1738204615 instance=ExtResource("31_brokensmelter")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1, -30)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -29.5)
 hoverName = "Broken Smelter"
 hoverText = "Repair this at the nearby button "
 

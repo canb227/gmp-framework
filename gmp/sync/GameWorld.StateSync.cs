@@ -44,15 +44,12 @@ public partial class GameWorld
 
     /// <summary>This session's per-tick budget; the host gets 4× (set in <see cref="Preload"/>).</summary>
     private static int maxTickSize = baseMaxTickSize;
-    /// <summary>Count of GAME_State tick messages received from remote peers (used by the headless smoke test).</summary>
-    public static int inboundTickCount = 0;
 
     private static void ResetStateSync()
     {
         pendingOutgoingTick = new();
         pendingStates.Clear();
         lastStateTick.Clear();
-        inboundTickCount = 0;
     }
 
     private static void OnMessageReceived(ulong from, Channel ch, byte[] msg)
@@ -61,7 +58,6 @@ public partial class GameWorld
         {
             return;
         }
-        inboundTickCount++;
         WorldTickMessage tickmsg = pack.Deserialize<WorldTickMessage>(msg);
         // Merge per object: a tick only carries the objects that won the sender's priority budget, so
         // keeping just the newest tick per sender would lose updates carried only by an older one.

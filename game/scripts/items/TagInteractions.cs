@@ -17,9 +17,6 @@ public static class TagInteractions
 
     static readonly Dictionary<(ItemTags self, ItemTags other), Action<PhysicalFactoryItem, PhysicalFactoryItem>> rules = new()
     {
-        { (ItemTags.HOT, ItemTags.COLD), (self, other) => temperatureContacts++ },
-        { (ItemTags.COLD, ItemTags.HOT), (self, other) => temperatureContacts++ },
-
         // Resource behaviours (design stubs: they log the intended effect). Each reaction runs on the item it changes.
         { (ItemTags.FUEL, ItemTags.HOT), (self, other) => ReportReaction(self, other, "ignites: starts burning and becomes HOT") },
         { (ItemTags.VOLATILE, ItemTags.HOT), (self, other) => ReportReaction(self, other, "detonates: blast impulse to neighbours, destroyed") },
@@ -53,9 +50,6 @@ public static class TagInteractions
         }
         return false;
     }
-
-    /// <summary>HOT/COLD contacts reported on this peer (used by the headless multiplayer test).</summary>
-    public static int temperatureContacts { get; private set; }
 
     /// <summary>Called when <paramref name="self"/> touches <paramref name="other"/>, on <paramref name="self"/>'s authority.</summary>
     public static void OnTouch(PhysicalFactoryItem self, PhysicalFactoryItem other)

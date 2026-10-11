@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3 uid="uid://d3ambcfus02hp"]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_kpulr"]
+
+[resource]
+script = ExtResource("1_kpulr")
+itemID = "scrap"
+metadata/_custom_type_script = "uid://cjkscq3ch54w2"
