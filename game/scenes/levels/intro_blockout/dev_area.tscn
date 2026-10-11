@@ -1,6 +1,5 @@
 [gd_scene format=4 uid="uid://xv4gtujbywwp"]
 
-[ext_resource type="PackedScene" path="res://game/scenes/entities/devScrapSource.tscn" id="1_u7xt8"]
 [ext_resource type="Material" uid="uid://bxp2j5qppx4lp" path="res://game/assets/materials/tile_floor.tres" id="2_jhkrf"]
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/PhysicalFactoryItem.cs" id="2_s0g2q"]
 [ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="3_5cgpr"]
@@ -11,7 +10,6 @@
 [ext_resource type="Material" uid="uid://ksxtasgoycp6" path="res://game/assets/materials/basic_wall.tres" id="4_5cgpr"]
 [ext_resource type="PackedScene" uid="uid://dgsvqf0go4aka" path="res://dev/sceneStorage/metals/scrap_piece_bar.tscn" id="4_b0sfj"]
 [ext_resource type="Material" uid="uid://chvh6g63q2ucw" path="res://game/assets/materials/glass.tres" id="5_euj40"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/logistics/conveyors/Conveyor.tscn" id="5_g5s5b"]
 [ext_resource type="PackedScene" uid="uid://86ay41csogvr" path="res://dev/sceneStorage/metals/scrap_piece_box.tscn" id="5_jjh62"]
 [ext_resource type="PackedScene" uid="uid://c7eysh6j3fipd" path="res://dev/sceneStorage/metals/scrap_piece_sheet.tscn" id="6_qiak6"]
 [ext_resource type="Texture2D" uid="uid://cff3ql7psjvfh" path="res://game/assets/textures/door_temp.png" id="7_fgl2k"]
@@ -25,7 +23,6 @@
 [ext_resource type="Script" uid="uid://c64akhdf23fdq" path="res://game/scripts/entities/PricedButton.cs" id="30_priced"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/broken/BrokenSmelter.tscn" id="31_brokensmelter"]
 [ext_resource type="PackedScene" uid="uid://ci3gdnftondij" path="res://game/scenes/structures/broken/BrokenRecycler.tscn" id="32_brokenrecycler"]
-
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vchc8"]
 
@@ -422,27 +419,6 @@ gizmo_extents = 10.0
 
 [node name="ElectronicSources" type="Node3D" parent="WorldStuff" unique_id=1444824382]
 
-[node name="DevScrapSource10" parent="WorldStuff/ElectronicSources" unique_id=1901466388 instance=ExtResource("1_u7xt8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49, 5, 37)
-
-[node name="DevScrapSource11" parent="WorldStuff/ElectronicSources" unique_id=1520702997 instance=ExtResource("1_u7xt8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 5, 37)
-
-[node name="DevScrapSource12" parent="WorldStuff/ElectronicSources" unique_id=1545697974 instance=ExtResource("1_u7xt8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 5, 39)
-
-[node name="DevScrapSource13" parent="WorldStuff/ElectronicSources" unique_id=1443340241 instance=ExtResource("1_u7xt8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 5, 41)
-
-[node name="DevScrapSource14" parent="WorldStuff/ElectronicSources" unique_id=1629555514 instance=ExtResource("1_u7xt8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 5, 43)
-
-[node name="DevScrapSource15" parent="WorldStuff/ElectronicSources" unique_id=494642557 instance=ExtResource("1_u7xt8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 5, 45)
-
-[node name="DevScrapSource16" parent="WorldStuff/ElectronicSources" unique_id=48507995 instance=ExtResource("1_u7xt8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 5, 47)
-
 [node name="ScrapSources" type="Node3D" parent="WorldStuff" unique_id=437613743]
 
 [node name="StartingScrap" type="Node3D" parent="WorldStuff" unique_id=491458326]
@@ -543,15 +519,6 @@ transform = Transform3D(1, 0, 5.9604645e-08, 0, 1, 0, -5.9604645e-08, 0, 1, 39, 
 transform = Transform3D(-0.5, 0, -0.86602545, 0, 1, 0, 0.86602545, 0, -0.5, 41, 4, 45)
 
 [node name="OldFactory" type="Node3D" parent="WorldStuff" unique_id=1596832553]
-
-[node name="Conveyor" parent="WorldStuff/OldFactory" unique_id=2008044525 instance=ExtResource("5_g5s5b")]
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 26, 1, -32)
-
-[node name="Conveyor2" parent="WorldStuff/OldFactory" unique_id=1579058278 instance=ExtResource("5_g5s5b")]
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 26, 1, -30)
-
-[node name="Conveyor3" parent="WorldStuff/OldFactory" unique_id=2121177187 instance=ExtResource("5_g5s5b")]
-transform = Transform3D(1.3113416e-07, 0, 1, 0, 1, 0, -1, 0, 1.3113416e-07, 26, 1, -28)
 
 [node name="CoreColumn" type="MeshInstance3D" parent="WorldStuff" unique_id=1650547916]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -13.277921, 2.0336442, 0.4161811)

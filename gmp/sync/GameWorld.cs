@@ -24,7 +24,9 @@ public partial class GameWorld : Node3D
         Lobby.LobbyDonePreloadingEvent += Instance_LobbyDonePreloadingEvent;
         Lobby.PeerConnectedEvent += OnPeerLinked;
         Lobby.PeerDisconnectedEvent += OnPeerUnlinked;
-        GetTree().Paused = true;
+
+
+        //GetTree().Paused = true;
         // Full (gen2) collections then run in the background instead of stopping the game; gen0/gen1 collections
         // still pause it, so per-frame allocations should stay low. Needs background GC, which is on by default.
         System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.SustainedLowLatency;
