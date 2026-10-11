@@ -21,6 +21,7 @@
 [ext_resource type="Script" uid="uid://cltf2fbu2l28o" path="res://game/scripts/core/NoBuildVolume.cs" id="10_6ag5b"]
 [ext_resource type="Texture2D" uid="uid://dfssoii6t84gn" path="res://game/assets/textures/wall_basic_1/wall_basic_1_diffuseOriginal.png" id="12_ihq8k"]
 [ext_resource type="Texture2D" uid="uid://c8knlhvemp8jf" path="res://game/assets/textures/grass_1/grass_ao.png" id="15_ubgps"]
+[ext_resource type="PackedScene" uid="uid://bjhbph10ul8sj" path="res://game/scenes/structures/processing/smelter.tscn" id="25_2k66h"]
 [ext_resource type="Script" uid="uid://c64akhdf23fdq" path="res://game/scripts/entities/PricedButton.cs" id="30_priced"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/broken/BrokenSmelter.tscn" id="31_brokensmelter"]
 [ext_resource type="PackedScene" uid="uid://ci3gdnftondij" path="res://game/scenes/structures/special/RecyclerBroken.tscn" id="32_brokenrecycler"]
@@ -680,9 +681,6 @@ body_type = 0
 shape_type = 1
 sphere_radius = 0.1
 script = ExtResource("30_priced")
-cost = Dictionary[int, int]({
-0: 10
-})
 animator = NodePath("AnimationPlayer")
 targets = [NodePath("../../BrokenSmelter")]
 hoverName = "Repair broken smelter"
@@ -718,9 +716,6 @@ body_type = 0
 shape_type = 1
 sphere_radius = 0.1
 script = ExtResource("30_priced")
-cost = Dictionary[int, int]({
-0: 5
-})
 animator = NodePath("AnimationPlayer")
 targets = [NodePath("../../RecyclerBroken")]
 
@@ -1184,3 +1179,6 @@ material = ExtResource("4_5cgpr")
 transform = Transform3D(-4.371139e-08, -1, 4.371139e-08, 0, -4.371139e-08, -1, 1, -4.371139e-08, 1.9106855e-15, 45, 0.50000024, 28.5)
 size = Vector3(1, 5, 1)
 material = ExtResource("4_5cgpr")
+
+[node name="smelter" parent="CSGMesh3D" unique_id=484613544 instance=ExtResource("25_2k66h")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 18.5, 0.5, -31.5)
