@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dur2rr1yg176g"]
 
-[ext_resource type="Script" uid="uid://dsb2t4gvni4bd" path="res://game/scripts/items/world/JumpingChunk.cs" id="1_s"]
+[ext_resource type="Script" uid="uid://dsb2t4gvni4bd" path="res://dev/scriptStorage/JumpingChunk.cs" id="1_s"]
+
 
 [sub_resource type="SphereMesh" id="lobe0"]
 radius = 0.287

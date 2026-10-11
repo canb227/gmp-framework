@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BlueprintItem" format=3 uid="uid://bfegk6oa0tloa"]
+
+[ext_resource type="Texture2D" uid="uid://xp0anun8bifw" path="res://game/assets/icons/blueprints/blueprint_smelter.png" id="1_xccrn"]
+[ext_resource type="PackedScene" uid="uid://e450hsdm0ju3" path="res://game/scenes/structures/BlueprintGhost.tscn" id="2_k8q4b"]
+[ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="3_d8p67"]
+[ext_resource type="PackedScene" uid="uid://bn6wytq6qe8ad" path="res://dev/sceneStorage/structures/processing/Smelter.tscn" id="4_vh2hw"]
+
+[resource]
+script = ExtResource("3_d8p67")
+structureScene = ExtResource("4_vh2hw")
+itemID = "blueprint_smelter"
+displayName = "Blueprint: Smelter"
+description = "Smelts ore dropped into its hopper; ingots come out at the front. Two cells in each direction."
+icon = ExtResource("1_xccrn")
+inHandScene = ExtResource("2_k8q4b")
+maxStackSize = 999

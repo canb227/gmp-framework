@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/world/PhysicalFactoryItem.cs" id="1_s"]
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/PhysicalFactoryItem.cs" id="1_s"]
+
 
 [sub_resource type="StandardMaterial3D" id="mat0"]
 albedo_color = Color(0.18, 0.18, 0.2, 1)

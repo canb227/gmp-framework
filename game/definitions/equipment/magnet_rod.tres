@@ -2,7 +2,8 @@
 
 [ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_tool"]
 [ext_resource type="Texture2D" uid="uid://dngfpu0vsb2" path="res://game/assets/icons/items/magnet_rod.png" id="2_icon"]
-[ext_resource type="PackedScene" uid="uid://v3645dcjw5ni" path="res://game/scenes/items/held/MagnetRod.tscn" id="3_hand"]
+[ext_resource type="PackedScene" uid="uid://v3645dcjw5ni" path="res://game/scenes/inhand/MagnetRod.tscn" id="3_hand"]
+
 
 [resource]
 script = ExtResource("1_tool")

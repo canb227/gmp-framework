@@ -1,6 +1,6 @@
 [gd_scene format=4 uid="uid://dxv3vfkutt1i6"]
 
-[ext_resource type="Script" uid="uid://b15kdw48ky68p" path="res://game/scripts/items/placed/Store.cs" id="1_7sxt4"]
+[ext_resource type="Script" uid="uid://b15kdw48ky68p" path="res://game/scripts/structures/special/Store.cs" id="1_7sxt4"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f55un"]
 resource_name = "M_ConvPanel"

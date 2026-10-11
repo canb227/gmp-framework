@@ -28,3 +28,8 @@ tests/logs/
 # Python bytecode from the tools scripts
 __pycache__/
 *.blend1
+
+.superpowers/
+docs/*
+CLAUDE.md
+.claude/

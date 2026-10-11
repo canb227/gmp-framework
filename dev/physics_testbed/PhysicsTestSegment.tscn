@@ -2,12 +2,12 @@
 
 [ext_resource type="PackedScene" path="res://game/scenes/entities/devScrapSource.tscn" id="1_source"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/processing/ScrapArm.tscn" id="2_arm"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/basic/Conveyor.tscn" id="3_straight"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/conveyors/basic/ConveyorSlope.tscn" id="6_slope"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/Smelter.tscn" id="7_smelter"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/ItemVoid.tscn" id="8_void"]
-[ext_resource type="Script" path="res://dev/physics_testbed/PhysicsTuningStation.cs" id="9_station"]
-[ext_resource type="Script" path="res://dev/physics_testbed/TestbedButton.cs" id="10_button"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/logistics/conveyors/basic/Conveyor.tscn" id="3_straight"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/logistics/conveyors/basic/ConveyorSlope.tscn" id="6_slope"]
+[ext_resource type="PackedScene" uid="uid://bn6wytq6qe8ad" path="res://dev/sceneStorage/structures/processing/Smelter.tscn" id="7_smelter"]
+[ext_resource type="PackedScene" uid="uid://bywvnipt62y5r" path="res://game/scenes/structures/ItemVoid.tscn" id="8_void"]
+[ext_resource type="Script" uid="uid://b4x2xiqvvndgt" path="res://dev/physics_testbed/PhysicsTuningStation.cs" id="9_station"]
+[ext_resource type="Script" uid="uid://o17b074fndto" path="res://dev/physics_testbed/TestbedButton.cs" id="10_button"]
 [ext_resource type="PackedScene" path="res://game/scenes/entities/Lever.tscn" id="11_lever"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_items"]

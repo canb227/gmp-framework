@@ -1,10 +1,11 @@
 [gd_scene format=3 uid="uid://ydmfekqvhgei"]
 
-[ext_resource type="Script" uid="uid://djjc1nh5u0bg" path="res://game/scripts/items/placed/ConveyorBelt.cs" id="belt"]
+[ext_resource type="Script" uid="uid://djjc1nh5u0bg" path="res://game/scripts/structures/logistics/conveyors/ConveyorBelt.cs" id="belt"]
 [ext_resource type="PackedScene" uid="uid://c45rytap45wtw" path="res://game/assets/models/machines/recycler/recycler_body.glb" id="body"]
-[ext_resource type="Script" uid="uid://2hhnc7f4qnm3" path="res://game/scripts/items/placed/StructurePort.cs" id="port_script"]
+[ext_resource type="Script" uid="uid://2hhnc7f4qnm3" path="res://game/scripts/structures/StructurePort.cs" id="port_script"]
 [ext_resource type="PackedScene" uid="uid://pqjvhgupmo08" path="res://game/assets/models/machines/recycler/recycler_roller.glb" id="roller"]
-[ext_resource type="Script" uid="uid://bgn8523q15leq" path="res://game/scripts/items/placed/Recycler.cs" id="script"]
+[ext_resource type="Script" uid="uid://bgn8523q15leq" path="res://game/scripts/structures/special/Recycler.cs" id="script"]
+
 
 [sub_resource type="Resource" id="Port_valley"]
 script = ExtResource("port_script")
