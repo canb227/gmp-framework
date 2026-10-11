@@ -1,0 +1,24 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://1h74niprlvyn"]
+
+[ext_resource type="Texture2D" uid="uid://d35t67yu126q5" path="res://game/assets/textures/metal_rusty/Metal025_2K-JPG_Color.jpg" id="1_yayki"]
+[ext_resource type="Texture2D" uid="uid://bdwdxdebigqmx" path="res://game/assets/textures/metal_rusty/Metal025_2K-JPG_Displacement.jpg" id="2_ixk37"]
+[ext_resource type="Texture2D" uid="uid://drcdmnlh1ltg6" path="res://game/assets/textures/metal_rusty/Metal025_2K-JPG_Metalness.jpg" id="3_gp3fy"]
+[ext_resource type="Texture2D" uid="uid://cpbswb74x0f7k" path="res://game/assets/textures/metal_rusty/Metal025_2K-JPG_NormalGL.jpg" id="4_2bx14"]
+[ext_resource type="Texture2D" uid="uid://dudodlnb4ank6" path="res://game/assets/textures/metal_rusty/Metal025_2K-JPG_Roughness.jpg" id="5_0s0nb"]
+
+[resource]
+cull_mode = 2
+albedo_texture = ExtResource("1_yayki")
+metallic = 1.0
+metallic_texture = ExtResource("3_gp3fy")
+metallic_texture_channel = 4
+roughness_texture = ExtResource("5_0s0nb")
+roughness_texture_channel = 4
+normal_enabled = true
+normal_texture = ExtResource("4_2bx14")
+rim_enabled = true
+rim = 0.0
+rim_tint = 0.7
+heightmap_enabled = true
+heightmap_scale = 1.0
+heightmap_texture = ExtResource("2_ixk37")
