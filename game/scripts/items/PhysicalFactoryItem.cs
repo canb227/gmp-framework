@@ -78,7 +78,7 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
 
     public override void _ExitTree()
     {
-        SleepingItemPoller.Remove(this);
+
     }
 
     public override void OnAuthorityChanged()
@@ -94,7 +94,7 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
     {
         if (id == 0 || authority != Lobby.selfPeerID || awakePriority <= 0 || asleep) return;
         asleep = true;
-        SleepingItemPoller.Add(this);
+
         priority = sleepingPriority;
         // Queue one more update so peers get the resting pose, not the last one sent while it settled.
         priorityAccumulator = Math.Max(priorityAccumulator, awakePriority);
@@ -117,7 +117,7 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
 
     void SetAwake()
     {
-        SleepingItemPoller.Remove(this);
+
         asleep = false;
         if (awakePriority > 0) priority = awakePriority;
     }
@@ -133,7 +133,7 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
             }
             else
             {
-                AudioManager.playRandomSound(this.GetPath(), ["res://game/assets/audio/impacts/impactWood_heavy_000.ogg", "res://game/assets/audio/impacts/impactWood_heavy_001.ogg", "res://game/assets/audio/impacts/impactWood_heavy_002.ogg", "res://game/assets/audio/impacts/impactWood_heavy_003.ogg"], -35);
+                //AudioManager.playRandomSound(this.GetPath(), ["res://game/assets/audio/impacts/impactWood_heavy_000.ogg", "res://game/assets/audio/impacts/impactWood_heavy_001.ogg", "res://game/assets/audio/impacts/impactWood_heavy_002.ogg", "res://game/assets/audio/impacts/impactWood_heavy_003.ogg"], -35);
             }
         }
     }
@@ -191,14 +191,9 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
         }
     }
 
-    /// <summary>An item dropped in a void is turned in: the host counts it toward quests and deposits it in the shop for its <see cref="currencyValue"/>.</summary>
     public override void OnDespawned(DespawnReason reason)
     {
-        if (reason == DespawnReason.Voided && Lobby.isHost)
-        {
-            ProgressManager.TurnInForQuest(itemID);
-            Shop.Deposit(itemID, currencyValue);
-        }
+
     }
 }
 

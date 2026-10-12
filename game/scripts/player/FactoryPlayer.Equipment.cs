@@ -7,7 +7,7 @@ using System;
 /// </summary>
 public partial class FactoryPlayer
 {
-    const string DefaultHeldScene = "res://game/scenes/items/held/DefaultHeldBox.tscn";
+    const string DefaultHeldScene = "res://game/scenes/inhand/DefaultHeldBox.tscn";
 
     /// <summary>The held item's in-hand scene (a blueprint's ghost, the magnet rod, ...), or null.</summary>
     public HeldItem heldItem { get; private set; }

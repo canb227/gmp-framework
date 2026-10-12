@@ -164,11 +164,20 @@ _data = {
 [node name="store" type="Node3D" unique_id=1931553037]
 transform = Transform3D(0.9996162, 0, -0.027701735, 0, 1, 0, 0.027701735, 0, 0.9996162, 0, 0, 0)
 script = ExtResource("1_7sxt4")
-cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, 1), Vector3i(1, 0, 1), Vector3i(0, 1, 0), Vector3i(1, 1, 0), Vector3i(0, 1, 1), Vector3i(1, 1, 1)])
-placementOffset = Vector3(0.5, 0.5, 0.5)
+cells = Dictionary[Vector3i, int]({
+Vector3i(0, 0, -1): 0,
+Vector3i(1, 0, -1): 0,
+Vector3i(0, 0, 0): 0,
+Vector3i(1, 0, 0): 0,
+Vector3i(0, 1, -1): 0,
+Vector3i(1, 1, -1): 0,
+Vector3i(0, 1, 0): 0,
+Vector3i(1, 1, 0): 0
+})
 hoverText = "Press F to open the shop!"
 
 [node name="Model" type="Node3D" parent="." unique_id=184199136]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -1)
 
 [node name="Mesh" type="MeshInstance3D" parent="Model" unique_id=302920215]
 mesh = SubResource("ArrayMesh_y71ic")
@@ -189,4 +198,4 @@ autoplay = &"idle-loop"
 [node name="Collider0" type="Box3DBody" parent="." unique_id=923168855]
 body_type = 0
 box_size = Vector3(0.94238, 1.79956, 0.74224)
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02119, 0.89978, -0.00764)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.02119, 0.8929291, -1.0076401)

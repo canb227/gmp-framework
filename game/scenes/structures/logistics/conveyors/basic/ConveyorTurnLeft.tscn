@@ -1,0 +1,107 @@
+[gd_scene format=3 uid="uid://kntxrimjqyhh"]
+
+[ext_resource type="Script" uid="uid://c8jn3gvcakhgp" path="res://game/scripts/structures/logistics/conveyors/Conveyor.cs" id="1_r"]
+[ext_resource type="PackedScene" uid="uid://c0sgkso4dld8d" path="res://game/assets/models/conveyors/conveyor_turn_left.glb" id="2_r"]
+[ext_resource type="Script" uid="uid://bv13olg4g30nl" path="res://game/scripts/structures/StructureArrow.cs" id="3_pktch"]
+
+[node name="ConveyorTurnLeft" type="Box3DBody" unique_id=1324107816 node_paths=PackedStringArray("beltSurfaces")]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 0, 0)
+script = ExtResource("1_r")
+beltSurfaces = []
+shape = 1
+cells = Dictionary[Vector3i, int]({
+Vector3i(0, 0, -1): 68,
+Vector3i(0, 0, 0): 4,
+Vector3i(1, 0, -1): 64,
+Vector3i(1, 0, 0): 0
+})
+blueprintItemID = "blueprint_conveyor"
+
+[node name="Model" parent="." unique_id=813788857 instance=ExtResource("2_r")]
+
+[node name="Floor0" type="Box3DBody" parent="." unique_id=1007537442]
+body_type = 0
+box_size = Vector3(1.68, 0.1, 0.98605)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+user_material_id = 5
+transform = Transform3D(0.25882, 0, -0.96593, 0, 1, 0, 0.96593, 0, 0.25882, 0.25882, 0.1, -1.03407)
+
+[node name="Floor1" type="Box3DBody" parent="." unique_id=337974952]
+body_type = 0
+box_size = Vector3(1.68, 0.1, 0.98605)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+user_material_id = 5
+transform = Transform3D(0.70711, 0, -0.70711, 0, 1, 0, 0.70711, 0, 0.70711, 0.70711, 0.1, -1.29289)
+
+[node name="Floor2" type="Box3DBody" parent="." unique_id=334643199]
+body_type = 0
+box_size = Vector3(1.68, 0.1, 0.98605)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+user_material_id = 5
+transform = Transform3D(0.96593, 0, -0.25882, 0, 1, 0, 0.25882, 0, 0.96593, 0.96593, 0.1, -1.74118)
+
+[node name="WallOuter0" type="Box3DCollisionShape" parent="." unique_id=1107121708]
+box_size = Vector3(0.11, 0.4, 1.045)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0.25882, 0, -0.96593, 0, 1, 0, 0.96593, 0, 0.25882, 0.49046, 0.2, -0.16957)
+
+[node name="WallOuter1" type="Box3DCollisionShape" parent="." unique_id=1060106689]
+box_size = Vector3(0.11, 0.4, 1.045)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0.70711, 0, -0.70711, 0, 1, 0, 0.70711, 0, 0.70711, 1.33997, 0.2, -0.66003)
+
+[node name="WallOuter2" type="Box3DCollisionShape" parent="." unique_id=51411012]
+box_size = Vector3(0.11, 0.4, 1.045)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0.96593, 0, -0.25882, 0, 1, 0, 0.25882, 0, 0.96593, 1.83043, 0.2, -1.50954)
+
+[node name="Post" type="Box3DCollisionShape" parent="." unique_id=1747350150]
+shape_type = 3
+box_size = Vector3(0.16, 0.4, 0.16)
+sphere_radius = 0.01
+capsule_radius = 0.08
+capsule_height = 0.4
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0.99999934, 0, 0, 0, 1, 0, 0, 0, 0.99999934, 0.06070797, 0.26764405, -1.9450451)
+
+[node name="StructureArrow" type="Node3D" parent="." unique_id=362824754]
+transform = Transform3D(4.371139e-08, 3.821371e-15, -1, 8.742278e-08, -1, 0, -1, -8.742278e-08, -4.371139e-08, 0.16272354, 0.8026422, -0.78694737)
+script = ExtResource("3_pktch")
+shape = 1
+metadata/_custom_type_script = "uid://bv13olg4g30nl"
+
+[node name="Floor0Lip" type="Box3DCollisionShape" parent="." unique_id=468265542]
+shape_type = 2
+capsule_radius = 0.05
+capsule_height = 1.58
+friction = 0.8
+tangent_velocity = Vector3(1.93186, 0, -0.51764)
+user_material_id = 5
+transform = Transform3D(0, 0.25882, -0.96593, -1, 0, 0, 0, 0.96593, 0.25882, -0.2174, 0.104, -0.90647)
+
+[node name="Floor1Lip" type="Box3DCollisionShape" parent="." unique_id=1687289959]
+shape_type = 2
+capsule_radius = 0.05
+capsule_height = 1.58
+friction = 0.8
+tangent_velocity = Vector3(1.41422, 0, -1.41422)
+user_material_id = 5
+transform = Transform3D(0, 0.70711, -0.70711, -1, 0, 0, 0, 0.70711, 0.70711, 0.35849, 0.104, -0.94427)
+
+[node name="Floor2Lip" type="Box3DCollisionShape" parent="." unique_id=1244877856]
+shape_type = 2
+capsule_radius = 0.05
+capsule_height = 1.58
+friction = 0.8
+tangent_velocity = Vector3(0.51764, 0, -1.93186)
+user_material_id = 5
+transform = Transform3D(0, 0.96593, -0.25882, -1, 0, 0, 0, 0.25882, 0.96593, 0.83833, 0.104, -1.26496)

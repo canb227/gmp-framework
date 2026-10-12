@@ -5,12 +5,10 @@ using System.Collections.Generic;
 /// The in-hand scene of every <see cref="BlueprintItem"/>. On the local player it shows a translucent
 /// <see cref="PlacementProbe"/> of the blueprint's structure where it would be built (face-snapped, see
 /// <see cref="BuildGrid.TryGetPlacementTarget"/>), tinted by whether the placement is allowed, which the
-/// probe's sensors check against the simulation. Floating arrows show which way a belt carries items, or where a
-/// machine takes them in and lets them out (<see cref="FlowArrowMesh"/>). While shown it reveals the grid around itself
+/// probe's sensors check against the simulation. While shown it reveals the grid around itself
 /// and highlights the face it's snapped to (<see cref="BuildGrid.placementActive"/>, BuildGrid.Reveal.cs). Other players' copies stay empty. As a <see cref="HeldItem"/>
 /// it handles its own input: "rotate" turns the preview, "alternate" switches a two-form blueprint (e.g. uphill/downhill
-/// slope) to its other form, and primary builds it (host-arbitrated, see BuildGrid.Placement.cs). A floor conveyor
-/// previews the form it would take where it's aimed (<see cref="ConveyorStructure"/>, see <see cref="PlacementProbe.MoveTo"/>). Deconstructing is an interact on a structure (FactoryPlayer.Interaction.cs).
+/// slope) to its other form, and primary builds it (host-arbitrated, see BuildGrid.Placement.cs). Deconstructing is an interact on a structure (FactoryPlayer.Interaction.cs).
 /// </summary>
 public partial class BlueprintGhost : HeldItem
 {
@@ -44,9 +42,23 @@ public partial class BlueprintGhost : HeldItem
     public bool canPlace { get; private set; }
 
     PlacementProbe probe;
-    // The preview's ports in its own frame, for lining it up with built structures. A self-turning conveyor's
-    // include every form's, so it also lines up with a belt that would feed its side.
-    IReadOnlyList<PortShape> ports = [];
+
+    /// <summary>The scene of the selected form (a belt's straight scene, while the preview may show one of its turns).</summary>
+    PackedScene mainScene => blueprint.StructureScene(showingAlternate);
+    /// <summary>
+    /// Whether the structure has input ends (face tags, Structure.Ends.cs): its preview then snaps onto open output ends
+    /// of placed structures. A <see cref="ConveyorBlueprint"/>'s also takes the shape the belt would be built in.
+    /// </summary>
+    bool snaps => Structure.SceneInputEnds(mainScene).Count > 0;
+    ConveyorShape previewShape = ConveyorShape.Straight;
+    /// <summary>
+    /// The output end the preview last snapped to. Static, because each placement re-creates the ghost: the preview
+    /// only turns to follow an end when it first snaps to a different one.
+    /// </summary>
+    static CellEnd snappedTo;
+    /// <summary>True while a placement re-creates the ghost, which mustn't reset the direction like a real equip does.</summary>
+    static bool placing;
+
     readonly StandardMaterial3D material = new()
     {
         ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
@@ -66,6 +78,13 @@ public partial class BlueprintGhost : HeldItem
             Logging.Warn($"Blueprint {blueprint?.itemID} has no structure scene", "BlueprintGhost");
             return;
         }
+        if (snaps && !placing)
+        {
+            // Equipping a belt (or anything else with inputs) points it the way the camera faces.
+            Vector3 look = -player.camera.GlobalBasis.Z;
+            quarterTurns = Mathf.PosMod(Mathf.RoundToInt(Mathf.Atan2(-look.X, -look.Z) / (Mathf.Pi / 2)), 4);
+            snappedTo = null;
+        }
         BuildPreview();
     }
 
@@ -75,38 +94,38 @@ public partial class BlueprintGhost : HeldItem
         probe?.Free();
         targetCell = null; // forces the new probe to be moved into place
         canPlace = false;
-        probe = PlacementProbe.Create(blueprint.StructureScene(showingAlternate), false);
+        PackedScene scene = mainScene;
+        if (blueprint is ConveyorBlueprint conveyorBlueprint)
+        {
+            scene = conveyorBlueprint.SceneFor(previewShape);
+        }
+        probe = PlacementProbe.Create(scene, false);
         if (probe == null)
         {
-            ports = [];
+
             return;
         }
-        ports = probe.structure.allLocalPorts;
+
         foreach (Node n in probe.structure.FindChildren("*", nameof(MeshInstance3D), true, false))
         {
+            // The structure's arrows keep their own colours.
+            if (n.GetParent() is StructureArrow)
+            {
+                continue;
+            }
             // Set through the engine rather than casting: a mesh can carry its own script (e.g. a Spinner),
             // which makes its managed type something other than MeshInstance3D.
             n.Set(GeometryInstance3D.PropertyName.MaterialOverride, material);
             n.Set(GeometryInstance3D.PropertyName.CastShadow, (int)GeometryInstance3D.ShadowCastingSetting.Off);
         }
-        RefreshArrows();
-    }
-
-    // The preview's arrows (FlowArrowMesh): which way a belt carries items, or where a structure takes them in and
-    // lets them out. Rebuilt when a self-turning conveyor's preview changes form, since its way in moves.
-    Node3D arrows;
-    ConveyorStructure.Shape? arrowsShape;
-
-    void RefreshArrows()
-    {
-        // Freed already if the preview it hung on was replaced.
-        if (GodotObject.IsInstanceValid(arrows)) arrows.QueueFree();
-        arrows = FlowArrowMesh.Create(probe.structure);
-        if (arrows != null)
+        // Arrows hide themselves in game; the preview is where they're for.
+        foreach (Node n in probe.structure.FindChildren("*", nameof(Node3D), true, false))
         {
-            probe.structure.AddChild(arrows);
+            if (n is StructureArrow arrow)
+            {
+                arrow.Visible = true;
+            }
         }
-        arrowsShape = (probe.structure as ConveyorStructure)?.shape;
     }
 
     public override void _ExitTree()
@@ -141,15 +160,9 @@ public partial class BlueprintGhost : HeldItem
         {
             if (canPlace && targetCell is Vector3I cell)
             {
-                // Read before requesting: using up the blueprint re-equips the slot, which can free this ghost's probe.
-                int? outputTurns = StructurePorts.OutputQuarterTurns(probe.structure.localPorts);
-                int placedTurns = quarterTurns;
+                placing = true;
                 BuildGrid.RequestPlace(player, blueprint, cell, quarterTurns, showingAlternate);
-                // Pre-rotate the next placement to carry on from this one's output, whatever blueprint comes next.
-                if (outputTurns is int turns && smartPlacement)
-                {
-                    quarterTurns = (placedTurns + turns) % 4;
-                }
+                placing = false;
             }
             return true;
         }
@@ -174,7 +187,7 @@ public partial class BlueprintGhost : HeldItem
 
         Camera3D camera = player.camera;
         if (!BuildGrid.TryGetPlacementTarget(camera.GlobalPosition, -camera.GlobalTransform.Basis.Z, placeRange,
-                probe.structure.cellOffsets, quarterTurns, out Vector3I anchor, out _, out Vector3I faceNormal))
+                probe.structure.cells.Keys, quarterTurns, out Vector3I anchor, out _, out Vector3I faceNormal))
         {
             targetCell = null;
             canPlace = false;
@@ -183,10 +196,23 @@ public partial class BlueprintGhost : HeldItem
             BuildGrid.placementFace = null;
             return;
         }
-        // A structure aimed a cell off a built one's port is pulled into line with it, so they connect (and belts merge).
-        if (smartPlacement)
+        if (snaps && smartPlacement)
         {
-            anchor = BuildGrid.AlignPorts(probe.structure, ports, anchor, quarterTurns);
+            anchor = SnapToOutput(anchor);
+        }
+        if (blueprint is ConveyorBlueprint conveyorBlueprint)
+        {
+            // Preview the shape the belt will be built in.
+            ConveyorShape wanted = Conveyor.ShapeAt(conveyorBlueprint, anchor, quarterTurns);
+            if (wanted != previewShape)
+            {
+                previewShape = wanted;
+                BuildPreview();
+                if (probe == null)
+                {
+                    return;
+                }
+            }
         }
         BuildGrid.placementFocus = FootprintCentre(anchor);
         BuildGrid.placementFace = ContactFace(anchor, faceNormal);
@@ -196,10 +222,7 @@ public partial class BlueprintGhost : HeldItem
             targetCell = anchor;
             probe.MoveTo(anchor, quarterTurns);
             probe.structure.Visible = true;
-            if (probe.structure is ConveyorStructure conveyor && conveyor.shape != arrowsShape)
-            {
-                RefreshArrows();
-            }
+
         }
         // Until the probe settles its overlaps still describe the previous pose: keep the old tint, don't allow placing.
         if (!probe.settled)
@@ -212,11 +235,68 @@ public partial class BlueprintGhost : HeldItem
         BuildGrid.placementTint = material.AlbedoColor;
     }
 
+    // Aimed within a cell of a placed structure's open output end, the preview is pulled so that one of its input ends
+    // takes that end's items, if one is the same size and shape. The first time it snaps to an end it turns to take
+    // it head on; turned a quarter from there, a belt takes it on a turn's side input instead.
+    Vector3I SnapToOutput(Vector3I anchor)
+    {
+        CellEnd feeder = Structure.FindOpenEnd(new List<Vector3I>(BuildGrid.FootprintCells(anchor, probe.structure.cells.Keys, quarterTurns)));
+        if (feeder != snappedTo)
+        {
+            snappedTo = feeder;
+            if (feeder != null)
+            {
+                TurnToTake(feeder);
+            }
+        }
+        if (feeder == null)
+        {
+            return anchor;
+        }
+        var scenes = new List<PackedScene> { mainScene };
+        if (blueprint is ConveyorBlueprint conveyorBlueprint)
+        {
+            scenes.Add(conveyorBlueprint.turnLeftScene);
+            scenes.Add(conveyorBlueprint.turnRightScene);
+        }
+        foreach (PackedScene scene in scenes)
+        {
+            if (scene == null)
+            {
+                continue;
+            }
+            foreach (CellEnd input in Structure.SceneInputEnds(scene))
+            {
+                if (feeder.OffsetToFeed(input.Placed(anchor, quarterTurns)) is Vector3I offset)
+                {
+                    return anchor + offset;
+                }
+            }
+        }
+        return anchor;
+    }
+
+    // Turns the preview so one of the main scene's input ends can take the feeder's items; left alone if none can.
+    void TurnToTake(CellEnd feeder)
+    {
+        for (int turns = 0; turns < 4; turns++)
+        {
+            foreach (CellEnd input in Structure.SceneInputEnds(mainScene))
+            {
+                if (feeder.OffsetToFeed(input.Placed(Vector3I.Zero, turns)) != null)
+                {
+                    quarterTurns = turns;
+                    return;
+                }
+            }
+        }
+    }
+
     // World-space centre of the footprint's bounding box at anchor, where the grid reveal centres.
     Vector3 FootprintCentre(Vector3I anchor)
     {
         Vector3 min = Vector3.Inf, max = -Vector3.Inf;
-        foreach (Vector3I cell in BuildGrid.FootprintCells(anchor, probe.structure.cellOffsets, quarterTurns))
+        foreach (Vector3I cell in BuildGrid.FootprintCells(anchor, probe.structure.cells.Keys, quarterTurns))
         {
             Vector3 c = BuildGrid.CellToWorld(cell);
             min = min.Min(c);
@@ -230,12 +310,12 @@ public partial class BlueprintGhost : HeldItem
     (Vector3I min, Vector3I max, Vector3I normal) ContactFace(Vector3I anchor, Vector3I normal)
     {
         int rear = int.MaxValue;
-        foreach (Vector3I cell in BuildGrid.FootprintCells(anchor, probe.structure.cellOffsets, quarterTurns))
+        foreach (Vector3I cell in BuildGrid.FootprintCells(anchor, probe.structure.cells.Keys, quarterTurns))
         {
             rear = Mathf.Min(rear, (cell.X * normal.X + cell.Y * normal.Y + cell.Z * normal.Z));
         }
         Vector3I min = new(int.MaxValue, int.MaxValue, int.MaxValue), max = new(int.MinValue, int.MinValue, int.MinValue);
-        foreach (Vector3I cell in BuildGrid.FootprintCells(anchor, probe.structure.cellOffsets, quarterTurns))
+        foreach (Vector3I cell in BuildGrid.FootprintCells(anchor, probe.structure.cells.Keys, quarterTurns))
         {
             if ((cell.X * normal.X + cell.Y * normal.Y + cell.Z * normal.Z) != rear) continue;
             for (int axis = 0; axis < 3; axis++)

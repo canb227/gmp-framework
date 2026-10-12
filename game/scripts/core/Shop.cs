@@ -134,7 +134,7 @@ public partial class Shop : Node
     /// Host only: an item turned in to the void. Counts it in <see cref="Deposited"/> and adds what it's worth,
     /// <paramref name="value"/> (null or empty: nothing), to the banks.
     /// </summary>
-    public static void Deposit(string itemID, Godot.Collections.Dictionary<Currency, int> value)
+    public static void Deposit(string itemID, IDictionary<Currency, int> value)
     {
         RPCManager.RPC(instance, nameof(_SetDeposited), [itemID, deposited.GetValueOrDefault(itemID, 0) + 1]);
         if (value == null) return;
