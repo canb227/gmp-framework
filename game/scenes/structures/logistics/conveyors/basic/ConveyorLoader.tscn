@@ -2,151 +2,58 @@
 
 [ext_resource type="PackedScene" uid="uid://qwvn3rhhh4ac" path="res://game/assets/models/conveyors/conveyor_loader.glb" id="1_r"]
 [ext_resource type="Script" uid="uid://b10te24frnknc" path="res://game/scripts/structures/Structure.cs" id="2_r"]
-[ext_resource type="Script" uid="uid://2hhnc7f4qnm3" path="res://game/scripts/structures/StructurePort.cs" id="3_r"]
-[ext_resource type="Script" uid="uid://djjc1nh5u0bg" path="res://game/scripts/structures/logistics/conveyors/ConveyorBelt.cs" id="4_r"]
+[ext_resource type="Script" uid="uid://bv13olg4g30nl" path="res://game/scripts/structures/StructureArrow.cs" id="3_cydhc"]
 
-[sub_resource type="Resource" id="Port_0"]
-script = ExtResource("3_r")
-kind = 1
-size = Vector2i(2, 1)
-volume = null
-spawn = null
-
-[node name="ConveyorLoader" type="Box3DBody" unique_id=1936840711]
+[node name="ConveyorLoader" type="Box3DBody" unique_id=492491202]
 body_type = 0
 box_size = Vector3(0, 0, 0)
 script = ExtResource("2_r")
-cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, 1), Vector3i(1, 0, 1)])
-placementOffset = Vector3(0.5, 0.5, 0.5)
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, -1), Vector3i(1, 0, -1), Vector3i(0, 0, 0), Vector3i(1, 0, 0)])
 blueprintItemID = "blueprint_conveyor_loader"
-ports = Array[ExtResource("3_r")]([SubResource("Port_0")])
-tags = Array[int]([5])
 
-[node name="Model" parent="." unique_id=421700205 instance=ExtResource("1_r")]
+[node name="Model" parent="." unique_id=957442965 instance=ExtResource("1_r")]
 
-[node name="Belt" type="Node3D" parent="." unique_id=139118538]
-script = ExtResource("4_r")
-points = PackedVector3Array(0, -0.85, 1, 0, -0.84986, 0.20499, 0, -0.83044, 0.00741, 0, -0.7853, -0.1655, 0, -0.5, -0.95)
-returnDepth = 0.085
-endIsPort = false
-visual = NodePath("../Model/Belt")
-
-[node name="WallL0" type="Box3DCollisionShape" parent="." unique_id=301949773]
-box_size = Vector3(0.11, 0.4, 0.77679)
+[node name="WallLFlat" type="Box3DCollisionShape" parent="." unique_id=956910492]
+box_size = Vector3(0.11, 0.4, 0.98759)
 friction = 0.1
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.895, -0.8, 0.6116)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.105, 0.2, -0.4938)
 
-[node name="LipL0" type="Box3DCollisionShape" parent="." unique_id=1673876855]
-box_size = Vector3(0.03, 0.055, 0.77679)
+[node name="WallRFlat" type="Box3DCollisionShape" parent="." unique_id=2130064128]
+box_size = Vector3(0.11, 0.4, 0.98759)
 friction = 0.1
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.827, -0.9725, 0.6116)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.895, 0.2, -0.4938)
 
-[node name="WallL1" type="Box3DCollisionShape" parent="." unique_id=1952039080]
-box_size = Vector3(0.11, 0.4, 0.11047)
+[node name="WallLLift" type="Box3DCollisionShape" parent="." unique_id=791558715]
+box_size = Vector3(0.11, 0.4, 1.02407)
 friction = 0.1
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.99831, -0.05815, 0, 0.05815, 0.99831, -0.895, -0.79645, 0.15644)
+transform = Transform3D(1, 0, 0, 0, 0.93978, -0.34177, 0, 0.34177, 0.93978, 0.105, 0.37199, -1.45171)
 
-[node name="LipL1" type="Box3DCollisionShape" parent="." unique_id=1475025027]
-box_size = Vector3(0.03, 0.055, 0.15059)
+[node name="WallRLift" type="Box3DCollisionShape" parent="." unique_id=1235895753]
+box_size = Vector3(0.11, 0.4, 1.02407)
 friction = 0.1
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.99831, -0.05815, 0, 0.05815, 0.99831, -0.827, -0.96808, 0.14644)
+transform = Transform3D(1, 0, 0, 0, 0.93978, -0.34177, 0, 0.34177, 0.93978, 1.895, 0.37199, -1.45171)
 
-[node name="WallL2" type="Box3DCollisionShape" parent="." unique_id=506503097]
-box_size = Vector3(0.11, 0.4, 0.11047)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.98481, -0.17365, 0, 0.17365, 0.98481, -0.895, -0.78095, 0.02379)
+[node name="BeltFlat" type="Box3DBody" parent="." unique_id=579466451]
+body_type = 0
+box_size = Vector3(1.68, 0.1, 0.98759)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+user_material_id = 5
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.1, -0.4938)
 
-[node name="LipL2" type="Box3DCollisionShape" parent="." unique_id=1083886407]
-box_size = Vector3(0.03, 0.055, 0.15059)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.98481, -0.17365, 0, 0.17365, 0.98481, -0.827, -0.95025, -0.00606)
+[node name="BeltLift" type="Box3DBody" parent="." unique_id=1785350793]
+body_type = 0
+box_size = Vector3(1.68, 0.1, 1.02407)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+user_material_id = 5
+transform = Transform3D(1, 0, 0, 0, 0.93978, -0.34177, 0, 0.34177, 0.93978, 1, 0.27801, -1.48588)
 
-[node name="WallL3" type="Box3DCollisionShape" parent="." unique_id=1911014408]
-box_size = Vector3(0.11, 0.4, 0.11048)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.95799, -0.2868, 0, 0.2868, 0.95799, -0.895, -0.75015, -0.10615)
-
-[node name="LipL3" type="Box3DCollisionShape" parent="." unique_id=1636571839]
-box_size = Vector3(0.03, 0.055, 0.1506)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.95799, -0.2868, 0, 0.2868, 0.95799, -0.827, -0.91484, -0.15546)
-
-[node name="WallL4" type="Box3DCollisionShape" parent="." unique_id=1616108905]
-box_size = Vector3(0.11, 0.4, 0.81035)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.93969, -0.34202, 0, 0.34202, 0.93969, -0.895, -0.59207, -0.55086)
-
-[node name="LipL4" type="Box3DCollisionShape" parent="." unique_id=777368246]
-box_size = Vector3(0.03, 0.055, 0.81035)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.93969, -0.34202, 0, 0.34202, 0.93969, -0.827, -0.75416, -0.60985)
-
-[node name="WallR0" type="Box3DCollisionShape" parent="." unique_id=584962871]
-box_size = Vector3(0.11, 0.4, 0.77679)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.895, -0.8, 0.6116)
-
-[node name="LipR0" type="Box3DCollisionShape" parent="." unique_id=449014078]
-box_size = Vector3(0.03, 0.055, 0.77679)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.827, -0.9725, 0.6116)
-
-[node name="WallR1" type="Box3DCollisionShape" parent="." unique_id=241585582]
-box_size = Vector3(0.11, 0.4, 0.11047)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.99831, -0.05815, 0, 0.05815, 0.99831, 0.895, -0.79645, 0.15644)
-
-[node name="LipR1" type="Box3DCollisionShape" parent="." unique_id=1268354295]
-box_size = Vector3(0.03, 0.055, 0.15059)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.99831, -0.05815, 0, 0.05815, 0.99831, 0.827, -0.96808, 0.14644)
-
-[node name="WallR2" type="Box3DCollisionShape" parent="." unique_id=823430947]
-box_size = Vector3(0.11, 0.4, 0.11047)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.98481, -0.17365, 0, 0.17365, 0.98481, 0.895, -0.78095, 0.02379)
-
-[node name="LipR2" type="Box3DCollisionShape" parent="." unique_id=2094814468]
-box_size = Vector3(0.03, 0.055, 0.15059)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.98481, -0.17365, 0, 0.17365, 0.98481, 0.827, -0.95025, -0.00606)
-
-[node name="WallR3" type="Box3DCollisionShape" parent="." unique_id=873523294]
-box_size = Vector3(0.11, 0.4, 0.11048)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.95799, -0.2868, 0, 0.2868, 0.95799, 0.895, -0.75015, -0.10615)
-
-[node name="LipR3" type="Box3DCollisionShape" parent="." unique_id=675439688]
-box_size = Vector3(0.03, 0.055, 0.1506)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.95799, -0.2868, 0, 0.2868, 0.95799, 0.827, -0.91484, -0.15546)
-
-[node name="WallR4" type="Box3DCollisionShape" parent="." unique_id=1680518589]
-box_size = Vector3(0.11, 0.4, 0.81035)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.93969, -0.34202, 0, 0.34202, 0.93969, 0.895, -0.59207, -0.55086)
-
-[node name="LipR4" type="Box3DCollisionShape" parent="." unique_id=722827023]
-box_size = Vector3(0.03, 0.055, 0.81035)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.93969, -0.34202, 0, 0.34202, 0.93969, 0.827, -0.75416, -0.60985)
+[node name="StructureArrow" type="Node3D" parent="." unique_id=1996480043]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8817806, 0.6749563, -0.5244819)
+script = ExtResource("3_cydhc")
+metadata/_custom_type_script = "uid://bv13olg4g30nl"

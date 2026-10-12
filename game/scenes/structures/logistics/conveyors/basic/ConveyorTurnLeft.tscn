@@ -1,0 +1,72 @@
+[gd_scene format=3 uid="uid://kntxrimjqyhh"]
+
+[ext_resource type="Script" uid="uid://b10te24frnknc" path="res://game/scripts/structures/Structure.cs" id="1_r"]
+[ext_resource type="PackedScene" uid="uid://c0sgkso4dld8d" path="res://game/assets/models/conveyors/conveyor_turn_left.glb" id="2_r"]
+[ext_resource type="Script" uid="uid://bv13olg4g30nl" path="res://game/scripts/structures/StructureArrow.cs" id="3_pktch"]
+
+[node name="ConveyorTurnLeft" type="Box3DBody" unique_id=1324107816]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 0, 0)
+script = ExtResource("1_r")
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, -1), Vector3i(1, 0, -1), Vector3i(0, 0, 0), Vector3i(1, 0, 0)])
+blueprintItemID = "blueprint_conveyor"
+
+[node name="Model" parent="." unique_id=813788857 instance=ExtResource("2_r")]
+
+[node name="Floor0" type="Box3DBody" parent="." unique_id=1007537442]
+body_type = 0
+box_size = Vector3(1.68, 0.1, 0.98605)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+user_material_id = 5
+enabled = false
+transform = Transform3D(0.25882, 0, -0.96593, 0, 1, 0, 0.96593, 0, 0.25882, 0.25882, 0.1, -1.03407)
+
+[node name="Floor1" type="Box3DBody" parent="." unique_id=337974952]
+body_type = 0
+box_size = Vector3(1.68, 0.1, 0.98605)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+user_material_id = 5
+enabled = false
+transform = Transform3D(0.70711, 0, -0.70711, 0, 1, 0, 0.70711, 0, 0.70711, 0.70711, 0.1, -1.29289)
+
+[node name="Floor2" type="Box3DBody" parent="." unique_id=334643199]
+body_type = 0
+box_size = Vector3(1.68, 0.1, 0.98605)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+user_material_id = 5
+enabled = false
+transform = Transform3D(0.96593, 0, -0.25882, 0, 1, 0, 0.25882, 0, 0.96593, 0.96593, 0.1, -1.74118)
+
+[node name="WallOuter0" type="Box3DCollisionShape" parent="." unique_id=1107121708]
+box_size = Vector3(0.11, 0.4, 1.045)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0.25882, 0, -0.96593, 0, 1, 0, 0.96593, 0, 0.25882, 0.49046, 0.2, -0.16957)
+
+[node name="WallOuter1" type="Box3DCollisionShape" parent="." unique_id=1060106689]
+box_size = Vector3(0.11, 0.4, 1.045)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0.70711, 0, -0.70711, 0, 1, 0, 0.70711, 0, 0.70711, 1.33997, 0.2, -0.66003)
+
+[node name="WallOuter2" type="Box3DCollisionShape" parent="." unique_id=51411012]
+box_size = Vector3(0.11, 0.4, 1.045)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0.96593, 0, -0.25882, 0, 1, 0, 0.25882, 0, 0.96593, 1.83043, 0.2, -1.50954)
+
+[node name="Post" type="Box3DCollisionShape" parent="." unique_id=1747350150]
+box_size = Vector3(0.16, 0.4, 0.16)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.08, 0.2, -1.92)
+
+[node name="StructureArrow" type="Node3D" parent="." unique_id=362824754]
+transform = Transform3D(4.371139e-08, 3.821371e-15, -1, 8.742278e-08, -1, 0, -1, -8.742278e-08, -4.371139e-08, 0.16272354, 0.8026422, -0.78694737)
+script = ExtResource("3_pktch")
+shape = 1
+metadata/_custom_type_script = "uid://bv13olg4g30nl"

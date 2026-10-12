@@ -310,18 +310,13 @@ public partial class BuildGrid : Node3D
     }
 
     /// <summary>
-    /// The Structure a ray hit, or null. Like <see cref="FindStructure(Node)"/>, but a hit on a merged belt line
-    /// (BuildGrid.Belts.cs) resolves to the structure owning the cell just behind the hit surface.
+    /// The Structure a ray hit, or null. See <see cref="FindStructure(Node)"/>.
     /// </summary>
     public static Structure FindStructure(in RayHit hit)
     {
         if (!hit.hit)
         {
             return null;
-        }
-        if (IsBeltLine(hit.collider))
-        {
-            return GetStructureAt(WorldToCell(hit.position - hit.normal * 0.02f));
         }
         return FindStructure(hit.collider);
     }

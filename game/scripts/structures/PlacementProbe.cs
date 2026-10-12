@@ -2,26 +2,11 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-/// <summary>What a candidate placement's colliders would overlap. <see cref="BuildGrid.placementBlockers"/> picks which of these block.</summary>
-[Flags]
-public enum PlacementBlockers
-{
-    None = 0,
-    /// <summary>Anything not part of a GMPObject: level walls, floors and props.</summary>
-    LevelGeometry = 1 << 0,
-    /// <summary>PhysicalFactoryItems authored as dynamic bodies (dropped items).</summary>
-    DynamicItems = 1 << 1,
-    /// <summary>Structures, and PhysicalFactoryItems authored as static or kinematic.</summary>
-    StaticObjects = 1 << 2,
-    Players = 1 << 3,
-    /// <summary>Any other synced object.</summary>
-    OtherSynced = 1 << 4,
-}
-
 /// <summary>
-/// A sensor copy of a structure scene, used to ask the Box3D simulation what the structure's colliders
-/// would overlap at a candidate cell. Every <c>Box3DBody</c> in the copy (the root and any child bodies)
-/// that isn't already a trigger sensor is turned into a sensor on <see cref="GameWorld.QueryHiddenLayer"/> so it affects nothing and world
+/// A sensor copy of a structure scene, used to ask the Box3D simulation whether the structure's colliders
+/// would overlap the level's static colliders at a candidate cell (<see cref="LevelOverlaps"/>). Placed structures,
+/// items, players and every other synced object are ignored: structures keep out of each other through the grid's cells.
+/// Every <c>Box3DBody</c> in the copy (the root and any child bodies) that isn't already a trigger sensor is turned into a sensor on <see cref="GameWorld.QueryHiddenLayer"/> so it affects nothing and world
 /// raycasts pass through it. Used by the local <see cref="BlueprintGhost"/> (visible, as the preview) and
 /// by the host to validate a place request (hidden).
 /// <para>
@@ -98,12 +83,7 @@ public class PlacementProbe
     {
         this.anchor = anchor;
         this.quarterTurns = quarterTurns;
-        Transform3D root = structure.PlacementTransform(anchor, quarterTurns);
-        // A conveyor shows the form it would take there. Only its own: built neighbours keep theirs until it's built.
-        if (structure is ConveyorStructure conveyor)
-        {
-            conveyor.ApplyShape(BuildGrid.ResolveConveyorShape(conveyor, root));
-        }
+        Transform3D root = Structure.PlacementTransform(anchor, quarterTurns);
         root.Basis = root.Basis.Scaled(Vector3.One * SkinScale);
         foreach (var (body, relative) in bodies)
         {
@@ -112,36 +92,21 @@ public class PlacementProbe
         movedOnFrame = Engine.GetPhysicsFrames();
     }
 
-    /// <summary>The categories of body the probe currently overlaps (only meaningful once <see cref="settled"/>).</summary>
-    public PlacementBlockers Overlaps()
+    /// <summary>The level's static colliders the probe currently overlaps (only meaningful once <see cref="settled"/>).</summary>
+    public List<Node> LevelOverlaps()
     {
-        PlacementBlockers hits = PlacementBlockers.None;
+        var hits = new List<Node>();
         foreach (var (body, _) in bodies)
         {
             foreach (Node other in body.Call(Box3DNames.getOverlappingBodies).AsGodotArray<Node>())
             {
-                hits |= Classify(other);
-            }
-        }
-        return hits;
-    }
-
-    /// <summary>"path (category)" for every overlapped body in <paramref name="categories"/>, for logs.</summary>
-    public string DescribeOverlaps(PlacementBlockers categories)
-    {
-        var parts = new List<string>();
-        foreach (var (body, _) in bodies)
-        {
-            foreach (Node other in body.Call(Box3DNames.getOverlappingBodies).AsGodotArray<Node>())
-            {
-                PlacementBlockers c = Classify(other);
-                if ((c & categories) != 0)
+                if (IsStaticLevelCollider(other))
                 {
-                    parts.Add($"{other.GetPath()} ({c})");
+                    hits.Add(other);
                 }
             }
         }
-        return string.Join(", ", parts);
+        return hits;
     }
 
     public void Free()
@@ -152,31 +117,24 @@ public class PlacementProbe
         }
     }
 
-    // Walk up to the nearest GMPObject to decide what was hit.
-    static PlacementBlockers Classify(Node hit)
+    // A solid, static Box3DBody that isn't part of a synced object (placed structures, items, players...) or another probe.
+    static bool IsStaticLevelCollider(Node hit)
     {
+        if (!hit.IsClass("Box3DBody"))
+        {
+            return false;
+        }
+        if (hit.Get(Box3DNames.bodyType).AsInt32() != (int)BodyTypeEnum.Static || hit.Get(Box3DNames.isSensor).AsBool())
+        {
+            return false;
+        }
         for (Node n = hit; n != null; n = n.GetParent())
         {
-            if (n.IsInGroup(ProbeGroup))
+            if (n is GMPObject || n.IsInGroup(ProbeGroup))
             {
-                return PlacementBlockers.None; // another probe (e.g. a pending host check)
-            }
-            if (BuildGrid.IsBeltLine(n))
-            {
-                return PlacementBlockers.StaticObjects; // structures' belts, merged into lines
-            }
-            switch (n)
-            {
-                case Structure:
-                    return PlacementBlockers.StaticObjects;
-                case PhysicalFactoryItem item:
-                    return item.authoredBodyType == BodyTypeEnum.Dynamic ? PlacementBlockers.DynamicItems : PlacementBlockers.StaticObjects;
-                case FactoryPlayer:
-                    return PlacementBlockers.Players;
-                case GMPObject:
-                    return PlacementBlockers.OtherSynced;
+                return false;
             }
         }
-        return PlacementBlockers.LevelGeometry;
+        return true;
     }
 }

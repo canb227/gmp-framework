@@ -239,6 +239,10 @@ def build_loader():
             streak(B, p, (0, 1, 0), 0.05)
     status_light(B, path, 0.6, 1)
     B.to_object("Frame", coll)
+    # Into the structure frame (Structure.cs): origin at the anchor cell's left-bottom-back corner, growing
+    # +X +Y -Z in Godot (+X -Y +Z here).
+    for ob in coll.objects:
+        ob.data.transform(Matrix.Translation(Vector((1, 1, 1))))
     return coll
 
 PIECES = [

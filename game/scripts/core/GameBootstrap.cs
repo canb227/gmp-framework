@@ -67,7 +67,6 @@ public static class GameBootstrap
         }
 
         player.UpdateEquippedItem();
-       // BlueprintCommands.Ensure(); // the other structure blueprints: "blueprints <set>" in the console
     }
 
     /// <summary>Group for spawn markers placed in level scenes (e.g. a Marker3D named PlayerStart).</summary>

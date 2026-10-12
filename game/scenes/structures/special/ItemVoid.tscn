@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://bywvnipt62y5r"]
+
+[ext_resource type="Script" uid="uid://duy6blmgj5jew" path="res://game/scripts/structures/special/Consumer.cs" id="1_ucbhb"]
+[ext_resource type="PackedScene" uid="uid://ciueileresd63" path="res://game/assets/models/props/item_void.glb" id="2_bti2d"]
+
+[node name="ItemVoid" type="Box3DBody" unique_id=1650974929 node_paths=PackedStringArray("inputVolume")]
+body_type = 0
+script = ExtResource("1_ucbhb")
+inputVolume = NodePath("Trigger")
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(2, 0, 0), Vector3i(3, 0, 0), Vector3i(0, 0, -1), Vector3i(1, 0, -1), Vector3i(2, 0, -1), Vector3i(3, 0, -1), Vector3i(0, 0, -2), Vector3i(1, 0, -2), Vector3i(2, 0, -2), Vector3i(3, 0, -2), Vector3i(0, 0, -3), Vector3i(1, 0, -3), Vector3i(2, 0, -3), Vector3i(3, 0, -3)])
+interactable = false
+occupiedCells = Array[Vector3i]([])
+
+[node name="Model" parent="." unique_id=13990206 instance=ExtResource("2_bti2d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, -1)
+
+[node name="FloorShape" type="Box3DCollisionShape" parent="." unique_id=63614341]
+box_size = Vector3(4, 0.05, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.025, -2)
+
+[node name="WallWShape" type="Box3DCollisionShape" parent="." unique_id=1896546427]
+box_size = Vector3(0.15, 1, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.075, 0.5, -2)
+
+[node name="WallEShape" type="Box3DCollisionShape" parent="." unique_id=880506886]
+box_size = Vector3(0.15, 1, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.925, 0.5, -2)
+
+[node name="WallBShape" type="Box3DCollisionShape" parent="." unique_id=1634230605]
+box_size = Vector3(4, 0.12, 0.15)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.06, -0.075)
+
+[node name="WallFShape" type="Box3DCollisionShape" parent="." unique_id=5252107]
+box_size = Vector3(4, 1, 0.15)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.5, -3.925)
+
+[node name="Trigger" type="Box3DBody" parent="." unique_id=1743748814]
+body_type = 0
+box_size = Vector3(3.6, 0.75, 3.6)
+is_sensor = true
+collision_layer = 1073741824
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.6, -2)

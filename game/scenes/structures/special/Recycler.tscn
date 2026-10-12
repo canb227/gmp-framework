@@ -1,127 +1,100 @@
 [gd_scene format=3 uid="uid://ydmfekqvhgei"]
 
-[ext_resource type="Script" uid="uid://djjc1nh5u0bg" path="res://game/scripts/structures/logistics/conveyors/ConveyorBelt.cs" id="belt"]
 [ext_resource type="PackedScene" uid="uid://c45rytap45wtw" path="res://game/assets/models/machines/recycler/recycler_body.glb" id="body"]
-[ext_resource type="Script" uid="uid://2hhnc7f4qnm3" path="res://game/scripts/structures/StructurePort.cs" id="port_script"]
 [ext_resource type="PackedScene" uid="uid://pqjvhgupmo08" path="res://game/assets/models/machines/recycler/recycler_roller.glb" id="roller"]
 [ext_resource type="Script" uid="uid://bgn8523q15leq" path="res://game/scripts/structures/special/Recycler.cs" id="script"]
-
-
-[sub_resource type="Resource" id="Port_valley"]
-script = ExtResource("port_script")
-cell = Vector3i(1, 3, 1)
-face = 4
-size = Vector2i(6, 6)
-volume = NodePath("Valley")
-spawn = null
-
-[sub_resource type="Resource" id="Port_mouth1"]
-script = ExtResource("port_script")
-kind = 1
-size = Vector2i(2, 1)
-volume = null
-spawn = NodePath("outputSpawn1")
-
-[sub_resource type="Resource" id="Port_mouth2"]
-script = ExtResource("port_script")
-kind = 1
-cell = Vector3i(3, 0, 0)
-size = Vector2i(2, 1)
-volume = null
-spawn = NodePath("outputSpawn2")
 
 [node name="Recycler" type="Box3DBody" unique_id=700023757 node_paths=PackedStringArray("rollers")]
 body_type = 0
 box_size = Vector3(0, 0, 0)
 script = ExtResource("script")
 rollers = [NodePath("Roller0"), NodePath("Roller1"), NodePath("Roller2"), NodePath("Roller3"), NodePath("Roller4"), NodePath("Roller5")]
-cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(2, 0, 0), Vector3i(3, 0, 0), Vector3i(4, 0, 0), Vector3i(5, 0, 0), Vector3i(6, 0, 0), Vector3i(7, 0, 0), Vector3i(0, 0, 1), Vector3i(1, 0, 1), Vector3i(2, 0, 1), Vector3i(3, 0, 1), Vector3i(4, 0, 1), Vector3i(5, 0, 1), Vector3i(6, 0, 1), Vector3i(7, 0, 1), Vector3i(0, 0, 2), Vector3i(1, 0, 2), Vector3i(2, 0, 2), Vector3i(3, 0, 2), Vector3i(4, 0, 2), Vector3i(5, 0, 2), Vector3i(6, 0, 2), Vector3i(7, 0, 2), Vector3i(0, 0, 3), Vector3i(1, 0, 3), Vector3i(2, 0, 3), Vector3i(3, 0, 3), Vector3i(4, 0, 3), Vector3i(5, 0, 3), Vector3i(6, 0, 3), Vector3i(7, 0, 3), Vector3i(0, 0, 4), Vector3i(1, 0, 4), Vector3i(2, 0, 4), Vector3i(3, 0, 4), Vector3i(4, 0, 4), Vector3i(5, 0, 4), Vector3i(6, 0, 4), Vector3i(7, 0, 4), Vector3i(0, 0, 5), Vector3i(1, 0, 5), Vector3i(2, 0, 5), Vector3i(3, 0, 5), Vector3i(4, 0, 5), Vector3i(5, 0, 5), Vector3i(6, 0, 5), Vector3i(7, 0, 5), Vector3i(0, 0, 6), Vector3i(1, 0, 6), Vector3i(2, 0, 6), Vector3i(3, 0, 6), Vector3i(4, 0, 6), Vector3i(5, 0, 6), Vector3i(6, 0, 6), Vector3i(7, 0, 6), Vector3i(0, 0, 7), Vector3i(1, 0, 7), Vector3i(2, 0, 7), Vector3i(3, 0, 7), Vector3i(4, 0, 7), Vector3i(5, 0, 7), Vector3i(6, 0, 7), Vector3i(7, 0, 7), Vector3i(0, 1, 0), Vector3i(1, 1, 0), Vector3i(2, 1, 0), Vector3i(3, 1, 0), Vector3i(4, 1, 0), Vector3i(5, 1, 0), Vector3i(6, 1, 0), Vector3i(7, 1, 0), Vector3i(0, 1, 1), Vector3i(1, 1, 1), Vector3i(2, 1, 1), Vector3i(3, 1, 1), Vector3i(4, 1, 1), Vector3i(5, 1, 1), Vector3i(6, 1, 1), Vector3i(7, 1, 1), Vector3i(0, 1, 2), Vector3i(1, 1, 2), Vector3i(2, 1, 2), Vector3i(3, 1, 2), Vector3i(4, 1, 2), Vector3i(5, 1, 2), Vector3i(6, 1, 2), Vector3i(7, 1, 2), Vector3i(0, 1, 3), Vector3i(1, 1, 3), Vector3i(2, 1, 3), Vector3i(3, 1, 3), Vector3i(4, 1, 3), Vector3i(5, 1, 3), Vector3i(6, 1, 3), Vector3i(7, 1, 3), Vector3i(0, 1, 4), Vector3i(1, 1, 4), Vector3i(2, 1, 4), Vector3i(3, 1, 4), Vector3i(4, 1, 4), Vector3i(5, 1, 4), Vector3i(6, 1, 4), Vector3i(7, 1, 4), Vector3i(0, 1, 5), Vector3i(1, 1, 5), Vector3i(2, 1, 5), Vector3i(3, 1, 5), Vector3i(4, 1, 5), Vector3i(5, 1, 5), Vector3i(6, 1, 5), Vector3i(7, 1, 5), Vector3i(0, 1, 6), Vector3i(1, 1, 6), Vector3i(2, 1, 6), Vector3i(3, 1, 6), Vector3i(4, 1, 6), Vector3i(5, 1, 6), Vector3i(6, 1, 6), Vector3i(7, 1, 6), Vector3i(0, 1, 7), Vector3i(1, 1, 7), Vector3i(2, 1, 7), Vector3i(3, 1, 7), Vector3i(4, 1, 7), Vector3i(5, 1, 7), Vector3i(6, 1, 7), Vector3i(7, 1, 7), Vector3i(0, 2, 0), Vector3i(1, 2, 0), Vector3i(2, 2, 0), Vector3i(3, 2, 0), Vector3i(4, 2, 0), Vector3i(5, 2, 0), Vector3i(6, 2, 0), Vector3i(7, 2, 0), Vector3i(0, 2, 1), Vector3i(1, 2, 1), Vector3i(2, 2, 1), Vector3i(3, 2, 1), Vector3i(4, 2, 1), Vector3i(5, 2, 1), Vector3i(6, 2, 1), Vector3i(7, 2, 1), Vector3i(0, 2, 2), Vector3i(1, 2, 2), Vector3i(2, 2, 2), Vector3i(3, 2, 2), Vector3i(4, 2, 2), Vector3i(5, 2, 2), Vector3i(6, 2, 2), Vector3i(7, 2, 2), Vector3i(0, 2, 3), Vector3i(1, 2, 3), Vector3i(2, 2, 3), Vector3i(3, 2, 3), Vector3i(4, 2, 3), Vector3i(5, 2, 3), Vector3i(6, 2, 3), Vector3i(7, 2, 3), Vector3i(0, 2, 4), Vector3i(1, 2, 4), Vector3i(2, 2, 4), Vector3i(3, 2, 4), Vector3i(4, 2, 4), Vector3i(5, 2, 4), Vector3i(6, 2, 4), Vector3i(7, 2, 4), Vector3i(0, 2, 5), Vector3i(1, 2, 5), Vector3i(2, 2, 5), Vector3i(3, 2, 5), Vector3i(4, 2, 5), Vector3i(5, 2, 5), Vector3i(6, 2, 5), Vector3i(7, 2, 5), Vector3i(0, 2, 6), Vector3i(1, 2, 6), Vector3i(2, 2, 6), Vector3i(3, 2, 6), Vector3i(4, 2, 6), Vector3i(5, 2, 6), Vector3i(6, 2, 6), Vector3i(7, 2, 6), Vector3i(0, 2, 7), Vector3i(1, 2, 7), Vector3i(2, 2, 7), Vector3i(3, 2, 7), Vector3i(4, 2, 7), Vector3i(5, 2, 7), Vector3i(6, 2, 7), Vector3i(7, 2, 7), Vector3i(0, 3, 0), Vector3i(1, 3, 0), Vector3i(2, 3, 0), Vector3i(3, 3, 0), Vector3i(4, 3, 0), Vector3i(5, 3, 0), Vector3i(6, 3, 0), Vector3i(7, 3, 0), Vector3i(0, 3, 1), Vector3i(1, 3, 1), Vector3i(2, 3, 1), Vector3i(3, 3, 1), Vector3i(4, 3, 1), Vector3i(5, 3, 1), Vector3i(6, 3, 1), Vector3i(7, 3, 1), Vector3i(0, 3, 2), Vector3i(1, 3, 2), Vector3i(2, 3, 2), Vector3i(3, 3, 2), Vector3i(4, 3, 2), Vector3i(5, 3, 2), Vector3i(6, 3, 2), Vector3i(7, 3, 2), Vector3i(0, 3, 3), Vector3i(1, 3, 3), Vector3i(2, 3, 3), Vector3i(3, 3, 3), Vector3i(4, 3, 3), Vector3i(5, 3, 3), Vector3i(6, 3, 3), Vector3i(7, 3, 3), Vector3i(0, 3, 4), Vector3i(1, 3, 4), Vector3i(2, 3, 4), Vector3i(3, 3, 4), Vector3i(4, 3, 4), Vector3i(5, 3, 4), Vector3i(6, 3, 4), Vector3i(7, 3, 4), Vector3i(0, 3, 5), Vector3i(1, 3, 5), Vector3i(2, 3, 5), Vector3i(3, 3, 5), Vector3i(4, 3, 5), Vector3i(5, 3, 5), Vector3i(6, 3, 5), Vector3i(7, 3, 5), Vector3i(0, 3, 6), Vector3i(1, 3, 6), Vector3i(2, 3, 6), Vector3i(3, 3, 6), Vector3i(4, 3, 6), Vector3i(5, 3, 6), Vector3i(6, 3, 6), Vector3i(7, 3, 6), Vector3i(0, 3, 7), Vector3i(1, 3, 7), Vector3i(2, 3, 7), Vector3i(3, 3, 7), Vector3i(4, 3, 7), Vector3i(5, 3, 7), Vector3i(6, 3, 7), Vector3i(7, 3, 7)])
-placementOffset = Vector3(3.5, -0.5, 3.5)
-ports = Array[ExtResource("port_script")]([SubResource("Port_valley"), SubResource("Port_mouth1"), SubResource("Port_mouth2")])
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, -7), Vector3i(1, 0, -7), Vector3i(2, 0, -7), Vector3i(3, 0, -7), Vector3i(4, 0, -7), Vector3i(5, 0, -7), Vector3i(6, 0, -7), Vector3i(7, 0, -7), Vector3i(0, 0, -6), Vector3i(1, 0, -6), Vector3i(2, 0, -6), Vector3i(3, 0, -6), Vector3i(4, 0, -6), Vector3i(5, 0, -6), Vector3i(6, 0, -6), Vector3i(7, 0, -6), Vector3i(0, 0, -5), Vector3i(1, 0, -5), Vector3i(2, 0, -5), Vector3i(3, 0, -5), Vector3i(4, 0, -5), Vector3i(5, 0, -5), Vector3i(6, 0, -5), Vector3i(7, 0, -5), Vector3i(0, 0, -4), Vector3i(1, 0, -4), Vector3i(2, 0, -4), Vector3i(3, 0, -4), Vector3i(4, 0, -4), Vector3i(5, 0, -4), Vector3i(6, 0, -4), Vector3i(7, 0, -4), Vector3i(0, 0, -3), Vector3i(1, 0, -3), Vector3i(2, 0, -3), Vector3i(3, 0, -3), Vector3i(4, 0, -3), Vector3i(5, 0, -3), Vector3i(6, 0, -3), Vector3i(7, 0, -3), Vector3i(0, 0, -2), Vector3i(1, 0, -2), Vector3i(2, 0, -2), Vector3i(3, 0, -2), Vector3i(4, 0, -2), Vector3i(5, 0, -2), Vector3i(6, 0, -2), Vector3i(7, 0, -2), Vector3i(0, 0, -1), Vector3i(1, 0, -1), Vector3i(2, 0, -1), Vector3i(3, 0, -1), Vector3i(4, 0, -1), Vector3i(5, 0, -1), Vector3i(6, 0, -1), Vector3i(7, 0, -1), Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(2, 0, 0), Vector3i(3, 0, 0), Vector3i(4, 0, 0), Vector3i(5, 0, 0), Vector3i(6, 0, 0), Vector3i(7, 0, 0), Vector3i(0, 1, -7), Vector3i(1, 1, -7), Vector3i(2, 1, -7), Vector3i(3, 1, -7), Vector3i(4, 1, -7), Vector3i(5, 1, -7), Vector3i(6, 1, -7), Vector3i(7, 1, -7), Vector3i(0, 1, -6), Vector3i(1, 1, -6), Vector3i(2, 1, -6), Vector3i(3, 1, -6), Vector3i(4, 1, -6), Vector3i(5, 1, -6), Vector3i(6, 1, -6), Vector3i(7, 1, -6), Vector3i(0, 1, -5), Vector3i(1, 1, -5), Vector3i(2, 1, -5), Vector3i(3, 1, -5), Vector3i(4, 1, -5), Vector3i(5, 1, -5), Vector3i(6, 1, -5), Vector3i(7, 1, -5), Vector3i(0, 1, -4), Vector3i(1, 1, -4), Vector3i(2, 1, -4), Vector3i(3, 1, -4), Vector3i(4, 1, -4), Vector3i(5, 1, -4), Vector3i(6, 1, -4), Vector3i(7, 1, -4), Vector3i(0, 1, -3), Vector3i(1, 1, -3), Vector3i(2, 1, -3), Vector3i(3, 1, -3), Vector3i(4, 1, -3), Vector3i(5, 1, -3), Vector3i(6, 1, -3), Vector3i(7, 1, -3), Vector3i(0, 1, -2), Vector3i(1, 1, -2), Vector3i(2, 1, -2), Vector3i(3, 1, -2), Vector3i(4, 1, -2), Vector3i(5, 1, -2), Vector3i(6, 1, -2), Vector3i(7, 1, -2), Vector3i(0, 1, -1), Vector3i(1, 1, -1), Vector3i(2, 1, -1), Vector3i(3, 1, -1), Vector3i(4, 1, -1), Vector3i(5, 1, -1), Vector3i(6, 1, -1), Vector3i(7, 1, -1), Vector3i(0, 1, 0), Vector3i(1, 1, 0), Vector3i(2, 1, 0), Vector3i(3, 1, 0), Vector3i(4, 1, 0), Vector3i(5, 1, 0), Vector3i(6, 1, 0), Vector3i(7, 1, 0), Vector3i(0, 2, -7), Vector3i(1, 2, -7), Vector3i(2, 2, -7), Vector3i(3, 2, -7), Vector3i(4, 2, -7), Vector3i(5, 2, -7), Vector3i(6, 2, -7), Vector3i(7, 2, -7), Vector3i(0, 2, -6), Vector3i(1, 2, -6), Vector3i(2, 2, -6), Vector3i(3, 2, -6), Vector3i(4, 2, -6), Vector3i(5, 2, -6), Vector3i(6, 2, -6), Vector3i(7, 2, -6), Vector3i(0, 2, -5), Vector3i(1, 2, -5), Vector3i(2, 2, -5), Vector3i(3, 2, -5), Vector3i(4, 2, -5), Vector3i(5, 2, -5), Vector3i(6, 2, -5), Vector3i(7, 2, -5), Vector3i(0, 2, -4), Vector3i(1, 2, -4), Vector3i(2, 2, -4), Vector3i(3, 2, -4), Vector3i(4, 2, -4), Vector3i(5, 2, -4), Vector3i(6, 2, -4), Vector3i(7, 2, -4), Vector3i(0, 2, -3), Vector3i(1, 2, -3), Vector3i(2, 2, -3), Vector3i(3, 2, -3), Vector3i(4, 2, -3), Vector3i(5, 2, -3), Vector3i(6, 2, -3), Vector3i(7, 2, -3), Vector3i(0, 2, -2), Vector3i(1, 2, -2), Vector3i(2, 2, -2), Vector3i(3, 2, -2), Vector3i(4, 2, -2), Vector3i(5, 2, -2), Vector3i(6, 2, -2), Vector3i(7, 2, -2), Vector3i(0, 2, -1), Vector3i(1, 2, -1), Vector3i(2, 2, -1), Vector3i(3, 2, -1), Vector3i(4, 2, -1), Vector3i(5, 2, -1), Vector3i(6, 2, -1), Vector3i(7, 2, -1), Vector3i(0, 2, 0), Vector3i(1, 2, 0), Vector3i(2, 2, 0), Vector3i(3, 2, 0), Vector3i(4, 2, 0), Vector3i(5, 2, 0), Vector3i(6, 2, 0), Vector3i(7, 2, 0), Vector3i(0, 3, -7), Vector3i(1, 3, -7), Vector3i(2, 3, -7), Vector3i(3, 3, -7), Vector3i(4, 3, -7), Vector3i(5, 3, -7), Vector3i(6, 3, -7), Vector3i(7, 3, -7), Vector3i(0, 3, -6), Vector3i(1, 3, -6), Vector3i(2, 3, -6), Vector3i(3, 3, -6), Vector3i(4, 3, -6), Vector3i(5, 3, -6), Vector3i(6, 3, -6), Vector3i(7, 3, -6), Vector3i(0, 3, -5), Vector3i(1, 3, -5), Vector3i(2, 3, -5), Vector3i(3, 3, -5), Vector3i(4, 3, -5), Vector3i(5, 3, -5), Vector3i(6, 3, -5), Vector3i(7, 3, -5), Vector3i(0, 3, -4), Vector3i(1, 3, -4), Vector3i(2, 3, -4), Vector3i(3, 3, -4), Vector3i(4, 3, -4), Vector3i(5, 3, -4), Vector3i(6, 3, -4), Vector3i(7, 3, -4), Vector3i(0, 3, -3), Vector3i(1, 3, -3), Vector3i(2, 3, -3), Vector3i(3, 3, -3), Vector3i(4, 3, -3), Vector3i(5, 3, -3), Vector3i(6, 3, -3), Vector3i(7, 3, -3), Vector3i(0, 3, -2), Vector3i(1, 3, -2), Vector3i(2, 3, -2), Vector3i(3, 3, -2), Vector3i(4, 3, -2), Vector3i(5, 3, -2), Vector3i(6, 3, -2), Vector3i(7, 3, -2), Vector3i(0, 3, -1), Vector3i(1, 3, -1), Vector3i(2, 3, -1), Vector3i(3, 3, -1), Vector3i(4, 3, -1), Vector3i(5, 3, -1), Vector3i(6, 3, -1), Vector3i(7, 3, -1), Vector3i(0, 3, 0), Vector3i(1, 3, 0), Vector3i(2, 3, 0), Vector3i(3, 3, 0), Vector3i(4, 3, 0), Vector3i(5, 3, 0), Vector3i(6, 3, 0), Vector3i(7, 3, 0)])
 hoverName = "Scrap Recycler"
 
 [node name="Model" parent="." unique_id=700031676 instance=ExtResource("body")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -4)
 
 [node name="Core" type="Box3DCollisionShape" parent="." unique_id=700039595]
 box_size = Vector3(8, 1.4, 6)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.7, -3)
 
 [node name="Front0" type="Box3DCollisionShape" parent="." unique_id=700047514]
 box_size = Vector3(0.12, 1.4, 2)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.94, 0.7, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06, 0.7, -7)
 
 [node name="Front1" type="Box3DCollisionShape" parent="." unique_id=700055433]
 box_size = Vector3(1.24, 1.4, 2)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.7, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.7, -7)
 
 [node name="Front2" type="Box3DCollisionShape" parent="." unique_id=700063352]
 box_size = Vector3(1.24, 1.4, 2)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.7, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0.7, -7)
 
 [node name="Front3" type="Box3DCollisionShape" parent="." unique_id=700071271]
 box_size = Vector3(0.12, 1.4, 2)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.94, 0.7, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.94, 0.7, -7)
 
 [node name="MouthRoof1" type="Box3DCollisionShape" parent="." unique_id=700079190]
 box_size = Vector3(1.76, 0.1, 2)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.35, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1.35, -7)
 
 [node name="MouthRoof2" type="Box3DCollisionShape" parent="." unique_id=700087109]
 box_size = Vector3(1.76, 0.1, 2)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.35, -7)
 
 [node name="MouthRoof3" type="Box3DCollisionShape" parent="." unique_id=700095028]
 box_size = Vector3(1.76, 0.1, 2)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1.35, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1.35, -7)
 
 [node name="FrontWall" type="Box3DCollisionShape" parent="." unique_id=700102947]
 box_size = Vector3(8, 2.6, 0.9)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, -3.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.7, -7.55)
 
 [node name="BackWall" type="Box3DCollisionShape" parent="." unique_id=700110866]
 box_size = Vector3(8, 2.6, 0.9)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, 3.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.7, -0.45)
 
 [node name="WallL" type="Box3DCollisionShape" parent="." unique_id=700118785]
 box_size = Vector3(0.7, 2.6, 6.2)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.65, 2.7, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 2.7, -4)
 
 [node name="WallR" type="Box3DCollisionShape" parent="." unique_id=700126704]
 box_size = Vector3(0.7, 2.6, 6.2)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.65, 2.7, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.65, 2.7, -4)
 
 [node name="MouthPlate3" type="Box3DCollisionShape" parent="." unique_id=700134623]
 box_size = Vector3(1.76, 1.3, 0.1)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.65, -3.95)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.65, -7.95)
 
 [node name="ValleyBack" type="Box3DCollisionShape" parent="." unique_id=700007919]
 box_size = Vector3(6.6, 0.1, 3.49942)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.911922, 0.410365, 0, -0.410365, 0.911922, 0, 2.5269, 1.57052)
+transform = Transform3D(1, 0, 0, 0, 0.911922, 0.410365, 0, -0.410365, 0.911922, 4, 2.5269, -2.42948)
 
 [node name="ValleyFront" type="Box3DCollisionShape" parent="." unique_id=700015838]
 box_size = Vector3(6.6, 0.1, 3.49942)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 0.911922, -0.410365, 0, 0.410365, 0.911922, 0, 2.5269, -1.57052)
+transform = Transform3D(1, 0, 0, 0, 0.911922, -0.410365, 0, 0.410365, 0.911922, 4, 2.5269, -5.57052)
 
 [node name="Roller0" type="Box3DBody" parent="." unique_id=700142542]
 body_type = 1
 shape_type = 1
 sphere_radius = 0.05
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 2.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 3, -1.5)
 
 [node name="Model" parent="Roller0" unique_id=700150461 instance=ExtResource("roller")]
 
@@ -348,7 +321,7 @@ transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906
 body_type = 1
 shape_type = 1
 sphere_radius = 0.05
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 2.55, 1.5)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 4, 2.55, -2.5)
 
 [node name="Model" parent="Roller1" unique_id=700459302 instance=ExtResource("roller")]
 
@@ -575,7 +548,7 @@ transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906
 body_type = 1
 shape_type = 1
 sphere_radius = 0.05
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.1, -3.5)
 
 [node name="Model" parent="Roller2" unique_id=700768143 instance=ExtResource("roller")]
 
@@ -802,7 +775,7 @@ transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906
 body_type = 1
 shape_type = 1
 sphere_radius = 0.05
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 2.1, -0.5)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 4, 2.1, -4.5)
 
 [node name="Model" parent="Roller3" unique_id=701076984 instance=ExtResource("roller")]
 
@@ -1029,7 +1002,7 @@ transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906
 body_type = 1
 shape_type = 1
 sphere_radius = 0.05
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.55, -1.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.55, -5.5)
 
 [node name="Model" parent="Roller4" unique_id=701385825 instance=ExtResource("roller")]
 
@@ -1256,7 +1229,7 @@ transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906
 body_type = 1
 shape_type = 1
 sphere_radius = 0.05
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 3, -2.5)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 4, 3, -6.5)
 
 [node name="Model" parent="Roller5" unique_id=701694666 instance=ExtResource("roller")]
 
@@ -1484,22 +1457,10 @@ body_type = 0
 box_size = Vector3(6.5, 1.825, 6.1)
 is_sensor = true
 collision_layer = 1073741824
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7875, 0)
-
-[node name="Belt1" type="Node3D" parent="." unique_id=702003507]
-script = ExtResource("belt")
-points = PackedVector3Array(-3, 0.15, -2, -3, 0.15, -4)
-startIsPort = false
-visual = NodePath("../Model/Belt1")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.7875, -4)
 
 [node name="outputSpawn1" type="Marker3D" parent="." unique_id=702011426]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.65, -2.5)
-
-[node name="Belt2" type="Node3D" parent="." unique_id=702019345]
-script = ExtResource("belt")
-points = PackedVector3Array(0, 0.15, -2, 0, 0.15, -4)
-startIsPort = false
-visual = NodePath("../Model/Belt2")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.65, -8.411766)
 
 [node name="outputSpawn2" type="Marker3D" parent="." unique_id=702027264]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, -2.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.65, -8.094786)

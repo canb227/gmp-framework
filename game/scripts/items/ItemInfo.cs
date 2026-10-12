@@ -28,7 +28,7 @@ public partial class ItemInfo : Resource
     [Export]
     public int maxStackSize = 1;
 
-    const string DefaultDroppedScene = "res://game/scenes/items/world/DefaultDroppedBox.tscn";
+    const string DefaultDroppedScene = "res://game/scenes/items/DefaultDroppedBox.tscn";
 
     /// <summary>
     /// Spawns <paramref name="itemID"/> in the world for every peer: its <see cref="droppedScene"/>, or a labelled

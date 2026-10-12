@@ -8,22 +8,14 @@ using System.Collections.Generic;
 /// updates as the structure spawns or leaves the tree.
 /// <para>
 /// A placement must pass two checks (<see cref="IsPlacementAllowed"/>): its cells are free in the grid,
-/// and its colliders don't overlap anything in <see cref="placementBlockers"/>, found with a
-/// <see cref="PlacementProbe"/>. The probe needs a physics step or two to report, so the host holds each
+/// and its colliders don't overlap the level's static colliders, found with a <see cref="PlacementProbe"/>.
+/// Other structures' colliders don't matter, only their cells. The probe needs a physics step or two to report, so the host holds each
 /// place request until its probe settles, then re-checks the grid at decision time: of several requests
 /// for the same cells, the first decided wins and the rest are refunded.
 /// </para>
 /// </summary>
 public partial class BuildGrid
 {
-    /// <summary>
-    /// Which kinds of overlap block a placement. Only level geometry for now; add
-    /// <see cref="PlacementBlockers.DynamicItems"/>, <see cref="PlacementBlockers.StaticObjects"/> or
-    /// <see cref="PlacementBlockers.Players"/> to make those block too. Must match on every peer
-    /// (the ghost's tint and the host's decision both use it).
-    /// </summary>
-    public static PlacementBlockers placementBlockers = PlacementBlockers.LevelGeometry;
-
     record PendingPlacement(PlacementProbe probe, string blueprintItemID, bool alternate, ulong requester, ulong playerObjectId);
     static readonly List<PendingPlacement> pendingPlacements = new(); // host only
 
@@ -35,15 +27,15 @@ public partial class BuildGrid
             p.probe.Free();
         }
         pendingPlacements.Clear();
-        ResetBeltLines();
+       // ResetBeltLines();
     }
 
-    /// <summary>True if the grid cells are free and the probe's overlaps include nothing in <see cref="placementBlockers"/>.</summary>
-    public static bool IsPlacementAllowed(PlacementProbe probe, out PlacementBlockers overlaps)
+    /// <summary>True if the grid cells are free and the probe overlaps none of the level's static colliders.</summary>
+    public static bool IsPlacementAllowed(PlacementProbe probe, out List<Node> levelOverlaps)
     {
-        overlaps = probe.Overlaps();
+        levelOverlaps = probe.LevelOverlaps();
         return CanPlace(probe.anchor, probe.structure.cellOffsets, probe.quarterTurns)
-            && (overlaps & placementBlockers) == 0;
+            && levelOverlaps.Count == 0;
     }
 
     /// <summary>
@@ -96,7 +88,7 @@ public partial class BuildGrid
     public override void _PhysicsProcess(double delta)
     {
         UpdateHighlight();
-        UpdateBeltLines();
+        //UpdateBeltLines();
         // Decide settled requests in arrival order.
         for (int i = 0; i < pendingPlacements.Count; i++)
         {
@@ -114,11 +106,11 @@ public partial class BuildGrid
     private static void DecidePlacement(PendingPlacement p)
     {
         PlacementProbe probe = p.probe;
-        if (!IsPlacementAllowed(probe, out PlacementBlockers overlaps))
+        if (!IsPlacementAllowed(probe, out List<Node> levelOverlaps))
         {
-            if ((overlaps & placementBlockers) != 0)
+            foreach (Node hit in levelOverlaps)
             {
-                Logging.Log($"Refused {p.blueprintItemID} at {probe.anchor}: overlaps {probe.DescribeOverlaps(placementBlockers)}", "BuildGrid");
+                Logging.Log($"Refused {p.blueprintItemID} at {probe.anchor}: overlaps {hit.GetPath()}", "BuildGrid");
             }
             Refund(p.blueprintItemID, p.requester, p.playerObjectId);
             return;
@@ -126,7 +118,7 @@ public partial class BuildGrid
 
         StructureState state = new() { anchor = probe.anchor, quarterTurns = probe.quarterTurns };
         GMPOInitData init = new() { owner = p.requester };
-        Transform3D pose = probe.structure.PlacementTransform(probe.anchor, probe.quarterTurns);
+        Transform3D pose = Structure.PlacementTransform(probe.anchor, probe.quarterTurns);
         BlueprintItem blueprint = (BlueprintItem)ItemInfo.Fetch(p.blueprintItemID);
         GameWorld.SpawnScene(blueprint.StructureScene(p.alternate), pose.Origin, pose.Basis.GetEuler(), init, GMPObject.serializer.Serialize(state));
     }

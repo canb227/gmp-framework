@@ -5,7 +5,9 @@ Run inside Blender (Text Editor > Run Script, or exec(open(path).read())). Re-ru
 from scratch in the "Conveyors" scene collections and re-exports to ../ (game/assets/models/conveyors).
 
 Frame conventions (Blender, Z up; glTF export turns these into Godot's Y up):
-  - The origin is the centre of the anchor 2 m build cell; its floor is z = -1.
+  - Pieces are BUILT around the top-centre of their 2 m footprint (floor z = -1), and build_all then moves them
+    into the structure frame for export (Structure.cs): origin at the anchor cell's left-bottom-back corner, the
+    piece growing +X +Y -Z in Godot. conveyor_slope_down.glb is the slope turned round.
   - Items flow toward +Y here, which is Godot's -Z (a structure's front).
   - The belt's top run is BELT_TOP (0.15 m above the cell floor); its return run is exposed underneath,
     running the opposite way, BELT_H lower. Nothing crosses under the belt, so the underside stays clear.
@@ -541,12 +543,34 @@ def build_all(do_export=True):
             base = ob.name.split(".")[0].split("_")[-1]
             ob.name = f"{tag}_{base}"
             ob.data.name = ob.name
+    # Into the structure frame (Structure.cs): the root is the anchor cell's left-bottom-back corner and the piece
+    # grows +X +Y -Z in Godot, which is +X -Y +Z here. Turns are first swung round so they come in from the side
+    # and leave through the front, the way their scenes use them.
+    to_corner = Matrix.Translation(Vector((1, 1, 1)))
+    for ob in left.objects:
+        ob.data.transform(to_corner @ Matrix.Rotation(math.radians(-90), 4, 'Z'))
+    for ob in bpy.data.collections["Conveyor_TurnRight"].objects:
+        ob.data.transform(to_corner @ Matrix.Rotation(math.radians(90), 4, 'Z'))
+    for name in ("Conveyor_Straight", "Conveyor_Slope"):
+        for ob in bpy.data.collections[name].objects:
+            ob.data.transform(to_corner)
     if do_export:
         for coll, fn, tag in pieces:
             # export with plain node names ("Belt", "Frame") so every scene finds its parts the same way
             for ob in coll.objects: ob.name = ob.name.split("_", 1)[1]
             export(coll, fn)
             for ob in coll.objects: ob.name = f"{tag}_{ob.name}"
+        # The downhill slope is the slope turned round its footprint's vertical centre line (Godot x 1, z -2).
+        slope = bpy.data.collections["Conveyor_Slope"]
+        pivot = Vector((1, 2, 0))
+        turn_round = Matrix.Translation(pivot) @ Matrix.Rotation(math.pi, 4, 'Z') @ Matrix.Translation(-pivot)
+        for ob in slope.objects:
+            ob.data.transform(turn_round)
+            ob.name = ob.name.split("_", 1)[1]
+        export(slope, "conveyor_slope_down.glb")
+        for ob in slope.objects:
+            ob.data.transform(turn_round.inverted())
+            ob.name = f"Slope_{ob.name}"
     return pieces
 
 if __name__ != "conveyor_lib":   # other build scripts exec this file as a library

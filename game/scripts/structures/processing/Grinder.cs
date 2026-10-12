@@ -33,33 +33,33 @@ public partial class Grinder : Structure
 
     public override void _PhysicsProcess(double delta)
     {
-        if (!runsMachineLogic) return;
+        //if (!runsMachineLogic) return;
 
-        foreach (PhysicalFactoryItem item in ItemsAtInputs())
-        {
-            string input = item.itemID ?? "";
-            GameWorld.DespawnObject(item.id, DespawnReason.Consumed);
-            consumedCount++;
-            string output = recipes.TryGetValue(input, out string o) ? o : item.itemID;
-            queue.Enqueue((output, outputCounts.TryGetValue(input, out int n) ? Mathf.Max(1, n) : 1));
-            if (queue.Count == 1)
-            {
-                untilNextOutput = processTime;
-            }
-        }
+        //foreach (PhysicalFactoryItem item in ItemsAtInputs())
+        //{
+        //    string input = item.itemID ?? "";
+        //    GameWorld.DespawnObject(item.id, DespawnReason.Consumed);
+        //    consumedCount++;
+        //    string output = recipes.TryGetValue(input, out string o) ? o : item.itemID;
+        //    queue.Enqueue((output, outputCounts.TryGetValue(input, out int n) ? Mathf.Max(1, n) : 1));
+        //    if (queue.Count == 1)
+        //    {
+        //        untilNextOutput = processTime;
+        //    }
+        //}
 
-        if (queue.Count == 0) return;
-        untilNextOutput -= delta;
-        if (untilNextOutput <= 0)
-        {
-            (string output, int count) = queue.Dequeue();
-            for (int i = 0; output != null && i < count; i++)
-            {
-                Vector3 side = GlobalBasis.X * ((i - (count - 1) / 2f) * outputSpacing);
-                ItemInfo.SpawnInWorld(output, OutputPosition() + side, GlobalRotation);
-                producedCount++;
-            }
-            untilNextOutput = processTime;
-        }
+        //if (queue.Count == 0) return;
+        //untilNextOutput -= delta;
+        //if (untilNextOutput <= 0)
+        //{
+        //    (string output, int count) = queue.Dequeue();
+        //    for (int i = 0; output != null && i < count; i++)
+        //    {
+        //        Vector3 side = GlobalBasis.X * ((i - (count - 1) / 2f) * outputSpacing);
+        //        ItemInfo.SpawnInWorld(output, OutputPosition() + side, GlobalRotation);
+        //        producedCount++;
+        //    }
+        //    untilNextOutput = processTime;
+        //}
     }
 }

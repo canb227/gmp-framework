@@ -81,6 +81,23 @@ public partial class ProgressManager : Node
 
     // ---- turn-ins ---------------------------------------------------------------
 
+    /// <summary>
+    /// Any peer: an item was turned in (e.g. eaten by a <see cref="Consumer"/>). Sends it to the host, which deposits
+    /// <paramref name="value"/> in the <see cref="Shop"/> and counts it toward quests.
+    /// </summary>
+    public static void RequestDeposit(string itemID, Dictionary<Currency, int> value)
+    {
+        RPCManager.RPCTo(Lobby.hostID, instance, nameof(_Deposit), [itemID, value]);
+    }
+
+    [RPC]
+    private void _Deposit(string itemID, Dictionary<Currency, int> value)
+    {
+        if (!Lobby.isHost) return;
+        Shop.Deposit(itemID, value);
+        TurnInForQuest(itemID);
+    }
+
     /// <summary>Host only: counts one <paramref name="itemID"/> toward every quest in progress that wants it, for everyone.</summary>
     internal static void TurnInForQuest(string itemID)
     {

@@ -1,0 +1,71 @@
+[gd_scene format=3 uid="uid://dcm710gynders"]
+
+[ext_resource type="Script" uid="uid://b10te24frnknc" path="res://game/scripts/structures/Structure.cs" id="1_r"]
+[ext_resource type="PackedScene" uid="uid://cqh6bx6av4kv0" path="res://game/assets/models/conveyors/conveyor_turn_right.glb" id="2_r"]
+[ext_resource type="Script" uid="uid://bv13olg4g30nl" path="res://game/scripts/structures/StructureArrow.cs" id="3_1v8e7"]
+
+[node name="ConveyorTurnRight" type="Box3DBody" unique_id=1232208056]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("1_r")
+cellOffsets = Array[Vector3i]([Vector3i(0, 0, -1), Vector3i(1, 0, -1), Vector3i(0, 0, 0), Vector3i(1, 0, 0)])
+blueprintItemID = "blueprint_conveyor"
+
+[node name="Model" parent="." unique_id=1442939280 instance=ExtResource("2_r")]
+
+[node name="WallOuter0" type="Box3DCollisionShape" parent="." unique_id=272251356]
+box_size = Vector3(0.11, 0.4, 1.045)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0.25882, 0, 0.96593, 0, 1, 0, -0.96593, 0, 0.25882, 1.50954, 0.2, -0.16957)
+
+[node name="WallOuter1" type="Box3DCollisionShape" parent="." unique_id=1086159749]
+box_size = Vector3(0.11, 0.4, 1.045)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0.70711, 0, 0.70711, 0, 1, 0, -0.70711, 0, 0.70711, 0.66003, 0.2, -0.66003)
+
+[node name="WallOuter2" type="Box3DCollisionShape" parent="." unique_id=305098591]
+box_size = Vector3(0.11, 0.4, 1.045)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0.96593, 0, 0.25882, 0, 1, 0, -0.25882, 0, 0.96593, 0.16957, 0.2, -1.50954)
+
+[node name="Post" type="Box3DCollisionShape" parent="." unique_id=386200157]
+box_size = Vector3(0.16, 0.4, 0.16)
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.92, 0.2, -1.92)
+
+[node name="Floor0" type="Box3DBody" parent="." unique_id=723475997]
+body_type = 0
+box_size = Vector3(1.68, 0.1, 0.98605)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+user_material_id = 5
+enabled = false
+transform = Transform3D(0.25882, 0, 0.96593, 0, 1, 0, -0.96593, 0, 0.25882, 1.74118, 0.1, -1.03407)
+
+[node name="Floor1" type="Box3DBody" parent="." unique_id=260296978]
+body_type = 0
+box_size = Vector3(1.68, 0.1, 0.98605)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+user_material_id = 5
+enabled = false
+transform = Transform3D(0.70711, 0, 0.70711, 0, 1, 0, -0.70711, 0, 0.70711, 1.29289, 0.1, -1.29289)
+
+[node name="Floor2" type="Box3DBody" parent="." unique_id=368166759]
+body_type = 0
+box_size = Vector3(1.68, 0.1, 0.98605)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+user_material_id = 5
+enabled = false
+transform = Transform3D(0.96593, 0, 0.25882, 0, 1, 0, -0.25882, 0, 0.96593, 1.03407, 0.1, -1.74118)
+
+[node name="StructureArrow" type="Node3D" parent="." unique_id=589559048]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.7333997, 0.8026422, -0.993477)
+script = ExtResource("3_1v8e7")
+shape = 1
+metadata/_custom_type_script = "uid://bv13olg4g30nl"
