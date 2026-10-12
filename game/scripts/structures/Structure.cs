@@ -14,18 +14,48 @@ public partial record struct StructureState
 }
 
 /// <summary>
+/// The faces of a structure's cell that items go in or out through, used for placement, snapping and belt shapes
+/// (machines take in and hand out items however they like). Faces are in the structure's own frame: Front is -Z,
+/// Back +Z, Left -X, Right +X. A cell can have several, e.g. a turn's corner cell takes items in from the left and
+/// hands them on through the front. The bit for face f (in <see cref="Structure.FaceDirections"/> order) is
+/// 1 &lt;&lt; f for an input and 1 &lt;&lt; (f + 6) for an output.
+/// </summary>
+[Flags]
+public enum CellTags
+{
+    None = 0,
+    InputFront = 1 << 0,
+    InputBack = 1 << 1,
+    InputLeft = 1 << 2,
+    InputRight = 1 << 3,
+    InputUp = 1 << 4,
+    InputDown = 1 << 5,
+    OutputFront = 1 << 6,
+    OutputBack = 1 << 7,
+    OutputLeft = 1 << 8,
+    OutputRight = 1 << 9,
+    OutputUp = 1 << 10,
+    OutputDown = 1 << 11,
+}
+
+/// <summary>
 /// A building on the build grid. Every structure scene is authored the same way: the root (0,0,0) is the
 /// left (-X), bottom (-Y), back (+Z) corner of its anchor cell, and the structure grows toward +X, +Y and -Z
-/// (its front faces -Z). A 2x2x2 structure fits in x 0..2, y 0..2, z -2..0, with cellOffsets in 0..1, 0..1, -1..0.
+/// (its front faces -Z). A 2x2x2 structure fits in x 0..2, y 0..2, z -2..0, with cells in 0..1, 0..1, -1..0.
 /// </summary>
 public partial class Structure : GMPOBox3DBody, Interactable
 {
     /// <summary>
-    /// Cells this structure occupies, relative to its anchor cell before rotation: always (0,0,0), and otherwise
-    /// x and y of 0 or more and z of 0 or less (see the class summary).
+    /// The cells this structure is made of, relative to its anchor cell before rotation, each with the faces items
+    /// go in or out through. All have x and y of 0 or more and z of 0 or less (see the class summary), but the anchor
+    /// cell (0,0,0) itself needn't be one of them: a downhill slope's bottom back corner is empty. Edit them with the
+    /// Structure Tools plugin's Edit Cells.
     /// </summary>
     [Export]
-    public Godot.Collections.Array<Vector3I> cellOffsets = [Vector3I.Zero];
+    public Godot.Collections.Dictionary<Vector3I, CellTags> cells = new() { { Vector3I.Zero, CellTags.None } };
+
+    /// <summary>The directions of the six faces of a cell, in <see cref="CellTags"/> order: front, back, left, right, up, down.</summary>
+    public static readonly Vector3I[] FaceDirections = [new(0, 0, -1), new(0, 0, 1), new(-1, 0, 0), new(1, 0, 0), new(0, 1, 0), new(0, -1, 0)];
 
     /// <summary>The blueprint given back when this structure is deconstructed.</summary>
     [Export]
@@ -77,7 +107,7 @@ public partial class Structure : GMPOBox3DBody, Interactable
 
     /// <summary>
     /// The root's world transform when anchored at <paramref name="anchor"/> with <paramref name="quarterTurns"/>.
-    /// It turns about the anchor cell's centre, the same as <see cref="cellOffsets"/> do (<see cref="BuildGrid.RotateOffset"/>).
+    /// It turns about the anchor cell's centre, the same as <see cref="cells"/> do (<see cref="BuildGrid.RotateOffset"/>).
     /// </summary>
     public static Transform3D PlacementTransform(Vector3I anchor, int quarterTurns)
     {
@@ -141,6 +171,8 @@ public partial class Structure : GMPOBox3DBody, Interactable
         {
             this.occupiedCells = new Godot.Collections.Array<Vector3I>(placedIn);
         }
+        outputEnds = FindEnds(cells, true, anchor, quarterTurns);
+        CheckReceiversLater();
 
         // Structures never follow synced state, so only machines with their own _PhysicsProcess keep processing on.
         RefreshPhysicsProcess();
@@ -148,6 +180,14 @@ public partial class Structure : GMPOBox3DBody, Interactable
 
     public override void OnAuthorityChanged()
     {
+    }
+
+    // Runs on every peer. Frees the cells now rather than at _ExitTree (end of frame), so a replacement spawned
+    // straight after (a repaired structure, a belt of another shape) can occupy them.
+    public override void OnDespawned(DespawnReason reason)
+    {
+        BuildGrid.Vacate(this);
+        CheckReceiversLater();
     }
 
     public override void _ExitTree()

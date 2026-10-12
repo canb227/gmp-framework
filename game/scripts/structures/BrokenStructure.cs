@@ -43,11 +43,4 @@ public partial class BrokenStructure : Structure, Triggerable
         GameWorld.DespawnObject(id);
         GameWorld.SpawnScene(repairedScene, pose.Origin, pose.Basis.GetEuler(), new GMPOInitData(), GMPObject.serializer.Serialize(state));
     }
-
-    // Runs on every peer. Free the cells now rather than at _ExitTree (end of frame), so the replacement,
-    // spawned straight after, can occupy them.
-    public override void OnDespawned(DespawnReason reason)
-    {
-        BuildGrid.Vacate(this);
-    }
 }

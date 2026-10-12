@@ -89,4 +89,14 @@ public partial class BasicSmelter : Structure, IOMachine
     {
         throw new NotImplementedException();
     }
+
+    public float getSpeedMultiplier()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void setSpeedMultiplier(float multiplier)
+    {
+        throw new NotImplementedException();
+    }
 }

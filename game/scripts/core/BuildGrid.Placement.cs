@@ -34,7 +34,7 @@ public partial class BuildGrid
     public static bool IsPlacementAllowed(PlacementProbe probe, out List<Node> levelOverlaps)
     {
         levelOverlaps = probe.LevelOverlaps();
-        return CanPlace(probe.anchor, probe.structure.cellOffsets, probe.quarterTurns)
+        return CanPlace(probe.anchor, probe.structure.cells.Keys, probe.quarterTurns)
             && levelOverlaps.Count == 0;
     }
 
@@ -75,7 +75,7 @@ public partial class BuildGrid
             return;
         }
         PlacementProbe probe = PlacementProbe.Create(blueprint.StructureScene(alternate), false);
-        if (probe == null || !CanPlace(anchor, probe.structure.cellOffsets, quarterTurns))
+        if (probe == null || !CanPlace(anchor, probe.structure.cells.Keys, quarterTurns))
         {
             probe?.Free();
             Refund(blueprintItemID, RPCManager.sender, playerObjectId);
@@ -120,7 +120,13 @@ public partial class BuildGrid
         GMPOInitData init = new() { owner = p.requester };
         Transform3D pose = Structure.PlacementTransform(probe.anchor, probe.quarterTurns);
         BlueprintItem blueprint = (BlueprintItem)ItemInfo.Fetch(p.blueprintItemID);
-        GameWorld.SpawnScene(blueprint.StructureScene(p.alternate), pose.Origin, pose.Basis.GetEuler(), init, GMPObject.serializer.Serialize(state));
+        PackedScene scene = blueprint.StructureScene(p.alternate);
+        // A belt is built straight in the shape what feeds it calls for, rather than straight and then swapped.
+        if (blueprint is ConveyorBlueprint conveyorBlueprint)
+        {
+            scene = conveyorBlueprint.SceneFor(Conveyor.ShapeAt(conveyorBlueprint, probe.anchor, probe.quarterTurns));
+        }
+        GameWorld.SpawnScene(scene, pose.Origin, pose.Basis.GetEuler(), init, GMPObject.serializer.Serialize(state));
     }
 
     // Runs on the host. A structure already despawned by an earlier request is simply not found.

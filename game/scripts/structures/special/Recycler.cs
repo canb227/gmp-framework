@@ -168,4 +168,14 @@ public partial class Recycler : Structure, IOMachine
     {
         return outputLocations;
     }
+
+    public float getSpeedMultiplier()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void setSpeedMultiplier(float multiplier)
+    {
+        throw new NotImplementedException();
+    }
 }

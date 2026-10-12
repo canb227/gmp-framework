@@ -1,17 +1,34 @@
 [gd_scene format=3 uid="uid://f84cilvcke1a"]
 
 [ext_resource type="PackedScene" uid="uid://blimcbugiyy2c" path="res://game/assets/models/conveyors/conveyor_slope_down.glb" id="1_r"]
-[ext_resource type="Script" uid="uid://b10te24frnknc" path="res://game/scripts/structures/Structure.cs" id="2_r"]
+[ext_resource type="Script" uid="uid://c8jn3gvcakhgp" path="res://game/scripts/structures/logistics/conveyors/Conveyor.cs" id="2_r"]
 [ext_resource type="Script" uid="uid://bv13olg4g30nl" path="res://game/scripts/structures/StructureArrow.cs" id="3_mxnqd"]
 
-[node name="ConveyorSlopeDown" type="Box3DBody" unique_id=1434477856]
+[node name="ConveyorSlopeDown" type="Box3DBody" unique_id=1434477856 node_paths=PackedStringArray("beltSurfaces")]
 body_type = 0
 box_size = Vector3(0, 0, 0)
 script = ExtResource("2_r")
-cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(0, 0, -2), Vector3i(1, 0, -2), Vector3i(0, 0, -3), Vector3i(1, 0, -3), Vector3i(0, 1, 0), Vector3i(1, 1, 0), Vector3i(0, 1, -1), Vector3i(1, 1, -1), Vector3i(0, 1, -2), Vector3i(1, 1, -2), Vector3i(0, 2, 0), Vector3i(1, 2, 0)])
+beltSurfaces = []
+cells = Dictionary[Vector3i, int]({
+Vector3i(0, 0, -3): 64,
+Vector3i(0, 0, -2): 0,
+Vector3i(0, 1, -2): 0,
+Vector3i(0, 1, -1): 0,
+Vector3i(0, 1, 0): 0,
+Vector3i(0, 2, 0): 2,
+Vector3i(1, 0, -3): 64,
+Vector3i(1, 0, -2): 0,
+Vector3i(1, 1, -2): 0,
+Vector3i(1, 1, -1): 0,
+Vector3i(1, 1, 0): 0,
+Vector3i(1, 2, 0): 2
+})
 blueprintItemID = "blueprint_conveyor_slope"
 
 [node name="Model" parent="." unique_id=1336257386 instance=ExtResource("1_r")]
+
+[node name="Belt" parent="Model" index="0"]
+instance_shader_parameters/belt_speed = -2.0
 
 [node name="WallL" type="Box3DCollisionShape" parent="." unique_id=1175274396]
 box_size = Vector3(0.11, 0.55, 4.61702)
@@ -50,7 +67,7 @@ user_material_id = 5
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.1, -3.86824)
 
 [node name="StructureArrow" type="Node3D" parent="." unique_id=883549638]
-transform = Transform3D(1, 0, 0, 0, -0.8354547, -0.5495593, 0, 0.5495593, -0.8354547, 1.046238, 1.3718457, -3.2052827)
+transform = Transform3D(1, 0, 0, 0, 0.8354547, 0.5495593, 0, -0.5495593, 0.8354547, 1.046238, 2.1961846, -1.9521006)
 script = ExtResource("3_mxnqd")
 length = 1.5
 metadata/_custom_type_script = "uid://bv13olg4g30nl"

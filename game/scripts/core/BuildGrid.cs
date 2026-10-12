@@ -148,16 +148,8 @@ public partial class BuildGrid : Node3D
     /// the face it is centred on where the ray meets the face (in whole cells, always covering the target cell), so
     /// a structure several cells wide sits under the crosshair and turning it turns it about its own middle. The one
     /// exception is height on a wall: there the footprint stands on the target cell rather than centring on it.
-    /// </summary>
-    public static bool TryGetPlacementTarget(Vector3 from, Vector3 direction, float range, IEnumerable<Vector3I> offsets, int quarterTurns, out Vector3I anchor)
-    {
-        return TryGetPlacementTarget(from, direction, range, offsets, quarterTurns, out anchor, out _, out _);
-    }
-
-    /// <summary>
-    /// <see cref="TryGetPlacementTarget(Vector3, Vector3, float, IEnumerable{Vector3I}, int, out Vector3I)"/>, also
-    /// giving the face that was picked: <paramref name="target"/> is the empty cell across it and
-    /// <paramref name="normal"/> points out of the surface into that cell.
+    /// <paramref name="target"/> is the empty cell across the picked face and <paramref name="normal"/> points out of
+    /// the surface into that cell.
     /// </summary>
     public static bool TryGetPlacementTarget(Vector3 from, Vector3 direction, float range, IEnumerable<Vector3I> offsets, int quarterTurns,
         out Vector3I anchor, out Vector3I target, out Vector3I normal)
@@ -447,13 +439,13 @@ public partial class BuildGrid : Node3D
     /// <summary>Registers every cell of <paramref name="structure"/>. Fails (registering nothing) if any is taken.</summary>
     public static bool Occupy(Structure structure, out List<Vector3I> placedIn)
     {
-        if (!CanPlace(structure.anchor, structure.cellOffsets, structure.quarterTurns))
+        if (!CanPlace(structure.anchor, structure.cells.Keys, structure.quarterTurns))
         {
             placedIn = null;
             return false;
         }
         placedIn = new();
-        foreach (Vector3I cell in FootprintCells(structure.anchor, structure.cellOffsets, structure.quarterTurns))
+        foreach (Vector3I cell in FootprintCells(structure.anchor, structure.cells.Keys, structure.quarterTurns))
         {
             placedIn.Add(cell);
             cells[cell] = structure;
@@ -464,7 +456,7 @@ public partial class BuildGrid : Node3D
     /// <summary>Frees every cell registered to <paramref name="structure"/>.</summary>
     public static void Vacate(Structure structure)
     {
-        foreach (Vector3I cell in FootprintCells(structure.anchor, structure.cellOffsets, structure.quarterTurns))
+        foreach (Vector3I cell in FootprintCells(structure.anchor, structure.cells.Keys, structure.quarterTurns))
         {
             if (cells.TryGetValue(cell, out Structure existing) && existing == structure)
             {

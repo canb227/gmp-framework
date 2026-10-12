@@ -1,13 +1,17 @@
-[gd_resource type="Resource" script_class="BlueprintItem" format=3 uid="uid://22qmcsar40ns"]
+[gd_resource type="Resource" script_class="ConveyorBlueprint" format=3 uid="uid://22qmcsar40ns"]
 
-[ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_bp"]
+[ext_resource type="Script" path="res://game/scripts/items/ConveyorBlueprint.cs" id="1_bp"]
 [ext_resource type="Texture2D" uid="uid://bnk6fca4yqh6n" path="res://game/assets/icons/blueprints/blueprint_conveyor.png" id="2_icon"]
 [ext_resource type="PackedScene" uid="uid://e450hsdm0ju3" path="res://game/scenes/structures/BlueprintGhost.tscn" id="3_ghost"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/logistics/conveyors/basic/Conveyor.tscn" id="4_struct"]
+[ext_resource type="PackedScene" uid="uid://kntxrimjqyhh" path="res://game/scenes/structures/logistics/conveyors/basic/ConveyorTurnLeft.tscn" id="5_left"]
+[ext_resource type="PackedScene" uid="uid://dcm710gynders" path="res://game/scenes/structures/logistics/conveyors/basic/ConveyorTurnRight.tscn" id="6_right"]
 
 [resource]
 script = ExtResource("1_bp")
 structureScene = ExtResource("4_struct")
+turnLeftScene = ExtResource("5_left")
+turnRightScene = ExtResource("6_right")
 cost = Dictionary[int, int]({
 0: 1
 })

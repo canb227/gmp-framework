@@ -4,27 +4,35 @@ using System.Collections.Generic;
 using System.Reflection;
 
 /// <summary>
-/// Two toggles on the 3D editor's toolbar for making and placing <see cref="Structure"/>s:
+/// Tools on the 3D editor's toolbar for making and placing <see cref="Structure"/>s:
 /// <list type="bullet">
 /// <item>View Grid draws the build grid's 1 m cells on a floor around the selection, and outlines the cells every
-/// Structure in the open scene claims (its cellOffsets), the scene's own root included when editing a structure.</item>
+/// Structure in the open scene is made of (its <see cref="Structure.cells"/>), the scene's own root included when
+/// editing a structure. Faces tagged as an input are filled green and as an output orange.</item>
 /// <item>Grid Snap moves every selected Structure to the grid pose nearest to where a move or rotation ends
 /// (<see cref="Structure.NearestGridTransform"/>), so hand-placed ones pass the runtime alignment check. The open
 /// scene's root is never moved, so editing a structure's own scene is unaffected.</item>
-/// <item>Fill Cells sets the selected Structures' cellOffsets (or the open structure scene's root's, with nothing
+/// <item>Fill Cells sets the selected Structures' cells (or the open structure scene's root's, with nothing
 /// selected) to every cell their solid colliders touch: each collider's bounding box, read in the root's frame.
-/// The box beside it is the overhang tolerance: a collider must reach further than that into a cell to claim it.</item>
+/// Cells that stay keep their tags. The box beside it is the overhang tolerance: a collider must reach further than
+/// that into a cell to claim it.</item>
+/// <item>Edit Cells: click a structure's cell in the viewport to select it (a click that hits none selects the
+/// anchor), then use the Structure Cells dock to put it in or out of the structure, tag its faces, and step to a
+/// neighbouring cell. Each change is written to the structure's cells straight away, as an undoable step.</item>
 /// </list>
 /// Structure isn't a [Tool] script, so in the editor its nodes carry a placeholder: they are found by script
-/// inheritance and their cellOffsets are read through Get().
+/// inheritance and their cells are read and written through Get() and Set().
 /// </summary>
 [Tool]
 public partial class StructureToolsPlugin : EditorPlugin
 {
     /// <summary>How many cells the drawn floor grid reaches out from the selection in each direction.</summary>
     const int GridRadius = 12;
+    /// <summary>How far tagged faces and the selected cell's outline sit inside their cell, so they don't hide the footprint's outline.</summary>
+    const float Inset = 0.06f;
 
     static readonly Vector3I[] Axes = [Vector3I.Right, Vector3I.Up, Vector3I.Back];
+    static readonly string[] FaceNames = ["Front", "Back", "Left", "Right", "Up", "Down"];
 
     // Partial classes get one [ScriptPath] per file; the generator tags each with the script's path.
     static readonly HashSet<string> structureScriptPaths = StructureScriptPaths();
@@ -33,17 +41,34 @@ public partial class StructureToolsPlugin : EditorPlugin
     CheckButton snapToggle;
     Button fillCellsButton;
     SpinBox toleranceBox;
+    CheckButton editCellsToggle;
     MeshInstance3D overlay;
     ImmediateMesh lines;
     StandardMaterial3D gridMaterial;
     StandardMaterial3D footprintMaterial;
+    StandardMaterial3D inputMaterial;
+    StandardMaterial3D outputMaterial;
+    StandardMaterial3D selectedMaterial;
+
+    // The Structure Cells dock.
+    EditorDock cellDock;
+    Label cellLabel;
+    CheckBox inStructureBox;
+    readonly CheckBox[] inputBoxes = new CheckBox[6];
+    readonly CheckBox[] outputBoxes = new CheckBox[6];
+    readonly List<Button> stepButtons = new();
+
+    /// <summary>The structure Edit Cells works on (the selected one), or null.</summary>
+    Node3D editTarget;
+    /// <summary>The selected cell of <see cref="editTarget"/>, in its cells' frame. It needn't be one of its cells.</summary>
+    Vector3I selectedCell;
 
     public override void _EnterTree()
     {
         viewGridToggle = new CheckButton
         {
             Text = "View Grid",
-            TooltipText = "Show the build grid's cells around the selection, and the cells each Structure claims.",
+            TooltipText = "Show the build grid's cells around the selection, and the cells each Structure is made of.",
         };
         snapToggle = new CheckButton
         {
@@ -54,7 +79,7 @@ public partial class StructureToolsPlugin : EditorPlugin
         fillCellsButton = new Button
         {
             Text = "Fill Cells",
-            TooltipText = "Set the selected Structures' cellOffsets (or the open structure scene's) to every cell their solid colliders touch.",
+            TooltipText = "Set the selected Structures' cells (or the open structure scene's) to every cell their solid colliders touch.",
         };
         fillCellsButton.Pressed += FillCells;
         toleranceBox = new SpinBox
@@ -66,28 +91,27 @@ public partial class StructureToolsPlugin : EditorPlugin
             Suffix = "m",
             TooltipText = "Fill Cells overhang tolerance: a collider only claims a cell if it reaches further than this into it.",
         };
+        editCellsToggle = new CheckButton
+        {
+            Text = "Edit Cells",
+            TooltipText = "Click a cell of the selected Structure to edit it in the Structure Cells dock.",
+        };
+        editCellsToggle.Toggled += OnEditCellsToggled;
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, viewGridToggle);
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, snapToggle);
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, fillCellsButton);
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, toleranceBox);
+        AddControlToContainer(CustomControlContainer.SpatialEditorMenu, editCellsToggle);
         // A move records its undo step when it ends (a gizmo drag released, a keyboard move confirmed, an inspector
         // edit), so snapping then leaves the drag itself free.
         GetUndoRedo().HistoryChanged += OnHistoryChanged;
 
-        gridMaterial = new StandardMaterial3D
-        {
-            ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
-            Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
-            AlbedoColor = new Color(1f, 1f, 1f, 0.25f),
-        };
-        // Drawn through everything so a structure's cells show inside its model.
-        footprintMaterial = new StandardMaterial3D
-        {
-            ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
-            Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
-            NoDepthTest = true,
-            AlbedoColor = new Color(1f, 0.55f, 0.1f, 0.8f),
-        };
+        gridMaterial = OverlayMaterial(new Color(1f, 1f, 1f, 0.25f), false);
+        // The rest draw through everything so a structure's cells show inside its model.
+        footprintMaterial = OverlayMaterial(new Color(0.85f, 0.85f, 0.85f, 0.6f), true);
+        inputMaterial = OverlayMaterial(new Color(StructureArrow.InputColor, 0.45f), true);
+        outputMaterial = OverlayMaterial(new Color(StructureArrow.OutputColor, 0.45f), true);
+        selectedMaterial = OverlayMaterial(new Color(1f, 0.95f, 0.2f, 1f), true);
         lines = new ImmediateMesh();
         // Has no owner, so it's never saved into the scene it's drawn over.
         overlay = new MeshInstance3D
@@ -97,6 +121,9 @@ public partial class StructureToolsPlugin : EditorPlugin
             CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
             Visible = false,
         };
+
+        BuildCellDock();
+        AddDock(cellDock);
     }
 
     public override void _ExitTree()
@@ -106,11 +133,27 @@ public partial class StructureToolsPlugin : EditorPlugin
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, snapToggle);
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, fillCellsButton);
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, toleranceBox);
+        RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, editCellsToggle);
+        RemoveDock(cellDock);
         viewGridToggle.QueueFree();
         snapToggle.QueueFree();
         fillCellsButton.QueueFree();
         toleranceBox.QueueFree();
+        editCellsToggle.QueueFree();
+        cellDock.QueueFree();
         overlay.QueueFree();
+    }
+
+    static StandardMaterial3D OverlayMaterial(Color color, bool throughEverything)
+    {
+        return new StandardMaterial3D
+        {
+            ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+            Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+            CullMode = BaseMaterial3D.CullModeEnum.Disabled,
+            NoDepthTest = throughEverything,
+            AlbedoColor = color,
+        };
     }
 
     void OnHistoryChanged()
@@ -123,7 +166,12 @@ public partial class StructureToolsPlugin : EditorPlugin
 
     public override void _Process(double delta)
     {
-        if (viewGridToggle.ButtonPressed)
+        if (editTarget != null && !IsInstanceValid(editTarget))
+        {
+            editTarget = null;
+        }
+        RefreshCellDock();
+        if (viewGridToggle.ButtonPressed || editTarget != null)
         {
             DrawOverlay();
         }
@@ -158,6 +206,8 @@ public partial class StructureToolsPlugin : EditorPlugin
         }
     }
 
+    // ---- drawing ----
+
     void DrawOverlay()
     {
         Node root = EditorInterface.Singleton.GetEditedSceneRoot();
@@ -189,90 +239,169 @@ public partial class StructureToolsPlugin : EditorPlugin
         int cx = Mathf.RoundToInt(centre.X / size);
         int cz = Mathf.RoundToInt(centre.Z / size);
         float y = Mathf.Floor(centre.Y / size + 0.01f) * size;
-        lines.SurfaceBegin(Mesh.PrimitiveType.Lines, gridMaterial);
+        var grid = new List<Vector3>();
         for (int i = -GridRadius; i <= GridRadius; i++)
         {
-            lines.SurfaceAddVertex(new Vector3((cx + i) * size, y, (cz - GridRadius) * size));
-            lines.SurfaceAddVertex(new Vector3((cx + i) * size, y, (cz + GridRadius) * size));
-            lines.SurfaceAddVertex(new Vector3((cx - GridRadius) * size, y, (cz + i) * size));
-            lines.SurfaceAddVertex(new Vector3((cx + GridRadius) * size, y, (cz + i) * size));
+            grid.Add(new Vector3((cx + i) * size, y, (cz - GridRadius) * size));
+            grid.Add(new Vector3((cx + i) * size, y, (cz + GridRadius) * size));
+            grid.Add(new Vector3((cx - GridRadius) * size, y, (cz + i) * size));
+            grid.Add(new Vector3((cx + GridRadius) * size, y, (cz + i) * size));
         }
-        lines.SurfaceEnd();
+        AddSurface(Mesh.PrimitiveType.Lines, gridMaterial, grid);
 
         var structures = new List<Node3D>();
         CollectStructures(root, structures);
-        if (structures.Count == 0)
+        var footprints = new List<Vector3>();
+        var inputFaces = new List<Vector3>();
+        var outputFaces = new List<Vector3>();
+        foreach (Node3D structure in structures)
+        {
+            Godot.Collections.Dictionary<Vector3I, CellTags> cells = CellsOf(structure);
+            AddFootprint(structure.GlobalTransform, cells, footprints);
+            foreach (KeyValuePair<Vector3I, CellTags> cell in cells)
+            {
+                for (int face = 0; face < 6; face++)
+                {
+                    if ((cell.Value & Structure.InputTag(face)) != 0)
+                    {
+                        AddFace(structure.GlobalTransform, cell.Key, face, inputFaces);
+                    }
+                    if ((cell.Value & Structure.OutputTag(face)) != 0)
+                    {
+                        AddFace(structure.GlobalTransform, cell.Key, face, outputFaces);
+                    }
+                }
+            }
+        }
+        AddSurface(Mesh.PrimitiveType.Lines, footprintMaterial, footprints);
+        AddSurface(Mesh.PrimitiveType.Triangles, inputMaterial, inputFaces);
+        AddSurface(Mesh.PrimitiveType.Triangles, outputMaterial, outputFaces);
+
+        if (editTarget != null)
+        {
+            var selected = new List<Vector3>();
+            AddBox(editTarget.GlobalTransform, selectedCell, selected);
+            AddSurface(Mesh.PrimitiveType.Lines, selectedMaterial, selected);
+        }
+    }
+
+    // An ImmediateMesh refuses an empty surface, so one is only added when it has something in it.
+    void AddSurface(Mesh.PrimitiveType primitive, Material material, List<Vector3> vertices)
+    {
+        if (vertices.Count == 0)
         {
             return;
         }
-        lines.SurfaceBegin(Mesh.PrimitiveType.Lines, footprintMaterial);
-        foreach (Node3D structure in structures)
+        lines.SurfaceBegin(primitive, material);
+        foreach (Vector3 v in vertices)
         {
-            AddFootprint(structure);
+            lines.SurfaceAddVertex(v);
         }
         lines.SurfaceEnd();
     }
 
-    /// <summary>Outlines the outside faces of a structure's cells, divided into cells.</summary>
-    void AddFootprint(Node3D structure)
+    // Where cell (x, y, z) starts: it spans x..x+1, y..y+1 and z-1..z from the root (see Structure).
+    static Vector3 CellLow(Vector3I cell)
     {
-        Variant value = structure.Get(Structure.PropertyName.cellOffsets);
-        var cells = new HashSet<Vector3I>();
-        if (value.VariantType == Variant.Type.Nil)
-        {
-            cells.Add(Vector3I.Zero);
-        }
-        else
-        {
-            foreach (Vector3I cell in value.AsGodotArray<Vector3I>())
-            {
-                cells.Add(cell);
-            }
-        }
-        Transform3D transform = structure.GlobalTransform;
+        return new Vector3(cell.X, cell.Y, cell.Z - 1) * BuildGrid.CellSize;
+    }
+
+    /// <summary>Outlines the outside faces of a structure's cells, divided into cells.</summary>
+    static void AddFootprint(Transform3D transform, Godot.Collections.Dictionary<Vector3I, CellTags> cells, List<Vector3> output)
+    {
         float size = BuildGrid.CellSize;
-        foreach (Vector3I cell in cells)
+        foreach (Vector3I cell in cells.Keys)
         {
-            // Cell (x, y, z) spans x..x+1, y..y+1 and z-1..z from the root (see Structure).
-            Vector3 low = new Vector3(cell.X, cell.Y, cell.Z - 1) * size;
+            Vector3 low = CellLow(cell);
             for (int a = 0; a < 3; a++)
             {
                 for (int side = 0; side < 2; side++)
                 {
-                    Vector3I neighbour = cell + Axes[a] * (side * 2 - 1);
-                    if (cells.Contains(neighbour))
+                    if (cells.ContainsKey(cell + Axes[a] * (side * 2 - 1)))
                     {
                         continue;
                     }
                     // The face's four corners, going round, on the two axes other than a.
                     int u = (a + 1) % 3;
                     int v = (a + 2) % 3;
-                    Vector3 c0 = FaceCorner(low, size, a, side, u, 0, v, 0);
-                    Vector3 c1 = FaceCorner(low, size, a, side, u, 1, v, 0);
-                    Vector3 c2 = FaceCorner(low, size, a, side, u, 1, v, 1);
-                    Vector3 c3 = FaceCorner(low, size, a, side, u, 0, v, 1);
-                    AddLine(transform * c0, transform * c1);
-                    AddLine(transform * c1, transform * c2);
-                    AddLine(transform * c2, transform * c3);
-                    AddLine(transform * c3, transform * c0);
+                    Vector3 c0 = low;
+                    c0[a] += side * size;
+                    Vector3 c1 = c0;
+                    c1[u] += size;
+                    Vector3 c2 = c1;
+                    c2[v] += size;
+                    Vector3 c3 = c0;
+                    c3[v] += size;
+                    output.Add(transform * c0);
+                    output.Add(transform * c1);
+                    output.Add(transform * c1);
+                    output.Add(transform * c2);
+                    output.Add(transform * c2);
+                    output.Add(transform * c3);
+                    output.Add(transform * c3);
+                    output.Add(transform * c0);
                 }
             }
         }
     }
 
-    static Vector3 FaceCorner(Vector3 low, float size, int a, int side, int u, int uStep, int v, int vStep)
+    /// <summary>A filled square on one face of a cell (in <see cref="Structure.FaceDirections"/> order), as two triangles.</summary>
+    static void AddFace(Transform3D transform, Vector3I cell, int face, List<Vector3> output)
     {
-        Vector3 p = low;
-        p[a] += side * size;
-        p[u] += uStep * size;
-        p[v] += vStep * size;
-        return p;
+        float size = BuildGrid.CellSize;
+        Vector3I normal = Structure.FaceDirections[face];
+        int a = 0;
+        if (normal.Y != 0) a = 1;
+        if (normal.Z != 0) a = 2;
+        int u = (a + 1) % 3;
+        int v = (a + 2) % 3;
+        Vector3 c0 = CellLow(cell);
+        if (normal[a] > 0)
+        {
+            c0[a] += size;
+        }
+        c0[u] += Inset;
+        c0[v] += Inset;
+        Vector3 c1 = c0;
+        c1[u] += size - 2 * Inset;
+        Vector3 c2 = c1;
+        c2[v] += size - 2 * Inset;
+        Vector3 c3 = c0;
+        c3[v] += size - 2 * Inset;
+        output.Add(transform * c0);
+        output.Add(transform * c1);
+        output.Add(transform * c2);
+        output.Add(transform * c0);
+        output.Add(transform * c2);
+        output.Add(transform * c3);
     }
 
-    void AddLine(Vector3 from, Vector3 to)
+    /// <summary>The twelve edges of a box a little inside a cell.</summary>
+    static void AddBox(Transform3D transform, Vector3I cell, List<Vector3> output)
     {
-        lines.SurfaceAddVertex(from);
-        lines.SurfaceAddVertex(to);
+        Vector3 low = CellLow(cell) + Vector3.One * Inset;
+        Vector3 high = CellLow(cell) + Vector3.One * (BuildGrid.CellSize - Inset);
+        // The eight corners: bit 0 picks high x, bit 1 high y, bit 2 high z. Edges join corners that differ in one bit.
+        Vector3[] corners = new Vector3[8];
+        for (int i = 0; i < 8; i++)
+        {
+            Vector3 c = low;
+            if ((i & 1) != 0) c.X = high.X;
+            if ((i & 2) != 0) c.Y = high.Y;
+            if ((i & 4) != 0) c.Z = high.Z;
+            corners[i] = transform * c;
+        }
+        for (int i = 0; i < 8; i++)
+        {
+            for (int bit = 1; bit < 8; bit *= 2)
+            {
+                if ((i & bit) == 0)
+                {
+                    output.Add(corners[i]);
+                    output.Add(corners[i | bit]);
+                }
+            }
+        }
     }
 
     static void CollectStructures(Node node, List<Node3D> structures)
@@ -286,6 +415,219 @@ public partial class StructureToolsPlugin : EditorPlugin
             CollectStructures(child, structures);
         }
     }
+
+    // ---- Edit Cells ----
+
+    /// <summary>A structure's cells as the placeholder holds them; just the anchor when it has never been set.</summary>
+    static Godot.Collections.Dictionary<Vector3I, CellTags> CellsOf(Node structure)
+    {
+        Variant value = structure.Get(Structure.PropertyName.cells);
+        if (value.VariantType != Variant.Type.Dictionary)
+        {
+            return new() { { Vector3I.Zero, CellTags.None } };
+        }
+        return value.AsGodotDictionary<Vector3I, CellTags>();
+    }
+
+    void BuildCellDock()
+    {
+        cellDock = new EditorDock { Title = "Structure Cells", DefaultSlot = EditorDock.DockSlot.RightUl };
+        var column = new VBoxContainer();
+        cellDock.AddChild(column);
+        cellLabel = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart };
+        column.AddChild(cellLabel);
+
+        inStructureBox = new CheckBox { Text = "In structure", TooltipText = "Whether this cell is one of the structure's cells. The last one can't be removed." };
+        inStructureBox.Toggled += SetInStructure;
+        column.AddChild(inStructureBox);
+
+        // Faces down the side, inputs and outputs across.
+        var faces = new GridContainer { Columns = 3 };
+        faces.AddChild(new Label());
+        faces.AddChild(new Label { Text = "In" });
+        faces.AddChild(new Label { Text = "Out" });
+        for (int face = 0; face < 6; face++)
+        {
+            int f = face;
+            faces.AddChild(new Label { Text = FaceNames[face] });
+            inputBoxes[face] = new CheckBox { TooltipText = $"Items go in through this cell's {FaceNames[face].ToLower()} face." };
+            inputBoxes[face].Toggled += on => SetTag(Structure.InputTag(f), on);
+            faces.AddChild(inputBoxes[face]);
+            outputBoxes[face] = new CheckBox { TooltipText = $"Items come out through this cell's {FaceNames[face].ToLower()} face." };
+            outputBoxes[face].Toggled += on => SetTag(Structure.OutputTag(f), on);
+            faces.AddChild(outputBoxes[face]);
+        }
+        column.AddChild(faces);
+
+        column.AddChild(new Label { Text = "Select neighbour" });
+        var steps = new GridContainer { Columns = 2 };
+        for (int face = 0; face < 6; face++)
+        {
+            Vector3I direction = Structure.FaceDirections[face];
+            var button = new Button { Text = $"{FaceNames[face]} {direction}" };
+            button.Pressed += () => selectedCell += direction;
+            steps.AddChild(button);
+            stepButtons.Add(button);
+        }
+        column.AddChild(steps);
+    }
+
+    // Shows the selected cell's state, so undo and edits from the inspector show up too.
+    void RefreshCellDock()
+    {
+        bool editing = editTarget != null;
+        Godot.Collections.Dictionary<Vector3I, CellTags> cells = null;
+        CellTags tags = CellTags.None;
+        bool inStructure = false;
+        if (editing)
+        {
+            cells = CellsOf(editTarget);
+            inStructure = cells.TryGetValue(selectedCell, out tags);
+            cellLabel.Text = $"{editTarget.Name}: cell {selectedCell}";
+        }
+        else
+        {
+            cellLabel.Text = "Turn on Edit Cells (3D toolbar) and select a Structure, then click one of its cells.";
+        }
+        inStructureBox.SetPressedNoSignal(inStructure);
+        // A structure needs at least one cell.
+        inStructureBox.Disabled = !editing || (inStructure && cells.Count == 1);
+        for (int face = 0; face < 6; face++)
+        {
+            inputBoxes[face].SetPressedNoSignal((tags & Structure.InputTag(face)) != 0);
+            outputBoxes[face].SetPressedNoSignal((tags & Structure.OutputTag(face)) != 0);
+            inputBoxes[face].Disabled = !editing;
+            outputBoxes[face].Disabled = !editing;
+        }
+        foreach (Button button in stepButtons)
+        {
+            button.Disabled = !editing;
+        }
+    }
+
+    void SetInStructure(bool on)
+    {
+        if (editTarget == null)
+        {
+            return;
+        }
+        Godot.Collections.Dictionary<Vector3I, CellTags> cells = CellsOf(editTarget).Duplicate();
+        if (!on && cells.Count == 1)
+        {
+            return;
+        }
+        if (on)
+        {
+            cells.TryAdd(selectedCell, CellTags.None);
+        }
+        else
+        {
+            cells.Remove(selectedCell);
+        }
+        CommitCells(cells, "Set structure cell");
+    }
+
+    // Tagging a face of a cell that isn't in the structure adds it.
+    void SetTag(CellTags tag, bool on)
+    {
+        if (editTarget == null)
+        {
+            return;
+        }
+        Godot.Collections.Dictionary<Vector3I, CellTags> cells = CellsOf(editTarget).Duplicate();
+        cells.TryGetValue(selectedCell, out CellTags tags);
+        if (on)
+        {
+            tags |= tag;
+        }
+        else
+        {
+            tags &= ~tag;
+        }
+        cells[selectedCell] = tags;
+        CommitCells(cells, "Tag structure cell face");
+    }
+
+    void CommitCells(Godot.Collections.Dictionary<Vector3I, CellTags> cells, string actionName)
+    {
+        EditorUndoRedoManager undo = GetUndoRedo();
+        undo.CreateAction(actionName);
+        undo.AddDoProperty(editTarget, Structure.PropertyName.cells, cells);
+        undo.AddUndoProperty(editTarget, Structure.PropertyName.cells, editTarget.Get(Structure.PropertyName.cells));
+        undo.CommitAction();
+    }
+
+    // The editor only asks which plugin handles a node when the selection changes, so re-select to start or stop.
+    void OnEditCellsToggled(bool on)
+    {
+        EditorSelection selection = EditorInterface.Singleton.GetSelection();
+        var nodes = new List<Node>(selection.GetSelectedNodes());
+        Node root = EditorInterface.Singleton.GetEditedSceneRoot();
+        if (on && nodes.Count == 0 && root != null && IsStructure(root))
+        {
+            nodes.Add(root);
+        }
+        if (!on)
+        {
+            editTarget = null;
+        }
+        selection.Clear();
+        foreach (Node node in nodes)
+        {
+            selection.AddNode(node);
+        }
+    }
+
+    public override bool _Handles(GodotObject @object)
+    {
+        return editCellsToggle.ButtonPressed && @object is Node3D node && IsStructure(node);
+    }
+
+    public override void _Edit(GodotObject @object)
+    {
+        Node3D target = @object as Node3D;
+        if (target != editTarget)
+        {
+            selectedCell = Vector3I.Zero;
+        }
+        editTarget = target;
+    }
+
+    public override void _MakeVisible(bool visible)
+    {
+        if (!visible)
+        {
+            editTarget = null;
+        }
+    }
+
+    // A left click selects the nearest of the structure's cells under the cursor, or the anchor if it hits none.
+    public override int _Forward3DGuiInput(Camera3D viewportCamera, InputEvent @event)
+    {
+        if (editTarget == null || @event is not InputEventMouseButton click || click.ButtonIndex != MouseButton.Left || !click.Pressed)
+        {
+            return (int)AfterGuiInput.Pass;
+        }
+        Transform3D toLocal = editTarget.GlobalTransform.AffineInverse();
+        Vector3 from = toLocal * viewportCamera.ProjectRayOrigin(click.Position);
+        Vector3 direction = toLocal.Basis * viewportCamera.ProjectRayNormal(click.Position);
+        selectedCell = Vector3I.Zero;
+        float nearest = float.MaxValue;
+        foreach (Vector3I cell in CellsOf(editTarget).Keys)
+        {
+            var box = new Aabb(CellLow(cell), Vector3.One * BuildGrid.CellSize);
+            // Of the cells the ray passes through, the one whose centre is nearest the camera.
+            float distance = from.DistanceTo(box.GetCenter());
+            if (distance < nearest && box.IntersectsSegment(from, from + direction * 10000f))
+            {
+                nearest = distance;
+                selectedCell = cell;
+            }
+        }
+        return (int)AfterGuiInput.Stop;
+    }
+
+    // ---- Fill Cells ----
 
     void FillCells()
     {
@@ -311,28 +653,34 @@ public partial class StructureToolsPlugin : EditorPlugin
         }
 
         EditorUndoRedoManager undo = GetUndoRedo();
-        undo.CreateAction("Fill Structure cellOffsets");
+        undo.CreateAction("Fill Structure cells");
         foreach (Node3D structure in targets)
         {
-            var cells = new HashSet<Vector3I>();
-            cells.Add(Vector3I.Zero); // the anchor cell always counts
-            CollectColliderCells(structure, structure.GlobalTransform.AffineInverse(), tolerance, cells);
+            var found = new HashSet<Vector3I>();
+            CollectColliderCells(structure, structure.GlobalTransform.AffineInverse(), tolerance, found);
+            if (found.Count == 0)
+            {
+                GD.PushWarning($"Fill Cells: {structure.Name} has no solid colliders; its cells are left as they are.");
+                continue;
+            }
 
-            // Stable order: bottom layer first, back to front, left to right.
-            var sorted = new List<Vector3I>(cells);
+            // Stable order: bottom layer first, back to front, left to right. Cells that stay keep their tags.
+            var sorted = new List<Vector3I>(found);
             sorted.Sort(CompareCells);
-            var offsets = new Godot.Collections.Array<Vector3I>();
+            Godot.Collections.Dictionary<Vector3I, CellTags> old = CellsOf(structure);
+            var cells = new Godot.Collections.Dictionary<Vector3I, CellTags>();
             foreach (Vector3I cell in sorted)
             {
-                offsets.Add(cell);
+                old.TryGetValue(cell, out CellTags tags);
+                cells[cell] = tags;
                 if (cell.X < 0 || cell.Y < 0 || cell.Z > 0)
                 {
                     GD.PushWarning($"Fill Cells: {structure.Name} has a collider in cell {cell}, outside the +X +Y -Z frame (see Structure).");
                 }
             }
-            undo.AddDoProperty(structure, Structure.PropertyName.cellOffsets, offsets);
-            undo.AddUndoProperty(structure, Structure.PropertyName.cellOffsets, structure.Get(Structure.PropertyName.cellOffsets));
-            GD.Print($"Fill Cells: {structure.Name} now claims {offsets.Count} cell(s).");
+            undo.AddDoProperty(structure, Structure.PropertyName.cells, cells);
+            undo.AddUndoProperty(structure, Structure.PropertyName.cells, structure.Get(Structure.PropertyName.cells));
+            GD.Print($"Fill Cells: {structure.Name} now has {cells.Count} cell(s).");
         }
         undo.CommitAction();
     }

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://kntxrimjqyhh"]
 
-[ext_resource type="Script" uid="uid://b10te24frnknc" path="res://game/scripts/structures/Structure.cs" id="1_r"]
+[ext_resource type="Script" uid="uid://c8jn3gvcakhgp" path="res://game/scripts/structures/logistics/conveyors/Conveyor.cs" id="1_r"]
 [ext_resource type="PackedScene" uid="uid://c0sgkso4dld8d" path="res://game/assets/models/conveyors/conveyor_turn_left.glb" id="2_r"]
 [ext_resource type="Script" uid="uid://bv13olg4g30nl" path="res://game/scripts/structures/StructureArrow.cs" id="3_pktch"]
 
@@ -9,8 +9,14 @@ body_type = 0
 box_size = Vector3(0, 0, 0)
 transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 0, 0)
 script = ExtResource("1_r")
-cellOffsets = Array[Vector3i]([Vector3i(0, 0, -1), Vector3i(1, 0, -1), Vector3i(0, 0, 0), Vector3i(1, 0, 0)])
+cells = Dictionary[Vector3i, int]({
+Vector3i(0, 0, -1): 68,
+Vector3i(1, 0, -1): 64,
+Vector3i(0, 0, 0): 4,
+Vector3i(1, 0, 0): 0
+})
 blueprintItemID = "blueprint_conveyor"
+shape = 1
 
 [node name="Model" parent="." unique_id=813788857 instance=ExtResource("2_r")]
 
@@ -20,7 +26,6 @@ box_size = Vector3(1.68, 0.1, 0.98605)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
 user_material_id = 5
-enabled = false
 transform = Transform3D(0.25882, 0, -0.96593, 0, 1, 0, 0.96593, 0, 0.25882, 0.25882, 0.1, -1.03407)
 
 [node name="Floor1" type="Box3DBody" parent="." unique_id=337974952]
@@ -29,7 +34,6 @@ box_size = Vector3(1.68, 0.1, 0.98605)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
 user_material_id = 5
-enabled = false
 transform = Transform3D(0.70711, 0, -0.70711, 0, 1, 0, 0.70711, 0, 0.70711, 0.70711, 0.1, -1.29289)
 
 [node name="Floor2" type="Box3DBody" parent="." unique_id=334643199]
@@ -38,7 +42,6 @@ box_size = Vector3(1.68, 0.1, 0.98605)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
 user_material_id = 5
-enabled = false
 transform = Transform3D(0.96593, 0, -0.25882, 0, 1, 0, 0.25882, 0, 0.96593, 0.96593, 0.1, -1.74118)
 
 [node name="WallOuter0" type="Box3DCollisionShape" parent="." unique_id=1107121708]

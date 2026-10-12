@@ -13,8 +13,10 @@ public partial interface IOMachine
     
     public bool isOperating();
 
+    public float getSpeedMultiplier();
+
+    public void setSpeedMultiplier(float multiplier);
 
 
-    
 }
 

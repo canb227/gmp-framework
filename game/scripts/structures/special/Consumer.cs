@@ -18,6 +18,8 @@ public partial class Consumer : Structure, IOMachine
     public float processTime = 1.0f;
     public float processTimeRemaining = 0.0f;
 
+    private float speedMultiplier = 1.0f;
+
     public override void _PhysicsProcess(double delta)
     {
         if (isOperating())
@@ -79,6 +81,14 @@ public partial class Consumer : Structure, IOMachine
         return null;
     }
 
+    public float getSpeedMultiplier()
+    {
+        return speedMultiplier;
+    }
 
+    public void setSpeedMultiplier(float multiplier)
+    {
+        speedMultiplier = multiplier;
+    }
 }
 

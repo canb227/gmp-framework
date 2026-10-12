@@ -7,7 +7,24 @@
 body_type = 0
 script = ExtResource("1_ucbhb")
 inputVolume = NodePath("Trigger")
-cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(2, 0, 0), Vector3i(3, 0, 0), Vector3i(0, 0, -1), Vector3i(1, 0, -1), Vector3i(2, 0, -1), Vector3i(3, 0, -1), Vector3i(0, 0, -2), Vector3i(1, 0, -2), Vector3i(2, 0, -2), Vector3i(3, 0, -2), Vector3i(0, 0, -3), Vector3i(1, 0, -3), Vector3i(2, 0, -3), Vector3i(3, 0, -3)])
+cells = Dictionary[Vector3i, int]({
+Vector3i(0, 0, 0): 0,
+Vector3i(1, 0, 0): 0,
+Vector3i(2, 0, 0): 0,
+Vector3i(3, 0, 0): 0,
+Vector3i(0, 0, -1): 0,
+Vector3i(1, 0, -1): 0,
+Vector3i(2, 0, -1): 0,
+Vector3i(3, 0, -1): 0,
+Vector3i(0, 0, -2): 0,
+Vector3i(1, 0, -2): 0,
+Vector3i(2, 0, -2): 0,
+Vector3i(3, 0, -2): 0,
+Vector3i(0, 0, -3): 0,
+Vector3i(1, 0, -3): 0,
+Vector3i(2, 0, -3): 0,
+Vector3i(3, 0, -3): 0
+})
 interactable = false
 occupiedCells = Array[Vector3i]([])
 
