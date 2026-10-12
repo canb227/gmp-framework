@@ -54,9 +54,11 @@ public partial class StructureToolsPlugin : EditorPlugin
     EditorDock cellDock;
     Label cellLabel;
     CheckBox inStructureBox;
-    readonly CheckBox[] inputBoxes = new CheckBox[6];
-    readonly CheckBox[] outputBoxes = new CheckBox[6];
-    readonly List<Button> stepButtons = new();
+    // Godot arrays rather than C# ones: rebuilding the C# project reloads this script and keeps only fields Godot can
+    // store, without running _EnterTree again.
+    Godot.Collections.Array<CheckBox> inputBoxes = new();
+    Godot.Collections.Array<CheckBox> outputBoxes = new();
+    Godot.Collections.Array<Button> stepButtons = new();
 
     /// <summary>The structure Edit Cells works on (the selected one), or null.</summary>
     Node3D editTarget;
@@ -446,16 +448,19 @@ public partial class StructureToolsPlugin : EditorPlugin
         faces.AddChild(new Label());
         faces.AddChild(new Label { Text = "In" });
         faces.AddChild(new Label { Text = "Out" });
+        // The lambdas capture only this and an int, which Godot can carry over when it reloads the script.
         for (int face = 0; face < 6; face++)
         {
             int f = face;
             faces.AddChild(new Label { Text = FaceNames[face] });
-            inputBoxes[face] = new CheckBox { TooltipText = $"Items go in through this cell's {FaceNames[face].ToLower()} face." };
-            inputBoxes[face].Toggled += on => SetTag(Structure.InputTag(f), on);
-            faces.AddChild(inputBoxes[face]);
-            outputBoxes[face] = new CheckBox { TooltipText = $"Items come out through this cell's {FaceNames[face].ToLower()} face." };
-            outputBoxes[face].Toggled += on => SetTag(Structure.OutputTag(f), on);
-            faces.AddChild(outputBoxes[face]);
+            var input = new CheckBox { TooltipText = $"Items go in through this cell's {FaceNames[face].ToLower()} face." };
+            input.Toggled += on => SetTag(Structure.InputTag(f), on);
+            faces.AddChild(input);
+            inputBoxes.Add(input);
+            var output = new CheckBox { TooltipText = $"Items come out through this cell's {FaceNames[face].ToLower()} face." };
+            output.Toggled += on => SetTag(Structure.OutputTag(f), on);
+            faces.AddChild(output);
+            outputBoxes.Add(output);
         }
         column.AddChild(faces);
 
@@ -463,9 +468,9 @@ public partial class StructureToolsPlugin : EditorPlugin
         var steps = new GridContainer { Columns = 2 };
         for (int face = 0; face < 6; face++)
         {
-            Vector3I direction = Structure.FaceDirections[face];
-            var button = new Button { Text = $"{FaceNames[face]} {direction}" };
-            button.Pressed += () => selectedCell += direction;
+            int f = face;
+            var button = new Button { Text = $"{FaceNames[face]} {Structure.FaceDirections[face]}" };
+            button.Pressed += () => selectedCell += Structure.FaceDirections[f];
             steps.AddChild(button);
             stepButtons.Add(button);
         }
@@ -492,7 +497,7 @@ public partial class StructureToolsPlugin : EditorPlugin
         inStructureBox.SetPressedNoSignal(inStructure);
         // A structure needs at least one cell.
         inStructureBox.Disabled = !editing || (inStructure && cells.Count == 1);
-        for (int face = 0; face < 6; face++)
+        for (int face = 0; face < inputBoxes.Count && face < outputBoxes.Count; face++)
         {
             inputBoxes[face].SetPressedNoSignal((tags & Structure.InputTag(face)) != 0);
             outputBoxes[face].SetPressedNoSignal((tags & Structure.OutputTag(face)) != 0);
