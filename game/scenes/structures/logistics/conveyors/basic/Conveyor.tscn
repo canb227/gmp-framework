@@ -4,18 +4,18 @@
 [ext_resource type="PackedScene" uid="uid://btl173g422b6k" path="res://game/assets/models/conveyors/conveyor_straight.glb" id="2_r"]
 [ext_resource type="Script" uid="uid://bv13olg4g30nl" path="res://game/scripts/structures/StructureArrow.cs" id="3_e26cu"]
 
-[node name="Conveyor" type="Box3DBody" unique_id=1852099020]
+[node name="Conveyor" type="Box3DBody" unique_id=1852099020 node_paths=PackedStringArray("beltSurfaces")]
 body_type = 0
 box_size = Vector3(0, 0, 0)
 script = ExtResource("1_r")
+beltSurfaces = []
 cells = Dictionary[Vector3i, int]({
 Vector3i(0, 0, -1): 64,
-Vector3i(1, 0, -1): 64,
 Vector3i(0, 0, 0): 2,
+Vector3i(1, 0, -1): 64,
 Vector3i(1, 0, 0): 2
 })
 blueprintItemID = "blueprint_conveyor"
-shape = 0
 
 [node name="Model" parent="." unique_id=2037822336 instance=ExtResource("2_r")]
 
@@ -38,6 +38,15 @@ friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
 user_material_id = 5
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.1, -1)
+
+[node name="BeltLip" type="Box3DCollisionShape" parent="." unique_id=1417958707]
+shape_type = 2
+capsule_radius = 0.05
+capsule_height = 1.58
+friction = 0.8
+user_material_id = 5
+tangent_velocity = Vector3(0, 0, -2)
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 1, 0.104, 0)
 
 [node name="StructureArrow" type="Node3D" parent="." unique_id=909107365]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.96666133, 0.71025324, -0.41426277)

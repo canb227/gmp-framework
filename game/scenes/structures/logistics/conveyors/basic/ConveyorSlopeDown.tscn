@@ -71,3 +71,30 @@ transform = Transform3D(1, 0, 0, 0, 0.8354547, 0.5495593, 0, -0.5495593, 0.83545
 script = ExtResource("3_mxnqd")
 length = 1.5
 metadata/_custom_type_script = "uid://bv13olg4g30nl"
+
+[node name="BeltInLip" type="Box3DCollisionShape" parent="."]
+shape_type = 2
+capsule_radius = 0.05
+capsule_height = 1.58
+friction = 1.2
+user_material_id = 5
+tangent_velocity = Vector3(0, 0, -2)
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 1, 2.104, 0)
+
+[node name="BeltInclineLip" type="Box3DCollisionShape" parent="."]
+shape_type = 2
+capsule_radius = 0.05
+capsule_height = 1.58
+friction = 1.2
+user_material_id = 5
+tangent_velocity = Vector3(0, -0.99884, -1.73272)
+transform = Transform3D(0, 1, 0, -0.86636, 0, 0.49942, 0.49942, 0, 0.86636, 1, 2.11014, -0.24405)
+
+[node name="BeltOutLip" type="Box3DCollisionShape" parent="."]
+shape_type = 2
+capsule_radius = 0.05
+capsule_height = 1.58
+friction = 1.2
+user_material_id = 5
+tangent_velocity = Vector3(0, 0, -2)
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 1, 0.104, -3.73648)

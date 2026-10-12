@@ -12,8 +12,8 @@ beltSurfaces = []
 shape = 2
 cells = Dictionary[Vector3i, int]({
 Vector3i(0, 0, -1): 64,
-Vector3i(1, 0, -1): 72,
 Vector3i(0, 0, 0): 0,
+Vector3i(1, 0, -1): 72,
 Vector3i(1, 0, 0): 8
 })
 blueprintItemID = "blueprint_conveyor"
@@ -37,12 +37,6 @@ box_size = Vector3(0.11, 0.4, 1.045)
 friction = 0.1
 user_material_id = 3
 transform = Transform3D(0.96593, 0, 0.25882, 0, 1, 0, -0.25882, 0, 0.96593, 0.16957, 0.2, -1.50954)
-
-[node name="Post" type="Box3DCollisionShape" parent="." unique_id=386200157]
-box_size = Vector3(0.16, 0.4, 0.16)
-friction = 0.1
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.92, 0.2, -1.92)
 
 [node name="Floor0" type="Box3DBody" parent="." unique_id=723475997]
 body_type = 0
@@ -73,3 +67,40 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.73
 script = ExtResource("3_1v8e7")
 shape = 1
 metadata/_custom_type_script = "uid://bv13olg4g30nl"
+
+[node name="Floor0Lip" type="Box3DCollisionShape" parent="." unique_id=1096796782]
+shape_type = 2
+capsule_radius = 0.05
+capsule_height = 1.58
+friction = 0.8
+tangent_velocity = Vector3(-1.93186, 0, -0.51764)
+user_material_id = 5
+transform = Transform3D(0, 0.25882, 0.96593, -1, 0, 0, 0, -0.96593, 0.25882, 2.2174, 0.104, -0.90647)
+
+[node name="Floor1Lip" type="Box3DCollisionShape" parent="." unique_id=1435793311]
+shape_type = 2
+capsule_radius = 0.05
+capsule_height = 1.58
+friction = 0.8
+tangent_velocity = Vector3(-1.41422, 0, -1.41422)
+user_material_id = 5
+transform = Transform3D(0, 0.70711, 0.70711, -1, 0, 0, 0, -0.70711, 0.70711, 1.64151, 0.104, -0.94427)
+
+[node name="Floor2Lip" type="Box3DCollisionShape" parent="." unique_id=263807629]
+shape_type = 2
+capsule_radius = 0.05
+capsule_height = 1.58
+friction = 0.8
+tangent_velocity = Vector3(-0.51764, 0, -1.93186)
+user_material_id = 5
+transform = Transform3D(0, 0.96593, 0.25882, -1, 0, 0, 0, -0.25882, 0.96593, 1.16167, 0.104, -1.26496)
+
+[node name="Post" type="Box3DCollisionShape" parent="." unique_id=1058721608]
+shape_type = 3
+box_size = Vector3(0.16, 0.4, 0.16)
+sphere_radius = 0.01
+capsule_radius = 0.08
+capsule_height = 0.4
+friction = 0.1
+user_material_id = 3
+transform = Transform3D(0.99999934, 0, 0, 0, 1, 0, 0, 0, 0.99999934, 1.9497774, 0.26764405, -1.9450451)
