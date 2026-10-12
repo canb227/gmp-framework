@@ -2,7 +2,15 @@
 
 [ext_resource type="PackedScene" uid="uid://d0gf4pr3y05me" path="res://game/assets/models/machines/processing/smelter.blend" id="1_3gl1m"]
 [ext_resource type="Script" uid="uid://bn4s85elvvobt" path="res://game/scripts/structures/processing/BasicSmelter.cs" id="2_kr2my"]
-[ext_resource type="Material" uid="uid://bosg7vc1hulq8" path="res://game/assets/materials/temp_metal.tres" id="3_kr2my"]
+[ext_resource type="Material" uid="uid://1h74niprlvyn" path="res://game/assets/materials/metal_rusty.tres" id="3_kr2my"]
+[ext_resource type="Texture2D" uid="uid://btqd20cdixqt8" path="res://game/assets/textures/furnace_vent.jpg" id="4_gjrb0"]
+[ext_resource type="Texture2D" uid="uid://8ao7sytkjw8q" path="res://game/assets/textures/exhaust_fan.png" id="4_ovoro"]
+[ext_resource type="Texture2D" uid="uid://cff3ql7psjvfh" path="res://game/assets/textures/door_temp.png" id="5_bj1j1"]
+[ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="6_1hc2w"]
+[ext_resource type="Material" uid="uid://bosg7vc1hulq8" path="res://game/assets/materials/temp_metal.tres" id="6_2mw6v"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_32ecn"]
+albedo_texture = ExtResource("4_gjrb0")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_86s7u"]
 resource_name = "Material.001"
@@ -42,39 +50,10 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_hmf5u")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2ggr0"]
-
-[sub_resource type="ArrayMesh" id="ArrayMesh_nic6d"]
-_surfaces = [{
-"aabb": AABB(-0.00022585719, -4.038659e-07, -0.74031764, 1.2383186, 0.21174204, 1.4805093),
-"format": 34896613377,
-"index_count": 60,
-"index_data": PackedByteArray("CAABAAkAAwAJAAEAAAADAAEACAAAAAEAAAAFAAMABgAIAAkAAAAKAAUAAAAIAAoABQALAAMAAwALAAkABQAKAAsACAAGAAcACAAHAAoABgAJAAIACwACAAkABwAGAAIACgAEAAsACgAHAAQACwAEAAIABwACAAQA"),
-"lods": [0.00037368992, PackedByteArray("AAABAAIAAwACAAEAAAADAAEAAwAEAAIAAAAFAAMABQAEAAMABgAAAAIABQAHAAQAAAAHAAUAAAAGAAcABwACAAQABwAGAAIA")],
-"primitive": 3,
-"uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 12,
-"vertex_data": PackedByteArray("AAAAAAAAAAAAAP//AAAAAAAA/////wAA/////wAAAAD///////8AAP//AAAAAAAAAAAAAP//AAD//wAA//8AAAAAAAD/fwAAAAD///9/AAD//wAA/38AAP//////fwAA")
-}]
-blend_shape_mode = 0
-
-[sub_resource type="ArrayMesh" id="ArrayMesh_bj1j1"]
-resource_name = "smelter_Cube_004"
-_surfaces = [{
-"aabb": AABB(-0.00022585719, -4.038659e-07, -0.74031764, 1.2383186, 0.21174204, 1.4805093),
-"attribute_data": PackedByteArray("/1//v/+f/7//n////1////9f/7//n/9//5//v/9f/3//X/8//58AAP+f/z//XwAA/x//f/8f/z//X/8//1//f/+f/3//3/8//9//f/+f/z//X/9//5//P/+f/3//X/8//1//3/+f/9//X/9f/5//X/8f/1//X/9f/5//X//f/18="),
-"format": 34896613399,
-"index_count": 60,
-"index_data": PackedByteArray("GAABABkAGAAAAAEAAwAYABkAAwAZAAIABAAFAAYABAAHAAUAGgAVABsAGgAXABUAFAAaABsAFAAbABYACAAJAAoACAALAAkAHAAOAB0AHAANAA4ADAAcAB0ADAAdAA8AHgARAB8AHgATABEAEAAeAB8AEAAfABIA"),
-"lods": [0.00037368992, PackedByteArray("AAABAAIAAwAAAAIABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAOAA8AEAARABIAEAATABEAFAAVABYAFAAXABUA")],
-"material": SubResource("StandardMaterial3D_2ggr0"),
-"primitive": 3,
-"uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 32,
-"vertex_data": PackedByteArray("AAAAAAAAVNUAAP//AABU1QAA/////1TVAAAAAP//VNUAAAAAAAD///////8AAP//AAD//wAA/////wAAAAD/////AAD///+/AAD//////7//////////vwAAAAD///+/AAAAAAAA/78AAAAA////v///AAD///+///8AAAAA/7//////AAD//wAA////////AAD//wAA////////////////AAAAAFTV////////VNX/////AABU1f//AAD//1TVAAAAAP9/VNUAAP///39U1f//AAD/f1TV//////9/VNUAAAAA/3//v///AAD/f/+///////9///8AAP///3///1TVVNVU1VTVVNVU1VTVVNX/v/+//7//v/+//7//v/+//////////////////////wAA/38AAP9/AAD/fwAA/3//f/+//3//v/9//7//f/+/qiqqKqoqqiqqKqoqqiqqKlTVVNVU1VTVqiqqKqoqqioAAP9/AAD/f/9//7//f/+/")
-}]
-blend_shape_mode = 0
-shadow_mesh = SubResource("ArrayMesh_nic6d")
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hlukt"]
+albedo_texture = ExtResource("5_bj1j1")
+uv1_scale = Vector3(1.79, 1.79, 1.79)
+uv1_offset = Vector3(0.46, 0, 0)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mvagm"]
 
@@ -109,6 +88,40 @@ _surfaces = [{
 }]
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_7m5d6")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2ggr0"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_nic6d"]
+_surfaces = [{
+"aabb": AABB(-0.00022585719, -4.038659e-07, -0.74031764, 1.2383186, 0.21174204, 1.4805093),
+"format": 34896613377,
+"index_count": 60,
+"index_data": PackedByteArray("CAABAAkAAwAJAAEAAAADAAEACAAAAAEAAAAFAAMABgAIAAkAAAAKAAUAAAAIAAoABQALAAMAAwALAAkABQAKAAsACAAGAAcACAAHAAoABgAJAAIACwACAAkABwAGAAIACgAEAAsACgAHAAQACwAEAAIABwACAAQA"),
+"lods": [0.00037368992, PackedByteArray("AAABAAIAAwACAAEAAAADAAEAAwAEAAIAAAAFAAMABQAEAAMABgAAAAIABQAHAAQAAAAHAAUAAAAGAAcABwACAAQABwAGAAIA")],
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 12,
+"vertex_data": PackedByteArray("AAAAAAAAAAAAAP//AAAAAAAA/////wAA/////wAAAAD///////8AAP//AAAAAAAAAAAAAP//AAD//wAA//8AAAAAAAD/fwAAAAD///9/AAD//wAA/38AAP//////fwAA")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_bj1j1"]
+resource_name = "smelter_Cube_004"
+_surfaces = [{
+"aabb": AABB(-0.00022585719, -4.038659e-07, -0.74031764, 1.2383186, 0.21174204, 1.4805093),
+"attribute_data": PackedByteArray("/1//v/+f/7//n////1////9f/7//n/9//5//v/9f/3//X/8//58AAP+f/z//XwAA/x//f/8f/z//X/8//1//f/+f/3//3/8//9//f/+f/z//X/9//5//P/+f/3//X/8//1//3/+f/9//X/9f/5//X/8f/1//X/9f/5//X//f/18="),
+"format": 34896613399,
+"index_count": 60,
+"index_data": PackedByteArray("GAABABkAGAAAAAEAAwAYABkAAwAZAAIABAAFAAYABAAHAAUAGgAVABsAGgAXABUAFAAaABsAFAAbABYACAAJAAoACAALAAkAHAAOAB0AHAANAA4ADAAcAB0ADAAdAA8AHgARAB8AHgATABEAEAAeAB8AEAAfABIA"),
+"lods": [0.00037368992, PackedByteArray("AAABAAIAAwAAAAIABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAOAA8AEAARABIAEAATABEAFAAVABYAFAAXABUA")],
+"material": SubResource("StandardMaterial3D_2ggr0"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 32,
+"vertex_data": PackedByteArray("AAAAAAAAVNUAAP//AABU1QAA/////1TVAAAAAP//VNUAAAAAAAD///////8AAP//AAD//wAA/////wAAAAD/////AAD///+/AAD//////7//////////vwAAAAD///+/AAAAAAAA/78AAAAA////v///AAD///+///8AAAAA/7//////AAD//wAA////////AAD//wAA////////////////AAAAAFTV////////VNX/////AABU1f//AAD//1TVAAAAAP9/VNUAAP///39U1f//AAD/f1TV//////9/VNUAAAAA/3//v///AAD/f/+///////9///8AAP///3///1TVVNVU1VTVVNVU1VTVVNX/v/+//7//v/+//7//v/+//////////////////////wAA/38AAP9/AAD/fwAA/3//f/+//3//v/9//7//f/+/qiqqKqoqqiqqKqoqqiqqKlTVVNVU1VTVqiqqKqoqqioAAP9/AAD/f/9//7//f/+/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_nic6d")
 
 [sub_resource type="Animation" id="Animation_jy6km"]
 length = 0.001
@@ -193,31 +206,58 @@ _data = {
 &"output_bar": SubResource("Animation_gjrb0")
 }
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yayki"]
+transparency = 1
+albedo_texture = ExtResource("4_ovoro")
+
 [node name="smelter" unique_id=484613544 instance=ExtResource("1_3gl1m")]
 script = ExtResource("2_kr2my")
-cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(2, 0, 0), Vector3i(3, 0, 0), Vector3i(4, 0, 0), Vector3i(5, 0, 0), Vector3i(6, 0, 0), Vector3i(7, 0, 0), Vector3i(0, 0, -1), Vector3i(1, 0, -1), Vector3i(2, 0, -1), Vector3i(3, 0, -1), Vector3i(4, 0, -1), Vector3i(5, 0, -1), Vector3i(6, 0, -1), Vector3i(7, 0, -1), Vector3i(0, 0, -2), Vector3i(1, 0, -2), Vector3i(2, 0, -2), Vector3i(3, 0, -2), Vector3i(4, 0, -2), Vector3i(5, 0, -2), Vector3i(6, 0, -2), Vector3i(7, 0, -2), Vector3i(0, 0, -3), Vector3i(1, 0, -3), Vector3i(2, 0, -3), Vector3i(3, 0, -3), Vector3i(4, 0, -3), Vector3i(5, 0, -3), Vector3i(6, 0, -3), Vector3i(7, 0, -3), Vector3i(0, 0, -4), Vector3i(1, 0, -4), Vector3i(2, 0, -4), Vector3i(3, 0, -4), Vector3i(4, 0, -4), Vector3i(5, 0, -4), Vector3i(6, 0, -4), Vector3i(7, 0, -4), Vector3i(0, 0, -5), Vector3i(1, 0, -5), Vector3i(2, 0, -5), Vector3i(3, 0, -5), Vector3i(4, 0, -5), Vector3i(5, 0, -5), Vector3i(6, 0, -5), Vector3i(7, 0, -5), Vector3i(0, 1, 0), Vector3i(1, 1, 0), Vector3i(2, 1, 0), Vector3i(3, 1, 0), Vector3i(4, 1, 0), Vector3i(5, 1, 0), Vector3i(6, 1, 0), Vector3i(7, 1, 0), Vector3i(0, 1, -1), Vector3i(1, 1, -1), Vector3i(2, 1, -1), Vector3i(3, 1, -1), Vector3i(4, 1, -1), Vector3i(5, 1, -1), Vector3i(6, 1, -1), Vector3i(7, 1, -1), Vector3i(0, 1, -2), Vector3i(1, 1, -2), Vector3i(2, 1, -2), Vector3i(3, 1, -2), Vector3i(4, 1, -2), Vector3i(5, 1, -2), Vector3i(6, 1, -2), Vector3i(7, 1, -2), Vector3i(0, 1, -3), Vector3i(1, 1, -3), Vector3i(2, 1, -3), Vector3i(3, 1, -3), Vector3i(4, 1, -3), Vector3i(5, 1, -3), Vector3i(6, 1, -3), Vector3i(7, 1, -3), Vector3i(0, 1, -4), Vector3i(1, 1, -4), Vector3i(2, 1, -4), Vector3i(3, 1, -4), Vector3i(4, 1, -4), Vector3i(5, 1, -4), Vector3i(6, 1, -4), Vector3i(7, 1, -4), Vector3i(0, 1, -5), Vector3i(1, 1, -5), Vector3i(2, 1, -5), Vector3i(3, 1, -5), Vector3i(4, 1, -5), Vector3i(5, 1, -5), Vector3i(6, 1, -5), Vector3i(7, 1, -5), Vector3i(0, 2, 0), Vector3i(1, 2, 0), Vector3i(2, 2, 0), Vector3i(3, 2, 0), Vector3i(4, 2, 0), Vector3i(5, 2, 0), Vector3i(6, 2, 0), Vector3i(7, 2, 0), Vector3i(0, 2, -1), Vector3i(1, 2, -1), Vector3i(2, 2, -1), Vector3i(3, 2, -1), Vector3i(4, 2, -1), Vector3i(5, 2, -1), Vector3i(6, 2, -1), Vector3i(7, 2, -1), Vector3i(0, 2, -2), Vector3i(1, 2, -2), Vector3i(2, 2, -2), Vector3i(3, 2, -2), Vector3i(4, 2, -2), Vector3i(5, 2, -2), Vector3i(6, 2, -2), Vector3i(7, 2, -2), Vector3i(0, 2, -3), Vector3i(1, 2, -3), Vector3i(2, 2, -3), Vector3i(3, 2, -3), Vector3i(4, 2, -3), Vector3i(5, 2, -3), Vector3i(6, 2, -3), Vector3i(7, 2, -3), Vector3i(0, 2, -4), Vector3i(1, 2, -4), Vector3i(2, 2, -4), Vector3i(3, 2, -4), Vector3i(4, 2, -4), Vector3i(5, 2, -4), Vector3i(6, 2, -4), Vector3i(7, 2, -4), Vector3i(0, 2, -5), Vector3i(1, 2, -5), Vector3i(2, 2, -5), Vector3i(3, 2, -5), Vector3i(4, 2, -5), Vector3i(5, 2, -5), Vector3i(6, 2, -5), Vector3i(7, 2, -5), Vector3i(0, 3, 0), Vector3i(1, 3, 0), Vector3i(2, 3, 0), Vector3i(3, 3, 0), Vector3i(4, 3, 0), Vector3i(5, 3, 0), Vector3i(6, 3, 0), Vector3i(7, 3, 0), Vector3i(0, 3, -1), Vector3i(1, 3, -1), Vector3i(2, 3, -1), Vector3i(3, 3, -1), Vector3i(4, 3, -1), Vector3i(5, 3, -1), Vector3i(6, 3, -1), Vector3i(7, 3, -1), Vector3i(0, 3, -2), Vector3i(1, 3, -2), Vector3i(2, 3, -2), Vector3i(3, 3, -2), Vector3i(4, 3, -2), Vector3i(5, 3, -2), Vector3i(6, 3, -2), Vector3i(7, 3, -2), Vector3i(0, 3, -3), Vector3i(1, 3, -3), Vector3i(2, 3, -3), Vector3i(3, 3, -3), Vector3i(4, 3, -3), Vector3i(5, 3, -3), Vector3i(6, 3, -3), Vector3i(7, 3, -3), Vector3i(0, 3, -4), Vector3i(1, 3, -4), Vector3i(2, 3, -4), Vector3i(3, 3, -4), Vector3i(4, 3, -4), Vector3i(5, 3, -4), Vector3i(6, 3, -4), Vector3i(7, 3, -4), Vector3i(0, 3, -5), Vector3i(1, 3, -5), Vector3i(2, 3, -5), Vector3i(3, 3, -5), Vector3i(4, 3, -5), Vector3i(5, 3, -5), Vector3i(6, 3, -5), Vector3i(7, 3, -5), Vector3i(0, 4, 0), Vector3i(1, 4, 0), Vector3i(2, 4, 0), Vector3i(3, 4, 0), Vector3i(4, 4, 0), Vector3i(5, 4, 0), Vector3i(6, 4, 0), Vector3i(7, 4, 0), Vector3i(0, 4, -1), Vector3i(1, 4, -1), Vector3i(2, 4, -1), Vector3i(3, 4, -1), Vector3i(4, 4, -1), Vector3i(5, 4, -1), Vector3i(6, 4, -1), Vector3i(7, 4, -1), Vector3i(0, 4, -2), Vector3i(1, 4, -2), Vector3i(2, 4, -2), Vector3i(3, 4, -2), Vector3i(4, 4, -2), Vector3i(5, 4, -2), Vector3i(6, 4, -2), Vector3i(7, 4, -2), Vector3i(0, 4, -3), Vector3i(1, 4, -3), Vector3i(2, 4, -3), Vector3i(3, 4, -3), Vector3i(4, 4, -3), Vector3i(5, 4, -3), Vector3i(6, 4, -3), Vector3i(7, 4, -3), Vector3i(0, 4, -4), Vector3i(1, 4, -4), Vector3i(2, 4, -4), Vector3i(3, 4, -4), Vector3i(4, 4, -4), Vector3i(5, 4, -4), Vector3i(6, 4, -4), Vector3i(7, 4, -4), Vector3i(0, 4, -5), Vector3i(1, 4, -5), Vector3i(2, 4, -5), Vector3i(3, 4, -5), Vector3i(4, 4, -5), Vector3i(5, 4, -5), Vector3i(6, 4, -5), Vector3i(7, 4, -5)])
-recipes = Dictionary[String, String]({
-"scrap_ball": "scrap_ingot"
-})
 
-[node name="Body" parent="." index="0" unique_id=76917323]
+[node name="Body" parent="." index="0" unique_id=1724899122]
 surface_material_override/0 = ExtResource("3_kr2my")
+surface_material_override/1 = SubResource("StandardMaterial3D_32ecn")
 
 [node name="BodyBox3D" type="Box3DBody" parent="Body" index="0" unique_id=1325558041]
 body_type = 0
 shape_type = 7
 collision_mesh = SubResource("ArrayMesh_gjrb0")
 
-[node name="MoldPlateBox3D" type="Box3DBody" parent="Mold_Plate" parent_id_path=PackedInt32Array(1430734775) index="0" unique_id=309522825]
-body_type = 1
-shape_type = 7
-collision_mesh = SubResource("ArrayMesh_bj1j1")
+[node name="Cube" parent="." index="1" unique_id=219294359]
+surface_material_override/0 = ExtResource("6_2mw6v")
 
-[node name="DoorBox3D" type="Box3DBody" parent="Door" parent_id_path=PackedInt32Array(1025083476) index="0" unique_id=374888485]
+[node name="Cylinder" parent="." index="2" unique_id=1929923142]
+surface_material_override/0 = ExtResource("6_1hc2w")
+
+[node name="Door" parent="." index="3" unique_id=91334227]
+transform = Transform3D(0.9999999, 0, 0, 0, 0.9999999, 0, 0, 0, 1, 2.5921988, 0.299758, -4.4629443e-05)
+surface_material_override/0 = SubResource("StandardMaterial3D_hlukt")
+
+[node name="DoorBox3D" type="Box3DBody" parent="Door" index="0" unique_id=374888485]
 body_type = 1
 shape_type = 7
 collision_mesh = SubResource("ArrayMesh_hlukt")
 tangent_velocity = Vector3(0, -2, 0)
 
+[node name="Mold_Plate" parent="." index="4" unique_id=1058775973]
+surface_material_override/0 = ExtResource("6_2mw6v")
+
+[node name="MoldPlateBox3D" type="Box3DBody" parent="Mold_Plate" index="0" unique_id=309522825]
+body_type = 1
+shape_type = 7
+collision_mesh = SubResource("ArrayMesh_bj1j1")
+
+[node name="Smelter_" parent="." index="5" unique_id=778854684]
+surface_material_override/0 = ExtResource("6_2mw6v")
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." index="6" unique_id=546729603]
 libraries/ = SubResource("AnimationLibrary_gjrb0")
+
+[node name="Spout" parent="." index="7" unique_id=581189637]
+surface_material_override/0 = ExtResource("6_2mw6v")
+
+[node name="Vent1" parent="." index="8" unique_id=93116725]
+transform = Transform3D(0.6516196, 0, 0, 0, 0.0036197326, 0.6465827, 0, -0.12988348, 0.018019661, 1.6032736, 3.9293602, 2.8910563)
+surface_material_override/0 = SubResource("StandardMaterial3D_yayki")
+
+[node name="Vent2" parent="." index="9" unique_id=1815145021]
+surface_material_override/0 = SubResource("StandardMaterial3D_yayki")
