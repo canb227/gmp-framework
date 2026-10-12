@@ -3,11 +3,11 @@
 [ext_resource type="Material" uid="uid://bxp2j5qppx4lp" path="res://game/assets/materials/tile_floor.tres" id="2_jhkrf"]
 [ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/PhysicalFactoryItem.cs" id="2_s0g2q"]
 [ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="3_5cgpr"]
-[ext_resource type="Texture2D" uid="uid://c06b1j8wdtii5" path="res://game/assets/textures/circuit_board.jpeg" id="3_d2mjd"]
+[ext_resource type="Texture2D" uid="uid://c06b1j8wdtii5" path="res://game/assets/textures/misc/circuit_board.jpeg" id="3_d2mjd"]
 [ext_resource type="PackedScene" uid="uid://1xxnu441im5p" path="res://game/scenes/entities/GoalScreen.tscn" id="3_yv5q0"]
 [ext_resource type="Material" uid="uid://ksxtasgoycp6" path="res://game/assets/materials/basic_wall.tres" id="4_5cgpr"]
 [ext_resource type="Material" uid="uid://chvh6g63q2ucw" path="res://game/assets/materials/glass.tres" id="5_euj40"]
-[ext_resource type="Texture2D" uid="uid://cff3ql7psjvfh" path="res://game/assets/textures/door_temp.png" id="7_fgl2k"]
+[ext_resource type="Texture2D" uid="uid://cff3ql7psjvfh" path="res://game/assets/textures/misc/door_temp.png" id="7_fgl2k"]
 [ext_resource type="PackedScene" uid="uid://dxv3vfkutt1i6" path="res://game/scenes/structures/special/store.tscn" id="7_ihq8k"]
 [ext_resource type="Material" uid="uid://bosg7vc1hulq8" path="res://game/assets/materials/temp_metal.tres" id="8_kuy7m"]
 [ext_resource type="PackedScene" uid="uid://bywvnipt62y5r" path="res://game/scenes/structures/ItemVoid.tscn" id="9_kuy7m"]
@@ -433,36 +433,9 @@ canBeInteractedWith = true
 transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, -0.045993805, 0, 0)
 mesh = SubResource("BoxMesh_pet1e")
 
-[node name="scrap_piece_barrel5" parent="WorldStuff/StartingScrap" unique_id=1636194786]
-transform = Transform3D(-0.7071068, 0, -0.7071067, 0, 1, 0, 0.7071067, 0, -0.7071068, 85.53984, 1, -3.9099045)
-
-[node name="scrap_piece_barrel6" parent="WorldStuff/StartingScrap" unique_id=1317355097]
-transform = Transform3D(-0.7071068, 0, -0.7071067, -0.35355335, 0.8660254, 0.3535534, 0.61237234, 0.5, -0.61237246, 85.53984, 2, -4.9099045)
-
-[node name="scrap_piece_barrel8" parent="WorldStuff/StartingScrap" unique_id=322266681]
-transform = Transform3D(-0.7071068, 0, -0.7071067, -0.35355335, 0.8660254, 0.3535534, 0.61237234, 0.5, -0.61237246, 85.53984, 2, 4.0900955)
-
-[node name="scrap_piece_barrel7" parent="WorldStuff/StartingScrap" unique_id=2100474406]
-transform = Transform3D(-0.7071068, 0, -0.7071067, 0, 1, 0, 0.7071067, 0, -0.7071068, 85.53984, 1, 5.0900955)
-
 [node name="GroundScrap" type="Node3D" parent="WorldStuff" unique_id=185693050]
 
 [node name="GroundElectronic" type="Node3D" parent="WorldStuff" unique_id=815242465]
-
-[node name="copper_ore" parent="WorldStuff/GroundElectronic" unique_id=126599523]
-transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 42, 4, 37)
-
-[node name="copper_ore2" parent="WorldStuff/GroundElectronic" unique_id=809897029]
-transform = Transform3D(0.9659258, 0, 0.2588191, 0, 1, 0, -0.2588191, 0, 0.9659258, 34, 4, 39)
-
-[node name="copper_ore3" parent="WorldStuff/GroundElectronic" unique_id=319724174]
-transform = Transform3D(1, 0, 5.9604645e-08, 0, 1, 0, -5.9604645e-08, 0, 1, 39, 4, 35)
-
-[node name="copper_ore4" parent="WorldStuff/GroundElectronic" unique_id=1023990869]
-transform = Transform3D(1, 0, 5.9604645e-08, 0, 1, 0, -5.9604645e-08, 0, 1, 39, 4, 40)
-
-[node name="copper_ore5" parent="WorldStuff/GroundElectronic" unique_id=710800907]
-transform = Transform3D(-0.5, 0, -0.86602545, 0, 1, 0, 0.86602545, 0, -0.5, 41, 4, 45)
 
 [node name="OldFactory" type="Node3D" parent="WorldStuff" unique_id=1596832553]
 
@@ -596,7 +569,7 @@ shape_type = 1
 sphere_radius = 0.1
 script = ExtResource("30_priced")
 animator = NodePath("AnimationPlayer")
-targets = [NodePath("../../BrokenSmelter")]
+targets = [null]
 hoverName = "Repair broken smelter"
 hoverText = "Cost is 10 scrap"
 
@@ -614,24 +587,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8763647, 0)
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff/RepairSmelterButton/ButtonBody" unique_id=25745241]
 mesh = SubResource("BoxMesh_r1731")
 
-[node name="BrokenSmelter" parent="WorldStuff" unique_id=1738204615 node_paths=PackedStringArray("inputVolumes", "outputSpawns") instance=ExtResource("31_brokensmelter")]
+[node name="BrokenSmelter" parent="WorldStuff" unique_id=1738204615 instance=ExtResource("31_brokensmelter")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -29.5)
-cellOffsets = Array[Vector3i]([Vector3i(0, 0, 0)])
-placementOffset = Vector3(0, 0, 0)
-inputVolumes = []
-outputSpawns = []
-tags = null
-interactable = true
-occupiedCells = null
-priority = 0
-pauseable = true
-syncLerpRate = 10.0
 hoverName = "Broken Smelter"
 hoverText = "Repair this at the nearby button "
-id = 0
-authority = 0
-owner = 0
-priorityAccumulator = 0
 
 [node name="RecyclerBroken" parent="WorldStuff" unique_id=1829331707 instance=ExtResource("32_brokenrecycler")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 35, 0, -33)

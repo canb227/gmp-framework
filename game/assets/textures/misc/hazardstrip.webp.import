@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://8ao7sytkjw8q"
-path.s3tc="res://.godot/imported/exhaust_fan.png-8df4cd510cd9da7456475dab0f3c26b8.s3tc.ctex"
+uid="uid://cs88p3lg7qps3"
+path.s3tc="res://.godot/imported/hazardstrip.webp-abc5dabfdc66d250f81b7604151a1a17.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://game/assets/textures/exhaust_fan.png"
-dest_files=["res://.godot/imported/exhaust_fan.png-8df4cd510cd9da7456475dab0f3c26b8.s3tc.ctex"]
+source_file="res://game/assets/textures/misc/hazardstrip.webp"
+dest_files=["res://.godot/imported/hazardstrip.webp-abc5dabfdc66d250f81b7604151a1a17.s3tc.ctex"]
 
 [params]
 

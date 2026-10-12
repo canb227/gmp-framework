@@ -2,21 +2,21 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cff3ql7psjvfh"
-path.s3tc="res://.godot/imported/door_temp.png-9bd2714ff5dbda5efcb619de471d89eb.s3tc.ctex"
+uid="uid://bwqq5q7kodk40"
+path="res://.godot/imported/fmod_icon.svg-cca7eb13231881fafaea0d598d407ea3.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"has_editor_variant": true,
+"vram_texture": false
 }
 
 [deps]
 
-source_file="res://game/assets/textures/door_temp.png"
-dest_files=["res://.godot/imported/door_temp.png-9bd2714ff5dbda5efcb619de471d89eb.s3tc.ctex"]
+source_file="res://addons/fmod/icons/fmod_icon.svg"
+dest_files=["res://.godot/imported/fmod_icon.svg-cca7eb13231881fafaea0d598d407ea3.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -24,7 +24,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
@@ -38,4 +38,7 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=0
+detect_3d/compress_to=1
+svg/scale=1.0
+editor/scale_with_editor_scale=true
+editor/convert_colors_with_editor_theme=true

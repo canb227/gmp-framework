@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cs88p3lg7qps3"
-path.s3tc="res://.godot/imported/hazardstrip.webp-62afd9f8e0839ccaca9bcb51ac76ba62.s3tc.ctex"
+uid="uid://btqd20cdixqt8"
+path.s3tc="res://.godot/imported/furnace_vent.jpg-4abdeadfc155e4b4e28efe72a8a56dd1.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://game/assets/textures/hazardstrip.webp"
-dest_files=["res://.godot/imported/hazardstrip.webp-62afd9f8e0839ccaca9bcb51ac76ba62.s3tc.ctex"]
+source_file="res://game/assets/textures/misc/furnace_vent.jpg"
+dest_files=["res://.godot/imported/furnace_vent.jpg-4abdeadfc155e4b4e28efe72a8a56dd1.s3tc.ctex"]
 
 [params]
 
