@@ -4,10 +4,12 @@
 [ext_resource type="PackedScene" uid="uid://pqjvhgupmo08" path="res://game/assets/models/machines/recycler/recycler_roller.glb" id="roller"]
 [ext_resource type="Script" uid="uid://bgn8523q15leq" path="res://game/scripts/structures/special/Recycler.cs" id="script"]
 
-[node name="Recycler" type="Box3DBody" unique_id=700023757]
+[node name="Recycler" type="Box3DBody" unique_id=700023757 node_paths=PackedStringArray("inputVolumes", "outputLocations")]
 body_type = 0
 box_size = Vector3(0, 0, 0)
 script = ExtResource("script")
+inputVolumes = [NodePath("Valley")]
+outputLocations = [NodePath("outputSpawn1"), NodePath("outputSpawn2")]
 cells = Dictionary[Vector3i, int]({
 Vector3i(0, 0, -7): 64,
 Vector3i(0, 0, -6): 0,

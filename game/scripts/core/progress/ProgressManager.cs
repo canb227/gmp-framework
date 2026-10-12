@@ -40,6 +40,7 @@ public partial class ProgressManager : Node
     public static event Action QuestStateUpdated;
     public static event Action<string> QuestCompleted;
 
+
     public override void _Ready()
     {
         instance = this;
