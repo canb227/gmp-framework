@@ -27,7 +27,7 @@ public partial struct ProgressData
 /// <para>
 /// Multiplayer: the lobby host owns quest state. Only the host turns items in and completes quests, broadcasting
 /// each change to every peer, itself included; it also puts unlocked blueprints on sale (the <see cref="Shop"/>
-/// shares that itself). A peer that connects later is sent the whole state.
+/// shares that itself). A peer that joins a running game gets the whole state with the world (<see cref="SaveManager"/>).
 /// </para>
 /// </summary>
 public partial class ProgressManager : Node
@@ -41,18 +41,28 @@ public partial class ProgressManager : Node
     public static event Action<string> QuestCompleted;
 
 
+    /// <summary>The quest every game starts with.</summary>
+    public const string FirstQuest = "quest_intro_00";
+
     public override void _Ready()
     {
         instance = this;
-        Lobby.PeerConnectedEvent += SendStateTo;
         loadQuestsFromFile();
-        currentQuests.Add("quest_intro_00", allQuests["quest_intro_00"]);
-        QuestStateUpdated?.Invoke();
+        ResetSession();
     }
 
-    public override void _ExitTree()
+    /// <summary>Back to the start for the next game: no quests done, only <see cref="FirstQuest"/> in progress, nothing turned in.</summary>
+    public static void ResetSession()
     {
-        Lobby.PeerConnectedEvent -= SendStateTo;
+        completedQuests.Clear();
+        currentQuests.Clear();
+        // Progress lives on the quest resources themselves, which stay loaded between games.
+        foreach (Quest quest in allQuests.Values)
+        {
+            quest.itemSubmissionProgress.Clear();
+        }
+        currentQuests.Add(FirstQuest, allQuests[FirstQuest]);
+        QuestStateUpdated?.Invoke();
     }
 
     public static void loadQuestsFromFile()
@@ -91,10 +101,10 @@ public partial class ProgressManager : Node
         RPCManager.RPCTo(Lobby.hostID, instance, nameof(_Deposit), [itemID, value]);
     }
 
+    // Host (only ever sent there).
     [RPC]
     private void _Deposit(string itemID, Dictionary<Currency, int> value)
     {
-        if (!Lobby.isHost) return;
         Shop.Deposit(itemID, value);
         TurnInForQuest(itemID);
     }
@@ -169,7 +179,7 @@ public partial class ProgressManager : Node
     // ---- saves -----------------------------------------------------------------
 
     /// <summary>
-    /// Replaces quest state with a restored save's (see <see cref="GameSave"/>): the completed quests, and each quest in
+    /// Replaces quest state with a restored save's (see <see cref="SaveManager"/>): the completed quests, and each quest in
     /// progress with its turn-ins. Runs on each restoring peer, all with the host's data.
     /// </summary>
     public static void LoadSave(List<string> completed, Dictionary<string, Dictionary<string, int>> progress)
@@ -187,39 +197,6 @@ public partial class ProgressManager : Node
                 quest.itemSubmissionProgress[itemID] = count;
             }
             currentQuests[questID] = quest;
-        }
-        QuestStateUpdated?.Invoke();
-    }
-
-    // ---- late joiners -----------------------------------------------------------
-
-    // Host: the quest lists, then each quest's progress.
-    void SendStateTo(ulong peerID)
-    {
-        if (!Lobby.isHost) return;
-        RPCManager.RPCTo(peerID, this, nameof(_SetQuestLists), [completedQuests.ToArray(), currentQuests.Keys.ToArray()]);
-        foreach (var (questID, quest) in currentQuests)
-        {
-            foreach (var (itemID, turnedIn) in quest.itemSubmissionProgress)
-            {
-                RPCManager.RPCTo(peerID, this, nameof(_SetProgress), [questID, itemID, turnedIn]);
-            }
-        }
-    }
-
-    [RPC(requireAuthority = true)]
-    private void _SetQuestLists(string[] completed, string[] current)
-    {
-        completedQuests.Clear();
-        completedQuests.AddRange(completed);
-        currentQuests.Clear();
-        foreach (string questID in current)
-        {
-            if (allQuests.TryGetValue(questID, out Quest quest))
-            {
-                quest.itemSubmissionProgress.Clear(); // the host sends the real progress next
-                currentQuests[questID] = quest;
-            }
         }
         QuestStateUpdated?.Invoke();
     }

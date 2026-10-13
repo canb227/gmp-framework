@@ -141,6 +141,9 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     /// </summary>
     public virtual void OnFellAsleep() { }
 
+    /// <summary>Called once a body that asked with <see cref="GameWorld.WatchForWake"/> is awake again, or is no longer this peer's to simulate.</summary>
+    public virtual void OnWoke() { }
+
     // ---- Box3DBody signals, as typed events (wired in _Ready) ----
     // Every peer simulates every body (followers as Kinematic), so these fire on all peers; check authority if only
     // the simulating peer should react.

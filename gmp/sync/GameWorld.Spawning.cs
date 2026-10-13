@@ -129,7 +129,7 @@ public partial class GameWorld
 
         if (node is GMPObject gmpo)
         {
-            gmpo.Init(initData, initState);
+            gmpo.Init(WithEarlyClaim(initData), initState);
             syncedObjs.Add(gmpo.id, gmpo);
         }
         else
@@ -157,7 +157,7 @@ public partial class GameWorld
                     c.QueueFree();
                     continue;
                 }
-                gmpoChild.Init(ci, childStates?.GetValueOrDefault(ci.id));
+                gmpoChild.Init(WithEarlyClaim(ci), childStates?.GetValueOrDefault(ci.id));
                 syncedObjs.Add(gmpoChild.id, gmpoChild);
             }
         }
@@ -186,7 +186,7 @@ public partial class GameWorld
         {
             gmpo.OnDespawned(reason);
             syncedObjs.Remove(id);
-            heldBy.Remove(id);
+            ForgetClaim(id);
             (gmpo as Node)?.QueueFree();
         }
     }

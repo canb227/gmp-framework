@@ -41,6 +41,15 @@ public partial class GameWorld
     static ulong frozenSyncId;
     static ulong nextSyncId;
 
+    /// <summary>True while this peer is frozen for a join, resync or load, which is also while every restore happens. Nothing should spawn then.</summary>
+    public static bool frozen => frozenSyncId != 0;
+
+    /// <summary>
+    /// A restore is sent in parts of this size: Steam refuses a single message over 512 KB. (Its limit on bytes queued
+    /// for sending is raised in <see cref="SteamNetwork.Host"/>, so the parts can all go at once.)
+    /// </summary>
+    const int RestorePartSize = 256 * 1024;
+
     // Host
     static SyncMode syncMode;
     static ulong joiningPeer;
@@ -57,6 +66,8 @@ public partial class GameWorld
     /// <summary>A received restore waiting for its peers' acks: the data and the peers frozen for it.</summary>
     static byte[] pendingRestore;
     static ulong[] pendingRestorePeers;
+    /// <summary>The parts of a restore received so far.</summary>
+    static System.IO.MemoryStream restoreParts;
 
     static void ResetResync()
     {
@@ -71,6 +82,7 @@ public partial class GameWorld
         ackedSync.Clear();
         pendingRestore = null;
         pendingRestorePeers = null;
+        restoreParts = null;
     }
 
     // ---- host entry points ------------------------------------------------------
@@ -96,7 +108,7 @@ public partial class GameWorld
     /// <summary>Host: writes the current game to the file at <paramref name="path"/>. False if it couldn't.</summary>
     public static bool SaveToFile(string path)
     {
-        return Lobby.isHost && started && WriteSaveFile(path, GameSave.Capture(false));
+        return Lobby.isHost && started && WriteSaveFile(path, SaveManager.Capture(false));
     }
 
     static bool BeginFreeze(SyncMode mode, ulong joiner)
@@ -184,7 +196,7 @@ public partial class GameWorld
     static void SendRestore()
     {
         restoreSent = true;
-        byte[] data = syncMode == SyncMode.Load ? GameSave.PrepareLoaded(loadData) : GameSave.Capture(syncMode == SyncMode.Resync);
+        byte[] data = syncMode == SyncMode.Load ? SaveManager.PrepareLoaded(loadData) : SaveManager.Capture(syncMode == SyncMode.Resync, syncMode == SyncMode.Join);
         loadData = null;
         if (data == null)
         {
@@ -197,17 +209,38 @@ public partial class GameWorld
         byte[] blob = Compress(data);
         Logging.Log($"{syncMode}: sending {blob.Length / 1024} KB ({data.Length / 1024} KB raw) to {restorers.Count} peer(s)", "GameWorld");
         awaitingDone.UnionWith(restorers);
+        int parts = (blob.Length + RestorePartSize - 1) / RestorePartSize;
         foreach (ulong peer in restorers)
         {
-            RPCManager.RPCTo(peer, instance, nameof(_Restore), [blob, peers]);
+            for (int part = 0; part < parts; part++)
+            {
+                int start = part * RestorePartSize;
+                int end = Math.Min(start + RestorePartSize, blob.Length);
+                Error err = RPCManager.RPCTo(peer, instance, nameof(_Restore), [part, parts, blob[start..end], peers]);
+                if (err != Error.Ok)
+                {
+                    Logging.Error($"{syncMode}: sending part {part + 1}/{parts} to {peer} failed ({err}); it will stay frozen", "GameWorld");
+                }
+            }
         }
     }
 
+    // Parts arrive in order (reliable, one channel); the last one completes the restore.
     [RPC(requireAuthority = true)]
-    private void _Restore(byte[] blob, ulong[] peers)
+    private void _Restore(int part, int parts, byte[] chunk, ulong[] peers)
     {
-        pendingRestore = blob;
+        if (part == 0)
+        {
+            restoreParts = new System.IO.MemoryStream();
+        }
+        restoreParts.Write(chunk);
+        if (part < parts - 1)
+        {
+            return;
+        }
+        pendingRestore = restoreParts.ToArray();
         pendingRestorePeers = peers;
+        restoreParts = null;
         TryFinishRestore();
     }
 
@@ -222,7 +255,7 @@ public partial class GameWorld
         pendingRestore = null;
         pendingRestorePeers = null;
         ulong start = Time.GetTicksMsec();
-        GameSave.Apply(Decompress(blob), !started);
+        SaveManager.Apply(Decompress(blob), !started);
         Logging.Log($"Restored the world in {Time.GetTicksMsec() - start} ms", "GameWorld");
         RPCManager.RPCTo(Lobby.hostID, instance, nameof(_RestoreDone), []);
     }
@@ -249,8 +282,9 @@ public partial class GameWorld
         frozenSyncId = 0;
         pendingRestore = null;
         pendingRestorePeers = null;
+        restoreParts = null;
         // Every restore is in, so a player spawned now reaches peers that have already rebuilt.
-        GameSave.EnsureLocalPlayer();
+        SaveManager.EnsureLocalPlayer();
         FrozenChanged?.Invoke(false);
         if (!started)
         {
@@ -289,6 +323,12 @@ public partial class GameWorld
     private static void OnPeerUnlinked(ulong peer)
     {
         linkedPeers.Remove(peer);
+        if (started)
+        {
+            // Its avatar goes first (the game keeps it for saves), then whatever else it simulated goes to the host.
+            GameBootstrap.PeerLeft(peer);
+            RehomeFrom(peer);
+        }
         // Don't wait on a peer that has left.
         awaitingDone.Remove(peer);
         CheckHostProgress();

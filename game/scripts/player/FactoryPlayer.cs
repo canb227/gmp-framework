@@ -5,8 +5,8 @@ using PolyType;
 /// <summary>
 /// The networked player character. This file holds identity, movement, mouse look, input dispatch
 /// and state sync; features live in partial-class files alongside it:
-/// FactoryPlayer.Interaction.cs (looks-at target + interact), FactoryPlayer.Grab.cs (physics grab tool),
-/// and FactoryPlayer.Equipment.cs (hotbar, in-hand item, dropping). A held <see cref="HeldItem"/> (magnet
+/// FactoryPlayer.Interaction.cs (looks-at target + interact) and FactoryPlayer.Equipment.cs (hotbar, in-hand
+/// item, dropping). A held <see cref="HeldItem"/> (magnet
 /// rod, blueprint preview, ...) gets first refusal on input. The HUD and every menu belong to
 /// <see cref="UIManager"/>, which binds the HUD to the local player when it spawns.
 /// </summary>
@@ -66,13 +66,12 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     public override void _Ready()
     {
         base._Ready();
-        // Saved by GameSave as players, not as part of the world.
+        // Saved by SaveManager as players, not as part of the world.
         AddToGroup(GameWorld.UnsavedGroup);
         gravity = gravityDirection * gravityMagnitude;
         camera = GetNode<Camera3D>("Camera3D");
         cameraOffset = camera.Position;
         itemHolder = camera.GetNode<Node3D>("ItemHolder");
-        grabNode = GetNode<Node3D>("%grabNode");
     }
 
     public override void AfterInit()
@@ -91,7 +90,6 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             playerNameLabel.Hide();
             body.GetNode<MeshInstance3D>("m").CastShadow = GeometryInstance3D.ShadowCastingSetting.ShadowsOnly;
             head.GetNode<MeshInstance3D>("head").CastShadow = GeometryInstance3D.ShadowCastingSetting.ShadowsOnly;
-            GameWorld.ClaimGrantedEvent += OnClaimGranted;
             // Replicate every local inventory change (pickups, drops, drag-and-drop, bootstrap seed).
             inventory.InventoryChanged += SyncInventory;
         }
@@ -104,8 +102,6 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
     public override void _ExitTree()
     {
-        // Unconditional: on LeaveLobby selfPeerID is already cleared by the time this runs.
-        GameWorld.ClaimGrantedEvent -= OnClaimGranted;
         UIManager.UnbindHud(this);
     }
 
@@ -130,7 +126,6 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         if (!UIManager.IsInventoryOpen && heldItem != null && heldItem.HandleInput(@event)) return;
         HandleInteractionInput(@event);
         HandleEquipmentInput(@event);
-        HandleGrabInput(@event);
     }
 
     /// <summary>Mouse look, and recapturing the mouse on a click (after the window lost it).</summary>
@@ -152,7 +147,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         }
     }
 
-    /// <summary>The scroll wheel moves the grab point while grabbing, otherwise cycles the hotbar.</summary>
+    /// <summary>The scroll wheel goes to the held item first (e.g. the magnet rod's hold distance), otherwise cycles the hotbar.</summary>
     void HandleScrollWheel(InputEvent @event)
     {
         if (UIManager.IsInventoryOpen) return;
@@ -160,9 +155,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         int step = @event.IsActionPressed(InputActions.scrollDown) ? +1 : @event.IsActionPressed(InputActions.scrollUp) ? -1 : 0;
         if (step == 0) return;
 
-        if (isGrabbing)
-            SetGrabDistance(grabDistance - step * grabScrollStep);
-        else if (heldItem == null || !heldItem.HandleScroll(step))
+        if (heldItem == null || !heldItem.HandleScroll(step))
             CycleHotbar(step);
     }
 
@@ -177,9 +170,8 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             return;
         }
 
-        // Gameplay rays and the grab point use where the player actually is this tick, not where it's drawn.
+        // Gameplay rays and held tools use where the player actually is this tick, not where it's drawn.
         PoseCamera(false);
-        ApplyGrabForce(delta);
         UpdatePickTarget();
         ApplyMovement(delta);
         PoseCamera(false);
@@ -242,6 +234,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             headRot = cameraPosed ? new Vector3(lookPitch, 0, 0) : this.camera.Rotation,
             vel = this.cachedVel,
             equippedSlot = inventory.ActiveHotbarSlot,
+            heldItemState = heldItem?.GenerateSyncState(),
         };
         return GMPObject.serializer.Serialize(msg);
     }
@@ -261,6 +254,11 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         {
             inventory.ActiveHotbarSlot = msg.equippedSlot;
             UpdateEquippedItem();
+        }
+        // The held tool's own state (e.g. what the magnet rod is pulling), after the slot above so it reaches the right tool.
+        if (!isLocal && heldItem != null)
+        {
+            heldItem.ApplySyncState(msg.heldItemState);
         }
     }
 
@@ -287,8 +285,6 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         ImGui.Text($"On Floor: {IsOnFloor()}");
         ImGui.Text($"Active Hotbar Slot: {inventory.ActiveHotbarSlot}");
         ImGui.Text($"Pick Target: {pickTarget?.Name ?? "none"}");
-        ImGui.Text($"Grab Target: {grabbedItem?.Name ?? "none"}");
-        ImGui.Checkbox("Empty-hand grab", ref emptyHandGrabEnabled);
         ImGui.Text($"Inventory Open: {UIManager.IsInventoryOpen}");
         ImGui.End();
     }
@@ -304,4 +300,6 @@ public partial record struct PlayerSync
     public Vector3 headRot;
     public int equippedSlot;
     public Vector3 vel;
+    /// <summary>The held tool's state for the other peers (<see cref="HeldItem.GenerateSyncState"/>), or null.</summary>
+    public byte[] heldItemState;
 }

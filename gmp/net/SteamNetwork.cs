@@ -32,6 +32,9 @@ public class SteamNetwork :  Network
         _onSessionRequest = Callback<SteamNetworkingMessagesSessionRequest_t>.Create(OnSessionRequest);
         _onSessionFailed = Callback<SteamNetworkingMessagesSessionFailed_t>.Create(OnSessionFailed);
         SteamNetworkingUtils.InitRelayNetworkAccess();
+        // A restore sends the whole world at once (in parts, GameWorld.Resync.cs). Steam refuses any send once more
+        // than this many bytes are waiting to go out, 512 KB by default.
+        SetGlobalConfigInt(ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_SendBufferSize, 32 * 1024 * 1024);
         _started = true;
         Logging.Log($"Steam messaging ready (SteamID {SelfId})", "NetworkSession");
         return Error.Ok;
@@ -163,6 +166,23 @@ public class SteamNetwork :  Network
         ulong id = e.m_info.m_identityRemote.GetSteamID64();
         if (_connected.Remove(id))
             PeerDisconnectedEvent?.Invoke(id);
+    }
+
+    private static void SetGlobalConfigInt(ESteamNetworkingConfigValue setting, int value)
+    {
+        IntPtr arg = Marshal.AllocHGlobal(sizeof(int));
+        try
+        {
+            Marshal.WriteInt32(arg, value);
+            if (!SteamNetworkingUtils.SetConfigValue(setting, ESteamNetworkingConfigScope.k_ESteamNetworkingConfig_Global, IntPtr.Zero, ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32, arg))
+            {
+                Logging.Error($"Steam refused config {setting} = {value}", "NetworkSession");
+            }
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(arg);
+        }
     }
 
     private static SteamNetworkingIdentity IdentityFor(ulong steamId)

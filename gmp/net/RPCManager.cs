@@ -16,6 +16,9 @@ public partial record RPC
 
     public ulong ObjectID;
 
+    /// <summary>When it was sent (<see cref="GameWorld.netTime"/>).</summary>
+    public ulong sendTime;
+
     // Each argument is serialized independently with its own concrete type so the
     // type identity survives the wire. A null element means the argument was null.
     public byte[][] args;
@@ -56,6 +59,12 @@ public partial class RPCManager : Node
     /// transport, so unlike a peer id passed as an argument it cannot be spoofed.
     /// </summary>
     public static ulong sender { get; private set; }
+
+    /// <summary>
+    /// When the RPC currently being handled was sent (<see cref="GameWorld.netTime"/>; 0 outside a handler). For
+    /// state several peers may write, the newest send wins (see <c>GameWorld.Ownership.cs</c>).
+    /// </summary>
+    public static ulong sendTime { get; private set; }
 
     /// <summary>An [RPC] method with what dispatch needs from reflection, looked up once per type and name.</summary>
     private sealed record RpcMethod(MethodInfo method, ParameterInfo[] parameters, bool requireAuthority);
@@ -126,6 +135,7 @@ public partial class RPCManager : Node
         rpc.MethodName = methodName;
         rpc.NodePath = nodePath;
         rpc.ObjectID = objectID;
+        rpc.sendTime = GameWorld.netTime;
         rpc.args = SerializeArgs(args);
         return s.Serialize(rpc);
     }
@@ -232,7 +242,9 @@ public partial class RPCManager : Node
         // Handlers often broadcast, and the local copy of that broadcast runs synchronously inside
         // this call, so restore the outer sender afterwards rather than clearing it.
         ulong outerSender = sender;
+        ulong outerSendTime = sendTime;
         sender = from;
+        sendTime = rpc.sendTime;
         try
         {
             object[] callArgs = DeserializeArgs(rpc.args, method.parameters);
@@ -252,6 +264,7 @@ public partial class RPCManager : Node
         finally
         {
             sender = outerSender;
+            sendTime = outerSendTime;
         }
     }
 

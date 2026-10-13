@@ -42,7 +42,7 @@ public partial record SaveGame
 /// so they can be matched to whoever loads), the shop and quests. The freeze-and-restore protocol that moves it
 /// between peers is in <c>GameWorld.Resync.cs</c>.
 /// </summary>
-public static class GameSave
+public static class SaveManager
 {
     public const int Version = 2;
 
@@ -51,15 +51,16 @@ public static class GameSave
 
     /// <summary>
     /// Host: the current game. <paramref name="forRestore"/> readies it for every peer to restore at once (a resync):
-    /// departed peers' objects go to the host and their avatars are left out.
+    /// departed peers' objects go to the host and their avatars are left out. <paramref name="keepClaims"/> keeps
+    /// claimed objects with their claimers, for a joiner restoring alone while everyone else plays on.
     /// </summary>
-    public static byte[] Capture(bool forRestore)
+    public static byte[] Capture(bool forRestore, bool keepClaims = false)
     {
         SaveGame save = new()
         {
             version = Version,
             gameInfo = Lobby.gameInfo,
-            world = GameWorld.SnapshotWorld(),
+            world = GameWorld.SnapshotWorld(keepClaims),
             shopStock = Shop.Stock.ToList(),
             shopBalances = Shop.SaveBalances(),
             shopDeposits = new(Shop.Deposited),
@@ -69,23 +70,57 @@ public static class GameSave
         };
         foreach (FactoryPlayer p in GameWorld.syncedObjs.Values.OfType<FactoryPlayer>())
         {
-            save.players.Add(new PlayerSave
-            {
-                id = p.id,
-                peerID = p.controllingPeerID,
-                name = p.playerName,
-                pos = p.Position,
-                rot = p.Rotation,
-                slots = (InventorySlot[])p.inventory.slots.Clone(),
-                equippedSlot = p.inventory.ActiveHotbarSlot,
-            });
+            save.players.Add(SaveOf(p));
         }
-        save.absentPlayers = absentPlayers.Where(a => !save.players.Any(p => p.peerID == a.peerID)).ToList();
+        // Players who came back are in the game again (matched by name too: LAN ids change between launches).
+        save.absentPlayers = absentPlayers.Where(a => !save.players.Any(p => p.peerID == a.peerID || (!string.IsNullOrEmpty(a.name) && p.name == a.name))).ToList();
         if (forRestore)
         {
             Prepare(save);
         }
         return GMPObject.serializer.Serialize(save);
+    }
+
+    static PlayerSave SaveOf(FactoryPlayer p)
+    {
+        return new PlayerSave
+        {
+            id = p.id,
+            peerID = p.controllingPeerID,
+            name = p.playerName,
+            pos = p.Position,
+            rot = p.Rotation,
+            slots = (InventorySlot[])p.inventory.slots.Clone(),
+            equippedSlot = p.inventory.ActiveHotbarSlot,
+        };
+    }
+
+    /// <summary>Keeps a player who left as absent, so saves still hold it and it can come back (<see cref="TakeAbsent"/>).</summary>
+    public static void RememberAbsent(FactoryPlayer player)
+    {
+        // Replaces an older entry of the same player (by name too: LAN ids change between launches).
+        absentPlayers.RemoveAll(a => a.peerID == player.controllingPeerID || (!string.IsNullOrEmpty(a.name) && a.name == player.playerName));
+        absentPlayers.Add(SaveOf(player));
+    }
+
+    /// <summary>The absent player matching this peer (by id, else by name), taken off the absent list; null if none.</summary>
+    public static PlayerSave TakeAbsent(ulong peerID, string name)
+    {
+        PlayerSave match = absentPlayers.FirstOrDefault(a => a.peerID == peerID);
+        if (match == null && !string.IsNullOrEmpty(name))
+        {
+            match = absentPlayers.FirstOrDefault(a => a.name == name);
+        }
+        if (match != null)
+        {
+            absentPlayers.Remove(match);
+        }
+        return match;
+    }
+
+    public static void ResetSession()
+    {
+        absentPlayers = new();
     }
 
     /// <summary>Host: a save file's contents, readied for every peer to restore. Null if it can't be used.</summary>
@@ -166,7 +201,7 @@ public static class GameSave
         SaveGame save = GMPObject.serializer.Deserialize<SaveGame>(data);
         if (save.version != Version)
         {
-            Logging.Error($"Save is version {save.version}, this build reads version {Version}", "GameSave");
+            Logging.Error($"Save is version {save.version}, this build reads version {Version}", "SaveManager");
             return null;
         }
         return save;

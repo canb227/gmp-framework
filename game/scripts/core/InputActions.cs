@@ -15,6 +15,7 @@ public static class InputActions
     public static readonly StringName sprint = "sprint";
     public static readonly StringName interact = "interact";
     public static readonly StringName primary = "primary";
+    public static readonly StringName secondary = "secondary";
     public static readonly StringName drop = "drop";
     public static readonly StringName inventory = "inventory";
     public static readonly StringName scrollDown = "scrollDown";

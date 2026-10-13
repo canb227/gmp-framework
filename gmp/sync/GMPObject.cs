@@ -34,10 +34,10 @@ public partial record struct GMPOInitData : IEquatable<GMPOInitData>
 public partial interface GMPObject
 {
     /// <summary>
-    /// This object's priority within the per-tick state-update byte budget. Accumulates into
-    /// <see cref="priorityAccumulator"/> every tick; whichever objects have the highest accumulator
-    /// send first once the budget is reached. A value of -1 or lower means this object never sends
-    /// a state update at all.
+    /// How often this object sends its state. Accumulates into <see cref="priorityAccumulator"/> every tick, and an
+    /// update is due once that reaches <c>GameWorld.SendThreshold</c> (30: every tick at 30 or more, about once a
+    /// second at 1). When the per-tick byte budget runs out, the highest accumulators send first. A value of -1 or
+    /// lower means this object never sends a state update at all.
     /// </summary>
     public int priority { get; set; }
 
@@ -62,7 +62,7 @@ public partial interface GMPObject
 
     public static MessagePackSerializer serializer = new MessagePackSerializer().WithGodotConverters();
 
-    /// <summary>Called on the authority peer, in priority order, for each object whose accumulator is above 0, until the tick's byte budget is full (the first update that doesn't fit is discarded and sending stops for that tick). Serializes this object's current state for every other peer to apply via <see cref="ApplyStateUpdate"/>. Return null/empty to send nothing.</summary>
+    /// <summary>Called on the authority peer, in priority order, for each object whose update is due, until the tick's byte budget is full (the first update that doesn't fit is discarded and sending stops for that tick). Serializes this object's current state for every other peer to apply via <see cref="ApplyStateUpdate"/>. Return null/empty to send nothing.</summary>
     public byte[] GenerateStateUpdate();
 
     /// <summary>Called on non-authority peers when a state update arrives from the authority, and on <b>every</b> peer (authority included) by <see cref="Init"/> with the spawn-time <c>initState</c>. The transform-synced bases just store it into <see cref="desiredState"/>; overrides may apply it immediately (e.g. FactoryPlayer).</summary>
@@ -121,7 +121,8 @@ public partial interface GMPObject
     }
 
     /// <summary>
-    /// Called on every peer after <see cref="authority"/> changes hands (see <c>GameWorld.Claim</c>).
+    /// Called on every peer after <see cref="authority"/> changes hands (see <c>GameWorld.Claim</c>), including when
+    /// a peer leaves and its objects go to the host.
     /// Override to switch between simulating (authority) and following replicated state.
     /// </summary>
     public virtual void OnAuthorityChanged()

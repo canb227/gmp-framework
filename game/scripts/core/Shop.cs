@@ -26,8 +26,8 @@ public record CurrencyInfo(string name, Texture2D icon);
 /// <para>
 /// Multiplayer: the lobby host owns stock, banks and deposits. Only the host changes them, broadcasting each change to
 /// every peer, itself included. Other players can only request purchases, which are paid for on the host (so two
-/// players can't spend the same currency) and the blueprints sent back to the buyer. A peer that connects later
-/// is sent the whole state.
+/// players can't spend the same currency) and the blueprints sent back to the buyer. A peer that joins a running game
+/// gets the whole state with the world (<see cref="SaveManager"/>). Everything is cleared when the session ends.
 /// </para>
 /// <para>An autoload, so RPCs have a node to target; the API is static.</para>
 /// </summary>
@@ -70,12 +70,16 @@ public partial class Shop : Node
     public override void _Ready()
     {
         instance = this;
-        Lobby.PeerConnectedEvent += SendStateTo;
     }
 
-    public override void _ExitTree()
+    /// <summary>Empties stock, banks and deposits for the next game: they are static, so they would outlive this one.</summary>
+    public static void ResetSession()
     {
-        Lobby.PeerConnectedEvent -= SendStateTo;
+        stock.Clear();
+        balances.Clear();
+        deposited.Clear();
+        StockChanged?.Invoke();
+        BalancesChanged?.Invoke();
     }
 
     // ---- stock ----------------------------------------------------------------
@@ -96,7 +100,7 @@ public partial class Shop : Node
         return true;
     }
 
-    /// <summary>Host only: takes everything off sale for everyone (the list is static, so it outlives a game).</summary>
+    /// <summary>Host only: takes everything off sale for everyone.</summary>
     public static void ClearAvailableItems()
     {
         RPCManager.RPC(instance, nameof(_ClearStock), []);
@@ -232,11 +236,11 @@ public partial class Shop : Node
         return true;
     }
 
-    // Host: checks the order against its own banks (first request wins), takes the payment, sends the blueprints.
+    // Host (only ever sent there): checks the order against its own banks (first request wins), takes the payment, sends the blueprints.
     [RPC]
     private void _RequestPurchase(string itemID, int quantity)
     {
-        if (!Lobby.isHost || quantity < 1 || !stock.Contains(itemID) || ItemInfo.Fetch(itemID) is not BlueprintItem item) return;
+        if (quantity < 1 || !stock.Contains(itemID) || ItemInfo.Fetch(itemID) is not BlueprintItem item) return;
         if (!IsAvailable(item) || !CanAfford(item.cost, quantity))
         {
             Logging.Log($"purchase of {quantity}x {itemID} by {RPCManager.sender} refused: unavailable or can't afford it", "Shop");
@@ -269,7 +273,7 @@ public partial class Shop : Node
     // ---- saves ------------------------------------------------------------------
 
     /// <summary>
-    /// Replaces stock, banks and deposits with a restored save's (see <see cref="GameSave"/>). Banks are saved by
+    /// Replaces stock, banks and deposits with a restored save's (see <see cref="SaveManager"/>). Banks are saved by
     /// currency name, so reordering <see cref="Currency"/> doesn't scramble them; unknown names are dropped. Runs on
     /// each restoring peer, all with the host's data, so they stay in agreement.
     /// </summary>
@@ -297,25 +301,4 @@ public partial class Shop : Node
 
     /// <summary>The banks keyed by currency name, for a save.</summary>
     public static Dictionary<string, int> SaveBalances() => balances.ToDictionary(b => b.Key.ToString(), b => b.Value);
-
-    // ---- late joiners ---------------------------------------------------------
-
-    // Host: the same messages that built this state, replayed to the new peer.
-    void SendStateTo(ulong peerID)
-    {
-        if (!Lobby.isHost) return;
-        RPCManager.RPCTo(peerID, this, nameof(_ClearStock), []);
-        foreach (string itemID in stock)
-        {
-            RPCManager.RPCTo(peerID, this, nameof(_AddStock), [itemID]);
-        }
-        foreach (var (currency, amount) in balances)
-        {
-            RPCManager.RPCTo(peerID, this, nameof(_SetBalance), [(int)currency, amount]);
-        }
-        foreach (var (itemID, count) in deposited)
-        {
-            RPCManager.RPCTo(peerID, this, nameof(_SetDeposited), [itemID, count]);
-        }
-    }
 }

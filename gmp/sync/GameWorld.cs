@@ -13,7 +13,13 @@ public partial class GameWorld : Node3D
     public static GMPOBox3DWorld b3droot;
 
     private static bool started = false;
-    public static ulong tickNum = 0;
+
+    /// <summary>
+    /// The clock every peer stamps its messages with: real time in milliseconds (UTC). Machines whose clocks set
+    /// themselves from the internet agree to within tens of milliseconds, which is all "the newest message wins"
+    /// needs. Every peer compares the same stamps, so they always agree on the winner even if a clock is off.
+    /// </summary>
+    public static ulong netTime => (ulong)System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
     public override void _Ready()
     {
@@ -79,6 +85,50 @@ public partial class GameWorld : Node3D
         DrawDebugUI();
     }
 
+    /// <summary>Bodies waiting to hear that they woke (see <see cref="WatchForWake"/>).</summary>
+    static readonly System.Collections.Generic.List<GMPOBox3DBody> sleepers = new();
+    static int nextSleeperCheck;
+    /// <summary>Sleepers polled per physics tick, round robin: a few thousand resting bodies are all checked within a second or so.</summary>
+    const int SleeperChecksPerTick = 200;
+
+    /// <summary>
+    /// Box3D signals a body falling asleep but not waking. A body that needs to know (e.g. to sync faster again) calls
+    /// this from <see cref="GMPOBox3DBody.OnFellAsleep"/>; <see cref="GMPOBox3DBody.OnWoke"/> is then called once it
+    /// is awake again, or once this peer stops simulating it.
+    /// </summary>
+    public static void WatchForWake(GMPOBox3DBody body)
+    {
+        sleepers.Add(body);
+    }
+
+    static void CheckSleepers()
+    {
+        int checks = Mathf.Min(SleeperChecksPerTick, sleepers.Count);
+        for (int i = 0; i < checks; i++)
+        {
+            if (nextSleeperCheck >= sleepers.Count)
+            {
+                nextSleeperCheck = 0;
+            }
+            GMPOBox3DBody body = sleepers[nextSleeperCheck];
+            bool gone = !IsInstanceValid(body) || body.IsQueuedForDeletion();
+            if (gone || body.authority != Lobby.selfPeerID || body.IsAwake())
+            {
+                // Swap-remove; the body moved into this slot is checked next.
+                sleepers[nextSleeperCheck] = sleepers[sleepers.Count - 1];
+                sleepers.RemoveAt(sleepers.Count - 1);
+                if (!gone)
+                {
+                    body.OnWoke();
+                }
+            }
+            else
+            {
+                nextSleeperCheck++;
+            }
+        }
+    }
+
     /// <summary>
     /// Collision layer for bodies that world queries should never hit (e.g. placement-preview sensors).
     /// Excluded from <see cref="Raycast"/> by default.
@@ -136,15 +186,16 @@ public partial class GameWorld : Node3D
     }
 
     /// <summary>
-    /// Clears all per-session world state (spawned nodes, registries, pending sync data, tick counter)
-    /// and re-pauses the tree, so the next lobby/game in this process starts clean. Called from
+    /// Clears all per-session world state (spawned nodes, registries, claims, pending sync data) and the game's
+    /// (<see cref="GameBootstrap.ResetSession"/>), and re-pauses the tree, so the next lobby/game in this process
+    /// starts clean. Called from
     /// <see cref="Lobby.LeaveLobby"/>.
     /// </summary>
     public static void ResetSession()
     {
         ClearWorld();
         ResetResync();
-        tickNum = 0;
+        GameBootstrap.ResetSession();
         started = false;
         maxTickSize = baseMaxTickSize;
         if (instance != null)
@@ -172,7 +223,9 @@ public partial class GameWorld : Node3D
         }
         spawnedRoots.Clear();
         syncedObjs.Clear();
-        heldBy.Clear();
+        sleepers.Clear();
+        claims.Clear();
+        leaseEnds.Clear();
         BuildGrid.ResetSession();
         ResetStateSync();
     }

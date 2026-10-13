@@ -9,7 +9,7 @@
 script = ExtResource("1_tool")
 itemID = "magnet_rod"
 displayName = "Magnet Rod"
-description = "Hold primary to pull nearby loose objects into a floating ball. Scroll to move it."
+description = "Hold left click on a loose object to lift it, or right click to pull nearby loose objects into a floating ball. Scroll to move them nearer or further."
 icon = ExtResource("2_icon")
 inHandScene = ExtResource("3_hand")
 maxStackSize = 1

@@ -371,11 +371,6 @@ text = "STARTING ITEMS"
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="HandGrabCheck" type="CheckBox" parent="Margin/RootVBox/Body/RightPanel/RightContent/LevelRow/LevelBox" unique_id=1748203963]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Empty-hand grab"
-
 [node name="MaxPlayersRow" type="PanelContainer" parent="Margin/RootVBox/Body/RightPanel/RightContent" unique_id=960546095]
 visible = false
 layout_mode = 2

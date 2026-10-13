@@ -51,7 +51,6 @@ public partial class LobbyDebug : Control
     private OptionButton _levelSelect;
     private Button _loadGameButton;
     private OptionButton _starterItemsSelect;
-    private CheckBox _handGrabCheck;
 
     public override void _Ready()
     {
@@ -74,7 +73,6 @@ public partial class LobbyDebug : Control
         _levelSelect = GetNode<OptionButton>("%LevelOption");
         _loadGameButton = GetNode<Button>("%LoadGameButton");
         _starterItemsSelect = GetNode<OptionButton>("%StarterItemsOption");
-        _handGrabCheck = GetNode<CheckBox>("%HandGrabCheck");
 
         _logText = GetNode<RichTextLabel>("Margin/RootVBox/Body/LeftPanel/LeftContent/EventLogSection/LogPanel/LogText");
         _playerRows = GetNode<VBoxContainer>("Margin/RootVBox/Body/CenterColumn/PlayerSection/PlayerListPanel/PlayerScroll/PlayerRows");
@@ -94,7 +92,6 @@ public partial class LobbyDebug : Control
         _loadGameButton.Pressed += OnLoadGamePressed;
         _loadGameButton.Disabled = true; // host only: enabled in StartHost
         _starterItemsSelect.ItemSelected += _starterItemsSelect_ItemSelected;
-        _handGrabCheck.Toggled += _handGrabCheck_Toggled;
         _chatInput.TextSubmitted += _ => OnSendChat();
 
         // Subscribe to Lobby (an autoload) events.
@@ -119,10 +116,9 @@ public partial class LobbyDebug : Control
         _levelSelect_ItemSelected(1);
         // Item order matches the StarterItems enum.
         _starterItemsSelect.AddItem("None");
-        _starterItemsSelect.AddItem("Only single magnet rod");
+        _starterItemsSelect.AddItem("Only magnet rod");
         _starterItemsSelect.AddItem("All");
         _starterItemsSelect.Select((int)Lobby.gameInfo.starterItems);
-        _handGrabCheck.SetPressedNoSignal(Lobby.gameInfo.emptyHandGrab);
         ProcessMode = ProcessModeEnum.Always;
         Log($"lobby ready ({_mode}) as {_selfName} ({ShortId(_selfId)})");
 
@@ -164,12 +160,6 @@ public partial class LobbyDebug : Control
     private void _starterItemsSelect_ItemSelected(long index)
     {
         Lobby.gameInfo.starterItems = (StarterItems)index;
-        Lobby.SendGameInfoUpdate();
-    }
-
-    private void _handGrabCheck_Toggled(bool on)
-    {
-        Lobby.gameInfo.emptyHandGrab = on;
         Lobby.SendGameInfoUpdate();
     }
 
@@ -375,7 +365,6 @@ public partial class LobbyDebug : Control
         // GameInfo changed on the wire (the host's choices).
         _levelSelect.Select(Lobby.gameInfo.levelIdx);
         _starterItemsSelect.Select((int)Lobby.gameInfo.starterItems);
-        _handGrabCheck.SetPressedNoSignal(Lobby.gameInfo.emptyHandGrab);
         RefreshSaveChoice();
     }
 

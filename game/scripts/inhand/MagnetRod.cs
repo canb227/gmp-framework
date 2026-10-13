@@ -1,62 +1,105 @@
 using Godot;
+using PolyType;
 using System.Collections.Generic;
 
+/// <summary>What a magnet rod is doing.</summary>
+public enum MagnetMode : byte { Off, Single, Area }
+
+/// <summary>What the other peers' copies of a magnet rod need each tick (<see cref="MagnetRod.GenerateSyncState"/>).</summary>
+[GenerateShape]
+public partial record struct MagnetSync
+{
+    public MagnetMode mode;
+    /// <summary>Where the rod pulls to, and how fast that point moves.</summary>
+    public Vector3 target;
+    public Vector3 targetVelocity;
+    /// <summary>The item a single grab holds; 0 in area mode, where every copy catches the items around the target itself.</summary>
+    public ulong itemId;
+}
+
 /// <summary>
-/// Tool: while primary is held, pulls nearby loose items into a floating ball in front of the camera that
-/// follows the cursor; the scroll wheel moves the ball nearer or further while active.
+/// The tool for moving things by hand. Hold left click on a loose item to lift it (<see cref="MagnetMode.Single"/>),
+/// or hold right click to pull the nearest loose items into a floating ball (<see cref="MagnetMode.Area"/>). The
+/// scroll wheel moves the hold point nearer or further.
 /// <para>
-/// Multiplayer: like the grab tool, the magnet claims each item it catches (<see cref="GameWorld.Claim"/>),
-/// making this peer the item's authority, so this peer simulates the pull and everyone else sees the item move
-/// through its state updates. Items someone else holds are refused. Every item is released when primary is let
-/// go or the rod is put away.
+/// Multiplayer: the rod's authority (the peer driving it) sends the mode, the hold point and (single) the item; it rides
+/// along with its player's state. Every peer's copy of the rod holds the same items and pulls the ones its own peer
+/// simulates, so pulls from several rods on one item add up: two players can lift what one can't. Items know nothing
+/// of this; a held item is an item like any other.
 /// </para>
 /// <para>
-/// Each caught item gets a spring-damper acceleration toward the ball centre plus gravity cancellation, with
-/// the total force capped at <see cref="maxForce"/>: light items snap in, heavy ones lag and sag. The items
-/// collide with each other, which packs them into a ball.
+/// Authority: each tick the rod's own peer keeps a leased claim (<see cref="GameWorld.Claim"/>) on every item it holds,
+/// so it simulates them and a lone holder feels no lag. An item another peer has claimed is left with them: this rod
+/// just adds its pull. The lease runs out <see cref="KeepAfterLetGo"/> after letting go, and the item goes back to the
+/// host. Handing it straight back would stop a throw dead: a hand-over starts the new authority from its own copy, at
+/// rest.
 /// </para>
 /// <para>
-/// With <see cref="singleItemGrab"/> set (the "magnet_rod_single" variant), the rod instead grabs the one item under
-/// the cursor using the player's own grab (<see cref="FactoryPlayer.RequestGrab"/>), for A/B testing grab-by-tool
-/// against grab-by-empty-hand (<see cref="FactoryPlayer.emptyHandGrabEnabled"/>).
+/// The pull is a mass-independent controller, so a feather and a lead weight respond alike: a position loop picks a
+/// velocity that closes the gap (plus the hold point's own velocity, so held items keep up while you move), a velocity
+/// loop turns that into an acceleration (never correcting more than a fraction of the difference per tick, which keeps
+/// light items from oscillating), gravity is cancelled, and the result is scaled by
+/// the item's mass and capped at <see cref="strength"/>, so heavy items sag and lag. Spin is damped while held. In
+/// area mode every item is pulled to the same point, and their collisions pack them into a ball.
 /// </para>
 /// </summary>
 public partial class MagnetRod : HeldItem
 {
-    [ExportGroup("Reach")]
-    /// <summary>Items within this distance of the ball centre are caught.</summary>
-    [Export] public float captureRadius = 5f;
-    [Export] public int maxItems = 30;
-    /// <summary>Seconds between searches for new items while active.</summary>
-    [Export] public double rescanInterval = 0.25;
-    /// <summary>Grab only the looked-at item, via the player's grab, instead of pulling a ball of items.</summary>
-    [Export] public bool singleItemGrab;
-
-    [ExportGroup("Ball")]
+    [ExportGroup("Hold distance")]
     [Export] public float holdDistance = 3f;
-    [Export] public float minHoldDistance = 1.5f;
+    [Export] public float minHoldDistance = 1f;
     [Export] public float maxHoldDistance = 8f;
     [Export] public float scrollStep = 0.5f;
 
-    [ExportGroup("Force")]
-    /// <summary>Spring stiffness toward the ball centre (acceleration per metre, 1/s²).</summary>
-    [Export] public float spring = 30f;
-    /// <summary>Velocity damping (1/s).</summary>
-    [Export] public float damping = 8f;
-    /// <summary>Force cap per item (N), including gravity cancellation.</summary>
-    [Export] public float maxForce = 600f;
+    [ExportGroup("Pull")]
+    /// <summary>How fast the gap to the hold point closes (1/s).</summary>
+    [Export] public float positionGain = 8f;
+    /// <summary>How fast an item's velocity follows the wanted velocity (1/s).</summary>
+    [Export] public float velocityGain = 20f;
+    /// <summary>Fastest an item is pulled toward the hold point (m/s), on top of following it.</summary>
+    [Export] public float maxPullSpeed = 12f;
+    /// <summary>
+    /// Smoothing time (s) for the hold point's velocity. Mouse look and movement move the point between physics
+    /// ticks, in uneven steps; unsmoothed, those steps would jolt held items.
+    /// </summary>
+    [Export] public float followSmoothing = 0.06f;
+    /// <summary>Force cap per item (N), including holding it up against gravity.</summary>
+    [Export] public float strength = 400f;
+    /// <summary>How fast a held item's spin is damped (1/s).</summary>
+    [Export] public float spinDamping = 6f;
 
-    /// <summary>Shown only while the magnet is pulling (the coil's glow); hidden otherwise.</summary>
+    [ExportGroup("Single")]
+    /// <summary>A single grab lets go if the item stays further than this from the hold point...</summary>
+    [Export] public float breakDistance = 2.5f;
+    /// <summary>...for this long (s), e.g. when it's pinned behind a wall.</summary>
+    [Export] public float breakTime = 0.5f;
+
+    [ExportGroup("Area")]
+    /// <summary>Items within this distance of the hold point are caught.</summary>
+    [Export] public float captureRadius = 5f;
+    [Export] public int maxItems = 30;
+    /// <summary>Seconds between searches for more items.</summary>
+    [Export] public double rescanInterval = 0.25;
+
+    /// <summary>Shown only while the rod is pulling (the coil's glow); hidden otherwise.</summary>
     [Export] public Node3D activeIndicator;
 
-    /// <summary>Items currently being pulled (this peer is their authority and holder).</summary>
-    public IReadOnlyCollection<PhysicalFactoryItem> captured => capturedItems;
+    // On every copy: set by input on the holder's peer, by its synced state on the others.
+    MagnetMode mode;
+    Vector3 target;
+    Vector3 targetVelocity;
+    /// <summary>The items held; once caught, an item stays until the rod lets go.</summary>
+    readonly List<PhysicalFactoryItem> caught = new();
 
-    readonly HashSet<PhysicalFactoryItem> capturedItems = new();
-    readonly Dictionary<ulong, PhysicalFactoryItem> pendingClaims = new();
-    bool active;
+    // The holder's peer only.
+    Vector3 lastTarget;
+    float strainedFor;
     double untilRescan;
     MeshInstance3D ballMarker;
+
+    /// <summary>Seconds a held item's claim lasts after the rod lets go of it, so a throw plays out on this peer.</summary>
+    public const double KeepAfterLetGo = 3.0;
+
     static readonly Vector3 gravity = ProjectSettings.GetSetting("physics/3d/default_gravity_vector").AsVector3()
         * ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
 
@@ -64,142 +107,216 @@ public partial class MagnetRod : HeldItem
     {
         base.Equip(item, player);
         if (!isLocal) return;
-        GameWorld.ClaimGrantedEvent += OnClaimGranted;
         ballMarker = GetNode<MeshInstance3D>("BallMarker");
         ballMarker.TopLevel = true;
         ballMarker.Visible = false;
     }
 
-    public override void _ExitTree()
-    {
-        if (!isLocal) return;
-        if (singleItemGrab) player.ReleaseGrab();
-        SetActive(false);
-        GameWorld.ClaimGrantedEvent -= OnClaimGranted;
-    }
+    // ---- input (holder's peer) ----------------------------------------------------
 
     public override bool HandleInput(InputEvent @event)
     {
-        if (singleItemGrab) return HandleSingleGrabInput(@event);
         if (@event.IsActionPressed(InputActions.primary))
         {
-            SetActive(true);
+            if (mode == MagnetMode.Off && player.pickTarget is PhysicalFactoryItem item && item.canBeGrabbed)
+            {
+                // Hold it where it is (distance-wise) rather than yanking it to a fixed point.
+                Camera3D camera = player.camera;
+                holdDistance = Mathf.Clamp((item.GlobalPosition - camera.GlobalPosition).Dot(-camera.GlobalTransform.Basis.Z), minHoldDistance, maxHoldDistance);
+                StartHolding(MagnetMode.Single);
+                caught.Add(item);
+            }
             return true;
         }
-        if (@event.IsActionReleased(InputActions.primary))
+        if (@event.IsActionPressed(InputActions.secondary))
         {
-            return true; // released in _PhysicsProcess, which also covers losing focus mid-hold
-        }
-        return false;
-    }
-
-    bool HandleSingleGrabInput(InputEvent @event)
-    {
-        if (@event.IsActionPressed(InputActions.primary))
-        {
-            if (player.pickTarget is PhysicalFactoryItem item && item.canBeGrabbed) player.RequestGrab(item);
+            if (mode == MagnetMode.Off)
+            {
+                StartHolding(MagnetMode.Area);
+            }
             return true;
         }
-        if (@event.IsActionReleased(InputActions.primary))
-        {
-            player.ReleaseGrab();
-            return true;
-        }
-        return false;
+        // Letting go is noticed in _PhysicsProcess, which also covers losing focus mid-hold.
+        return @event.IsActionReleased(InputActions.primary) || @event.IsActionReleased(InputActions.secondary);
     }
 
     public override bool HandleScroll(int step)
     {
-        if (!active) return false;
+        if (mode == MagnetMode.Off) return false;
         holdDistance = Mathf.Clamp(holdDistance - step * scrollStep, minHoldDistance, maxHoldDistance);
         return true;
     }
 
-    Vector3 BallCentre()
+    void StartHolding(MagnetMode newMode)
+    {
+        mode = newMode;
+        target = HoldPoint();
+        lastTarget = target;
+        targetVelocity = Vector3.Zero;
+        strainedFor = 0;
+        untilRescan = 0;
+    }
+
+    Vector3 HoldPoint()
     {
         Camera3D camera = player.camera;
         return camera.GlobalPosition - camera.GlobalTransform.Basis.Z * holdDistance;
     }
 
+    // ---- sync ---------------------------------------------------------------------
+
+    public override byte[] GenerateSyncState()
+    {
+        MagnetSync sync = new() { mode = mode, target = target, targetVelocity = targetVelocity };
+        if (mode == MagnetMode.Single && caught.Count > 0)
+        {
+            sync.itemId = caught[0].id;
+        }
+        return GMPObject.serializer.Serialize(sync);
+    }
+
+    public override void ApplySyncState(byte[] state)
+    {
+        if (state == null || state.Length == 0) return;
+        MagnetSync sync = GMPObject.serializer.Deserialize<MagnetSync>(state);
+        if (sync.mode != mode)
+        {
+            caught.Clear();
+            mode = sync.mode;
+        }
+        target = sync.target;
+        targetVelocity = sync.targetVelocity;
+        if (mode == MagnetMode.Single)
+        {
+            PhysicalFactoryItem item = null;
+            if (GameWorld.syncedObjs.TryGetValue(sync.itemId, out GMPObject gmpo))
+            {
+                item = gmpo as PhysicalFactoryItem;
+            }
+            if (caught.Count != 1 || caught[0] != item)
+            {
+                caught.Clear();
+                if (item != null) caught.Add(item);
+            }
+        }
+    }
+
+    // ---- every tick, every copy ---------------------------------------------------
+
     public override void _PhysicsProcess(double delta)
     {
-        if (!isLocal) return;
-        if (singleItemGrab)
+        caught.RemoveAll(IsGone);
+        if (isLocal)
         {
-            // The player drives the grab (and its scroll distance); the rod only shows the coil glow while holding.
-            if (activeIndicator != null) activeIndicator.Visible = player.grabbedItem != null;
+            UpdateHolder(delta);
+        }
+        if (activeIndicator != null) activeIndicator.Visible = mode != MagnetMode.Off;
+        if (mode == MagnetMode.Off)
+        {
+            caught.Clear();
             return;
         }
-        if (active && !Input.IsActionPressed(InputActions.primary))
+        if (mode == MagnetMode.Area)
         {
-            SetActive(false);
-        }
-        if (!active) return;
-
-        Vector3 centre = BallCentre();
-        ballMarker.GlobalPosition = centre;
-
-        untilRescan -= delta;
-        if (untilRescan <= 0)
-        {
-            untilRescan = rescanInterval;
-            CatchNearbyItems(centre);
-        }
-        Pull(centre);
-    }
-
-    void SetActive(bool on)
-    {
-        if (active == on) return;
-        active = on;
-        untilRescan = 0;
-        if (ballMarker != null) ballMarker.Visible = on;
-        if (activeIndicator != null) activeIndicator.Visible = on;
-        if (!on)
-        {
-            foreach (PhysicalFactoryItem item in capturedItems)
+            untilRescan -= delta;
+            if (untilRescan <= 0)
             {
-                if (IsInstanceValid(item)) GameWorld.Release(item);
+                untilRescan = rescanInterval;
+                CatchNearbyItems();
             }
-            capturedItems.Clear();
-            // Claims still in flight are released as they are granted (OnClaimGranted).
+        }
+        foreach (PhysicalFactoryItem item in caught)
+        {
+            // Keep simulating what this rod holds, unless another peer got there first.
+            if (isLocal && !GameWorld.IsClaimedByOther(item))
+            {
+                GameWorld.Claim(item, KeepAfterLetGo);
+            }
+            Pull(item, (float)delta);
         }
     }
 
-    void CatchNearbyItems(Vector3 centre)
+    /// <summary>Holder's peer: lets go when the button is up, moves the hold point, and breaks a single grab that's stuck.</summary>
+    void UpdateHolder(double delta)
     {
-        foreach (Node n in GameWorld.OverlapSphere(centre, captureRadius, (int)~GameWorld.QueryHiddenLayer))
+        StringName button = InputActions.secondary;
+        if (mode == MagnetMode.Single) button = InputActions.primary;
+        if (mode != MagnetMode.Off && !Input.IsActionPressed(button))
         {
-            if (capturedItems.Count + pendingClaims.Count >= maxItems) return;
-            if (n is not PhysicalFactoryItem item || !item.canBeGrabbed || item.authoredBodyType != BodyTypeEnum.Dynamic) continue;
-            if (item.id == 0 || capturedItems.Contains(item) || pendingClaims.ContainsKey(item.id)) continue;
-            if (GameWorld.heldBy.TryGetValue(item.id, out ulong holder) && holder != Lobby.selfPeerID) continue;
-            pendingClaims[item.id] = item;
-            GameWorld.Claim(item);
+            mode = MagnetMode.Off;
+        }
+        if (mode == MagnetMode.Single && caught.Count == 0)
+        {
+            mode = MagnetMode.Off; // the item is gone (picked up, eaten by a machine...)
+        }
+        ballMarker.Visible = mode == MagnetMode.Area;
+        if (mode == MagnetMode.Off) return;
+
+        float dt = (float)delta;
+        Vector3 point = HoldPoint();
+        Vector3 rawVelocity = (point - lastTarget) / dt;
+        lastTarget = point;
+        targetVelocity = targetVelocity.Lerp(rawVelocity, 1f - Mathf.Exp(-dt / followSmoothing));
+        target = point;
+        ballMarker.GlobalPosition = target;
+
+        if (mode == MagnetMode.Single)
+        {
+            strainedFor = caught[0].GlobalPosition.DistanceTo(target) > breakDistance ? strainedFor + dt : 0;
+            if (strainedFor > breakTime)
+            {
+                mode = MagnetMode.Off;
+            }
         }
     }
 
-    void OnClaimGranted(ulong id, ulong newAuthority)
+    /// <summary>Tops the catch up to <see cref="maxItems"/> with the nearest loose items around the hold point.</summary>
+    void CatchNearbyItems()
     {
-        if (!pendingClaims.Remove(id, out PhysicalFactoryItem item)) return;
-        if (newAuthority != Lobby.selfPeerID || !IsInstanceValid(item)) return;
-        if (active)
-            capturedItems.Add(item);
-        else
-            GameWorld.Release(item);
+        if (caught.Count >= maxItems) return;
+        List<PhysicalFactoryItem> inReach = new();
+        foreach (Node n in GameWorld.OverlapSphere(target, captureRadius, (int)~GameWorld.QueryHiddenLayer))
+        {
+            if (n is PhysicalFactoryItem item && item.id != 0 && item.canBeGrabbed && item.authoredBodyType == BodyTypeEnum.Dynamic && !caught.Contains(item))
+            {
+                inReach.Add(item);
+            }
+        }
+        inReach.Sort((a, b) => a.GlobalPosition.DistanceSquaredTo(target).CompareTo(b.GlobalPosition.DistanceSquaredTo(target)));
+        foreach (PhysicalFactoryItem item in inReach)
+        {
+            if (caught.Count >= maxItems) return;
+            caught.Add(item);
+        }
     }
 
-    void Pull(Vector3 centre)
+    static bool IsGone(PhysicalFactoryItem item)
     {
-        capturedItems.RemoveWhere(item => !IsInstanceValid(item) || item.authority != Lobby.selfPeerID);
-        foreach (PhysicalFactoryItem item in capturedItems)
+        return !IsInstanceValid(item) || item.IsQueuedForDeletion();
+    }
+
+    /// <summary>Drives <paramref name="item"/> toward the hold point, if this peer simulates it (otherwise its own peer's copy of this rod does).</summary>
+    void Pull(PhysicalFactoryItem item, float dt)
+    {
+        if (item.authority != Lobby.selfPeerID) return;
+
+        Vector3 pull = (target - item.GlobalPosition) * positionGain;
+        if (pull.Length() > maxPullSpeed) pull = pull.Normalized() * maxPullSpeed;
+        Vector3 wantedVelocity = targetVelocity + pull;
+
+        // Correct at most 90% of the velocity difference per tick, whatever the gain: this keeps the loop stable.
+        float response = Mathf.Min(velocityGain, 0.9f / dt);
+        // With several rods on one item each cancels all of gravity; the velocity loop takes up the extra lift.
+        Vector3 accel = (wantedVelocity - item.GetLinearVelocity()) * response - gravity;
+        Vector3 force = accel * item.GetMass();
+        if (force.Length() > strength) force = force.Normalized() * strength;
+        item.ApplyCentralForce(force);
+
+        // Remove a fraction of its spin (an angular impulse of I * delta-omega).
+        Vector3 spin = item.GetAngularVelocity();
+        if (spin.LengthSquared() > 1e-6f)
         {
-            float mass = item.GetMass();
-            Vector3 velocity = item.GetLinearVelocity();
-            Vector3 accel = (centre - item.GlobalPosition) * spring - velocity * damping - gravity;
-            Vector3 force = accel * mass;
-            if (force.Length() > maxForce) force = force.Normalized() * maxForce;
-            item.ApplyCentralForce(force);
+            item.ApplyAngularImpulse(item.GetInertiaTensor() * (-spin * Mathf.Min(1f, spinDamping * dt)));
         }
     }
 }

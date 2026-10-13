@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Linq;
 
 /// <summary>
 /// FactoryGame-specific session startup, called by GameWorld during the lobby → game transition.
@@ -40,25 +41,43 @@ public static class GameBootstrap
         SpawnLocalPlayer();
     }
 
-    /// <summary>Spawns this peer's player for everyone, with the starter items from the game settings.</summary>
+    /// <summary>
+    /// Spawns this peer's player for everyone. A player coming back to this game (one that left, matched by peer id
+    /// or name) picks up where it was with its inventory; anyone else gets the starter items from the game settings.
+    /// </summary>
     public static void SpawnLocalPlayer()
     {
+        string selfName = Lobby.members.TryGetValue(Lobby.selfPeerID, out PlayerInfo self) ? self.Name : "";
+        PlayerSave returning = SaveManager.TakeAbsent(Lobby.selfPeerID, selfName);
+
         PlayerSync init = new PlayerSync();
         init.controllingPeerID = Lobby.selfPeerID;
         init.isHuman = true;
         Vector3 spawnPos = PickSpawnPosition();
-        ulong pid = GameWorld.SpawnScene(PlayerScene, spawnPos, default, default, GMPObject.serializer.Serialize(init));
+        Vector3 spawnRot = default;
+        if (returning != null)
+        {
+            spawnPos = returning.pos;
+            spawnRot = returning.rot;
+        }
+        ulong pid = GameWorld.SpawnScene(PlayerScene, spawnPos, spawnRot, default, GMPObject.serializer.Serialize(init));
         FactoryPlayer player = GameWorld.syncedObjs[pid] as FactoryPlayer;
 
-        FactoryPlayer.emptyHandGrabEnabled = Lobby.gameInfo.emptyHandGrab;
+        if (returning != null)
+        {
+            player.inventory.slots = returning.slots ?? new InventorySlot[Inventory.TotalSlots];
+            player.inventory.ActiveHotbarSlot = returning.equippedSlot;
+            player.inventory.InventoryUpdated();
+            player.UpdateEquippedItem();
+            return;
+        }
         switch (Lobby.gameInfo.starterItems)
         {
-            case StarterItems.SingleMagnetRod:
-                player.inventory.AddItem("magnet_rod_single", 1);
+            case StarterItems.MagnetRod:
+                player.inventory.AddItem("magnet_rod", 1);
                 break;
             case StarterItems.All:
                 player.inventory.AddItem("magnet_rod", 1);
-                player.inventory.AddItem("magnet_rod_single", 1);
                 foreach (string blueprint in StartingBlueprints)
                 {
                     player.inventory.AddItem(blueprint, StartingBlueprintCount);
@@ -67,6 +86,30 @@ public static class GameBootstrap
         }
 
         player.UpdateEquippedItem();
+    }
+
+    /// <summary>
+    /// Every peer, when a peer leaves mid-game: its avatar is removed, and kept as an absent player so the next save
+    /// holds it and the player can come back to it (<see cref="SpawnLocalPlayer"/>).
+    /// </summary>
+    public static void PeerLeft(ulong peer)
+    {
+        foreach (FactoryPlayer player in GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().ToList())
+        {
+            if (player.controllingPeerID == peer)
+            {
+                SaveManager.RememberAbsent(player);
+                GameWorld.RemoveLocal(player.id);
+            }
+        }
+    }
+
+    /// <summary>Clears the game's state that outlives a session (it is static): the shop, quests and absent players.</summary>
+    public static void ResetSession()
+    {
+        Shop.ResetSession();
+        ProgressManager.ResetSession();
+        SaveManager.ResetSession();
     }
 
     /// <summary>Group for spawn markers placed in level scenes (e.g. a Marker3D named PlayerStart).</summary>

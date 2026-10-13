@@ -46,6 +46,12 @@ public partial class Conveyor : Structure
         {
             return;
         }
+        // A restore (always while frozen) rebuilds the saved shapes; swapping now would spawn while other peers are
+        // still restoring, and their restore would then wipe the new belt.
+        if (GameWorld.frozen)
+        {
+            return;
+        }
         if (ItemInfo.Fetch(blueprintItemID) is not ConveyorBlueprint blueprint)
         {
             return;

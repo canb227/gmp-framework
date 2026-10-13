@@ -263,7 +263,12 @@ public partial class Lobby : Node
 
     private static void OnDoneLoading(ulong from, byte[] msg)
     {
-        members[from].doneLoading = true;
+        if (!members.TryGetValue(from, out PlayerInfo sender))
+        {
+            Logging.Warn($"DoneLoading from {from}, who isn't a member", "Lobby");
+            return;
+        }
+        sender.doneLoading = true;
         foreach (var member in members)
         {
             if (!member.Value.doneLoading)
@@ -288,7 +293,12 @@ public partial class Lobby : Node
 
     private static void OnDonePreloading(ulong from, byte[] data)
     {
-        members[from].donePreloading = true;
+        if (!members.TryGetValue(from, out PlayerInfo sender))
+        {
+            Logging.Warn($"DonePreloading from {from}, who isn't a member", "Lobby");
+            return;
+        }
+        sender.donePreloading = true;
         foreach (var member in members)
         {
             if (!member.Value.donePreloading)
@@ -432,13 +442,17 @@ public partial class Lobby : Node
 
     // ---- helpers ---------------------------------------------------------------
 
+    // Updates an existing entry in place: replacing it would wipe its loading flags whenever a roster arrives mid-load.
     private static void AddOrUpdateMember(ulong id, string name, bool isHost)
     {
-        PlayerInfo m = new();
-        m.PeerID = id;
+        if (!members.TryGetValue(id, out PlayerInfo m))
+        {
+            m = new();
+            m.PeerID = id;
+            members[id] = m;
+        }
         m.Name = name;
         m.IsHost = isHost;
-        members[id] = m;
         if (m.IsHost)
         {
             hostID = id;

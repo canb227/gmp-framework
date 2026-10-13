@@ -29,16 +29,16 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
 
     [ExportGroup("Sync")]
     /// <summary>
-    /// Sync <see cref="GMPObject.priority"/> while Box3D has this item asleep. While it's awake the item uses its
-    /// normal priority (<see cref="DefaultPriority"/> unless the scene sets one), so moving items win the
-    /// state-update budget over resting ones. One last update is always queued as the item falls asleep, so every
-    /// peer sees where it came to rest.
+    /// Sync <see cref="GMPObject.priority"/> while Box3D has this item asleep (1: about once a second). While it's
+    /// awake the item uses its normal priority (<see cref="DefaultPriority"/> unless the scene sets one). One last
+    /// update is always queued as the item falls asleep, so every peer sees where it came to rest; the slow resends
+    /// after that heal any update the network lost.
     /// </summary>
     [Export]
     public int sleepingPriority = 1;
 
-    /// <summary>Sync priority of an awake item unless its scene sets its own.</summary>
-    public const int DefaultPriority = 10;
+    /// <summary>Sync priority of an awake item unless its scene sets its own: every tick (<see cref="GameWorld.SendThreshold"/>).</summary>
+    public const int DefaultPriority = GameWorld.SendThreshold;
 
     /// <summary>Set once a pickup has been granted, so later simultaneous requests lose.</summary>
     bool taken;
@@ -73,12 +73,11 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
         awakePriority = priority; // Init has resolved the scene/spawn priority by now
         // Level items can settle while the level loads, before this point, and Box3D won't report it again.
         if (authority == Lobby.selfPeerID && !this.IsAwake()) OnFellAsleep();
-        this.ApplyCentralForce(new Vector3(Random.Shared.Next(-5,5), Random.Shared.Next(-5,5), Random.Shared.Next(-5,5)));
-    }
-
-    public override void _ExitTree()
-    {
-
+        // A small nudge for a fresh spawn, not for a restore (which must leave everything where it was saved).
+        if (authority == Lobby.selfPeerID && !GameWorld.frozen)
+        {
+            this.ApplyCentralForce(new Vector3(Random.Shared.Next(-5, 5), Random.Shared.Next(-5, 5), Random.Shared.Next(-5, 5)));
+        }
     }
 
     public override void OnAuthorityChanged()
@@ -97,22 +96,13 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
 
         priority = sleepingPriority;
         // Queue one more update so peers get the resting pose, not the last one sent while it settled.
-        priorityAccumulator = Math.Max(priorityAccumulator, awakePriority);
+        priorityAccumulator = Math.Max(priorityAccumulator, GameWorld.SendThreshold);
+        GameWorld.WatchForWake(this);
     }
 
-    /// <summary>
-    /// Called by <see cref="SleepingItemPoller"/> every so often while this item is asleep. Box3D signals falling
-    /// asleep but not waking, so waking is polled; until it's noticed the item just syncs at its sleeping priority.
-    /// Returns false once the item is awake (or no longer this peer's to simulate) and needs no more checks.
-    /// </summary>
-    public bool CheckStillAsleep()
+    public override void OnWoke()
     {
-        if (authority != Lobby.selfPeerID || this.IsAwake())
-        {
-            SetAwake();
-            return false;
-        }
-        return true;
+        SetAwake();
     }
 
     void SetAwake()
@@ -152,11 +142,6 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
     private void _RequestPickup(ulong playerObjectId)
     {
         if (taken || !canBePickedUp || authority != Lobby.selfPeerID)
-        {
-            return;
-        }
-        // Someone else is holding it (grab tool).
-        if (GameWorld.heldBy.TryGetValue(id, out ulong holder) && holder != RPCManager.sender)
         {
             return;
         }

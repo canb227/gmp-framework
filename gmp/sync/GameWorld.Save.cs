@@ -35,7 +35,7 @@ public partial record WorldSave
 
 /// <summary>
 /// GameWorld: snapshotting the synced world into a <see cref="WorldSave"/> and rebuilding it from one, plus the save
-/// files on disk. The game wraps the world in its own save record (players, shop, quests); see <see cref="GameSave"/>.
+/// files on disk. The game wraps the world in its own save record (players, shop, quests); see <see cref="SaveManager"/>.
 /// <para>
 /// A snapshot walks <see cref="spawnedRoots"/>, so despawned objects are simply gone, and records each root as the
 /// spawn call that rebuilds it with the same ids. This relies on GMPObjects never being reparented: a child is found
@@ -57,8 +57,8 @@ public partial class GameWorld
         return "save_" + System.DateTime.Now.ToString("yyyyMMdd_HHmmss") + SaveExtension;
     }
 
-    /// <summary>Records every live spawned root and the state of each GMPObject in them.</summary>
-    public static WorldSave SnapshotWorld()
+    /// <summary>Records every live spawned root and the state of each GMPObject in them. Claimed objects are recorded with the host unless <paramref name="keepClaims"/>.</summary>
+    public static WorldSave SnapshotWorld(bool keepClaims)
     {
         WorldSave save = new();
         HashSet<ulong> covered = new();
@@ -83,7 +83,7 @@ public partial class GameWorld
             }
             if (root is GMPObject g)
             {
-                r.init = new GMPOInitData(g.id, g.authority, g.owner, g.priority, g.pauseable);
+                r.init = new GMPOInitData(g.id, SavedAuthority(g, keepClaims), g.owner, g.priority, g.pauseable);
                 covered.Add(g.id);
                 if (saved) SaveObject(save, g);
             }
@@ -91,7 +91,7 @@ public partial class GameWorld
             {
                 if (c is GMPObject gc && !c.IsQueuedForDeletion())
                 {
-                    r.childInit[root.GetPathTo(c)] = new GMPOInitData(gc.id, gc.authority, gc.owner, gc.priority, gc.pauseable);
+                    r.childInit[root.GetPathTo(c)] = new GMPOInitData(gc.id, SavedAuthority(gc, keepClaims), gc.owner, gc.priority, gc.pauseable);
                     covered.Add(gc.id);
                     if (saved) SaveObject(save, gc);
                 }
@@ -109,6 +109,18 @@ public partial class GameWorld
             }
         }
         return save;
+    }
+
+    // Claims aren't saved, and a restore clears them, so a claimed object is saved with the host, where it goes once the
+    // claim ends anyway; a rod still holding it simply claims it again. A joiner is the exception: it restores alone
+    // while the claimers keep their claims, so it must see them as the authority.
+    static ulong SavedAuthority(GMPObject gmpo, bool keepClaims)
+    {
+        if (!keepClaims && claims.TryGetValue(gmpo.id, out ClaimRecord claim) && !claim.released)
+        {
+            return Lobby.hostID;
+        }
+        return gmpo.authority;
     }
 
     static void SaveObject(WorldSave save, GMPObject gmpo)

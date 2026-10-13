@@ -122,8 +122,7 @@ public partial class Machine : Structure
     }
 
     /// <summary>
-    /// The synced items in the input volumes, skipping players, structures, items being held and items already
-    /// despawning.
+    /// The synced items in the input volumes, skipping players, structures and items already despawning.
     /// </summary>
     protected System.Collections.Generic.List<PhysicalFactoryItem> ItemsInInputs()
     {
@@ -135,7 +134,7 @@ public partial class Machine : Structure
             using Godot.Collections.Array bodies = result.AsGodotArray();
             for (int i = 0; i < bodies.Count; i++)
             {
-                if (bodies[i].AsGodotObject() is PhysicalFactoryItem item && GameWorld.syncedObjs.ContainsKey(item.id) && !GameWorld.heldBy.ContainsKey(item.id))
+                if (bodies[i].AsGodotObject() is PhysicalFactoryItem item && GameWorld.syncedObjs.ContainsKey(item.id))
                 {
                     items.Add(item);
                 }
