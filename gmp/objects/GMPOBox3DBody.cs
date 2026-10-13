@@ -69,9 +69,9 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         authoredBodyType = this.GetBodyType();
         if (authority == Lobby.selfPeerID)
         {
-            if (SyncHelpers.TryReadTransform(desiredState, out var s))
+            if (desiredState != null)
             {
-                this.Teleport(s.pos, s.rot);
+                this.Teleport(target.pos, target.rot);
             }
         }
         else
@@ -81,12 +81,50 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         RefreshPhysicsProcess();
     }
 
-    /// <summary>The authority simulates with the authored body type; everyone else follows as Kinematic.</summary>
+    /// <summary>
+    /// The authority simulates with the authored body type; everyone else follows as Kinematic. Motion carries across
+    /// the hand-off both ways, so a moving body (an item on a belt) doesn't stop and then rubber-band: the new
+    /// authority starts it at the velocity it was being followed at, and the old one keeps it moving at the velocity
+    /// it had until the new authority's updates arrive.
+    /// </summary>
     public virtual void OnAuthorityChanged()
     {
         desiredState = null;
-        following = false;
-        this.SetBodyType(authority == Lobby.selfPeerID ? authoredBodyType : BodyTypeEnum.Kinematic);
+        if (authority == Lobby.selfPeerID)
+        {
+            // A follower is only ever placed, so the body has no velocity of its own: give it the followed one.
+            Vector3 velocity = Vector3.Zero;
+            Vector3 angularVelocity = Vector3.Zero;
+            if (following && extrapolateLeft > 0f)
+            {
+                velocity = targetVelocity;
+                angularVelocity = targetAngularVelocity;
+            }
+            following = false;
+            this.SetBodyType(authoredBodyType);
+            if (authoredBodyType == BodyTypeEnum.Dynamic)
+            {
+                this.SetLinearVelocity(velocity);
+                this.SetAngularVelocity(angularVelocity);
+            }
+        }
+        else
+        {
+            // Was this peer simulating it? Then follow on from where and how fast it was going. (A follower that is
+            // still following just keeps its target; one that had arrived is at rest, which this also covers.)
+            if (!following)
+            {
+                target = new TransformSyncState { pos = Position, rot = Rotation };
+                targetVelocity = this.GetLinearVelocity();
+                targetAngularVelocity = this.GetAngularVelocity();
+                extrapolateLeft = MaxExtrapolation;
+                following = true;
+            }
+            this.SetBodyType(BodyTypeEnum.Kinematic);
+            // A Kinematic body moves by its own velocity, on top of the follower placing it: clear it.
+            this.SetLinearVelocity(Vector3.Zero);
+            this.SetAngularVelocity(Vector3.Zero);
+        }
         RefreshPhysicsProcess();
     }
 
@@ -109,6 +147,24 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     /// in float to compare against a small threshold.
     /// </summary>
     const float ArrivedDistance = 0.0005f, ArrivedRotation = 1e-6f;
+
+    /// <summary>
+    /// The newest state received from the authority, moved on by <see cref="targetVelocity"/> and turned by
+    /// <see cref="targetAngularVelocity"/> (world space) every tick since.
+    /// </summary>
+    TransformSyncState target;
+    Vector3 targetVelocity;
+    Vector3 targetAngularVelocity;
+
+    /// <summary>Seconds <see cref="target"/> may still be moved on by its velocity before a newer state arrives.</summary>
+    float extrapolateLeft;
+
+    /// <summary>
+    /// How long a follower keeps carrying the last state on at its velocity without hearing a newer one. Long enough
+    /// to cover the gap between updates and an authority hand-off (a round trip), short enough that a body whose
+    /// updates stop doesn't drift off.
+    /// </summary>
+    const float MaxExtrapolation = 0.25f;
 
     static readonly System.Collections.Generic.Dictionary<Type, bool> customPhysicsProcess = new();
 
@@ -190,7 +246,15 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
 
     public virtual byte[] GenerateStateUpdate()
     {
-        return SyncHelpers.WriteTransform(this);
+        // A sleeping body is at rest; don't let followers drift on whatever velocity it went to sleep with.
+        Vector3 velocity = Vector3.Zero;
+        Vector3 angularVelocity = Vector3.Zero;
+        if (this.IsAwake())
+        {
+            velocity = this.GetLinearVelocity();
+            angularVelocity = this.GetAngularVelocity();
+        }
+        return GMPObject.serializer.Serialize(new BodySyncState { pos = Position, rot = Rotation, vel = velocity, angVel = angularVelocity });
     }
 
     public virtual byte[] SaveState()
@@ -207,7 +271,16 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         // Resting objects keep being re-sent unchanged; a copy that has already arrived there has nothing to do.
         bool unchanged = update != null && desiredState != null && update.AsSpan().SequenceEqual(desiredState);
         desiredState = update;
-        if (authority != Lobby.selfPeerID && !following && update != null && !unchanged)
+        if (update == null || update.Length == 0 || unchanged)
+        {
+            return;
+        }
+        BodySyncState s = GMPObject.serializer.Deserialize<BodySyncState>(update);
+        target = new TransformSyncState { pos = s.pos, rot = s.rot };
+        targetVelocity = s.vel;
+        targetAngularVelocity = s.angVel;
+        extrapolateLeft = MaxExtrapolation;
+        if (authority != Lobby.selfPeerID && !following)
         {
             following = true;
             RefreshPhysicsProcess();
@@ -223,14 +296,40 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
             if (!hasCustomPhysicsProcess) SetPhysicsProcess(false);
             return;
         }
-        if (authority != Lobby.selfPeerID && SyncHelpers.TryReadTransform(desiredState, out var s))
+        if (authority != Lobby.selfPeerID)
         {
-            SyncHelpers.LerpTransform(this, s, SyncHelpers.LerpWeight(syncLerpRate, delta));
-            if (Position.DistanceTo(s.pos) > ArrivedDistance || 1f - Mathf.Abs(Quaternion.Dot(Quaternion.FromEuler(s.rot))) > ArrivedRotation)
+            // Carry the target on at its velocity until a newer state arrives, and move with it, so a follower keeps
+            // pace with a moving body instead of trailing behind it (easing alone always lags a moving target).
+            bool moving = false;
+            if (extrapolateLeft > 0f && (targetVelocity != Vector3.Zero || targetAngularVelocity != Vector3.Zero))
+            {
+                float step = Mathf.Min((float)delta, extrapolateLeft);
+                extrapolateLeft -= step;
+                // The velocities are world space, applied to the parent-relative Position and Quaternion: this
+                // assumes the body sits under the world root (as every spawned object does), at the world origin.
+                target.pos += targetVelocity * step;
+                Position += targetVelocity * step;
+                Vector3 spin = targetAngularVelocity * step;
+                float angle = spin.Length();
+                if (angle > 0f)
+                {
+                    // Angular velocity is world space, so the turn goes on the left (before the body's own rotation).
+                    Quaternion turn = new Quaternion(spin / angle, angle);
+                    target.rot = (turn * Quaternion.FromEuler(target.rot)).GetEuler();
+                    Quaternion = (turn * Quaternion).Normalized();
+                }
+                moving = true;
+            }
+            SyncHelpers.LerpTransform(this, target, SyncHelpers.LerpWeight(syncLerpRate, delta));
+            if (moving)
             {
                 return;
             }
-            SyncHelpers.LerpTransform(this, s, 1f); // land exactly on it
+            if (Position.DistanceTo(target.pos) > ArrivedDistance || 1f - Mathf.Abs(Quaternion.Dot(Quaternion.FromEuler(target.rot))) > ArrivedRotation)
+            {
+                return;
+            }
+            SyncHelpers.LerpTransform(this, target, 1f); // land exactly on it
         }
         following = false;
         RefreshPhysicsProcess();

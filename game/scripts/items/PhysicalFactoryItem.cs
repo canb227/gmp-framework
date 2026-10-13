@@ -37,6 +37,13 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
     [Export]
     public int sleepingPriority = 1;
 
+    /// <summary>
+    /// Seconds a client keeps simulating a loose item it just touched (dropped it, or let go of it with a magnet rod)
+    /// before it goes back to the host, which simulates all loose items: a leased claim (<see cref="GameWorld.Claim"/>).
+    /// It makes the drop or throw feel instant on that client and lets it play out there.
+    /// </summary>
+    public const double TouchLeaseSeconds = 3.0;
+
     /// <summary>Sync priority of an awake item unless its scene sets its own: every tick (<see cref="GameWorld.SendThreshold"/>).</summary>
     public const int DefaultPriority = GameWorld.SendThreshold;
 

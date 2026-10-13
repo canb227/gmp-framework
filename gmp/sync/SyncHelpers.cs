@@ -10,6 +10,20 @@ public partial record struct TransformSyncState
 }
 
 /// <summary>
+/// What a Box3D body's authority sends: its transform plus its velocities, so followers can keep pace with it between
+/// updates and a new authority can carry on at the same speed and spin. Older saves without them read as at rest.
+/// </summary>
+[GenerateShape]
+public partial record struct BodySyncState
+{
+    public Vector3 pos;
+    public Vector3 rot;
+    public Vector3 vel;
+    /// <summary>Angular velocity, world space (rad/s about each axis).</summary>
+    public Vector3 angVel;
+}
+
+/// <summary>
 /// Shared StateUpdate helpers for GMPO node types. Godot nodes can't share a base class across
 /// Node3D/Box3D wrappers, so common sync logic lives here instead.
 /// </summary>

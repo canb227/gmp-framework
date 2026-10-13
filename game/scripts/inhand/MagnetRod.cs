@@ -98,7 +98,7 @@ public partial class MagnetRod : HeldItem
     MeshInstance3D ballMarker;
 
     /// <summary>Seconds a held item's claim lasts after the rod lets go of it, so a throw plays out on this peer.</summary>
-    public const double KeepAfterLetGo = 3.0;
+    public const double KeepAfterLetGo = PhysicalFactoryItem.TouchLeaseSeconds;
 
     static readonly Vector3 gravity = ProjectSettings.GetSetting("physics/3d/default_gravity_vector").AsVector3()
         * ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
