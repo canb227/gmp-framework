@@ -15,10 +15,12 @@ using System.Reflection;
 /// <item>Fill Cells sets the selected Structures' cells (or the open structure scene's root's, with nothing
 /// selected) to every cell their solid colliders touch: each collider's bounding box, read in the root's frame.
 /// Cells that stay keep their tags. The box beside it is the overhang tolerance: a collider must reach further than
-/// that into a cell to claim it.</item>
+/// that into a cell to claim it. With Meshes on, every visible MeshInstance3D's bounding box claims cells the same way.</item>
 /// <item>Edit Cells: click a structure's cell in the viewport to select it (a click that hits none selects the
 /// anchor), then use the Structure Cells dock to put it in or out of the structure, tag its faces, and step to a
-/// neighbouring cell. Each change is written to the structure's cells straight away, as an undoable step.</item>
+/// neighbouring cell. Shift-click adds a cell to the selection (or takes it out again), and the dock's changes and
+/// steps then apply to every selected cell. Each change is written to the structure's cells straight away, as an
+/// undoable step.</item>
 /// </list>
 /// Structure isn't a [Tool] script, so in the editor its nodes carry a placeholder: they are found by script
 /// inheritance and their cells are read and written through Get() and Set().
@@ -41,6 +43,7 @@ public partial class StructureToolsPlugin : EditorPlugin
     CheckButton snapToggle;
     Button fillCellsButton;
     SpinBox toleranceBox;
+    CheckButton fillMeshesToggle;
     CheckButton editCellsToggle;
     MeshInstance3D overlay;
     ImmediateMesh lines;
@@ -62,8 +65,10 @@ public partial class StructureToolsPlugin : EditorPlugin
 
     /// <summary>The structure Edit Cells works on (the selected one), or null.</summary>
     Node3D editTarget;
-    /// <summary>The selected cell of <see cref="editTarget"/>, in its cells' frame. It needn't be one of its cells.</summary>
+    /// <summary>The last clicked cell of <see cref="editTarget"/>, in its cells' frame; the dock shows its state. It needn't be one of its cells.</summary>
     Vector3I selectedCell;
+    /// <summary>Every selected cell, <see cref="selectedCell"/> among them. The dock's changes apply to all of them.</summary>
+    Godot.Collections.Array<Vector3I> selectedCells = new();
 
     public override void _EnterTree()
     {
@@ -81,7 +86,7 @@ public partial class StructureToolsPlugin : EditorPlugin
         fillCellsButton = new Button
         {
             Text = "Fill Cells",
-            TooltipText = "Set the selected Structures' cells (or the open structure scene's) to every cell their solid colliders touch.",
+            TooltipText = "Set the selected Structures' cells (or the open structure scene's) to every cell their solid colliders (and meshes, with Meshes on) touch.",
         };
         fillCellsButton.Pressed += FillCells;
         toleranceBox = new SpinBox
@@ -93,6 +98,11 @@ public partial class StructureToolsPlugin : EditorPlugin
             Suffix = "m",
             TooltipText = "Fill Cells overhang tolerance: a collider only claims a cell if it reaches further than this into it.",
         };
+        fillMeshesToggle = new CheckButton
+        {
+            Text = "Meshes",
+            TooltipText = "Fill Cells also counts the cells each visible mesh's bounding box covers, not just colliders.",
+        };
         editCellsToggle = new CheckButton
         {
             Text = "Edit Cells",
@@ -103,6 +113,7 @@ public partial class StructureToolsPlugin : EditorPlugin
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, snapToggle);
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, fillCellsButton);
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, toleranceBox);
+        AddControlToContainer(CustomControlContainer.SpatialEditorMenu, fillMeshesToggle);
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, editCellsToggle);
         // A move records its undo step when it ends (a gizmo drag released, a keyboard move confirmed, an inspector
         // edit), so snapping then leaves the drag itself free.
@@ -135,12 +146,14 @@ public partial class StructureToolsPlugin : EditorPlugin
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, snapToggle);
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, fillCellsButton);
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, toleranceBox);
+        RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, fillMeshesToggle);
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, editCellsToggle);
         RemoveDock(cellDock);
         viewGridToggle.QueueFree();
         snapToggle.QueueFree();
         fillCellsButton.QueueFree();
         toleranceBox.QueueFree();
+        fillMeshesToggle.QueueFree();
         editCellsToggle.QueueFree();
         cellDock.QueueFree();
         overlay.QueueFree();
@@ -282,7 +295,10 @@ public partial class StructureToolsPlugin : EditorPlugin
         if (editTarget != null)
         {
             var selected = new List<Vector3>();
-            AddBox(editTarget.GlobalTransform, selectedCell, selected);
+            foreach (Vector3I cell in selectedCells)
+            {
+                AddBox(editTarget.GlobalTransform, cell, selected);
+            }
             AddSurface(Mesh.PrimitiveType.Lines, selectedMaterial, selected);
         }
     }
@@ -472,7 +488,7 @@ public partial class StructureToolsPlugin : EditorPlugin
         {
             int f = face;
             var button = new Button { Text = $"{FaceNames[face]} {Structure.FaceDirections[face]}" };
-            button.Pressed += () => selectedCell += Structure.FaceDirections[f];
+            button.Pressed += () => StepSelection(Structure.FaceDirections[f]);
             steps.AddChild(button);
             stepButtons.Add(button);
         }
@@ -490,15 +506,22 @@ public partial class StructureToolsPlugin : EditorPlugin
         {
             cells = CellsOf(editTarget);
             inStructure = cells.TryGetValue(selectedCell, out tags);
-            cellLabel.Text = $"{editTarget.Name}: cell {selectedCell}";
+            if (selectedCells.Count > 1)
+            {
+                cellLabel.Text = $"{editTarget.Name}: {selectedCells.Count} cells (showing {selectedCell})";
+            }
+            else
+            {
+                cellLabel.Text = $"{editTarget.Name}: cell {selectedCell}";
+            }
         }
         else
         {
             cellLabel.Text = "Turn on Edit Cells (3D toolbar) and select a Structure, then click one of its cells.";
         }
         inStructureBox.SetPressedNoSignal(inStructure);
-        // A structure needs at least one cell.
-        inStructureBox.Disabled = !editing || (inStructure && cells.Count == 1);
+        // A structure needs at least one cell, so the selection can't take out every one it has.
+        inStructureBox.Disabled = !editing || (inStructure && LeftAfterRemoving(cells) == 0);
         for (int face = 0; face < inputBoxes.Count && face < outputBoxes.Count; face++)
         {
             inputBoxes[face].SetPressedNoSignal((tags & Structure.InputTag(face)) != 0);
@@ -519,19 +542,36 @@ public partial class StructureToolsPlugin : EditorPlugin
             return;
         }
         Godot.Collections.Dictionary<Vector3I, CellTags> cells = CellsOf(editTarget).Duplicate();
-        if (!on && cells.Count == 1)
+        if (!on && LeftAfterRemoving(cells) == 0)
         {
             return;
         }
-        if (on)
+        foreach (Vector3I cell in selectedCells)
         {
-            cells.TryAdd(selectedCell, CellTags.None);
+            if (on)
+            {
+                cells.TryAdd(cell, CellTags.None);
+            }
+            else
+            {
+                cells.Remove(cell);
+            }
         }
-        else
+        CommitCells(cells, "Set structure cells");
+    }
+
+    // How many of the structure's cells would be left if the selected ones were taken out.
+    int LeftAfterRemoving(Godot.Collections.Dictionary<Vector3I, CellTags> cells)
+    {
+        int left = cells.Count;
+        foreach (Vector3I cell in selectedCells)
         {
-            cells.Remove(selectedCell);
+            if (cells.ContainsKey(cell))
+            {
+                left--;
+            }
         }
-        CommitCells(cells, "Set structure cell");
+        return left;
     }
 
     // Tagging a face of a cell that isn't in the structure adds it.
@@ -542,17 +582,37 @@ public partial class StructureToolsPlugin : EditorPlugin
             return;
         }
         Godot.Collections.Dictionary<Vector3I, CellTags> cells = CellsOf(editTarget).Duplicate();
-        cells.TryGetValue(selectedCell, out CellTags tags);
-        if (on)
+        foreach (Vector3I cell in selectedCells)
         {
-            tags |= tag;
+            cells.TryGetValue(cell, out CellTags tags);
+            if (on)
+            {
+                tags |= tag;
+            }
+            else
+            {
+                tags &= ~tag;
+            }
+            cells[cell] = tags;
         }
-        else
+        CommitCells(cells, "Tag structure cell faces");
+    }
+
+    // Moves the whole selection one cell along direction.
+    void StepSelection(Vector3I direction)
+    {
+        selectedCell += direction;
+        for (int i = 0; i < selectedCells.Count; i++)
         {
-            tags &= ~tag;
+            selectedCells[i] += direction;
         }
-        cells[selectedCell] = tags;
-        CommitCells(cells, "Tag structure cell face");
+    }
+
+    void SelectOnly(Vector3I cell)
+    {
+        selectedCell = cell;
+        selectedCells.Clear();
+        selectedCells.Add(cell);
     }
 
     void CommitCells(Godot.Collections.Dictionary<Vector3I, CellTags> cells, string actionName)
@@ -593,9 +653,9 @@ public partial class StructureToolsPlugin : EditorPlugin
     public override void _Edit(GodotObject @object)
     {
         Node3D target = @object as Node3D;
-        if (target != editTarget)
+        if (target != editTarget || selectedCells.Count == 0)
         {
-            selectedCell = Vector3I.Zero;
+            SelectOnly(Vector3I.Zero);
         }
         editTarget = target;
     }
@@ -609,6 +669,7 @@ public partial class StructureToolsPlugin : EditorPlugin
     }
 
     // A left click selects the nearest of the structure's cells under the cursor, or the anchor if it hits none.
+    // A shift-click adds that cell to the selection, or takes it out if it was already in; hitting none does nothing.
     public override int _Forward3DGuiInput(Camera3D viewportCamera, InputEvent @event)
     {
         if (editTarget == null || @event is not InputEventMouseButton click || click.ButtonIndex != MouseButton.Left || !click.Pressed)
@@ -618,7 +679,8 @@ public partial class StructureToolsPlugin : EditorPlugin
         Transform3D toLocal = editTarget.GlobalTransform.AffineInverse();
         Vector3 from = toLocal * viewportCamera.ProjectRayOrigin(click.Position);
         Vector3 direction = toLocal.Basis * viewportCamera.ProjectRayNormal(click.Position);
-        selectedCell = Vector3I.Zero;
+        Vector3I hit = Vector3I.Zero;
+        bool hitAny = false;
         float nearest = float.MaxValue;
         foreach (Vector3I cell in CellsOf(editTarget).Keys)
         {
@@ -628,8 +690,25 @@ public partial class StructureToolsPlugin : EditorPlugin
             if (distance < nearest && box.IntersectsSegment(from, from + direction * 10000f))
             {
                 nearest = distance;
-                selectedCell = cell;
+                hit = cell;
+                hitAny = true;
             }
+        }
+
+        if (!click.ShiftPressed)
+        {
+            SelectOnly(hit);
+        }
+        else if (hitAny && !selectedCells.Contains(hit))
+        {
+            selectedCells.Add(hit);
+            selectedCell = hit;
+        }
+        else if (hitAny && selectedCells.Count > 1)
+        {
+            // The dock then shows the most recently added cell still selected.
+            selectedCells.Remove(hit);
+            selectedCell = selectedCells[selectedCells.Count - 1];
         }
         return (int)AfterGuiInput.Stop;
     }
@@ -665,9 +744,13 @@ public partial class StructureToolsPlugin : EditorPlugin
         {
             var found = new HashSet<Vector3I>();
             CollectColliderCells(structure, structure.GlobalTransform.AffineInverse(), tolerance, found);
+            if (fillMeshesToggle.ButtonPressed)
+            {
+                CollectMeshCells(structure, structure.GlobalTransform.AffineInverse(), tolerance, found);
+            }
             if (found.Count == 0)
             {
-                GD.PushWarning($"Fill Cells: {structure.Name} has no solid colliders; its cells are left as they are.");
+                GD.PushWarning($"Fill Cells: {structure.Name} has nothing to fill from; its cells are left as they are.");
                 continue;
             }
 
@@ -712,6 +795,23 @@ public partial class StructureToolsPlugin : EditorPlugin
         foreach (Node child in node.GetChildren())
         {
             CollectColliderCells(child, toRoot, tolerance, cells);
+        }
+    }
+
+    // Adds the cells touched by every visible mesh at or under node, each by its mesh's bounding box.
+    static void CollectMeshCells(Node node, Transform3D toRoot, float tolerance, HashSet<Vector3I> cells)
+    {
+        if (node is MeshInstance3D m && m.Mesh != null && m.IsVisibleInTree())
+        {
+            Aabb local = m.Mesh.GetAabb();
+            if (local.Size.LengthSquared() > 0.000001f)
+            {
+                AddCells(toRoot * m.GlobalTransform, local, tolerance, cells);
+            }
+        }
+        foreach (Node child in node.GetChildren())
+        {
+            CollectMeshCells(child, toRoot, tolerance, cells);
         }
     }
 

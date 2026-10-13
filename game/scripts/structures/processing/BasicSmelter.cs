@@ -23,6 +23,16 @@ public partial class BasicSmelter : Machine
     /// <summary>The item being smelted (authority only).</summary>
     KeyValuePair<Dictionary<string, int>, Dictionary<string, int>> recipeInSmelter;
 
+    protected override void inputVolumeSensorEntered(Node3D other)
+    {
+        
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+       
+    }
+
     protected override bool TryStartProcess() //JEFF -> STEPHEN TODO: This should probably only be called when a new item enters the input area not every tick
     {
         List<PhysicalFactoryItem> items = ItemsInInputs();
@@ -85,21 +95,22 @@ public partial class BasicSmelter : Machine
         int outputIndex = 0;
         foreach(var outputItem in recipes.Values) //need to loop on sub items and get the counts to spawn items
         {
-            ItemInfo.SpawnInWorld(outputItem.Keys, OutputPosition(outputIndex), GlobalRotation);
+           // ItemInfo.SpawnInWorld(outputItem.Keys, OutputPosition(outputIndex), GlobalRotation);
             outputIndex++;
         }
 
-        recipeInSmelter = null;
+      //  recipeInSmelter = null;
     }
 
     protected override byte[] SaveMachineState()
     {
-        if (itemInSmelter == null) return null; //need to store the progress and recipe, and stuff
-        return GMPObject.serializer.Serialize(new SmelterSave { itemInSmelter = itemInSmelter });
+        //  if (itemInSmelter == null) return null; //need to store the progress and recipe, and stuff
+        //   return GMPObject.serializer.Serialize(new SmelterSave { itemInSmelter = itemInSmelter });
+        return null;
     }
 
     protected override void LoadMachineState(byte[] state)
     {
-        itemInSmelter = GMPObject.serializer.Deserialize<SmelterSave>(state).itemInSmelter;
+      //  itemInSmelter = GMPObject.serializer.Deserialize<SmelterSave>(state).itemInSmelter;
     }
 }

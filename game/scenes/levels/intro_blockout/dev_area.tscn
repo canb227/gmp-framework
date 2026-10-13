@@ -12,6 +12,7 @@
 [ext_resource type="Material" uid="uid://bosg7vc1hulq8" path="res://game/assets/materials/temp_metal.tres" id="8_kuy7m"]
 [ext_resource type="PackedScene" uid="uid://bywvnipt62y5r" path="res://game/scenes/structures/special/ItemVoid.tscn" id="9_kuy7m"]
 [ext_resource type="Script" uid="uid://cltf2fbu2l28o" path="res://game/scripts/core/NoBuildVolume.cs" id="10_6ag5b"]
+[ext_resource type="PackedScene" uid="uid://drwujr4mjdb84" path="res://game/scenes/structures/processing/Smelter.tscn" id="10_68s35"]
 [ext_resource type="Texture2D" uid="uid://dfssoii6t84gn" path="res://game/assets/textures/wall_basic_1/wall_basic_1_diffuseOriginal.png" id="12_ihq8k"]
 [ext_resource type="Texture2D" uid="uid://c8knlhvemp8jf" path="res://game/assets/textures/grass_1/grass_ao.png" id="15_ubgps"]
 [ext_resource type="Script" uid="uid://c64akhdf23fdq" path="res://game/scripts/entities/PricedButton.cs" id="30_priced"]
@@ -588,6 +589,7 @@ mesh = SubResource("BoxMesh_r1731")
 
 [node name="BrokenSmelter" parent="WorldStuff" unique_id=1738204615 instance=ExtResource("31_brokensmelter")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -26)
+repairedScene = ExtResource("10_68s35")
 hoverName = "Broken Smelter"
 hoverText = "Repair this at the nearby button "
 

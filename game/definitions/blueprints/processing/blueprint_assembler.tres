@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="BlueprintItem" format=3 uid="uid://df2dyvn064i1u"]
+
+[ext_resource type="Texture2D" uid="uid://klrew1k8b1ks" path="res://game/assets/icons/blueprints/shittyassemblericon.png" id="1_hchpv"]
+[ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_qdaam"]
+[ext_resource type="PackedScene" uid="uid://b2was0iiv4o23" path="res://game/scenes/structures/processing/Assembler.tscn" id="3_i5avu"]
+[ext_resource type="PackedScene" uid="uid://e450hsdm0ju3" path="res://game/scenes/structures/BlueprintGhost.tscn" id="4_ghost"]
+
+[resource]
+script = ExtResource("1_qdaam")
+structureScene = ExtResource("3_i5avu")
+cost = Dictionary[int, int]({
+1: 10
+})
+itemID = "blueprint_assembler"
+displayName = "Assembler"
+description = "Assembly machine"
+icon = ExtResource("1_hchpv")
+inHandScene = ExtResource("4_ghost")
+maxStackSize = 99
+metadata/_custom_type_script = "uid://blmd28f80x7rh"

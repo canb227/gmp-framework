@@ -125,6 +125,7 @@ public partial class BlueprintGhost : HeldItem
             {
                 arrow.Visible = true;
             }
+
         }
     }
 
@@ -215,6 +216,7 @@ public partial class BlueprintGhost : HeldItem
             }
         }
         BuildGrid.placementFocus = FootprintCentre(anchor);
+        BuildGrid.placementHalfSize = FootprintHalfSize(anchor);
         BuildGrid.placementFace = ContactFace(anchor, faceNormal);
 
         if (targetCell != anchor || probe.quarterTurns != quarterTurns || !probe.structure.Visible)
@@ -303,6 +305,19 @@ public partial class BlueprintGhost : HeldItem
             max = max.Max(c);
         }
         return (min + max) / 2f;
+    }
+
+    // Half the longest side of the footprint's bounding box at anchor, in metres; the grid reveal grows with it.
+    float FootprintHalfSize(Vector3I anchor)
+    {
+        Vector3I min = new(int.MaxValue, int.MaxValue, int.MaxValue), max = new(int.MinValue, int.MinValue, int.MinValue);
+        foreach (Vector3I cell in BuildGrid.FootprintCells(anchor, probe.structure.cells.Keys, quarterTurns))
+        {
+            min = min.Min(cell);
+            max = max.Max(cell);
+        }
+        Vector3I size = max - min + Vector3I.One;
+        return Mathf.Max(size.X, Mathf.Max(size.Y, size.Z)) * BuildGrid.CellSize / 2f;
     }
 
     // The footprint's rearmost layer along normal, as the min and max cells of its bounding box: its back side is

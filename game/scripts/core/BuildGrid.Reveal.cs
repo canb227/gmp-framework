@@ -26,11 +26,14 @@ public partial class BuildGrid
     public static (Vector3I min, Vector3I max, Vector3I normal)? placementFace;
     /// <summary>The ghost's tint (valid/invalid); the face highlight takes its hue. Set by the local ghost.</summary>
     public static Color placementTint = Colors.White;
+    /// <summary>
+    /// Half the ghost's footprint's longest side in metres; the reveal grows by however much this exceeds half a
+    /// cell, so a big structure gets as much grid around it as a one-cell one. Set by the local ghost.
+    /// </summary>
+    public static float placementHalfSize = CellSize / 2f;
 
-    // Lattice half-extent in cells. The reveal radius must stay within RevealCells * CellSize so the lattice edge is
-    // never visible: the lattice spans RevealCells cells either side of the focus' cell.
+    // Reveal radius around a one-cell ghost; bigger ghosts add to it (placementHalfSize).
     private const float RevealRadius = 7.0f;
-    private const int RevealCells = (int)(RevealRadius / CellSize) + 1;
     // Enough layers for a quick sweep across cells to fade out gracefully; past that the faintest is recycled.
     private const int RevealLayers = 5;
     private const int FaceLayers = 3;
@@ -145,11 +148,17 @@ public partial class BuildGrid
     private static readonly StringName FaceColorParam = "face_color";
     private static readonly StringName FaceSizeParam = "face_size";
 
-    private static readonly Action<MeshInstance3D, ShaderMaterial, Vector3> PlaceReveal = (instance, material, focus) =>
+    private static readonly StringName RevealRadiusParam = "reveal_radius";
+
+    private static readonly Action<MeshInstance3D, ShaderMaterial, (Vector3, float)> PlaceReveal = (instance, material, reveal) =>
     {
-        // The lattice sits on the world grid around the focus' cell; only the fade is centred on the focus.
+        var (focus, radius) = reveal;
+        // The lattice sits on the world grid around the focus' cell; only the fade is centred on the focus. It spans
+        // a cell more than the radius either side, so its edge is never visible.
+        instance.Mesh = RevealLattice((int)(radius / CellSize) + 1);
         instance.GlobalPosition = (Vector3)WorldToCell(focus) * CellSize;
         material.SetShaderParameter(FocusParam, focus);
+        material.SetShaderParameter(RevealRadiusParam, radius);
     };
 
     private static readonly Action<MeshInstance3D, ShaderMaterial, (Vector3I, Vector3I, Vector3I)> PlaceFace = (instance, material, face) =>
@@ -169,19 +178,17 @@ public partial class BuildGrid
         material.SetShaderParameter(FaceSizeParam, new Vector2(width, height));
     };
 
-    private FadePool<Vector3> _reveal;
+    private FadePool<(Vector3, float)> _reveal;
     private FadePool<(Vector3I, Vector3I, Vector3I)> _face;
 
     private void CreateReveal()
     {
-        ArrayMesh lattice = BuildRevealLattice();
-        _reveal = new FadePool<Vector3>(this, RevealLayers,
-            () => new MeshInstance3D { Mesh = lattice },
+        _reveal = new FadePool<(Vector3, float)>(this, RevealLayers,
+            () => new MeshInstance3D(),
             "res://game/assets/shaders/BuildGridReveal.gdshader", RevealFadeInTime, RevealFadeOutTime);
         _reveal.ForEachMaterial(m =>
         {
             m.SetShaderParameter("cell_size", CellSize);
-            m.SetShaderParameter("reveal_radius", RevealRadius);
             m.SetShaderParameter("major_size", ModuleSize);
         });
 
@@ -195,7 +202,13 @@ public partial class BuildGrid
     {
         bool active = placementActive && placementFocus.HasValue;
 
-        _reveal.Update(active ? placementFocus : null, delta, PlaceReveal);
+        (Vector3, float)? reveal = null;
+        if (active)
+        {
+            float radius = RevealRadius + Mathf.Max(0f, placementHalfSize - CellSize / 2f);
+            reveal = (placementFocus.Value, radius);
+        }
+        _reveal.Update(reveal, delta, PlaceReveal);
         bool newFace = _face.Update(active ? placementFace : null, delta, PlaceFace);
         // The ghost's hue at full strength (its alpha is for the ghost's body). A new face starts in the current tint;
         // on the same face a valid/invalid change blends over rather than flicking.
@@ -215,19 +228,26 @@ public partial class BuildGrid
         return new Basis(x, z.Cross(x), z);
     }
 
+    // Lattices already built, by half-extent in cells; each reveal size builds its own the first time it's needed.
+    private static readonly Dictionary<int, ArrayMesh> _revealLattices = new();
+
     /// <summary>
-    /// The lattice of grid lines within <see cref="RevealCells"/> cells of the origin cell, in the format
+    /// The lattice of grid lines within <paramref name="cells"/> cells of the origin cell, in the format
     /// BuildGridReveal.gdshader expects: per cell-long segment a quad of four vertices on the line, the line's
     /// direction in NORMAL and the side in UV.y.
     /// </summary>
-    private static ArrayMesh BuildRevealLattice()
+    private static ArrayMesh RevealLattice(int cells)
     {
+        if (_revealLattices.TryGetValue(cells, out ArrayMesh built))
+        {
+            return built;
+        }
         var vertices = new List<Vector3>();
         var normals = new List<Vector3>();
         var uvs = new List<Vector2>();
         var indices = new List<int>();
 
-        int min = -RevealCells, max = RevealCells + 1;
+        int min = -cells, max = cells + 1;
         for (int axis = 0; axis < 3; axis++)
         {
             Vector3 dir = Vector3.Zero;
@@ -263,6 +283,7 @@ public partial class BuildGrid
         arrays[(int)Mesh.ArrayType.Index] = indices.ToArray();
         var mesh = new ArrayMesh();
         mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays);
+        _revealLattices[cells] = mesh;
         return mesh;
     }
 }

@@ -161,7 +161,9 @@ _data = {
 &"idle": SubResource("Animation_pawgs")
 }
 
-[node name="store" type="Node3D" unique_id=1931553037]
+[node name="store" type="Box3DBody" unique_id=1931553037]
+body_type = 0
+box_size = Vector3(0, 0, 0)
 transform = Transform3D(0.9996162, 0, -0.027701735, 0, 1, 0, 0.027701735, 0, 0.9996162, 0, 0, 0)
 script = ExtResource("1_7sxt4")
 cells = Dictionary[Vector3i, int]({

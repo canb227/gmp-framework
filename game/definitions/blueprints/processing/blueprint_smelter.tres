@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="BlueprintItem" format=3 uid="uid://dy8h6x7jfk05b"]
+
+[ext_resource type="Texture2D" uid="uid://b1gkymveoy02p" path="res://game/assets/icons/blueprints/shittysmelter.png" id="1_5hxoc"]
+[ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_pbxo8"]
+[ext_resource type="PackedScene" uid="uid://drwujr4mjdb84" path="res://game/scenes/structures/processing/Smelter.tscn" id="3_cnuc2"]
+[ext_resource type="PackedScene" uid="uid://e450hsdm0ju3" path="res://game/scenes/structures/BlueprintGhost.tscn" id="4_ghost"]
+
+[resource]
+script = ExtResource("1_pbxo8")
+structureScene = ExtResource("3_cnuc2")
+cost = Dictionary[int, int]({
+0: 5
+})
+itemID = "blueprint_smelter"
+displayName = "Smelter"
+description = "its a smelter"
+icon = ExtResource("1_5hxoc")
+inHandScene = ExtResource("4_ghost")
+maxStackSize = 99
+metadata/_custom_type_script = "uid://blmd28f80x7rh"
