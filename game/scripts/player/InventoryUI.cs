@@ -313,7 +313,7 @@ public partial class InventoryUI : Control
                 0,
                 (float)(Random.Shared.NextDouble() - 0.5) * 0.5f
             );
-            GameWorld.SpawnScene(droppedScene.ResourcePath, dropPos + offset, dropRot);
+            ItemInfo.SpawnInWorld(slot.itemID, dropPos + offset, dropRot);
         }
 
         inventory.ClearSlot(slotIndex);

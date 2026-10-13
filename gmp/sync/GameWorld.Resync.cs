@@ -329,6 +329,8 @@ public partial class GameWorld
             GameBootstrap.PeerLeft(peer);
             RehomeFrom(peer);
         }
+        // Should it come back, its tick count starts again from scratch.
+        playbackClocks.Remove(peer);
         // Don't wait on a peer that has left.
         awaitingDone.Remove(peer);
         CheckHostProgress();

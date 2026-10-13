@@ -10,6 +10,8 @@ public partial record WorldTickMessage
 {
     /// <summary>When it was sent (<see cref="GameWorld.netTime"/>).</summary>
     public ulong sendTime = 0;
+    /// <summary>The sender's physics tick it was sent on, which followers interpolate by (<see cref="GameWorld.PlaybackTick"/>).</summary>
+    public ulong tick = 0;
     public List<(ulong, byte[])> updates = new();
 }
 
@@ -32,8 +34,41 @@ public partial class GameWorld
     private static readonly List<GMPObject> dueUpdates = new();
     private static readonly Comparison<GMPObject> ByAccumulatorDescending = (a, b) => b.priorityAccumulator.CompareTo(a.priorityAccumulator);
 
-    /// <summary>Newest received state per object, applied (and cleared) at the start of the next physics tick.</summary>
-    private static readonly Dictionary<ulong, (ulong sender, byte[] state)> pendingStates = new();
+    /// <summary>Received states in arrival order, applied (and cleared) at the start of the next physics tick.</summary>
+    private static readonly List<(ulong id, ulong sender, ulong tick, byte[] state)> pendingStates = new();
+
+    /// <summary>
+    /// The sender tick of the state being applied, inside <see cref="GMPObject.ApplyStateUpdate"/>; 0 outside one,
+    /// e.g. for a spawn's initState.
+    /// </summary>
+    public static ulong stateTick { get; private set; }
+
+    /// <summary>
+    /// Followers play other peers' states back this many ticks behind the newest one received, so there is nearly always
+    /// a newer state to interpolate toward even when packets arrive unevenly.
+    /// </summary>
+    public const double InterpolationDelay = 2;
+
+    /// <summary>
+    /// Per sending peer: the newest tick heard from it, and the (fractional) tick of its states that followers show now.
+    /// Playback runs a little slow while the buffer is short and a little fast while it is long, which keeps it about
+    /// <see cref="InterpolationDelay"/> behind.
+    /// </summary>
+    private class PlaybackClock
+    {
+        public ulong newestTick;
+        public double playbackTick;
+    }
+
+    private static readonly Dictionary<ulong, PlaybackClock> playbackClocks = new();
+
+    /// <summary>How much faster or slower playback runs per tick of buffer above or below <see cref="InterpolationDelay"/>.</summary>
+    private const double PlaybackCorrection = 0.1;
+    /// <summary>Slowest playback runs while the buffer runs dry (it never stops: a quiet sender would hold everything up).</summary>
+    private const double MinPlaybackRate = 0.75;
+    private const double MaxPlaybackRate = 1.1;
+    /// <summary>Further behind than this many ticks (after a pause, a stall, or a sender gone quiet), playback jumps ahead.</summary>
+    private const double MaxPlaybackLag = 8;
 
     /// <summary>Send time of the newest state accepted per object, used to drop out-of-order updates. Forgotten when an object changes authority.</summary>
     private static readonly Dictionary<ulong, ulong> lastStateTime = new();
@@ -63,6 +98,37 @@ public partial class GameWorld
         pendingOutgoingTick = new();
         pendingStates.Clear();
         lastStateTime.Clear();
+        playbackClocks.Clear();
+    }
+
+    /// <summary>
+    /// Which tick of <paramref name="peer"/>'s states followers should show now: fractional, about
+    /// <see cref="InterpolationDelay"/> behind the newest one received. 0 if nothing has been heard from it.
+    /// </summary>
+    public static double PlaybackTick(ulong peer)
+    {
+        if (playbackClocks.TryGetValue(peer, out PlaybackClock clock))
+        {
+            return clock.playbackTick;
+        }
+        return 0;
+    }
+
+    /// <summary>Each physics tick: moves every peer's playback on by about one tick (see <see cref="PlaybackClock"/>).</summary>
+    private static void AdvancePlaybackClocks()
+    {
+        foreach (PlaybackClock clock in playbackClocks.Values)
+        {
+            double buffered = clock.newestTick - clock.playbackTick;
+            if (buffered > InterpolationDelay + MaxPlaybackLag)
+            {
+                clock.playbackTick = clock.newestTick - InterpolationDelay;
+                continue;
+            }
+            double rate = 1 + (buffered - InterpolationDelay) * PlaybackCorrection;
+            rate = Math.Clamp(rate, MinPlaybackRate, MaxPlaybackRate);
+            clock.playbackTick += rate;
+        }
     }
 
     private static void OnMessageReceived(ulong from, Channel ch, byte[] msg)
@@ -71,7 +137,22 @@ public partial class GameWorld
         {
             return;
         }
+        // Paused (loading, or frozen for a resync): nothing is applied until the world moves again, and a restore
+        // replaces everything anyway, so don't pile states up. Moving objects resend every tick; resting ones soon.
+        if (!started || instance.GetTree().Paused)
+        {
+            return;
+        }
         WorldTickMessage tickmsg = pack.Deserialize<WorldTickMessage>(msg);
+        if (!playbackClocks.TryGetValue(from, out PlaybackClock clock))
+        {
+            clock = new PlaybackClock { newestTick = tickmsg.tick, playbackTick = tickmsg.tick - InterpolationDelay };
+            playbackClocks[from] = clock;
+        }
+        if (tickmsg.tick > clock.newestTick)
+        {
+            clock.newestTick = tickmsg.tick;
+        }
         // Merge per object: a tick only carries the objects that won the sender's priority budget, so
         // keeping just the newest tick per sender would lose updates carried only by an older one.
         foreach ((ulong id, byte[] state) in tickmsg.updates)
@@ -86,28 +167,30 @@ public partial class GameWorld
                 continue;
             }
             lastStateTime[id] = tickmsg.sendTime;
-            pendingStates[id] = (from, state);
+            pendingStates.Add((id, from, tickmsg.tick, state));
         }
     }
 
     public override void _PhysicsProcess(double delta)
     {
         // Paused (loading, or frozen for a resync): the world isn't moving, so there is nothing to send or apply.
-        // Received states wait in pendingStates; a restore clears them.
         if (!started || GetTree().Paused)
         {
             return;
         }
         CheckLeases();
-        foreach ((ulong id, (ulong sender, byte[] state)) in pendingStates)
+        foreach ((ulong id, ulong sender, ulong tick, byte[] state) in pendingStates)
         {
             // Only the object's current authority may move it (drops stragglers after a Claim).
             if (syncedObjs.TryGetValue(id, out GMPObject gmpo) && gmpo.authority == sender)
             {
+                stateTick = tick;
                 gmpo.ApplyStateUpdate(state);
             }
         }
+        stateTick = 0;
         pendingStates.Clear();
+        AdvancePlaybackClocks();
         CheckSleepers();
 
         // Nobody to send to (solo, or the last peer left): skip building updates, which costs per object per tick.
@@ -169,6 +252,7 @@ public partial class GameWorld
     private static void SendPendingTick()
     {
         pendingOutgoingTick.sendTime = netTime;
+        pendingOutgoingTick.tick = Engine.GetPhysicsFrames();
         byte[] packet = pack.Serialize<WorldTickMessage>(pendingOutgoingTick);
         Lobby.SendToAllExceptSelf(Channel.GAME_State, packet, Network.k_nSteamNetworkingSend_Unreliable | Network.k_nSteamNetworkingSend_NoNagle);
         pendingOutgoingTick.updates.Clear();

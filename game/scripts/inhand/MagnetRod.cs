@@ -28,11 +28,10 @@ public partial record struct MagnetSync
 /// of this; a held item is an item like any other.
 /// </para>
 /// <para>
-/// Authority: each tick the rod's own peer keeps a leased claim (<see cref="GameWorld.Claim"/>) on every item it holds,
-/// so it simulates them and a lone holder feels no lag. An item another peer has claimed is left with them: this rod
-/// just adds its pull. The lease runs out <see cref="KeepAfterLetGo"/> after letting go, and the item goes back to the
-/// host. Handing it straight back would stop a throw dead: a hand-over starts the new authority from its own copy, at
-/// rest.
+/// Authority: the host simulates every item, held or not, so only its copy of each rod does any pulling; a client's own
+/// held items trail its rod by about a round trip. To keep that small, a client shows what its rod holds at the host's
+/// newest state rather than the usual interpolation delay behind (<see cref="GMPOBox3DBody.ShowNewest"/>), and the hold
+/// point marker moves with the camera every frame.
 /// </para>
 /// <para>
 /// The pull is a mass-independent controller, so a feather and a lead weight respond alike: a position loop picks a
@@ -90,15 +89,13 @@ public partial class MagnetRod : HeldItem
     Vector3 targetVelocity;
     /// <summary>The items held; once caught, an item stays until the rod lets go.</summary>
     readonly List<PhysicalFactoryItem> caught = new();
+    /// <summary>Area mode: seconds until the next search for items to catch (each copy searches for itself).</summary>
+    double untilRescan;
 
     // The holder's peer only.
     Vector3 lastTarget;
     float strainedFor;
-    double untilRescan;
     MeshInstance3D ballMarker;
-
-    /// <summary>Seconds a held item's claim lasts after the rod lets go of it, so a throw plays out on this peer.</summary>
-    public const double KeepAfterLetGo = PhysicalFactoryItem.TouchLeaseSeconds;
 
     static readonly Vector3 gravity = ProjectSettings.GetSetting("physics/3d/default_gravity_vector").AsVector3()
         * ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
@@ -183,6 +180,8 @@ public partial class MagnetRod : HeldItem
         {
             caught.Clear();
             mode = sync.mode;
+            // Catch at once, as the holder's copy does (StartHolding): a quick tap may last only a few ticks here.
+            untilRescan = 0;
         }
         target = sync.target;
         targetVelocity = sync.targetVelocity;
@@ -227,13 +226,25 @@ public partial class MagnetRod : HeldItem
         }
         foreach (PhysicalFactoryItem item in caught)
         {
-            // Keep simulating what this rod holds, unless another peer got there first.
-            if (isLocal && !GameWorld.IsClaimedByOther(item))
+            if (isLocal)
             {
-                GameWorld.Claim(item, KeepAfterLetGo);
+                // Show what this player holds as close to now as the host's states allow (nothing on the host).
+                item.ShowNewest();
             }
             Pull(item, (float)delta);
         }
+    }
+
+    /// <summary>
+    /// Holder's peer: the hold point marker, every frame rather than every physics tick, so it moves with the camera at
+    /// once even though held items (simulated by the host) trail behind it.
+    /// </summary>
+    public override void _Process(double delta)
+    {
+        if (!isLocal) return;
+        ballMarker.Visible = mode != MagnetMode.Off;
+        if (mode == MagnetMode.Off) return;
+        ballMarker.GlobalPosition = HoldPoint();
     }
 
     /// <summary>Holder's peer: lets go when the button is up, moves the hold point, and breaks a single grab that's stuck.</summary>
@@ -249,7 +260,6 @@ public partial class MagnetRod : HeldItem
         {
             mode = MagnetMode.Off; // the item is gone (picked up, eaten by a machine...)
         }
-        ballMarker.Visible = mode == MagnetMode.Area;
         if (mode == MagnetMode.Off) return;
 
         float dt = (float)delta;
@@ -258,7 +268,6 @@ public partial class MagnetRod : HeldItem
         lastTarget = point;
         targetVelocity = targetVelocity.Lerp(rawVelocity, 1f - Mathf.Exp(-dt / followSmoothing));
         target = point;
-        ballMarker.GlobalPosition = target;
 
         if (mode == MagnetMode.Single)
         {
@@ -295,10 +304,13 @@ public partial class MagnetRod : HeldItem
         return !IsInstanceValid(item) || item.IsQueuedForDeletion();
     }
 
-    /// <summary>Drives <paramref name="item"/> toward the hold point, if this peer simulates it (otherwise its own peer's copy of this rod does).</summary>
+    /// <summary>Drives <paramref name="item"/> toward the hold point, if this peer simulates it (otherwise the host's copy of this rod does).</summary>
     void Pull(PhysicalFactoryItem item, float dt)
     {
         if (item.authority != Lobby.selfPeerID) return;
+        // A resting item sends about once a second, and the sleep poll can take a while to notice it woke: send it at
+        // full rate from the first pull, or the other peers see the grab only after a long delay.
+        if (item.asleep) item.OnWoke();
 
         Vector3 pull = (target - item.GlobalPosition) * positionGain;
         if (pull.Length() > maxPullSpeed) pull = pull.Normalized() * maxPullSpeed;

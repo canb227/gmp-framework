@@ -38,9 +38,6 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     public int priority { get; set; }
     [Export]
     public bool pauseable { get; set; } = true;
-    /// <summary>How quickly non-authority copies close the gap to replicated state (1/s); 0 snaps.</summary>
-    [Export]
-    public float syncLerpRate { get; set; } = 10f;
 
     [ExportGroup("Hover")]
     /// <summary>Name shown under the crosshair while a player looks at this body; empty shows none.</summary>
@@ -67,14 +64,13 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     public virtual void AfterInit()
     {
         authoredBodyType = this.GetBodyType();
-        if (authority == Lobby.selfPeerID)
+        // A spawn-time state (a restored save, a late join) puts the body exactly where it was, on every peer.
+        if (desiredState != null && desiredState.Length > 0)
         {
-            if (desiredState != null)
-            {
-                this.Teleport(target.pos, target.rot);
-            }
+            BodySyncState s = GMPObject.serializer.Deserialize<BodySyncState>(desiredState);
+            this.Teleport(s.pos, s.rot);
         }
-        else
+        if (authority != Lobby.selfPeerID)
         {
             this.SetBodyType(BodyTypeEnum.Kinematic);
         }
@@ -82,49 +78,33 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     }
 
     /// <summary>
-    /// The authority simulates with the authored body type; everyone else follows as Kinematic. Motion carries across
-    /// the hand-off both ways, so a moving body (an item on a belt) doesn't stop and then rubber-band: the new
-    /// authority starts it at the velocity it was being followed at, and the old one keeps it moving at the velocity
-    /// it had until the new authority's updates arrive.
+    /// The authority simulates with the authored body type; everyone else follows as Kinematic. A new authority carries
+    /// on at the velocity it was following the body at. A new follower holds still until the new authority's states
+    /// arrive, then eases onto them.
     /// </summary>
     public virtual void OnAuthorityChanged()
     {
         desiredState = null;
+        // Their ticks were counted by the old authority's clock.
+        snapshots?.Clear();
         if (authority == Lobby.selfPeerID)
         {
-            // A follower is only ever placed, so the body has no velocity of its own: give it the followed one.
-            Vector3 velocity = Vector3.Zero;
-            Vector3 angularVelocity = Vector3.Zero;
-            if (following && extrapolateLeft > 0f)
-            {
-                velocity = targetVelocity;
-                angularVelocity = targetAngularVelocity;
-            }
-            following = false;
             this.SetBodyType(authoredBodyType);
             if (authoredBodyType == BodyTypeEnum.Dynamic)
             {
-                this.SetLinearVelocity(velocity);
-                this.SetAngularVelocity(angularVelocity);
+                // A follower is only ever placed, so the body has no velocity of its own: give it the followed one.
+                this.SetLinearVelocity(followVelocity);
+                this.SetAngularVelocity(followAngularVelocity);
             }
         }
         else
         {
-            // Was this peer simulating it? Then follow on from where and how fast it was going. (A follower that is
-            // still following just keeps its target; one that had arrived is at rest, which this also covers.)
-            if (!following)
-            {
-                target = new TransformSyncState { pos = Position, rot = Rotation };
-                targetVelocity = this.GetLinearVelocity();
-                targetAngularVelocity = this.GetAngularVelocity();
-                extrapolateLeft = MaxExtrapolation;
-                following = true;
-            }
             this.SetBodyType(BodyTypeEnum.Kinematic);
             // A Kinematic body moves by its own velocity, on top of the follower placing it: clear it.
             this.SetLinearVelocity(Vector3.Zero);
             this.SetAngularVelocity(Vector3.Zero);
         }
+        following = false;
         RefreshPhysicsProcess();
     }
 
@@ -134,37 +114,77 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
 
     // ---- physics processing ----
     // Godot calling into C# costs a few microseconds per node per tick, which adds up across thousands of items
-    // (about 7 of a 7.4 ms tick at 2000 resting items, measured). So the base class only keeps
-    // physics processing on while a non-authority copy is still easing toward its last received state. Subclasses
-    // that override _PhysicsProcess keep it on all the time.
+    // (about 7 of a 7.4 ms tick at 2000 resting items, measured). So the base class only keeps physics processing on
+    // while a non-authority copy is following. Subclasses that override _PhysicsProcess keep it on all the time.
 
-    /// <summary>True while this non-authority copy hasn't yet reached <see cref="desiredState"/>.</summary>
+    // ---- following ----
+    // A non-authority copy plays the authority's states back from a short buffer instead of chasing the newest one:
+    // it shows the authority's tick GameWorld.PlaybackTick, about GameWorld.InterpolationDelay ticks behind the newest
+    // state heard, interpolating between the states either side of it. That smooths over packets arriving unevenly.
+    // Past the newest state (packets late) it carries that one on at its velocity, briefly.
+
+    /// <summary>One received state, by the authority's physics tick.</summary>
+    struct Snapshot
+    {
+        public ulong tick;
+        public Vector3 pos;
+        public Quaternion rot;
+        public Vector3 vel;
+        /// <summary>World space (rad/s about each axis).</summary>
+        public Vector3 angVel;
+    }
+
+    /// <summary>Received states, oldest first: the newest one at or before playback, then the ones after it.</summary>
+    List<Snapshot> snapshots;
+
+    /// <summary>States kept at most (half a second at 30 Hz).</summary>
+    const int MaxSnapshots = 16;
+
+    /// <summary>True while this non-authority copy is being placed from <see cref="snapshots"/>.</summary>
     bool following;
 
+    /// <summary>The velocities at the last playback, for carrying on with should this peer become the authority.</summary>
+    Vector3 followVelocity;
+    Vector3 followAngularVelocity;
+
     /// <summary>
-    /// Within these a follower counts as arrived, snaps the rest of the way and stops easing: position in metres,
-    /// rotation as 1 - |dot| of the two quaternions (1e-6 is about 0.16°). Not an angle: acos near 1 is too noisy
-    /// in float to compare against a small threshold.
+    /// How long a follower keeps carrying the newest state on at its velocity once playback has passed it. Long enough
+    /// to cover late packets, short enough that a body whose updates stop doesn't drift off.
+    /// </summary>
+    const float MaxExtrapolation = 0.25f;
+
+    /// <summary>
+    /// Where the body is shown relative to the played-back pose: taken when following starts, from wherever the body
+    /// was (e.g. simulated here as the authority before a hand-off), then faded out, so the body slides onto the
+    /// authority's pose instead of jumping.
+    /// </summary>
+    Vector3 errorPos;
+    Quaternion errorRot = Quaternion.Identity;
+    /// <summary>Take <see cref="errorPos"/>/<see cref="errorRot"/> from the body's pose at the next playback.</summary>
+    bool blendIn;
+
+    /// <summary>Time constant (s) of the fade: most of the gap is gone in about three times this.</summary>
+    const float ErrorBlendTime = 0.1f;
+
+    /// <summary>
+    /// Within these the fade counts as done: position in metres, rotation as 1 - |w| of the quaternion between the two
+    /// poses (1e-6 is about 0.16°). Not an angle: acos near 1 is too noisy in float to compare against a small threshold.
     /// </summary>
     const float ArrivedDistance = 0.0005f, ArrivedRotation = 1e-6f;
 
     /// <summary>
-    /// The newest state received from the authority, moved on by <see cref="targetVelocity"/> and turned by
-    /// <see cref="targetAngularVelocity"/> (world space) every tick since.
+    /// Ticks this follower is shown ahead of its authority's playback clock: 0, or up to
+    /// <see cref="GameWorld.InterpolationDelay"/> (the newest state heard) while <see cref="ShowNewest"/> is called.
+    /// Eased, so playback never jumps.
     /// </summary>
-    TransformSyncState target;
-    Vector3 targetVelocity;
-    Vector3 targetAngularVelocity;
-
-    /// <summary>Seconds <see cref="target"/> may still be moved on by its velocity before a newer state arrives.</summary>
-    float extrapolateLeft;
-
+    double playbackLead;
+    /// <summary>The physics frame <see cref="ShowNewest"/> was last called on.</summary>
+    ulong showNewestFrame;
     /// <summary>
-    /// How long a follower keeps carrying the last state on at its velocity without hearing a newer one. Long enough
-    /// to cover the gap between updates and an authority hand-off (a round trip), short enough that a body whose
-    /// updates stop doesn't drift off.
+    /// How fast <see cref="playbackLead"/> eases, in ticks per second: the whole delay in about half a second, during
+    /// which the body plays back a little fast or slow.
     /// </summary>
-    const float MaxExtrapolation = 0.25f;
+    const double PlaybackLeadRate = 4;
 
     static readonly System.Collections.Generic.Dictionary<Type, bool> customPhysicsProcess = new();
 
@@ -271,68 +291,158 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         // Resting objects keep being re-sent unchanged; a copy that has already arrived there has nothing to do.
         bool unchanged = update != null && desiredState != null && update.AsSpan().SequenceEqual(desiredState);
         desiredState = update;
-        if (update == null || update.Length == 0 || unchanged)
+        // stateTick 0 is a spawn-time state, which AfterInit puts the body on.
+        if (update == null || update.Length == 0 || GameWorld.stateTick == 0 || authority == Lobby.selfPeerID)
+        {
+            return;
+        }
+        if (unchanged && !following)
+        {
+            return;
+        }
+        if (snapshots == null)
+        {
+            snapshots = new List<Snapshot>();
+        }
+        if (snapshots.Count > 0 && snapshots[snapshots.Count - 1].tick >= GameWorld.stateTick)
         {
             return;
         }
         BodySyncState s = GMPObject.serializer.Deserialize<BodySyncState>(update);
-        target = new TransformSyncState { pos = s.pos, rot = s.rot };
-        targetVelocity = s.vel;
-        targetAngularVelocity = s.angVel;
-        extrapolateLeft = MaxExtrapolation;
-        if (authority != Lobby.selfPeerID && !following)
+        snapshots.Add(new Snapshot { tick = GameWorld.stateTick, pos = s.pos, rot = Quaternion.FromEuler(s.rot), vel = s.vel, angVel = s.angVel });
+        if (snapshots.Count > MaxSnapshots)
         {
-            following = true;
-            RefreshPhysicsProcess();
+            snapshots.RemoveAt(0);
         }
+        if (!following)
+        {
+            StartFollowing();
+        }
+    }
+
+    void StartFollowing()
+    {
+        following = true;
+        blendIn = true;
+        RefreshPhysicsProcess();
+    }
+
+    /// <summary>
+    /// Shows this follower at its authority's newest state instead of <see cref="GameWorld.InterpolationDelay"/> ticks
+    /// behind, for as long as this keeps being called each tick: less lag, for more guessing ahead when packets are
+    /// late. Eased in and out (see <see cref="playbackLead"/>). E.g. what the local player's magnet rod holds.
+    /// </summary>
+    public void ShowNewest()
+    {
+        showNewestFrame = Engine.GetPhysicsFrames();
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        if (!following)
+        if (!following || snapshots == null || snapshots.Count == 0)
         {
             // Nothing to do. Godot can switch processing back on behind AfterInit (it does so at _ready, which on a
             // client can come after Init), so switch it off again here.
+            following = false;
             if (!hasCustomPhysicsProcess) SetPhysicsProcess(false);
             return;
         }
-        if (authority != Lobby.selfPeerID)
+
+        double wantedLead = 0;
+        // Asked for this tick or the last: bodies and whatever asks run in no fixed order within a tick.
+        if (showNewestFrame + 1 >= Engine.GetPhysicsFrames())
         {
-            // Carry the target on at its velocity until a newer state arrives, and move with it, so a follower keeps
-            // pace with a moving body instead of trailing behind it (easing alone always lags a moving target).
-            bool moving = false;
-            if (extrapolateLeft > 0f && (targetVelocity != Vector3.Zero || targetAngularVelocity != Vector3.Zero))
-            {
-                float step = Mathf.Min((float)delta, extrapolateLeft);
-                extrapolateLeft -= step;
-                // The velocities are world space, applied to the parent-relative Position and Quaternion: this
-                // assumes the body sits under the world root (as every spawned object does), at the world origin.
-                target.pos += targetVelocity * step;
-                Position += targetVelocity * step;
-                Vector3 spin = targetAngularVelocity * step;
-                float angle = spin.Length();
-                if (angle > 0f)
-                {
-                    // Angular velocity is world space, so the turn goes on the left (before the body's own rotation).
-                    Quaternion turn = new Quaternion(spin / angle, angle);
-                    target.rot = (turn * Quaternion.FromEuler(target.rot)).GetEuler();
-                    Quaternion = (turn * Quaternion).Normalized();
-                }
-                moving = true;
-            }
-            SyncHelpers.LerpTransform(this, target, SyncHelpers.LerpWeight(syncLerpRate, delta));
-            if (moving)
-            {
-                return;
-            }
-            if (Position.DistanceTo(target.pos) > ArrivedDistance || 1f - Mathf.Abs(Quaternion.Dot(Quaternion.FromEuler(target.rot))) > ArrivedRotation)
-            {
-                return;
-            }
-            SyncHelpers.LerpTransform(this, target, 1f); // land exactly on it
+            wantedLead = GameWorld.InterpolationDelay;
         }
-        following = false;
-        RefreshPhysicsProcess();
+        playbackLead = Mathf.MoveToward(playbackLead, wantedLead, PlaybackLeadRate * delta);
+
+        bool done = PlayBack(GameWorld.PlaybackTick(authority) + playbackLead, out Vector3 pos, out Quaternion rot);
+        if (blendIn)
+        {
+            blendIn = false;
+            errorPos = Position - pos;
+            errorRot = Quaternion * rot.Inverse();
+        }
+        else
+        {
+            float keep = Mathf.Exp(-(float)delta / ErrorBlendTime);
+            errorPos *= keep;
+            errorRot = Quaternion.Identity.Slerp(errorRot, keep);
+        }
+        bool blended = errorPos.Length() < ArrivedDistance && 1f - Mathf.Abs(errorRot.W) < ArrivedRotation;
+        if (blended)
+        {
+            errorPos = Vector3.Zero;
+            errorRot = Quaternion.Identity;
+        }
+        // The poses are world space, set as the parent-relative Position and Quaternion: this assumes the body sits
+        // under the world root (as every spawned object does), at the world origin.
+        Position = pos + errorPos;
+        Quaternion = (errorRot * rot).Normalized();
+        if (done && blended)
+        {
+            following = false;
+            RefreshPhysicsProcess();
+        }
+    }
+
+    /// <summary>
+    /// The authority's pose at <paramref name="playbackTick"/>, from <see cref="snapshots"/>; also sets
+    /// <see cref="followVelocity"/>. True once there's nothing left to play: the newest state is at rest, or has been
+    /// carried on for <see cref="MaxExtrapolation"/>.
+    /// </summary>
+    bool PlayBack(double playbackTick, out Vector3 pos, out Quaternion rot)
+    {
+        // Drop the states playback has moved past, keeping the newest one at or before it.
+        while (snapshots.Count >= 2 && snapshots[1].tick <= playbackTick)
+        {
+            snapshots.RemoveAt(0);
+        }
+        Snapshot from = snapshots[0];
+        if (playbackTick < from.tick)
+        {
+            // Every state is still ahead of playback (it has only just started): wait at the first.
+            pos = from.pos;
+            rot = from.rot;
+            followVelocity = from.vel;
+            followAngularVelocity = from.angVel;
+            return false;
+        }
+        if (snapshots.Count >= 2)
+        {
+            Snapshot to = snapshots[1];
+            float t = (float)((playbackTick - from.tick) / (to.tick - from.tick));
+            pos = from.pos.Lerp(to.pos, t);
+            rot = from.rot.Slerp(to.rot, t);
+            followVelocity = from.vel.Lerp(to.vel, t);
+            followAngularVelocity = from.angVel.Lerp(to.angVel, t);
+            return false;
+        }
+
+        // Playback has passed the newest state: carry it on at its velocity, for a little while.
+        float ahead = (float)((playbackTick - from.tick) / Engine.PhysicsTicksPerSecond);
+        float carried = Mathf.Min(ahead, MaxExtrapolation);
+        pos = from.pos + from.vel * carried;
+        rot = from.rot;
+        Vector3 spin = from.angVel * carried;
+        float angle = spin.Length();
+        // Below this the turn doesn't show, and the axis of so small a spin can't be normalized reliably in float
+        // (Quaternion throws on an axis that isn't).
+        if (angle > 1e-5f)
+        {
+            // Angular velocity is world space, so the turn goes on the left (before the body's own rotation).
+            rot = new Quaternion(spin.Normalized(), angle) * from.rot;
+        }
+        bool atRest = from.vel == Vector3.Zero && from.angVel == Vector3.Zero;
+        if (atRest || ahead >= MaxExtrapolation)
+        {
+            followVelocity = Vector3.Zero;
+            followAngularVelocity = Vector3.Zero;
+            return true;
+        }
+        followVelocity = from.vel;
+        followAngularVelocity = from.angVel;
+        return false;
     }
 
     // ---- Box3DBody properties ----

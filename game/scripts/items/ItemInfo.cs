@@ -34,26 +34,22 @@ public partial class ItemInfo : Resource
     /// Spawns <paramref name="itemID"/> in the world for every peer: its <see cref="droppedScene"/>, or a labelled
     /// <c>DefaultDroppedBox</c> if it has none. Returns the new object's id.
     /// <para>
-    /// The host simulates all loose items. A client that spawns one (drops it) simulates it itself for
-    /// <see cref="PhysicalFactoryItem.TouchLeaseSeconds"/> first, so the drop is instant there, then the host takes over.
+    /// The host simulates all loose items, so it is the authority of every one, whoever spawns it.
     /// </para>
     /// </summary>
     public static ulong SpawnInWorld(string itemID, Vector3 position, Vector3 rotation = default, NodePath parentPath = default)
     {
         ItemInfo item = Fetch(itemID);
+        GMPOInitData init = new() { authority = Lobby.hostID };
         ulong id;
         if (item?.droppedScene != null)
         {
-            id = GameWorld.SpawnScene(item.droppedScene, position, rotation, parent: parentPath);
+            id = GameWorld.SpawnScene(item.droppedScene, position, rotation, init, parent: parentPath);
         }
         else
         {
-            id = GameWorld.SpawnScene(DefaultDroppedScene, position, rotation, parent: parentPath);
+            id = GameWorld.SpawnScene(DefaultDroppedScene, position, rotation, init, parent: parentPath);
             (GameWorld.syncedObjs[id] as DefaultDroppedBox).boxInit(itemID);
-        }
-        if (!Lobby.isHost)
-        {
-            GameWorld.Claim(GameWorld.syncedObjs[id], PhysicalFactoryItem.TouchLeaseSeconds);
         }
         return id;
     }
