@@ -436,7 +436,9 @@ public partial class StructureToolsPlugin : EditorPlugin
         cellDock = new EditorDock { Title = "Structure Cells", DefaultSlot = EditorDock.DockSlot.RightUl };
         var column = new VBoxContainer();
         cellDock.AddChild(column);
-        cellLabel = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart };
+        // A minimum width keeps the wrapped text from asking for one line per word while the dock still has no
+        // width at editor start-up, which made the dock taller than the window and pushed the bottom panel off it.
+        cellLabel = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart, CustomMinimumSize = new Vector2(200, 0) };
         column.AddChild(cellLabel);
 
         inStructureBox = new CheckBox { Text = "In structure", TooltipText = "Whether this cell is one of the structure's cells. The last one can't be removed." };
