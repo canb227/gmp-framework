@@ -1,6 +1,7 @@
 [gd_scene format=4 uid="uid://drwujr4mjdb84"]
 
 [ext_resource type="Script" uid="uid://bn4s85elvvobt" path="res://game/scripts/structures/processing/BasicSmelter.cs" id="1_qb6y1"]
+[ext_resource type="Script" uid="uid://bv13olg4g30nl" path="res://game/scripts/structures/StructureArrow.cs" id="2_cf5xe"]
 [ext_resource type="Texture2D" uid="uid://d35t67yu126q5" path="res://game/assets/textures/metal_rusty/Metal025_2K-JPG_Color.jpg" id="2_qb6y1"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_86s7u"]
@@ -1099,66 +1100,81 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.46613884, 2.478106, -3.0410
 [node name="FmodEventEmitter3D" type="FmodEventEmitter3D" parent="." unique_id=1880866957]
 event_guid = "{0000005f-006e-0000-6f00-000064000000}"
 
-[node name="Bars" type="MeshInstance3D" parent="." unique_id=843005602]
+[node name="outputArrow" type="Node3D" parent="." unique_id=827622258]
+transform = Transform3D(-1.0000001, -8.742277e-08, -4.371139e-08, 4.3711392e-08, 1.9106853e-15, -1, 8.7422784e-08, -0.99999994, 1.9106855e-15, 0.10041213, 3.0516224, -3.0231833)
+script = ExtResource("2_cf5xe")
+kind = 2
+shape = 1
+metadata/_custom_type_script = "uid://bv13olg4g30nl"
+
+[node name="inputArrow" type="Node3D" parent="." unique_id=1537271816]
+transform = Transform3D(-4.3711385e-08, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, -4.3711385e-08, 8.387845, 2.7459137, -3.0202599)
+script = ExtResource("2_cf5xe")
+kind = 1
+metadata/_custom_type_script = "uid://bv13olg4g30nl"
+
+[node name="model" type="Node3D" parent="." unique_id=331225991]
+
+[node name="Bars" type="MeshInstance3D" parent="model" unique_id=843005602]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.803155, 1.71756, -5.9474444)
 mesh = SubResource("ArrayMesh_poiwu")
 
-[node name="Body" type="MeshInstance3D" parent="." unique_id=1961246141]
+[node name="Body" type="MeshInstance3D" parent="model" unique_id=1961246141]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0029182, 1, -3.0155752)
 mesh = SubResource("ArrayMesh_nic6d")
 
-[node name="Chimney" type="MeshInstance3D" parent="." unique_id=353528439]
+[node name="Chimney" type="MeshInstance3D" parent="model" unique_id=353528439]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3023316, 4.7384133, -5.4796815)
 mesh = SubResource("ArrayMesh_04w7h")
 
-[node name="Door" type="MeshInstance3D" parent="." unique_id=554321956]
+[node name="Door" type="MeshInstance3D" parent="model" unique_id=554321956]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8802605, 2.0096307, -3.0156198)
 mesh = SubResource("ArrayMesh_pmte7")
 
-[node name="Mold_Plate" type="MeshInstance3D" parent="." unique_id=252591253]
+[node name="Mold_Plate" type="MeshInstance3D" parent="model" unique_id=252591253]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.009253502, 1.9940933, -3.0155122)
 mesh = SubResource("ArrayMesh_gwc8k")
 
-[node name="Mold_Plate_001" type="MeshInstance3D" parent="Mold_Plate" unique_id=1928396332]
+[node name="Mold_Plate_001" type="MeshInstance3D" parent="model/Mold_Plate" unique_id=1928396332]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.20506465, 0)
 mesh = SubResource("ArrayMesh_em4rv")
 
-[node name="MoltenMetal" type="MeshInstance3D" parent="." unique_id=1074473003]
+[node name="MoltenMetal" type="MeshInstance3D" parent="model" unique_id=1074473003]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5111605, 2.9780064, -3.0156038)
 mesh = SubResource("ArrayMesh_a8qai")
 
-[node name="Pipes_1" type="MeshInstance3D" parent="." unique_id=1732898937]
+[node name="Pipes_1" type="MeshInstance3D" parent="model" unique_id=1732898937]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 6.5123525, 1.9597063, -0.32171512)
 mesh = SubResource("ArrayMesh_yu3je")
 
-[node name="Pipes_2" type="MeshInstance3D" parent="." unique_id=1617610350]
+[node name="Pipes_2" type="MeshInstance3D" parent="model" unique_id=1617610350]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 5.3815413, 0.7638303, -1.1688838)
 mesh = SubResource("ArrayMesh_6a5d6")
 
-[node name="Pipes_3" type="MeshInstance3D" parent="." unique_id=1496063330]
+[node name="Pipes_3" type="MeshInstance3D" parent="model" unique_id=1496063330]
 transform = Transform3D(0, 0.32566032, -0.9454869, -1, 0, -2.9802322e-08, -2.9802322e-08, 0.9454869, 0.3256603, 5.063332, 6.848061, -0.7718456)
 mesh = SubResource("ArrayMesh_jp128")
 
-[node name="Pipes_4" type="MeshInstance3D" parent="." unique_id=1601636814]
+[node name="Pipes_4" type="MeshInstance3D" parent="model" unique_id=1601636814]
 transform = Transform3D(2.3841858e-07, 0.9560982, -0.2930464, -1, 2.3841858e-07, -5.9604645e-08, 0, 0.2930464, 0.9560982, 6.5123525, 6.848061, -2.3438013)
 mesh = SubResource("ArrayMesh_dvkck")
 
-[node name="SmelterCage" type="MeshInstance3D" parent="." unique_id=338666146]
+[node name="SmelterCage" type="MeshInstance3D" parent="model" unique_id=338666146]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.8111577, 1.8166819, -3.0156038)
 mesh = SubResource("ArrayMesh_fj7nt")
 
-[node name="Spout" type="MeshInstance3D" parent="." unique_id=1477981444]
+[node name="Spout" type="MeshInstance3D" parent="model" unique_id=1477981444]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 1.8098394, 2.9743454, -3.0155752)
 mesh = SubResource("ArrayMesh_qk107")
 
-[node name="Vent1" type="MeshInstance3D" parent="." unique_id=71032123]
+[node name="Vent1" type="MeshInstance3D" parent="model" unique_id=71032123]
 transform = Transform3D(1, 0, 0, 0, 0.027858138, 0.99961185, 0, -0.99961185, 0.027858138, 5.6061916, 3.9293602, -0.10734987)
 mesh = SubResource("ArrayMesh_221li")
 
-[node name="Vent2" type="MeshInstance3D" parent="." unique_id=469205366]
+[node name="Vent2" type="MeshInstance3D" parent="model" unique_id=469205366]
 transform = Transform3D(1, 0, 0, 0, 0.027858138, 0.99961185, 0, -0.99961185, 0.027858138, 3.9718275, 3.9293602, -0.10734987)
 mesh = SubResource("ArrayMesh_knbwy")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1526897162]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="model" unique_id=1526897162]
 root_node = NodePath("")
 libraries/ = SubResource("AnimationLibrary_qb6y1")
