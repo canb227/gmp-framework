@@ -194,4 +194,14 @@ public static class Box3DNames
     public static readonly StringName teleport = "teleport";
     public static readonly StringName userMaterialId = "user_material_id";
     public static readonly StringName workerCount = "worker_count";
+
+    // Box3DBody signals, each with the other Box3DBody as its one argument.
+    /// <summary>On a sensor (is_sensor): a body started overlapping it.</summary>
+    public static readonly StringName areaEntered = "area_entered";
+    /// <summary>On a sensor (is_sensor): a body stopped overlapping it.</summary>
+    public static readonly StringName areaExited = "area_exited";
+    /// <summary>On a solid body with contact_monitor: a body started touching it.</summary>
+    public static readonly StringName bodyEntered = "body_entered";
+    /// <summary>On a solid body with contact_monitor: a body stopped touching it.</summary>
+    public static readonly StringName bodyExited = "body_exited";
 }

@@ -1,5 +1,6 @@
 using Godot;
 using PolyType;
+using System;
 
 [GenerateShape]
 public partial record struct MachineSave
@@ -31,6 +32,24 @@ public partial class Machine : Structure
     public float processTimeRemaining = 0f;
     /// <summary>Whether a cycle is running, on every peer.</summary>
     public bool isOperating { get; private set; }
+
+    public override void _Ready()
+    {
+        base._Ready();
+        foreach (Node3D volume in inputVolumes)
+        {
+            if (volume is GMPOBox3DBody body)
+            {
+                body.SensorEntered += inputVolumeSensorEntered;
+            }
+            
+        }
+    }
+
+    protected virtual void inputVolumeSensorEntered(Node3D other)
+    {
+
+    }
 
     public override void _PhysicsProcess(double delta)
     {

@@ -141,6 +141,50 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     /// </summary>
     public virtual void OnFellAsleep() { }
 
+    // ---- Box3DBody signals, as typed events (wired in _Ready) ----
+    // Every peer simulates every body (followers as Kinematic), so these fire on all peers; check authority if only
+    // the simulating peer should react.
+
+    /// <summary>Sensor only (<see cref="isSensor"/>): a body started overlapping this one.</summary>
+    public event Action<Node3D> SensorEntered;
+
+    /// <summary>Sensor only (<see cref="isSensor"/>): a body stopped overlapping this one.</summary>
+    public event Action<Node3D> SensorExited;
+
+    /// <summary>Solid body with <see cref="contactMonitor"/> on: a body started touching this one.</summary>
+    public event Action<Node3D> ContactStarted;
+
+    /// <summary>Solid body with <see cref="contactMonitor"/> on: a body stopped touching this one.</summary>
+    public event Action<Node3D> ContactEnded;
+
+    public override void _Ready()
+    {
+        Connect(Box3DNames.areaEntered, Callable.From<Node3D>(OnAreaEntered));
+        Connect(Box3DNames.areaExited, Callable.From<Node3D>(OnAreaExited));
+        Connect(Box3DNames.bodyEntered, Callable.From<Node3D>(OnBodyEntered));
+        Connect(Box3DNames.bodyExited, Callable.From<Node3D>(OnBodyExited));
+    }
+
+    void OnAreaEntered(Node3D body)
+    {
+        SensorEntered?.Invoke(body);
+    }
+
+    void OnAreaExited(Node3D body)
+    {
+        SensorExited?.Invoke(body);
+    }
+
+    void OnBodyEntered(Node3D body)
+    {
+        ContactStarted?.Invoke(body);
+    }
+
+    void OnBodyExited(Node3D body)
+    {
+        ContactEnded?.Invoke(body);
+    }
+
     public virtual byte[] GenerateStateUpdate()
     {
         return SyncHelpers.WriteTransform(this);
@@ -240,12 +284,12 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     /// <summary>When off the body is removed from the simulation entirely.</summary>
     public bool enabled { get => Native(Box3DNames.enabled).AsBool(); set => Native(Box3DNames.enabled, value); }
 
-    /// <summary>Turn on to receive the body_entered / body_exited signals.</summary>
+    /// <summary>Turn on to receive the body_entered / body_exited signals (<see cref="ContactStarted"/>).</summary>
     public bool contactMonitor { get => Native(Box3DNames.contactMonitor).AsBool(); set => Native(Box3DNames.contactMonitor, value); }
     /// <summary>Whether this body is visible to other bodies' sensors.</summary>
     public bool sensorEvents { get => Native(Box3DNames.sensorEvents).AsBool(); set => Native(Box3DNames.sensorEvents, value); }
     public bool hitEvents { get => Native(Box3DNames.hitEvents).AsBool(); set => Native(Box3DNames.hitEvents, value); }
-    /// <summary>Makes the body a trigger volume (area_entered / area_exited, <see cref="GMPOBox3DBodyApi.GetOverlappingBodies"/>).</summary>
+    /// <summary>Makes the body a trigger volume (<see cref="SensorEntered"/> / <see cref="SensorExited"/>, <see cref="GMPOBox3DBodyApi.GetOverlappingBodies"/>).</summary>
     public bool isSensor { get => Native(Box3DNames.isSensor).AsBool(); set => Native(Box3DNames.isSensor, value); }
     public bool debugVisualize { get => Native(Box3DNames.debugVisualize).AsBool(); set => Native(Box3DNames.debugVisualize, value); }
     public bool continuous { get => Native(Box3DNames.continuous).AsBool(); set => Native(Box3DNames.continuous, value); }
