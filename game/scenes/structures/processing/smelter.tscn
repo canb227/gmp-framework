@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://drwujr4mjdb84"]
+[gd_scene format=3 uid="uid://dn7r2vkw8uls4"]
 
 [ext_resource type="Script" uid="uid://bn4s85elvvobt" path="res://game/scripts/structures/processing/BasicSmelter.cs" id="1_qb6y1"]
 [ext_resource type="Script" uid="uid://bv13olg4g30nl" path="res://game/scripts/structures/StructureArrow.cs" id="2_cf5xe"]

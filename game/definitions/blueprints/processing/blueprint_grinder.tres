@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="BlueprintItem" format=3 uid="uid://vly51svv34j2"]
+
+[ext_resource type="Texture2D" uid="uid://dbq7gamdljmxt" path="res://game/assets/icons/blueprints/shittygrinder.png" id="1_4lfed"]
+[ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_jwswt"]
+[ext_resource type="PackedScene" uid="uid://e450hsdm0ju3" path="res://game/scenes/structures/BlueprintGhost.tscn" id="2_k0i4c"]
+[ext_resource type="PackedScene" uid="uid://bylawd3koqxrb" path="res://game/scenes/structures/processing/Grinder.tscn" id="3_k0i4c"]
+
+[resource]
+script = ExtResource("1_jwswt")
+structureScene = ExtResource("3_k0i4c")
+cost = Dictionary[int, int]({
+0: 5
+})
+itemID = "blueprint_grinder"
+displayName = "Grinder"
+description = "Builds the Grinder"
+icon = ExtResource("1_4lfed")
+inHandScene = ExtResource("2_k0i4c")
+maxStackSize = 99
+metadata/_custom_type_script = "uid://blmd28f80x7rh"
