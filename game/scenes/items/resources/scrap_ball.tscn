@@ -6,8 +6,8 @@
 [node name="scrap_ball" type="Box3DBody" unique_id=1636194786]
 shape_type = 1
 sphere_radius = 0.22
-density = 5.0
-friction = 0.9
+density = 2000.0
+friction = 0.5
 restitution = 0.1
 rolling_resistance = 0.2
 script = ExtResource("1_item")

@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://5poilvd1f4mw"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/PhysicalFactoryItem.cs" id="1_ote1f"]
+[ext_resource type="Material" uid="uid://bosg7vc1hulq8" path="res://game/assets/materials/temp_metal.tres" id="2_ote1f"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_pet1e"]
+size = Vector3(0.1, 0.333, 1)
+
+[node name="scrap_piece1" type="Box3DBody" unique_id=1636194786]
+box_size = Vector3(0.1, 0.333, 1)
+sphere_radius = 0.22
+density = 2000.0
+friction = 0.5
+restitution = 0.1
+rolling_resistance = 0.2
+transform = Transform3D(0.60608906, -0.18541552, -0.77348393, 0.29253837, 0.9562539, 0, 0.7396468, -0.22627367, 0.63381606, 0, 0, 0)
+script = ExtResource("1_ote1f")
+itemID = "scrap_piece1"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([3, 22])
+currencyValue = Dictionary[int, int]({
+0: 1
+})
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=32231142]
+mesh = SubResource("BoxMesh_pet1e")
+surface_material_override/0 = ExtResource("2_ote1f")

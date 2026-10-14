@@ -18,22 +18,23 @@ Vector3i(1, 0, 0): 2
 blueprintItemID = "blueprint_conveyor"
 
 [node name="Model" parent="." unique_id=2037822336 instance=ExtResource("2_r")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.000918448, 0)
 
 [node name="WallL" type="Box3DCollisionShape" parent="." unique_id=892695477]
-box_size = Vector3(0.11, 0.4, 2)
+box_size = Vector3(0.065, 0.4, 2)
 friction = 0.1
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.105, 0.2, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.035707213, 0.2, -1)
 
 [node name="WallR" type="Box3DCollisionShape" parent="." unique_id=282947330]
-box_size = Vector3(0.11, 0.4, 2)
+box_size = Vector3(0.065, 0.4, 2)
 friction = 0.1
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.895, 0.2, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9672339, 0.2, -1)
 
 [node name="Belt" type="Box3DBody" parent="." unique_id=61098809]
 body_type = 0
-box_size = Vector3(1.68, 0.1, 2)
+box_size = Vector3(1.865, 0.1, 2)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
 user_material_id = 5
@@ -42,10 +43,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.1, -1)
 [node name="BeltLip" type="Box3DCollisionShape" parent="." unique_id=1417958707]
 shape_type = 2
 capsule_radius = 0.05
-capsule_height = 1.58
+capsule_height = 1.9
 friction = 0.8
-user_material_id = 5
 tangent_velocity = Vector3(0, 0, -2)
+user_material_id = 5
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 1, 0.104, 0)
 
 [node name="StructureArrow" type="Node3D" parent="." unique_id=909107365]

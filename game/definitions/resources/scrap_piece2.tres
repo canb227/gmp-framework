@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3 uid="uid://b2m5l24vbjiqb"]
+
+[ext_resource type="PackedScene" uid="uid://o17g0tn7jsl1" path="res://game/scenes/items/resources/scrap_piece2.tscn" id="1_nl1cf"]
+[ext_resource type="Texture2D" uid="uid://3unk615o2jxa" path="res://game/assets/icons/items/scrap_ball.png" id="2_h0ofn"]
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="3_7syw7"]
+
+[resource]
+script = ExtResource("3_7syw7")
+itemID = "scrap_piece2"
+droppedScene = ExtResource("1_nl1cf")
+displayName = "Scrap Piece"
+description = "A piece of ruined metal."
+icon = ExtResource("2_h0ofn")
+maxStackSize = 999

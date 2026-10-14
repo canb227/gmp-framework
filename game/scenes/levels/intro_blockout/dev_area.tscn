@@ -32,7 +32,6 @@ sky = SubResource("Sky_pet1e")
 ssr_enabled = true
 ssao_enabled = true
 ssil_enabled = true
-sdfgi_enabled = true
 sdfgi_read_sky_light = false
 sdfgi_min_cell_size = 1.953125
 glow_enabled = true
@@ -589,8 +588,11 @@ body_type = 0
 shape_type = 1
 sphere_radius = 0.1
 script = ExtResource("30_priced")
+cost = Dictionary[int, int]({
+0: 50
+})
 animator = NodePath("AnimationPlayer")
-targets = [null]
+targets = [NodePath("../../BrokenSmelter")]
 hoverName = "Repair broken smelter"
 hoverText = "Cost is 10 scrap"
 
@@ -614,16 +616,19 @@ hoverName = "Broken Smelter"
 hoverText = "Repair this at the nearby button "
 
 [node name="RecyclerBroken" parent="WorldStuff" unique_id=1829331707 instance=ExtResource("32_brokenrecycler")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 45, 0, -45)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 45, 0, -46.041515)
 
 [node name="Repair Source Button" type="Node3D" parent="WorldStuff" unique_id=846980836]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36.209885, 1.6260744, -37.219307)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36.388847, 1.6260744, -37.41516)
 
 [node name="Button" type="Box3DBody" parent="WorldStuff/Repair Source Button" unique_id=502930267 node_paths=PackedStringArray("animator", "targets")]
 body_type = 0
 shape_type = 1
 sphere_radius = 0.1
 script = ExtResource("30_priced")
+cost = Dictionary[int, int]({
+0: 5
+})
 animator = NodePath("AnimationPlayer")
 targets = [NodePath("../../RecyclerBroken")]
 
