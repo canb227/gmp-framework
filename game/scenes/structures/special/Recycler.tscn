@@ -9,7 +9,7 @@ box_size = Vector3(0, 0, 0)
 script = ExtResource("script")
 itemWeights = Dictionary[String, float]({
 "scrap_piece1": 1.0,
-"scrap_piece2": 1.0,
+"scrap_piece2": 0.0,
 "scrap_piece3": 1.0
 })
 inputVolumes = [NodePath("Node3D/Valley")]

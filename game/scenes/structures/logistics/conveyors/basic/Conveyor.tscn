@@ -19,7 +19,6 @@ blueprintItemID = "blueprint_conveyor"
 
 [node name="Model" parent="." unique_id=2037822336 instance=ExtResource("2_r")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.000918448, 0)
-visible = false
 
 [node name="WallL" type="Box3DCollisionShape" parent="." unique_id=892695477]
 box_size = Vector3(0.065, 0.4, 2)
