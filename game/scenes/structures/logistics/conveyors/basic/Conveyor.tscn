@@ -19,16 +19,17 @@ blueprintItemID = "blueprint_conveyor"
 
 [node name="Model" parent="." unique_id=2037822336 instance=ExtResource("2_r")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.000918448, 0)
+visible = false
 
 [node name="WallL" type="Box3DCollisionShape" parent="." unique_id=892695477]
 box_size = Vector3(0.065, 0.4, 2)
-friction = 0.1
+friction = 0.0
 user_material_id = 3
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.035707213, 0.2, -1)
 
 [node name="WallR" type="Box3DCollisionShape" parent="." unique_id=282947330]
 box_size = Vector3(0.065, 0.4, 2)
-friction = 0.1
+friction = 0.0
 user_material_id = 3
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9672339, 0.2, -1)
 
@@ -44,12 +45,29 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.1, -1)
 shape_type = 2
 capsule_radius = 0.05
 capsule_height = 1.9
-friction = 0.8
-tangent_velocity = Vector3(0, 0, -2)
+tangent_velocity = Vector3(0, 0, -2.5)
 user_material_id = 5
-transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 1, 0.104, 0)
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 1, 0.13891149, 0)
 
 [node name="StructureArrow" type="Node3D" parent="." unique_id=909107365]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.96666133, 0.71025324, -0.41426277)
 script = ExtResource("3_e26cu")
 metadata/_custom_type_script = "uid://bv13olg4g30nl"
+
+[node name="BeltLip2" type="Box3DCollisionShape" parent="." unique_id=481909268]
+shape_type = 2
+box_size = Vector3(1, 0.3, 1)
+capsule_radius = 0.05
+capsule_height = 0.4
+tangent_velocity = Vector3(0, 0, -2.5)
+user_material_id = 5
+transform = Transform3D(-1, 8.742278e-08, 0, -8.742278e-08, -1, 0, 0, 0, 1, 0.04826033, 0.2179855, 0)
+
+[node name="BeltLip3" type="Box3DCollisionShape" parent="." unique_id=1636419794]
+shape_type = 2
+box_size = Vector3(1, 0.3, 1)
+capsule_radius = 0.05
+capsule_height = 0.4
+tangent_velocity = Vector3(0, 0, -2.5)
+user_material_id = 5
+transform = Transform3D(-1, 8.742278e-08, 0, -8.742278e-08, -1, 0, 0, 0, 1, 1.9621977, 0.2179855, 0)

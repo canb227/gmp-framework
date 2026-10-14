@@ -13,6 +13,11 @@ using System.Reflection;
 /// <item>Modules marks the 2 m structure modules on that floor grid (<see cref="BuildGrid.ModuleSize"/>; modules
 /// start on even cells): bold module lines and a chequerboard of modules, blue when the floor is on a module's
 /// bottom (an even height) and orange when it's partway up one (odd), for lining a level up with the grid.</item>
+/// <item>Blocked Cells fills the faces of the build grid cells the open scene's level geometry blocks, around the
+/// selection, faint blue, the cells the game's build grid fill shows (BuildGrid.CellFill.cs): those a static, solid
+/// Box3DBody outside any GMPObject reaches more than <see cref="BuildGrid.LevelOverlapDepth"/> into. Cells a
+/// <see cref="NoBuildVolume"/> touches are filled red. Worked out from the colliders' shapes when it's turned on and
+/// after every edit, as the editor has no Box3D world to ask.</item>
 /// <item>Grid Snap moves every selected Structure to the grid pose nearest to where a move or rotation ends
 /// (<see cref="Structure.NearestGridTransform"/>), so hand-placed ones pass the runtime alignment check. The open
 /// scene's root is never moved, so editing a structure's own scene is unaffected.</item>
@@ -38,15 +43,20 @@ public partial class StructureToolsPlugin : EditorPlugin
     const float Inset = 0.06f;
     /// <summary>How far the module chequerboard sits above the floor grid, so it doesn't fight the floor under it.</summary>
     const float ModuleFillLift = 0.01f;
+    /// <summary>How far Blocked Cells' faces sit out from their cell, so they don't fight level surfaces on a cell boundary.</summary>
+    const float BlockedFaceLift = 0.01f;
 
     static readonly Vector3I[] Axes = [Vector3I.Right, Vector3I.Up, Vector3I.Back];
+    static readonly Vector3[] BoxAxes = [Vector3.Right, Vector3.Up, Vector3.Back];
     static readonly string[] FaceNames = ["Front", "Back", "Left", "Right", "Up", "Down"];
 
     // Partial classes get one [ScriptPath] per file; the generator tags each with the script's path.
     static readonly HashSet<string> structureScriptPaths = StructureScriptPaths();
+    static readonly HashSet<string> gmpObjectScriptPaths = GMPObjectScriptPaths();
 
     CheckButton viewGridToggle;
     CheckButton modulesToggle;
+    CheckButton blockedToggle;
     CheckButton snapToggle;
     Button fillCellsButton;
     SpinBox toleranceBox;
@@ -63,6 +73,20 @@ public partial class StructureToolsPlugin : EditorPlugin
     StandardMaterial3D inputMaterial;
     StandardMaterial3D outputMaterial;
     StandardMaterial3D selectedMaterial;
+    StandardMaterial3D levelBlockedMaterial;
+    StandardMaterial3D noBuildBlockedMaterial;
+
+    // Blocked Cells. The cells are in the game's frame and numbered like a structure's (see CellLow), so one higher
+    // in z than BuildGrid's. C# sets, as they're read for every face drawn; a script reload drops them (null) and
+    // they're worked out again.
+    MeshInstance3D blockedOverlay;
+    HashSet<Vector3I> levelBlocked;
+    HashSet<Vector3I> noBuildBlocked;
+    /// <summary>The scene root <see cref="levelBlocked"/> was worked out for.</summary>
+    Node blockedFor;
+    /// <summary>The cell <see cref="blockedOverlay"/>'s mesh was built around; it's rebuilt when the selection leaves it.</summary>
+    Vector3I blockedMeshCentre;
+    bool blockedMeshStale = true;
 
     // The Structure Cells dock.
     EditorDock cellDock;
@@ -93,6 +117,12 @@ public partial class StructureToolsPlugin : EditorPlugin
             Text = "Modules",
             TooltipText = "Mark the 2 m structure modules (which start on even cells) on the View Grid floor: bold lines and a chequerboard,\nblue when the floor is at an even height, orange when it's at an odd one (partway up a module).",
         };
+        blockedToggle = new CheckButton
+        {
+            Text = "Blocked Cells",
+            TooltipText = "Fill the faces of the build grid cells around the selection that level geometry blocks (blue)\nor a NoBuildVolume touches (red), as the game's build grid shows them.",
+        };
+        blockedToggle.Toggled += OnBlockedToggled;
         snapToggle = new CheckButton
         {
             Text = "Grid Snap",
@@ -127,6 +157,7 @@ public partial class StructureToolsPlugin : EditorPlugin
         editCellsToggle.Toggled += OnEditCellsToggled;
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, viewGridToggle);
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, modulesToggle);
+        AddControlToContainer(CustomControlContainer.SpatialEditorMenu, blockedToggle);
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, snapToggle);
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, fillCellsButton);
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, toleranceBox);
@@ -146,12 +177,21 @@ public partial class StructureToolsPlugin : EditorPlugin
         inputMaterial = OverlayMaterial(new Color(StructureArrow.InputColor, 0.45f), true);
         outputMaterial = OverlayMaterial(new Color(StructureArrow.OutputColor, 0.45f), true);
         selectedMaterial = OverlayMaterial(new Color(1f, 0.95f, 0.2f, 1f), true);
+        // The fill's colours (BuildGridFill.gdshader), a little stronger as nothing lights them here.
+        levelBlockedMaterial = OverlayMaterial(new Color(0.66f, 0.86f, 1f, 0.2f), false);
+        noBuildBlockedMaterial = OverlayMaterial(new Color(1f, 0.32f, 0.25f, 0.25f), false);
         lines = new ImmediateMesh();
         // Has no owner, so it's never saved into the scene it's drawn over.
         overlay = new MeshInstance3D
         {
             Name = "StructureToolsOverlay",
             Mesh = lines,
+            CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+            Visible = false,
+        };
+        blockedOverlay = new MeshInstance3D
+        {
+            Name = "StructureToolsBlockedCells",
             CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
             Visible = false,
         };
@@ -165,6 +205,7 @@ public partial class StructureToolsPlugin : EditorPlugin
         GetUndoRedo().HistoryChanged -= OnHistoryChanged;
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, viewGridToggle);
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, modulesToggle);
+        RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, blockedToggle);
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, snapToggle);
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, fillCellsButton);
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, toleranceBox);
@@ -173,6 +214,7 @@ public partial class StructureToolsPlugin : EditorPlugin
         RemoveDock(cellDock);
         viewGridToggle.QueueFree();
         modulesToggle.QueueFree();
+        blockedToggle.QueueFree();
         snapToggle.QueueFree();
         fillCellsButton.QueueFree();
         toleranceBox.QueueFree();
@@ -180,6 +222,7 @@ public partial class StructureToolsPlugin : EditorPlugin
         editCellsToggle.QueueFree();
         cellDock.QueueFree();
         overlay.QueueFree();
+        blockedOverlay.QueueFree();
     }
 
     static StandardMaterial3D OverlayMaterial(Color color, bool throughEverything)
@@ -200,6 +243,14 @@ public partial class StructureToolsPlugin : EditorPlugin
         {
             SnapSelected();
         }
+        // Any edit may have moved or changed level geometry: work the blocked cells out again when next drawn.
+        levelBlocked = null;
+    }
+
+    // Turning it on works the cells out afresh, so it also picks up changes no edit records (a reimported mesh).
+    void OnBlockedToggled(bool on)
+    {
+        levelBlocked = null;
     }
 
     public override void _Process(double delta)
@@ -216,6 +267,14 @@ public partial class StructureToolsPlugin : EditorPlugin
         else
         {
             overlay.Visible = false;
+        }
+        if (blockedToggle.ButtonPressed)
+        {
+            DrawBlockedCells();
+        }
+        else
+        {
+            blockedOverlay.Visible = false;
         }
     }
 
@@ -284,15 +343,7 @@ public partial class StructureToolsPlugin : EditorPlugin
         // The floor grid, at the floor of the cell the selection stands in (a structure's root is on a cell floor),
         // reaching a whole number of modules out from the module it's in. Drawn in the game's frame (GameFrame).
         Transform3D frame = GameFrame(root);
-        Vector3 centre = Vector3.Zero;
-        foreach (Node node in EditorInterface.Singleton.GetSelection().GetSelectedNodes())
-        {
-            if (node is Node3D n)
-            {
-                centre = frame.AffineInverse() * n.GlobalPosition;
-                break;
-            }
-        }
+        Vector3 centre = SelectionCentre(frame);
         float size = BuildGrid.CellSize;
         int cx = Mathf.FloorToInt(centre.X / BuildGrid.ModuleSize) * BuildGrid.ModuleCells;
         int cz = Mathf.FloorToInt(centre.Z / BuildGrid.ModuleSize) * BuildGrid.ModuleCells;
@@ -366,11 +417,11 @@ public partial class StructureToolsPlugin : EditorPlugin
                 {
                     if ((cell.Value & Structure.InputTag(face)) != 0)
                     {
-                        AddFace(structure.GlobalTransform, cell.Key, face, inputFaces);
+                        AddFace(structure.GlobalTransform, cell.Key, face, 0f, inputFaces);
                     }
                     if ((cell.Value & Structure.OutputTag(face)) != 0)
                     {
-                        AddFace(structure.GlobalTransform, cell.Key, face, outputFaces);
+                        AddFace(structure.GlobalTransform, cell.Key, face, 0f, outputFaces);
                     }
                 }
             }
@@ -388,6 +439,19 @@ public partial class StructureToolsPlugin : EditorPlugin
             }
             AddSurface(Mesh.PrimitiveType.Lines, selectedMaterial, selected);
         }
+    }
+
+    /// <summary>Where the first selected Node3D is, in the game's frame; the origin with none selected.</summary>
+    static Vector3 SelectionCentre(Transform3D frame)
+    {
+        foreach (Node node in EditorInterface.Singleton.GetSelection().GetSelectedNodes())
+        {
+            if (node is Node3D n)
+            {
+                return frame.AffineInverse() * n.GlobalPosition;
+            }
+        }
+        return Vector3.Zero;
     }
 
     // An ImmediateMesh refuses an empty surface, so one is only added when it has something in it.
@@ -450,8 +514,11 @@ public partial class StructureToolsPlugin : EditorPlugin
         }
     }
 
-    /// <summary>A filled square on one face of a cell (in <see cref="Structure.FaceDirections"/> order), as two triangles.</summary>
-    static void AddFace(Transform3D transform, Vector3I cell, int face, List<Vector3> output)
+    /// <summary>
+    /// A filled square on one face of a cell (in <see cref="Structure.FaceDirections"/> order), as two triangles,
+    /// moved <paramref name="lift"/> out from the cell.
+    /// </summary>
+    static void AddFace(Transform3D transform, Vector3I cell, int face, float lift, List<Vector3> output)
     {
         float size = BuildGrid.CellSize;
         Vector3I normal = Structure.FaceDirections[face];
@@ -465,6 +532,7 @@ public partial class StructureToolsPlugin : EditorPlugin
         {
             c0[a] += size;
         }
+        c0[a] += normal[a] * lift;
         c0[u] += Inset;
         c0[v] += Inset;
         Vector3 c1 = c0;
@@ -519,6 +587,269 @@ public partial class StructureToolsPlugin : EditorPlugin
         {
             CollectStructures(child, structures);
         }
+    }
+
+    // ---- Blocked Cells ----
+
+    // Keeps the blocked cells worked out for the open scene and their faces' mesh built around the selection. The
+    // mesh is in the game's frame and the overlay is put in that frame, so moving the scene's root needs no rebuild.
+    void DrawBlockedCells()
+    {
+        Node root = EditorInterface.Singleton.GetEditedSceneRoot();
+        if (root == null || root.GetParent() == null)
+        {
+            blockedOverlay.Visible = false;
+            return;
+        }
+        if (blockedOverlay.GetParent() != root.GetParent())
+        {
+            blockedOverlay.GetParent()?.RemoveChild(blockedOverlay);
+            root.GetParent().AddChild(blockedOverlay);
+        }
+        if (levelBlocked == null || noBuildBlocked == null || blockedFor != root)
+        {
+            FindBlockedCells(root);
+        }
+
+        Transform3D frame = GameFrame(root);
+        Vector3 centre = SelectionCentre(frame) / BuildGrid.CellSize;
+        // The cell the selection is in; a point at z lies in cell floor(z) + 1 (see AddCells).
+        var centreCell = new Vector3I(Mathf.FloorToInt(centre.X), Mathf.FloorToInt(centre.Y), Mathf.FloorToInt(centre.Z) + 1);
+        if (blockedMeshStale || centreCell != blockedMeshCentre)
+        {
+            BuildBlockedMesh(centreCell);
+        }
+        blockedOverlay.GlobalTransform = frame;
+        blockedOverlay.Visible = true;
+    }
+
+    void FindBlockedCells(Node root)
+    {
+        levelBlocked = new HashSet<Vector3I>();
+        noBuildBlocked = new HashSet<Vector3I>();
+        blockedFor = root;
+        blockedMeshStale = true;
+        CollectBlockedCells(root, GameFrame(root).AffineInverse(), false);
+    }
+
+    // Adds the cells level geometry blocks (as PlacementProbe.IsStaticLevelCollider judges level geometry) and the
+    // cells no-build volumes touch, at or under node. inObject: node is in a GMPObject (a structure, an item...),
+    // whose colliders aren't level geometry.
+    void CollectBlockedCells(Node node, Transform3D toFrame, bool inObject)
+    {
+        if (node is NoBuildVolume volume)
+        {
+            AddNoBuildCells(toFrame * volume.GlobalTransform * new Aabb(-volume.Size / 2, volume.Size), noBuildBlocked);
+        }
+        if (IsGMPObject(node))
+        {
+            inObject = true;
+        }
+        // A body's own shape counts only when it has no Box3DCollisionShape children (those replace it).
+        bool isShape = node.IsClass("Box3DCollisionShape") && node.GetParent() != null && IsStaticSolidBody(node.GetParent());
+        bool isBodyShape = node.IsClass("Box3DBody") && IsStaticSolidBody(node) && !HasShapeChildren(node);
+        if (!inObject && (isShape || isBodyShape) && node is Node3D n)
+        {
+            // A mesh collider is a surface: Box3D tests a query box against its triangles, so it blocks the cells its
+            // triangles pass through, not everything inside its bounds.
+            bool isMesh = (ShapeTypeEnum)n.Get(Box3DNames.shapeType).AsInt32() == ShapeTypeEnum.Mesh;
+            if (isMesh && TryGetMeshTriangles(n, out Transform3D meshTransform, out Vector3[] triangles))
+            {
+                AddTriangleCells(toFrame * meshTransform, triangles, levelBlocked);
+            }
+            else if (TryGetShapeBounds(n, out Aabb local))
+            {
+                AddCells(toFrame * n.GlobalTransform, local, BuildGrid.LevelOverlapDepth, levelBlocked);
+            }
+        }
+        foreach (Node child in node.GetChildren())
+        {
+            CollectBlockedCells(child, toFrame, inObject);
+        }
+    }
+
+    static bool IsStaticSolidBody(Node body)
+    {
+        return IsSolidBody(body) && body.Get(Box3DNames.bodyType).AsInt32() == (int)BodyTypeEnum.Static;
+    }
+
+    // A mesh collider's triangles (a vertex list, three to a triangle) and the frame they're in: its collision_mesh,
+    // else its first MeshInstance3D child's mesh, as TryGetMeshBounds finds them.
+    static bool TryGetMeshTriangles(Node3D node, out Transform3D transform, out Vector3[] triangles)
+    {
+        Mesh mesh = node.Get(Box3DNames.collisionMesh).As<Mesh>();
+        if (mesh != null)
+        {
+            transform = node.GlobalTransform;
+            triangles = mesh.GetFaces();
+            return true;
+        }
+        foreach (Node child in node.GetChildren())
+        {
+            if (child is MeshInstance3D m && m.Mesh != null)
+            {
+                transform = m.GlobalTransform;
+                triangles = m.Mesh.GetFaces();
+                return true;
+            }
+        }
+        transform = Transform3D.Identity;
+        triangles = [];
+        return false;
+    }
+
+    // Every cell a triangle passes through once the cell is pulled in by LevelOverlapDepth on every side: the box the
+    // game's query asks Box3D about (BuildGrid.QueryLevelBlocked). Worked out in BuildGrid's numbering (cell n spans
+    // n..n+1 on each axis) and added in a structure's (one higher in z).
+    static void AddTriangleCells(Transform3D toFrame, Vector3[] triangles, HashSet<Vector3I> cells)
+    {
+        float size = BuildGrid.CellSize;
+        float depth = BuildGrid.LevelOverlapDepth;
+        float half = size / 2f - depth;
+        for (int i = 0; i + 2 < triangles.Length; i += 3)
+        {
+            Vector3 a = toFrame * triangles[i];
+            Vector3 b = toFrame * triangles[i + 1];
+            Vector3 c = toFrame * triangles[i + 2];
+            Aabb bounds = new Aabb(a, Vector3.Zero).Expand(b).Expand(c);
+            // Cells whose pulled-in box the triangle's bounds reach: n * size + depth <= high and (n + 1) * size - depth >= low.
+            Vector3 low = bounds.Position;
+            Vector3 high = bounds.End;
+            int x0 = Mathf.CeilToInt((low.X + depth) / size - 1f);
+            int x1 = Mathf.FloorToInt((high.X - depth) / size);
+            int y0 = Mathf.CeilToInt((low.Y + depth) / size - 1f);
+            int y1 = Mathf.FloorToInt((high.Y - depth) / size);
+            int z0 = Mathf.CeilToInt((low.Z + depth) / size - 1f);
+            int z1 = Mathf.FloorToInt((high.Z - depth) / size);
+            for (int x = x0; x <= x1; x++)
+            {
+                for (int y = y0; y <= y1; y++)
+                {
+                    for (int z = z0; z <= z1; z++)
+                    {
+                        Vector3 cellCentre = new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) * size;
+                        if (TriangleTouchesBox(a, b, c, cellCentre, half))
+                        {
+                            cells.Add(new Vector3I(x, y, z + 1));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Whether a triangle touches an axis-aligned cube (centre and half its side). Separating axis test, as
+    // BoxTouchesCell: the axes to try are the cube's three, the triangle's normal, and each cube axis crossed with
+    // each triangle edge.
+    static bool TriangleTouchesBox(Vector3 a, Vector3 b, Vector3 c, Vector3 centre, float half)
+    {
+        Vector3 p0 = a - centre;
+        Vector3 p1 = b - centre;
+        Vector3 p2 = c - centre;
+        Vector3 e0 = p1 - p0;
+        Vector3 e1 = p2 - p1;
+        Vector3 e2 = p0 - p2;
+        foreach (Vector3 axis in BoxAxes)
+        {
+            if (SeparatedOn(axis, p0, p1, p2, half)
+                || SeparatedOn(axis.Cross(e0), p0, p1, p2, half)
+                || SeparatedOn(axis.Cross(e1), p0, p1, p2, half)
+                || SeparatedOn(axis.Cross(e2), p0, p1, p2, half))
+            {
+                return false;
+            }
+        }
+        return !SeparatedOn(e0.Cross(e1), p0, p1, p2, half);
+    }
+
+    // Whether the triangle's shadow on axis misses the cube's (centred on the origin). A zero axis (an edge along
+    // the cube's axis) separates nothing.
+    static bool SeparatedOn(Vector3 axis, Vector3 p0, Vector3 p1, Vector3 p2, float half)
+    {
+        float d0 = axis.Dot(p0);
+        float d1 = axis.Dot(p1);
+        float d2 = axis.Dot(p2);
+        float reach = half * (Mathf.Abs(axis.X) + Mathf.Abs(axis.Y) + Mathf.Abs(axis.Z));
+        return Mathf.Min(d0, Mathf.Min(d1, d2)) > reach || Mathf.Max(d0, Mathf.Max(d1, d2)) < -reach;
+    }
+
+    // Every cell a no-build volume's box overlaps (touching doesn't count), as BuildGrid.FillBlockAt tests it. A
+    // turned volume blocks the box around it, as in the game.
+    static void AddNoBuildCells(Aabb box, HashSet<Vector3I> cells)
+    {
+        float size = BuildGrid.CellSize;
+        Vector3 low = box.Position / size;
+        Vector3 high = box.End / size;
+        for (int x = Mathf.FloorToInt(low.X); x < high.X; x++)
+        {
+            for (int y = Mathf.FloorToInt(low.Y); y < high.Y; y++)
+            {
+                for (int z = Mathf.FloorToInt(low.Z); z < high.Z; z++)
+                {
+                    var cellBox = new Aabb(new Vector3(x, y, z) * size, Vector3.One * size);
+                    if (box.Intersects(cellBox))
+                    {
+                        cells.Add(new Vector3I(x, y, z + 1));
+                    }
+                }
+            }
+        }
+    }
+
+    // The faces of blocked cells within GridRadius of centre that border an open cell. A cell both kinds block
+    // shows as no-build, as in the game.
+    void BuildBlockedMesh(Vector3I centre)
+    {
+        blockedMeshStale = false;
+        blockedMeshCentre = centre;
+        var levelFaces = new List<Vector3>();
+        var noBuildFaces = new List<Vector3>();
+        foreach (Vector3I cell in levelBlocked)
+        {
+            if (!noBuildBlocked.Contains(cell))
+            {
+                AddBlockedFaces(cell, centre, levelFaces);
+            }
+        }
+        foreach (Vector3I cell in noBuildBlocked)
+        {
+            AddBlockedFaces(cell, centre, noBuildFaces);
+        }
+
+        var mesh = new ArrayMesh();
+        AddMeshSurface(mesh, levelFaces, levelBlockedMaterial);
+        AddMeshSurface(mesh, noBuildFaces, noBuildBlockedMaterial);
+        blockedOverlay.Mesh = mesh;
+    }
+
+    void AddBlockedFaces(Vector3I cell, Vector3I centre, List<Vector3> output)
+    {
+        if ((cell - centre).LengthSquared() > GridRadius * GridRadius)
+        {
+            return;
+        }
+        for (int face = 0; face < 6; face++)
+        {
+            Vector3I next = cell + Structure.FaceDirections[face];
+            if (!levelBlocked.Contains(next) && !noBuildBlocked.Contains(next))
+            {
+                AddFace(Transform3D.Identity, cell, face, BlockedFaceLift, output);
+            }
+        }
+    }
+
+    // An empty surface isn't allowed, so one is only added when it has something in it.
+    static void AddMeshSurface(ArrayMesh mesh, List<Vector3> vertices, Material material)
+    {
+        if (vertices.Count == 0)
+        {
+            return;
+        }
+        var arrays = new Godot.Collections.Array();
+        arrays.Resize((int)Mesh.ArrayType.Max);
+        arrays[(int)Mesh.ArrayType.Vertex] = vertices.ToArray();
+        mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays);
+        mesh.SurfaceSetMaterial(mesh.GetSurfaceCount() - 1, material);
     }
 
     // ---- Edit Cells ----
@@ -1093,9 +1424,21 @@ public partial class StructureToolsPlugin : EditorPlugin
     /// <summary>True if <paramref name="node"/> carries the Structure script or one derived from it (placeholders included).</summary>
     static bool IsStructure(Node node)
     {
+        return HasScriptIn(node, structureScriptPaths);
+    }
+
+    /// <summary>True if <paramref name="node"/> carries a script that is a <see cref="GMPObject"/> (placeholders included).</summary>
+    static bool IsGMPObject(Node node)
+    {
+        return HasScriptIn(node, gmpObjectScriptPaths);
+    }
+
+    // Whether node's script, or one it derives from, is one of paths.
+    static bool HasScriptIn(Node node, HashSet<string> paths)
+    {
         for (Script s = node.GetScript().As<Script>(); s != null; s = s.GetBaseScript())
         {
-            if (structureScriptPaths.Contains(s.ResourcePath))
+            if (paths.Contains(s.ResourcePath))
             {
                 return true;
             }
@@ -1109,6 +1452,24 @@ public partial class StructureToolsPlugin : EditorPlugin
         foreach (ScriptPathAttribute attribute in typeof(Structure).GetCustomAttributes<ScriptPathAttribute>(false))
         {
             paths.Add(attribute.Path);
+        }
+        return paths;
+    }
+
+    // Every script class that is a GMPObject (an interface, so each class implementing it is listed).
+    static HashSet<string> GMPObjectScriptPaths()
+    {
+        var paths = new HashSet<string>();
+        foreach (System.Type type in typeof(GMPObject).Assembly.GetTypes())
+        {
+            if (type.IsInterface || !typeof(GMPObject).IsAssignableFrom(type))
+            {
+                continue;
+            }
+            foreach (ScriptPathAttribute attribute in type.GetCustomAttributes<ScriptPathAttribute>(false))
+            {
+                paths.Add(attribute.Path);
+            }
         }
         return paths;
     }

@@ -47,19 +47,22 @@ transform = Transform3D(0.96593, 0, -0.25882, 0, 1, 0, 0.25882, 0, 0.96593, 0.96
 
 [node name="WallOuter0" type="Box3DCollisionShape" parent="." unique_id=1107121708]
 box_size = Vector3(0.11, 0.4, 1.045)
-friction = 0.1
+friction = 0.0
+tangent_velocity = Vector3(0, 0, -0.1)
 user_material_id = 3
 transform = Transform3D(0.25882, 0, -0.96593, 0, 1, 0, 0.96593, 0, 0.25882, 0.49046, 0.2, -0.16957)
 
 [node name="WallOuter1" type="Box3DCollisionShape" parent="." unique_id=1060106689]
 box_size = Vector3(0.11, 0.4, 1.045)
-friction = 0.1
+friction = 0.0
+tangent_velocity = Vector3(0, 0, -0.1)
 user_material_id = 3
 transform = Transform3D(0.70711, 0, -0.70711, 0, 1, 0, 0.70711, 0, 0.70711, 1.33997, 0.2, -0.66003)
 
 [node name="WallOuter2" type="Box3DCollisionShape" parent="." unique_id=51411012]
 box_size = Vector3(0.11, 0.4, 1.045)
-friction = 0.1
+friction = 0.0
+tangent_velocity = Vector3(0, 0, -0.1)
 user_material_id = 3
 transform = Transform3D(0.96593, 0, -0.25882, 0, 1, 0, 0.25882, 0, 0.96593, 1.83043, 0.2, -1.50954)
 
@@ -70,6 +73,7 @@ sphere_radius = 0.01
 capsule_radius = 0.08
 capsule_height = 0.4
 friction = 0.1
+tangent_velocity = Vector3(0.1, 0, 0.1)
 user_material_id = 3
 transform = Transform3D(0.99999934, 0, 0, 0, 1, 0, 0, 0, 0.99999934, 0.06070797, 0.26764405, -1.9450451)
 

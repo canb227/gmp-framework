@@ -24,7 +24,7 @@ public partial class BuildGrid
     const int FillChunkCells = 8;
     const int FillChunkVolume = FillChunkCells * FillChunkCells * FillChunkCells;
     /// <summary>How far (m) level geometry must reach into a cell to block it; less, like touching it, doesn't count.</summary>
-    const float LevelOverlapDepth = 0.05f;
+    public const float LevelOverlapDepth = 0.05f;
     /// <summary>Time each physics tick may spend scanning level geometry and building fill meshes, in ms.</summary>
     const double FillWorkBudgetMs = 1.5;
 

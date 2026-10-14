@@ -119,7 +119,13 @@ public partial class Recycler : Machine
     {
         string itemID = PickWeighted(itemWeights);
         if (itemID == null) return;
-        ItemInfo.SpawnInWorld(itemID, OutputPosition(output), GlobalRotation);
+
+        Vector3 rotVal = new Vector3(
+            (float)GD.RandRange(0, Mathf.Pi * 2),
+            (float)GD.RandRange(0, Mathf.Pi * 2),
+            (float)GD.RandRange(0, Mathf.Pi * 2)
+        );
+        ItemInfo.SpawnInWorld(itemID, OutputPosition(output), rotVal);
     }
 
     /// <summary>Picks a key at random in proportion to its weight; null if no key has a positive weight.</summary>

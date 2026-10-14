@@ -34,11 +34,11 @@ public partial record struct MagnetSync
 /// point marker moves with the camera every frame.
 /// </para>
 /// <para>
-/// The pull is a mass-independent controller, so a feather and a lead weight respond alike: a position loop picks a
+/// The pull works in accelerations, then scales by the item's mass, so anything can be lifted: a position loop picks a
 /// velocity that closes the gap (plus the hold point's own velocity, so held items keep up while you move), a velocity
 /// loop turns that into an acceleration (never correcting more than a fraction of the difference per tick, which keeps
-/// light items from oscillating), gravity is cancelled, and the result is scaled by
-/// the item's mass and capped at <see cref="strength"/>, so heavy items sag and lag. Spin is damped while held. In
+/// light items from oscillating), and gravity is cancelled in full. Heavy items get a lower pull speed and acceleration
+/// (<see cref="Lightness"/>), so they feel slow and swing wide but always move a little. Spin is damped while held. In
 /// area mode every item is pulled to the same point, and their collisions pack them into a ball.
 /// </para>
 /// </summary>
@@ -62,8 +62,15 @@ public partial class MagnetRod : HeldItem
     /// ticks, in uneven steps; unsmoothed, those steps would jolt held items.
     /// </summary>
     [Export] public float followSmoothing = 0.06f;
-    /// <summary>Force cap per item (N), including holding it up against gravity.</summary>
-    [Export] public float strength = 400f;
+    /// <summary>
+    /// Hardest a light item is accelerated (m/s²), apart from holding it up. Heavier items get less of this and a lower
+    /// <see cref="maxPullSpeed"/>, by their <see cref="Lightness"/>.
+    /// </summary>
+    [Export] public float maxAcceleration = 150f;
+    /// <summary>An item this heavy (kg) moves at half the speed and acceleration of a light one; twice as heavy, a third.</summary>
+    [Export] public float heavyMass = 50f;
+    /// <summary>However heavy an item is, it still gets at least this fraction of the speed and acceleration.</summary>
+    [Export] public float minLightness = 0.05f;
     /// <summary>How fast a held item's spin is damped (1/s).</summary>
     [Export] public float spinDamping = 6f;
 
@@ -272,7 +279,8 @@ public partial class MagnetRod : HeldItem
         if (mode == MagnetMode.Single)
         {
             strainedFor = caught[0].GlobalPosition.DistanceTo(target) > breakDistance ? strainedFor + dt : 0;
-            if (strainedFor > breakTime)
+            // Heavy items trail far behind a quick turn: give them longer to catch up before letting go.
+            if (strainedFor > breakTime / Lightness(caught[0].GetMass()))
             {
                 mode = MagnetMode.Off;
             }
@@ -312,17 +320,22 @@ public partial class MagnetRod : HeldItem
         // full rate from the first pull, or the other peers see the grab only after a long delay.
         if (item.asleep) item.OnWoke();
 
+        float mass = item.GetMass();
+        float lightness = Lightness(mass);
+
+        float pullSpeed = maxPullSpeed * lightness;
         Vector3 pull = (target - item.GlobalPosition) * positionGain;
-        if (pull.Length() > maxPullSpeed) pull = pull.Normalized() * maxPullSpeed;
+        if (pull.Length() > pullSpeed) pull = pull.Normalized() * pullSpeed;
         Vector3 wantedVelocity = targetVelocity + pull;
 
         // Correct at most 90% of the velocity difference per tick, whatever the gain: this keeps the loop stable.
         float response = Mathf.Min(velocityGain, 0.9f / dt);
-        // With several rods on one item each cancels all of gravity; the velocity loop takes up the extra lift.
-        Vector3 accel = (wantedVelocity - item.GetLinearVelocity()) * response - gravity;
-        Vector3 force = accel * item.GetMass();
-        if (force.Length() > strength) force = force.Normalized() * strength;
-        item.ApplyCentralForce(force);
+        Vector3 accel = (wantedVelocity - item.GetLinearVelocity()) * response;
+        float accelLimit = maxAcceleration * lightness;
+        if (accel.Length() > accelLimit) accel = accel.Normalized() * accelLimit;
+        // Gravity is always cancelled in full, so nothing is too heavy to lift. With several rods on one item each
+        // cancels all of it; the velocity loop takes up the extra lift.
+        item.ApplyCentralForce((accel - gravity) * mass);
 
         // Remove a fraction of its spin (an angular impulse of I * delta-omega).
         Vector3 spin = item.GetAngularVelocity();
@@ -330,5 +343,11 @@ public partial class MagnetRod : HeldItem
         {
             item.ApplyAngularImpulse(item.GetInertiaTensor() * (-spin * Mathf.Min(1f, spinDamping * dt)));
         }
+    }
+
+    /// <summary>1 for a light item, falling toward <see cref="minLightness"/> as it gets heavier (0.5 at <see cref="heavyMass"/>).</summary>
+    float Lightness(float mass)
+    {
+        return Mathf.Max(minLightness, 1f / (1f + mass / heavyMass));
     }
 }
