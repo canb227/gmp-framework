@@ -8,7 +8,11 @@ using System.Reflection;
 /// <list type="bullet">
 /// <item>View Grid draws the build grid's 1 m cells on a floor around the selection, and outlines the cells every
 /// Structure in the open scene is made of (its <see cref="Structure.cells"/>), the scene's own root included when
-/// editing a structure. Faces tagged as an input are filled green and as an output orange.</item>
+/// editing a structure. Faces tagged as an input are filled green and as an output orange. The grid is the game's
+/// exactly: drawn in the frame the game will put the scene's root in (<see cref="GameFrame"/>).</item>
+/// <item>Modules marks the 2 m structure modules on that floor grid (<see cref="BuildGrid.ModuleSize"/>; modules
+/// start on even cells): bold module lines and a chequerboard of modules, blue when the floor is on a module's
+/// bottom (an even height) and orange when it's partway up one (odd), for lining a level up with the grid.</item>
 /// <item>Grid Snap moves every selected Structure to the grid pose nearest to where a move or rotation ends
 /// (<see cref="Structure.NearestGridTransform"/>), so hand-placed ones pass the runtime alignment check. The open
 /// scene's root is never moved, so editing a structure's own scene is unaffected.</item>
@@ -32,6 +36,8 @@ public partial class StructureToolsPlugin : EditorPlugin
     const int GridRadius = 12;
     /// <summary>How far tagged faces and the selected cell's outline sit inside their cell, so they don't hide the footprint's outline.</summary>
     const float Inset = 0.06f;
+    /// <summary>How far the module chequerboard sits above the floor grid, so it doesn't fight the floor under it.</summary>
+    const float ModuleFillLift = 0.01f;
 
     static readonly Vector3I[] Axes = [Vector3I.Right, Vector3I.Up, Vector3I.Back];
     static readonly string[] FaceNames = ["Front", "Back", "Left", "Right", "Up", "Down"];
@@ -40,6 +46,7 @@ public partial class StructureToolsPlugin : EditorPlugin
     static readonly HashSet<string> structureScriptPaths = StructureScriptPaths();
 
     CheckButton viewGridToggle;
+    CheckButton modulesToggle;
     CheckButton snapToggle;
     Button fillCellsButton;
     SpinBox toleranceBox;
@@ -48,6 +55,10 @@ public partial class StructureToolsPlugin : EditorPlugin
     MeshInstance3D overlay;
     ImmediateMesh lines;
     StandardMaterial3D gridMaterial;
+    StandardMaterial3D moduleLineMaterial;
+    StandardMaterial3D moduleFillMaterial;
+    StandardMaterial3D oddModuleLineMaterial;
+    StandardMaterial3D oddModuleFillMaterial;
     StandardMaterial3D footprintMaterial;
     StandardMaterial3D inputMaterial;
     StandardMaterial3D outputMaterial;
@@ -76,6 +87,11 @@ public partial class StructureToolsPlugin : EditorPlugin
         {
             Text = "View Grid",
             TooltipText = "Show the build grid's cells around the selection, and the cells each Structure is made of.",
+        };
+        modulesToggle = new CheckButton
+        {
+            Text = "Modules",
+            TooltipText = "Mark the 2 m structure modules (which start on even cells) on the View Grid floor: bold lines and a chequerboard,\nblue when the floor is at an even height, orange when it's at an odd one (partway up a module).",
         };
         snapToggle = new CheckButton
         {
@@ -110,6 +126,7 @@ public partial class StructureToolsPlugin : EditorPlugin
         };
         editCellsToggle.Toggled += OnEditCellsToggled;
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, viewGridToggle);
+        AddControlToContainer(CustomControlContainer.SpatialEditorMenu, modulesToggle);
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, snapToggle);
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, fillCellsButton);
         AddControlToContainer(CustomControlContainer.SpatialEditorMenu, toleranceBox);
@@ -120,6 +137,10 @@ public partial class StructureToolsPlugin : EditorPlugin
         GetUndoRedo().HistoryChanged += OnHistoryChanged;
 
         gridMaterial = OverlayMaterial(new Color(1f, 1f, 1f, 0.25f), false);
+        moduleLineMaterial = OverlayMaterial(new Color(0.55f, 0.85f, 1f, 0.8f), false);
+        moduleFillMaterial = OverlayMaterial(new Color(0.55f, 0.85f, 1f, 0.15f), false);
+        oddModuleLineMaterial = OverlayMaterial(new Color(1f, 0.6f, 0.2f, 0.8f), false);
+        oddModuleFillMaterial = OverlayMaterial(new Color(1f, 0.6f, 0.2f, 0.15f), false);
         // The rest draw through everything so a structure's cells show inside its model.
         footprintMaterial = OverlayMaterial(new Color(0.85f, 0.85f, 0.85f, 0.6f), true);
         inputMaterial = OverlayMaterial(new Color(StructureArrow.InputColor, 0.45f), true);
@@ -143,6 +164,7 @@ public partial class StructureToolsPlugin : EditorPlugin
     {
         GetUndoRedo().HistoryChanged -= OnHistoryChanged;
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, viewGridToggle);
+        RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, modulesToggle);
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, snapToggle);
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, fillCellsButton);
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, toleranceBox);
@@ -150,6 +172,7 @@ public partial class StructureToolsPlugin : EditorPlugin
         RemoveControlFromContainer(CustomControlContainer.SpatialEditorMenu, editCellsToggle);
         RemoveDock(cellDock);
         viewGridToggle.QueueFree();
+        modulesToggle.QueueFree();
         snapToggle.QueueFree();
         fillCellsButton.QueueFree();
         toleranceBox.QueueFree();
@@ -199,6 +222,7 @@ public partial class StructureToolsPlugin : EditorPlugin
     void SnapSelected()
     {
         Node root = EditorInterface.Singleton.GetEditedSceneRoot();
+        Transform3D frame = GameFrame(root);
         bool moved = false;
         foreach (Node node in EditorInterface.Singleton.GetSelection().GetSelectedNodes())
         {
@@ -206,12 +230,13 @@ public partial class StructureToolsPlugin : EditorPlugin
             {
                 continue;
             }
-            Transform3D current = n.GlobalTransform;
+            // On the grid as the game will see it, in the root's frame.
+            Transform3D current = frame.AffineInverse() * n.GlobalTransform;
             Transform3D snapped = Structure.NearestGridTransform(current, out _, out _);
             if (!current.IsEqualApprox(snapped))
             {
                 // Set directly rather than as another undo step: undoing the move then returns to where it started.
-                n.GlobalTransform = snapped;
+                n.GlobalTransform = frame * snapped;
                 moved = true;
             }
         }
@@ -219,6 +244,22 @@ public partial class StructureToolsPlugin : EditorPlugin
         {
             EditorInterface.Singleton.MarkSceneAsUnsaved();
         }
+    }
+
+    /// <summary>
+    /// Where the game's world frame is in the editor: the open scene's root, unscaled. The game spawns a level (or any
+    /// scene) with its root at the world origin, unturned, whatever position and rotation the root has here (it keeps
+    /// its scale; GameWorld._SpawnInternal), so the build grid is drawn and snapped to in this frame and lines up with
+    /// the game's exactly.
+    /// </summary>
+    static Transform3D GameFrame(Node root)
+    {
+        if (root is Node3D root3D)
+        {
+            Transform3D rootTransform = root3D.GlobalTransform;
+            return new Transform3D(rootTransform.Basis.Orthonormalized(), rootTransform.Origin);
+        }
+        return Transform3D.Identity;
     }
 
     // ---- drawing ----
@@ -240,29 +281,75 @@ public partial class StructureToolsPlugin : EditorPlugin
         overlay.Visible = true;
         lines.ClearSurfaces();
 
-        // The floor grid, at the floor of the cell the selection stands in (a structure's root is on a cell floor).
+        // The floor grid, at the floor of the cell the selection stands in (a structure's root is on a cell floor),
+        // reaching a whole number of modules out from the module it's in. Drawn in the game's frame (GameFrame).
+        Transform3D frame = GameFrame(root);
         Vector3 centre = Vector3.Zero;
         foreach (Node node in EditorInterface.Singleton.GetSelection().GetSelectedNodes())
         {
             if (node is Node3D n)
             {
-                centre = n.GlobalPosition;
+                centre = frame.AffineInverse() * n.GlobalPosition;
                 break;
             }
         }
         float size = BuildGrid.CellSize;
-        int cx = Mathf.RoundToInt(centre.X / size);
-        int cz = Mathf.RoundToInt(centre.Z / size);
-        float y = Mathf.Floor(centre.Y / size + 0.01f) * size;
+        int cx = Mathf.FloorToInt(centre.X / BuildGrid.ModuleSize) * BuildGrid.ModuleCells;
+        int cz = Mathf.FloorToInt(centre.Z / BuildGrid.ModuleSize) * BuildGrid.ModuleCells;
+        int floorCell = Mathf.FloorToInt(centre.Y / size + 0.01f);
+        float y = floorCell * size;
+        bool showModules = modulesToggle.ButtonPressed;
         var grid = new List<Vector3>();
+        var moduleLines = new List<Vector3>();
         for (int i = -GridRadius; i <= GridRadius; i++)
         {
-            grid.Add(new Vector3((cx + i) * size, y, (cz - GridRadius) * size));
-            grid.Add(new Vector3((cx + i) * size, y, (cz + GridRadius) * size));
-            grid.Add(new Vector3((cx - GridRadius) * size, y, (cz + i) * size));
-            grid.Add(new Vector3((cx + GridRadius) * size, y, (cz + i) * size));
+            // cx and cz are even, so line i is on a module edge when i is.
+            List<Vector3> output = grid;
+            if (showModules && Mathf.PosMod(i, BuildGrid.ModuleCells) == 0)
+            {
+                output = moduleLines;
+            }
+            output.Add(frame * new Vector3((cx + i) * size, y, (cz - GridRadius) * size));
+            output.Add(frame * new Vector3((cx + i) * size, y, (cz + GridRadius) * size));
+            output.Add(frame * new Vector3((cx - GridRadius) * size, y, (cz + i) * size));
+            output.Add(frame * new Vector3((cx + GridRadius) * size, y, (cz + i) * size));
         }
         AddSurface(Mesh.PrimitiveType.Lines, gridMaterial, grid);
+
+        if (showModules)
+        {
+            // Every other module filled, like a chequerboard, so a cell's module (and whether it's an even or odd
+            // cell in it) can be read at a glance. Orange when the floor is at an odd height, partway up a module.
+            var checker = new List<Vector3>();
+            float lifted = y + ModuleFillLift;
+            for (int mx = -GridRadius; mx < GridRadius; mx += BuildGrid.ModuleCells)
+            {
+                for (int mz = -GridRadius; mz < GridRadius; mz += BuildGrid.ModuleCells)
+                {
+                    int x0 = cx + mx, z0 = cz + mz;
+                    if (Mathf.PosMod(x0 / BuildGrid.ModuleCells + z0 / BuildGrid.ModuleCells, 2) != 0)
+                    {
+                        continue;
+                    }
+                    int x1 = x0 + BuildGrid.ModuleCells, z1 = z0 + BuildGrid.ModuleCells;
+                    Vector3 c0 = frame * new Vector3(x0 * size, lifted, z0 * size);
+                    Vector3 c1 = frame * new Vector3(x1 * size, lifted, z0 * size);
+                    Vector3 c2 = frame * new Vector3(x1 * size, lifted, z1 * size);
+                    Vector3 c3 = frame * new Vector3(x0 * size, lifted, z1 * size);
+                    checker.AddRange([c0, c1, c2, c0, c2, c3]);
+                }
+            }
+            if (Mathf.PosMod(floorCell, BuildGrid.ModuleCells) == 0)
+            {
+                AddSurface(Mesh.PrimitiveType.Lines, moduleLineMaterial, moduleLines);
+                AddSurface(Mesh.PrimitiveType.Triangles, moduleFillMaterial, checker);
+            }
+            else
+            {
+                AddSurface(Mesh.PrimitiveType.Lines, oddModuleLineMaterial, moduleLines);
+                AddSurface(Mesh.PrimitiveType.Triangles, oddModuleFillMaterial, checker);
+            }
+        }
 
         var structures = new List<Node3D>();
         CollectStructures(root, structures);
