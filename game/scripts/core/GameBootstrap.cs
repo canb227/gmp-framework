@@ -12,13 +12,17 @@ public static class GameBootstrap
     public const string PlayerScene = "res://game/scenes/player/FactoryPlayer.tscn";
     public static readonly string[] StartingBlueprints =
     [
-        "blueprint_conveyor", "blueprint_conveyor_slope", "blueprint_conveyor_loader", "scrap_ball", "blueprint_assembler", "blueprint_smelter"
+        "blueprint_conveyor", "blueprint_conveyor_slope", "blueprint_conveyor_loader", "scrap_ball", "blueprint_assembler", "blueprint_smelter", "blueprint_grinder",
     ];
     public const int StartingBlueprintCount = 99;
 
-    /// <summary>Host spawns the selected level for everyone, unless starting from a save (loaded once all peers are in).</summary>
+    /// <summary>
+    /// Every peer stocks the shop. The host spawns the selected level for everyone, unless starting from a save
+    /// (loaded once all peers are in).
+    /// </summary>
     public static void Preload(GameInfo gameInfo)
     {
+        Shop.StockAllItems();
         if (Lobby.isHost)
         {
             if (!string.IsNullOrEmpty(gameInfo.savePath))

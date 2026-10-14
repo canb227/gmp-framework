@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// Shop terminal UI (ShopUI.tscn): a catalogue of purchasable structure blueprints on the left; selecting one
+/// Shop terminal UI (ShopUI.tscn): a catalogue of purchasable items (blueprints, equipment) on the left; selecting one
 /// shows its details on the right, with a purchase widget at the bottom (per currency in its price: the cost vs. how
 /// much the players' bank holds; an order-quantity selector, and a Purchase button). The header shows every
-/// discovered currency's bank (<see cref="CurrencyBar"/>). Only stock whose currencies are all discovered is listed.
+/// discovered currency's bank (<see cref="CurrencyBar"/>). Only stock with a price whose currencies are all discovered is listed.
 /// Laid out for a fixed 2560x1440 screen so it can later be rendered in a SubViewport on an in-world display.
 /// A view over <see cref="Shop"/>, which holds the stock, prices and the purchase itself; every open shop rebuilds
 /// when the stock changes or a currency is discovered. Opened as a screen by <see cref="UIManager.OpenShop"/>; Exit, Escape or interact close it.
@@ -21,8 +21,8 @@ public partial class ShopUI : UIScreen
 
     private Inventory inventory;
     private readonly ButtonGroup rowGroup = new();
-    private readonly List<(BlueprintItem item, Button row, HBoxContainer costBox)> rows = new();
-    private BlueprintItem selected;
+    private readonly List<(PurchasableItem item, Button row, HBoxContainer costBox)> rows = new();
+    private PurchasableItem selected;
     private int quantity = 1;
     private VBoxContainer itemList;
     private Label listCount, emptyDetail, detailCategory, detailName, detailStats, detailDescription;
@@ -147,13 +147,13 @@ public partial class ShopUI : UIScreen
         rows.Clear();
 
         // Grouped by definition folder, groups in order of first appearance, items in the order they were added.
-        List<BlueprintItem> stock = Shop.Stock.Select(id => ItemInfo.Fetch(id) as BlueprintItem).Where(i => i != null && Shop.IsAvailable(i)).ToList();
+        List<PurchasableItem> stock = Shop.Stock.Select(id => ItemInfo.Fetch(id) as PurchasableItem).Where(i => i != null && Shop.IsAvailable(i)).ToList();
         bool first = true;
         foreach (var group in stock.GroupBy(CategoryOf))
         {
             AddCategoryHeader(group.Key, first);
             first = false;
-            foreach (BlueprintItem item in group)
+            foreach (PurchasableItem item in group)
             {
                 AddRow(item);
             }
@@ -168,8 +168,8 @@ public partial class ShopUI : UIScreen
         Select(stock.Contains(selected) ? selected : stock.FirstOrDefault());
     }
 
-    /// <summary>The blueprint's definition folder, e.g. "chutes" (top-level blueprints are "general").</summary>
-    private static string CategoryOf(BlueprintItem item)
+    /// <summary>The item's definition folder, e.g. "conveyors" or "equipment" (top-level blueprints are "general").</summary>
+    private static string CategoryOf(PurchasableItem item)
     {
         string folder = item.ResourcePath.GetBaseDir().TrimSuffix("/").GetFile();
         return folder == "blueprints" ? "general" : folder;
@@ -188,7 +188,7 @@ public partial class ShopUI : UIScreen
         });
     }
 
-    private void AddRow(BlueprintItem item)
+    private void AddRow(PurchasableItem item)
     {
         Button row = new()
         {
@@ -229,7 +229,7 @@ public partial class ShopUI : UIScreen
     }
 
     /// <summary>Display name without the "Blueprint: " prefix every entry here would share.</summary>
-    private static string ShopName(BlueprintItem item)
+    private static string ShopName(PurchasableItem item)
     {
         string name = item.displayName ?? item.itemID;
         return name.StartsWith("Blueprint: ") ? name.Substring("Blueprint: ".Length) : name;
@@ -247,7 +247,7 @@ public partial class ShopUI : UIScreen
 
     // ---- detail + purchase -----------------------------------------------------
 
-    private void Select(BlueprintItem item)
+    private void Select(PurchasableItem item)
     {
         if (item != selected)
         {
@@ -269,9 +269,18 @@ public partial class ShopUI : UIScreen
         }
 
         detailIcon.Texture = item.icon;
-        detailCategory.Text = $"BLUEPRINT  //  {CategoryOf(item).Replace('_', ' ').ToUpperInvariant()}";
+        string kind = "EQUIPMENT";
+        string alternate = "";
+        if (item is BlueprintItem blueprint)
+        {
+            kind = $"BLUEPRINT  //  {CategoryOf(item).Replace('_', ' ').ToUpperInvariant()}";
+            if (blueprint.alternateStructureScene != null)
+            {
+                alternate = "  //  2 FORMS";
+            }
+        }
+        detailCategory.Text = kind;
         detailName.Text = ShopName(item);
-        string alternate = item.alternateStructureScene != null ? "  //  2 FORMS" : "";
         detailStats.Text = $"ID {item.itemID}  //  STACKS TO {item.maxStackSize}{alternate}";
         detailDescription.Text = string.IsNullOrEmpty(item.description) ? "No specification on file." : item.description;
 

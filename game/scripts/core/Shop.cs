@@ -16,17 +16,18 @@ public record CurrencyInfo(string name, Texture2D icon);
 /// <para>
 /// Items turned in to the void are deposited (<see cref="Deposit"/>): each is worth the currencies set on its
 /// <see cref="PhysicalFactoryItem.currencyValue"/> (maybe none), and every deposit is counted by item id either way
-/// (<see cref="Deposited"/>). All prices are paid from the currency banks; bought blueprints go into the buyer's
+/// (<see cref="Deposited"/>). All prices are paid from the currency banks; bought items go into the buyer's
 /// inventory.
 /// </para>
 /// <para>
-/// A currency is discovered the first time any of it is gained, and stays discovered (a bank at 0 still shows). An
-/// item on sale is only offered (<see cref="IsAvailable"/>) once every currency in its price has been discovered.
+/// Every <see cref="PurchasableItem"/> definition is on sale from game start (<see cref="StockAllItems"/>). A currency
+/// is discovered the first time any of it is gained, and stays discovered (a bank at 0 still shows). An item on sale
+/// is only offered (<see cref="IsAvailable"/>) once it has a price and every currency in it has been discovered.
 /// </para>
 /// <para>
 /// Multiplayer: the lobby host owns stock, banks and deposits. Only the host changes them, broadcasting each change to
 /// every peer, itself included. Other players can only request purchases, which are paid for on the host (so two
-/// players can't spend the same currency) and the blueprints sent back to the buyer. A peer that joins a running game
+/// players can't spend the same currency) and the items sent back to the buyer. A peer that joins a running game
 /// gets the whole state with the world (<see cref="SaveManager"/>). Everything is cleared when the session ends.
 /// </para>
 /// <para>An autoload, so RPCs have a node to target; the API is static.</para>
@@ -46,7 +47,7 @@ public partial class Shop : Node
     static readonly Dictionary<Currency, int> balances = new();
     static readonly Dictionary<string, int> deposited = new();
 
-    /// <summary>Blueprint item ids on sale, in the order they were added. Starts empty; grows through quest rewards.</summary>
+    /// <summary>Purchasable item ids on sale: every <see cref="PurchasableItem"/> definition, filled at game start.</summary>
     public static IReadOnlyList<string> Stock => stock;
 
     /// <summary>Raised whenever <see cref="Stock"/> changes.</summary>
@@ -64,7 +65,7 @@ public partial class Shop : Node
     /// <summary>How many of each item id have been turned in, currency value or not.</summary>
     public static IReadOnlyDictionary<string, int> Deposited => deposited;
 
-    /// <summary>Raised on the buyer's peer when a purchase arrives: (blueprint item id, quantity).</summary>
+    /// <summary>Raised on the buyer's peer when a purchase arrives: (item id, quantity).</summary>
     public static event Action<string, int> Purchased;
 
     public override void _Ready()
@@ -84,16 +85,54 @@ public partial class Shop : Node
 
     // ---- stock ----------------------------------------------------------------
 
+    const string DefinitionsRoot = "res://game/definitions";
+
+    /// <summary>
+    /// Puts every <see cref="PurchasableItem"/> definition under res://game/definitions on sale, replacing the stock.
+    /// Each peer does this itself at game start: they all have the same definitions, so nothing is sent.
+    /// </summary>
+    public static void StockAllItems()
+    {
+        stock.Clear();
+        StockItemsIn(DefinitionsRoot);
+        StockChanged?.Invoke();
+    }
+
+    private static void StockItemsIn(string path)
+    {
+        using DirAccess dir = DirAccess.Open(path);
+        if (dir == null)
+        {
+            return;
+        }
+        foreach (string sub in dir.GetDirectories())
+        {
+            StockItemsIn($"{path}/{sub}");
+        }
+        foreach (string file in dir.GetFiles())
+        {
+            // Exported builds list "x.tres.remap" instead of "x.tres".
+            string name = file.TrimSuffix(".remap");
+            if (!name.EndsWith(".tres")) continue;
+            // Fetch also keeps the definition loaded (see ItemInfo).
+            string itemID = name.TrimSuffix(".tres");
+            if (ItemInfo.Fetch(itemID) is PurchasableItem)
+            {
+                stock.Add(itemID);
+            }
+        }
+    }
+
     /// <summary>
     /// Host only: puts <paramref name="itemID"/> on sale for everyone. False (and nothing changes) for unknown or
-    /// non-blueprint ids and for ids already on sale.
+    /// non-purchasable ids and for ids already on sale. Everything is stocked at game start, so this rarely adds anything.
     /// </summary>
     public static bool AddAvailableItem(string itemID)
     {
         if (stock.Contains(itemID)) return false;
-        if (ItemInfo.Fetch(itemID) is not BlueprintItem)
+        if (ItemInfo.Fetch(itemID) is not PurchasableItem)
         {
-            Logging.Log($"can't stock '{itemID}': not a blueprint item", "Shop");
+            Logging.Log($"can't stock '{itemID}': not a purchasable item", "Shop");
             return false;
         }
         RPCManager.RPC(instance, nameof(_AddStock), [itemID]);
@@ -176,11 +215,11 @@ public partial class Shop : Node
     public static bool HasCost(Godot.Collections.Dictionary<Currency, int> cost) =>
         cost != null && cost.Values.Any(amount => amount > 0);
 
-    /// <summary>True when every currency in <paramref name="cost"/> has been discovered (always, for a free price).</summary>
+    /// <summary>True when <paramref name="cost"/> takes anything and every currency in it has been discovered (never, for a free price).</summary>
     public static bool IsAvailable(Godot.Collections.Dictionary<Currency, int> cost) =>
-        cost == null || cost.All(c => c.Value <= 0 || IsDiscovered(c.Key));
+        HasCost(cost) && cost.All(c => c.Value <= 0 || IsDiscovered(c.Key));
 
-    public static bool IsAvailable(BlueprintItem item) => IsAvailable(item.cost);
+    public static bool IsAvailable(PurchasableItem item) => IsAvailable(item.cost);
 
     /// <summary>True when the banks hold <paramref name="quantity"/> times <paramref name="cost"/>.</summary>
     public static bool CanAfford(Godot.Collections.Dictionary<Currency, int> cost, int quantity = 1) =>
@@ -207,7 +246,7 @@ public partial class Shop : Node
     }
 
     /// <summary>The largest order of <paramref name="item"/> that can be paid for, at least 1 and at most <paramref name="maxOrder"/>.</summary>
-    public static int MaxAffordable(BlueprintItem item, int maxOrder)
+    public static int MaxAffordable(PurchasableItem item, int maxOrder)
     {
         if (!HasCost(item.cost))
         {
@@ -221,12 +260,12 @@ public partial class Shop : Node
 
     /// <summary>
     /// Orders <paramref name="quantity"/> of <paramref name="itemID"/> for the local player, cut down to what fits in
-    /// <paramref name="inventory"/>. The host takes the payment and sends the blueprints back (<see cref="Purchased"/>).
+    /// <paramref name="inventory"/>. The host takes the payment and sends the items back (<see cref="Purchased"/>).
     /// False (and nothing is sent) if it isn't on sale or available, can't be afforded or nothing fits.
     /// </summary>
     public static bool TryPurchase(Inventory inventory, string itemID, int quantity)
     {
-        if (inventory == null || !stock.Contains(itemID) || ItemInfo.Fetch(itemID) is not BlueprintItem item) return false;
+        if (inventory == null || !stock.Contains(itemID) || ItemInfo.Fetch(itemID) is not PurchasableItem item) return false;
         if (!IsAvailable(item)) return false;
 
         quantity = Math.Min(quantity, inventory.RoomFor(itemID));
@@ -236,11 +275,11 @@ public partial class Shop : Node
         return true;
     }
 
-    // Host (only ever sent there): checks the order against its own banks (first request wins), takes the payment, sends the blueprints.
+    // Host (only ever sent there): checks the order against its own banks (first request wins), takes the payment, sends the items.
     [RPC]
     private void _RequestPurchase(string itemID, int quantity)
     {
-        if (quantity < 1 || !stock.Contains(itemID) || ItemInfo.Fetch(itemID) is not BlueprintItem item) return;
+        if (quantity < 1 || !stock.Contains(itemID) || ItemInfo.Fetch(itemID) is not PurchasableItem item) return;
         if (!IsAvailable(item) || !CanAfford(item.cost, quantity))
         {
             Logging.Log($"purchase of {quantity}x {itemID} by {RPCManager.sender} refused: unavailable or can't afford it", "Shop");
@@ -250,7 +289,7 @@ public partial class Shop : Node
         RPCManager.RPCTo(RPCManager.sender, this, nameof(_ReceivePurchase), [itemID, quantity]);
     }
 
-    // Buyer: the blueprints go into the local player's inventory (TryPurchase already cut the order to what fits).
+    // Buyer: the items go into the local player's inventory (TryPurchase already cut the order to what fits).
     [RPC(requireAuthority = true)]
     private void _ReceivePurchase(string itemID, int quantity)
     {
@@ -273,14 +312,21 @@ public partial class Shop : Node
     // ---- saves ------------------------------------------------------------------
 
     /// <summary>
-    /// Replaces stock, banks and deposits with a restored save's (see <see cref="SaveManager"/>). Banks are saved by
-    /// currency name, so reordering <see cref="Currency"/> doesn't scramble them; unknown names are dropped. Runs on
-    /// each restoring peer, all with the host's data, so they stay in agreement.
+    /// Replaces banks and deposits with a restored save's (see <see cref="SaveManager"/>). The stock is every
+    /// purchasable item again, plus anything else the save had on sale. Banks are saved by currency name, so
+    /// reordering <see cref="Currency"/> doesn't scramble them; unknown names are dropped. Runs on each restoring
+    /// peer, all with the host's data, so they stay in agreement.
     /// </summary>
     public static void LoadSave(List<string> savedStock, Dictionary<string, int> savedBalances, Dictionary<string, int> savedDeposits)
     {
-        stock.Clear();
-        stock.AddRange(savedStock);
+        StockAllItems();
+        foreach (string itemID in savedStock)
+        {
+            if (!stock.Contains(itemID) && ItemInfo.Fetch(itemID) is PurchasableItem)
+            {
+                stock.Add(itemID);
+            }
+        }
         balances.Clear();
         foreach (var (name, amount) in savedBalances)
         {
