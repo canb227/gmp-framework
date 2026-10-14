@@ -16,9 +16,13 @@ public static class GameBootstrap
     ];
     public const int StartingBlueprintCount = 99;
 
-    /// <summary>Host spawns the selected level for everyone, unless starting from a save (loaded once all peers are in).</summary>
+    /// <summary>
+    /// Every peer stocks the shop. The host spawns the selected level for everyone, unless starting from a save
+    /// (loaded once all peers are in).
+    /// </summary>
     public static void Preload(GameInfo gameInfo)
     {
+        Shop.StockAllItems();
         if (Lobby.isHost)
         {
             if (!string.IsNullOrEmpty(gameInfo.savePath))

@@ -7,7 +7,7 @@ using Godot;
 /// drop as a <c>DefaultDroppedBox</c>. A blueprint can have two forms (<see cref="alternateStructureScene"/>).
 /// </summary>
 [GlobalClass]
-public partial class BlueprintItem : ItemInfo
+public partial class BlueprintItem : PurchasableItem
 {
     /// <summary>The <see cref="Structure"/> scene this blueprint places.</summary>
     [Export]
@@ -19,13 +19,6 @@ public partial class BlueprintItem : ItemInfo
     /// </summary>
     [Export]
     public PackedScene alternateStructureScene;
-
-    /// <summary>
-    /// What one of these costs in the shop: any amount of any number of currencies (empty means free). It is only
-    /// offered once every currency here has been discovered.
-    /// </summary>
-    [Export]
-    public Godot.Collections.Dictionary<Currency, int> cost = new();
 
     /// <summary>The scene for the chosen form; the main one when there is no alternate.</summary>
     public PackedScene StructureScene(bool alternate) => alternate && alternateStructureScene != null ? alternateStructureScene : structureScene;
