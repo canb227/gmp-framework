@@ -31,10 +31,18 @@ public partial class BuildGrid
     /// cell, so a big structure gets as much grid around it as a one-cell one. Set by the local ghost.
     /// </summary>
     public static float placementHalfSize = CellSize / 2f;
+    /// <summary>
+    /// True while the ghost is free building (placing by the cell rather than the module): the cell lines between the
+    /// module lines then fade in. Set by the local ghost.
+    /// </summary>
+    public static bool placementFree;
+    /// <summary>World height of the bottom of the ghost's footprint; the grid lines lying on it are drawn brighter. Set by the local ghost.</summary>
+    public static float placementFloor;
 
     // Reveal radius around a one-cell ghost; bigger ghosts add to it (placementHalfSize).
     private const float RevealRadius = 7.0f;
     // Enough layers for a quick sweep across cells to fade out gracefully; past that the faintest is recycled.
+    // BuildGridFill.gdshader takes one light per layer, so its arrays must be this long too.
     private const int RevealLayers = 5;
     private const int FaceLayers = 3;
     private const float RevealFadeInTime = 0.18f;
@@ -44,6 +52,7 @@ public partial class BuildGrid
     // Lifts the face highlight off the surface it lies on.
     private const float FaceLift = 0.012f;
     private const float FaceTintRate = 14f;
+    private const float CellLinesFadeTime = 0.15f;
 
     /// <summary>
     /// A set of identical visuals, each pinned to a key (a place), crossfading between them: the one for the current
@@ -87,6 +96,15 @@ public partial class BuildGrid
 
         /// <summary>The material of the layer fading in, or null; the others keep what they had as they fade out.</summary>
         public ShaderMaterial currentMaterial => current?.material;
+
+        public int count => layers.Count;
+
+        /// <summary>Layer <paramref name="i"/>'s place and how strongly it shows (0 when faded out), eased as its material's opacity is.</summary>
+        public (TKey key, float opacity) LayerAt(int i)
+        {
+            float w = layers[i].weight;
+            return (layers[i].key, w * w * (3f - 2f * w));
+        }
 
         /// <summary>
         /// Fades in the layer at <paramref name="key"/> (or none, if null) and fades out the rest. Returns true when a
@@ -147,18 +165,28 @@ public partial class BuildGrid
     private static readonly StringName FocusParam = "focus";
     private static readonly StringName FaceColorParam = "face_color";
     private static readonly StringName FaceSizeParam = "face_size";
+    private static readonly StringName MinorVisibilityParam = "minor_visibility";
+    private static readonly StringName FillLightsParam = "lights";
+    private static readonly StringName FillLightRadiiParam = "light_radii";
+    private static readonly Vector4[] _fillLights = new Vector4[RevealLayers];
+    private static readonly float[] _fillLightRadii = new float[RevealLayers];
+
+    /// <summary>How far the grid is revealed around the ghost: further for a bigger ghost.</summary>
+    private static float revealRadius => RevealRadius + Mathf.Max(0f, placementHalfSize - CellSize / 2f);
 
     private static readonly StringName RevealRadiusParam = "reveal_radius";
+    private static readonly StringName FloorParam = "floor_y";
 
-    private static readonly Action<MeshInstance3D, ShaderMaterial, (Vector3, float)> PlaceReveal = (instance, material, reveal) =>
+    private static readonly Action<MeshInstance3D, ShaderMaterial, (Vector3, float, float)> PlaceReveal = (instance, material, reveal) =>
     {
-        var (focus, radius) = reveal;
+        var (focus, radius, floor) = reveal;
         // The lattice sits on the world grid around the focus' cell; only the fade is centred on the focus. It spans
         // a cell more than the radius either side, so its edge is never visible.
         instance.Mesh = RevealLattice((int)(radius / CellSize) + 1);
         instance.GlobalPosition = (Vector3)WorldToCell(focus) * CellSize;
         material.SetShaderParameter(FocusParam, focus);
         material.SetShaderParameter(RevealRadiusParam, radius);
+        material.SetShaderParameter(FloorParam, floor);
     };
 
     private static readonly Action<MeshInstance3D, ShaderMaterial, (Vector3I, Vector3I, Vector3I)> PlaceFace = (instance, material, face) =>
@@ -178,12 +206,12 @@ public partial class BuildGrid
         material.SetShaderParameter(FaceSizeParam, new Vector2(width, height));
     };
 
-    private FadePool<(Vector3, float)> _reveal;
+    private FadePool<(Vector3, float, float)> _reveal;
     private FadePool<(Vector3I, Vector3I, Vector3I)> _face;
 
     private void CreateReveal()
     {
-        _reveal = new FadePool<(Vector3, float)>(this, RevealLayers,
+        _reveal = new FadePool<(Vector3, float, float)>(this, RevealLayers,
             () => new MeshInstance3D(),
             "res://game/assets/shaders/BuildGridReveal.gdshader", RevealFadeInTime, RevealFadeOutTime);
         _reveal.ForEachMaterial(m =>
@@ -202,13 +230,32 @@ public partial class BuildGrid
     {
         bool active = placementActive && placementFocus.HasValue;
 
-        (Vector3, float)? reveal = null;
+        (Vector3, float, float)? reveal = null;
         if (active)
         {
-            float radius = RevealRadius + Mathf.Max(0f, placementHalfSize - CellSize / 2f);
-            reveal = (placementFocus.Value, radius);
+            reveal = (placementFocus.Value, revealRadius, placementFloor);
         }
         _reveal.Update(reveal, delta, PlaceReveal);
+        // The cell fill is lit by every reveal, each as strongly as it shows (BuildGrid.CellFill.cs).
+        if (shownFillChunks.Count > 0)
+        {
+            for (int i = 0; i < _reveal.count; i++)
+            {
+                var ((focus, radius, _), opacity) = _reveal.LayerAt(i);
+                _fillLights[i] = new Vector4(focus.X, focus.Y, focus.Z, opacity);
+                _fillLightRadii[i] = radius;
+            }
+            _fillMaterial.SetShaderParameter(FillLightsParam, _fillLights);
+            _fillMaterial.SetShaderParameter(FillLightRadiiParam, _fillLightRadii);
+        }
+        // Every reveal shows the cell lines alike, including those still fading out, so the grid never changes
+        // under the ghost as it moves. Only touches the materials while fading.
+        float cellLinesTarget = placementFree ? 1f : 0f;
+        if (_cellLines != cellLinesTarget)
+        {
+            _cellLines = Mathf.MoveToward(_cellLines, cellLinesTarget, delta / CellLinesFadeTime);
+            _reveal.ForEachMaterial(SetCellLines);
+        }
         bool newFace = _face.Update(active ? placementFace : null, delta, PlaceFace);
         // The ghost's hue at full strength (its alpha is for the ghost's body). A new face starts in the current tint;
         // on the same face a valid/invalid change blends over rather than flicking.
@@ -218,6 +265,12 @@ public partial class BuildGrid
     }
 
     private Color _faceTint = Colors.White;
+    // How much of the cell grid the reveals show (0-1), easing toward placementFree.
+    private static float _cellLines;
+    private static readonly Action<ShaderMaterial> SetCellLines = material =>
+    {
+        material.SetShaderParameter(MinorVisibilityParam, _cellLines);
+    };
 
     // A basis whose +Z (a QuadMesh's facing) is the face normal.
     private static Basis FaceBasis(Vector3I normal)

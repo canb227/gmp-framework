@@ -27,14 +27,18 @@ public partial class BuildGrid
             p.probe.Free();
         }
         pendingPlacements.Clear();
+        ResetFill();
        // ResetBeltLines();
     }
 
-    /// <summary>True if the grid cells are free and the probe overlaps none of the level's static colliders.</summary>
+    /// <summary>
+    /// True if the footprint is clear (<see cref="FootprintClear"/>: free grid cells, none blocked by level geometry)
+    /// and the probe overlaps none of the level's static colliders.
+    /// </summary>
     public static bool IsPlacementAllowed(PlacementProbe probe, out List<Node> levelOverlaps)
     {
         levelOverlaps = probe.LevelOverlaps();
-        return CanPlace(probe.anchor, probe.structure.cells.Keys, probe.quarterTurns)
+        return FootprintClear(probe.anchor, probe.structure.cells.Keys, probe.quarterTurns)
             && levelOverlaps.Count == 0;
     }
 
@@ -88,6 +92,7 @@ public partial class BuildGrid
     public override void _PhysicsProcess(double delta)
     {
         UpdateHighlight();
+        UpdateFill();
         //UpdateBeltLines();
         // Decide settled requests in arrival order.
         for (int i = 0; i < pendingPlacements.Count; i++)
@@ -111,6 +116,10 @@ public partial class BuildGrid
             foreach (Node hit in levelOverlaps)
             {
                 Logging.Log($"Refused {p.blueprintItemID} at {probe.anchor}: overlaps {hit.GetPath()}", "BuildGrid");
+            }
+            if (levelOverlaps.Count == 0)
+            {
+                Logging.Log($"Refused {p.blueprintItemID} at {probe.anchor}: its cells are taken or blocked", "BuildGrid");
             }
             Refund(p.blueprintItemID, p.requester, p.playerObjectId);
             return;

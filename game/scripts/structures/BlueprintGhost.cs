@@ -34,7 +34,8 @@ public partial class BlueprintGhost : HeldItem
     /// <summary>The structure copy the preview shows (used by the headless multiplayer test).</summary>
     public Structure previewStructure => probe?.structure;
     /// <summary>
-    /// Off while the player holds "freePlace" (G): the preview stays exactly where it's aimed (no snapping belt ends
+    /// Off while the player holds "freePlace" (G): the preview moves a cell at a time instead of a module (2x2x2 cells,
+    /// see <see cref="BuildGrid.TryGetPlacementTarget"/>), stays exactly where it's aimed (no snapping belt ends
     /// together) and placing doesn't turn the next one to follow its output.
     /// </summary>
     static bool smartPlacement => !Input.IsActionPressed(InputActions.freePlace);
@@ -136,6 +137,7 @@ public partial class BlueprintGhost : HeldItem
         if (isLocal)
         {
             BuildGrid.placementActive = false;
+            BuildGrid.placementFree = false;
             BuildGrid.placementFocus = null;
             BuildGrid.placementFace = null;
         }
@@ -185,10 +187,11 @@ public partial class BlueprintGhost : HeldItem
             return;
         }
         BuildGrid.placementActive = true;
+        BuildGrid.placementFree = !smartPlacement;
 
         Camera3D camera = player.camera;
         if (!BuildGrid.TryGetPlacementTarget(camera.GlobalPosition, -camera.GlobalTransform.Basis.Z, placeRange,
-                probe.structure.cells.Keys, quarterTurns, out Vector3I anchor, out _, out Vector3I faceNormal))
+                probe.structure.cells.Keys, quarterTurns, smartPlacement, out Vector3I anchor, out _, out Vector3I faceNormal))
         {
             targetCell = null;
             canPlace = false;
@@ -217,6 +220,7 @@ public partial class BlueprintGhost : HeldItem
         }
         BuildGrid.placementFocus = FootprintCentre(anchor);
         BuildGrid.placementHalfSize = FootprintHalfSize(anchor);
+        BuildGrid.placementFloor = FootprintFloor(anchor);
         BuildGrid.placementFace = ContactFace(anchor, faceNormal);
 
         if (targetCell != anchor || probe.quarterTurns != quarterTurns || !probe.structure.Visible)
@@ -318,6 +322,17 @@ public partial class BlueprintGhost : HeldItem
         }
         Vector3I size = max - min + Vector3I.One;
         return Mathf.Max(size.X, Mathf.Max(size.Y, size.Z)) * BuildGrid.CellSize / 2f;
+    }
+
+    // World height of the bottom of the footprint at anchor, where the grid reveal draws its floor brighter.
+    float FootprintFloor(Vector3I anchor)
+    {
+        int bottom = int.MaxValue;
+        foreach (Vector3I cell in BuildGrid.FootprintCells(anchor, probe.structure.cells.Keys, quarterTurns))
+        {
+            bottom = Mathf.Min(bottom, cell.Y);
+        }
+        return bottom * BuildGrid.CellSize;
     }
 
     // The footprint's rearmost layer along normal, as the min and max cells of its bounding box: its back side is

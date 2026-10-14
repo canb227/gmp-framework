@@ -117,8 +117,11 @@ public class PlacementProbe
         }
     }
 
-    // A solid, static Box3DBody that isn't part of a synced object (placed structures, items, players...) or another probe.
-    static bool IsStaticLevelCollider(Node hit)
+    /// <summary>
+    /// A solid, static Box3DBody that isn't part of a synced object (placed structures, items, players...) or another
+    /// probe: the level geometry structures can't be built into. The build grid's cell fill uses it too (BuildGrid.CellFill.cs).
+    /// </summary>
+    public static bool IsStaticLevelCollider(Node hit)
     {
         if (!hit.IsClass("Box3DBody"))
         {

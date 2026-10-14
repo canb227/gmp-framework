@@ -18,7 +18,7 @@
 [ext_resource type="Texture2D" uid="uid://dai3p48chnvni" path="res://game/assets/textures/wall_white_brick/wall_white_brick_normal.png" id="19_qiak6"]
 [ext_resource type="Texture2D" uid="uid://bnemfwnp757d1" path="res://game/assets/textures/wall_white_brick/wall_white_brick_smoothness.png" id="20_kcgea"]
 [ext_resource type="Script" uid="uid://c64akhdf23fdq" path="res://game/scripts/entities/PricedButton.cs" id="30_priced"]
-[ext_resource type="PackedScene" uid="uid://b3vrwosnvijj" path="res://game/scenes/structures/broken/BrokenSmelter.tscn" id="31_brokensmelter"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/broken/BrokenSmelter.tscn" id="31_brokensmelter"]
 [ext_resource type="PackedScene" uid="uid://ci3gdnftondij" path="res://game/scenes/structures/broken/BrokenRecycler.tscn" id="32_brokenrecycler"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vchc8"]
@@ -611,7 +611,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8737242, 0)
 mesh = SubResource("BoxMesh_r1731")
 
 [node name="BrokenSmelter" parent="WorldStuff" unique_id=1738204615 instance=ExtResource("31_brokensmelter")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 46.618126, 13.966055, 13.66845)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 47, 14, 14)
 hoverName = "Broken Smelter"
 hoverText = "Repair this at the nearby button "
 

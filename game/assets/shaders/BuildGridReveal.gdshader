@@ -3,7 +3,8 @@
 // NORMAL and which side of the line in UV.y (-1/+1). The vertex shader widens it to a camera-facing ribbon a
 // constant number of pixels wide; the fragment shader gives it soft edges and fades it out with distance from
 // `focus`, so the grid seems to be lit up by the ghost. Lines on the structure-module grid (every major_size) are
-// drawn bolder than the cell lines between them, and lattice nodes glint a little brighter. Everything here is
+// drawn bolder than the cell lines between them, which only show while free building (minor_visibility), and
+// lattice nodes glint a little brighter. Everything here is
 // fixed in the world or centred on a fixed focus: the grid must never appear to move.
 shader_type spatial;
 render_mode unshaded, skip_vertex_transform, blend_mix, depth_draw_never, cull_disabled, shadows_disabled, fog_disabled;
@@ -23,6 +24,13 @@ uniform float cell_size = 1.0;
 // Lines on the major_size grid are drawn at full strength, the cell lines between them at minor_strength.
 uniform float major_size = 2.0;
 uniform float minor_strength = 0.4;
+// How much of the cell grid shows (0-1): its lines and the nodes between module corners. Shown while free building.
+uniform float minor_visibility = 0.0;
+// The flat lines on the ghost's floor (the bottom of its footprint, height floor_y) are drawn floor_strength times as
+// strong, every other line (other heights, and the upright lines) off_floor_strength times.
+uniform float floor_y = 0.0;
+uniform float floor_strength = 1.6;
+uniform float off_floor_strength = 0.5;
 // The cell lines fade out sooner than the module lines, over this fraction of the reveal radius.
 uniform float minor_reveal_scale = 0.55;
 uniform float node_size = 0.2;
@@ -68,11 +76,17 @@ void fragment() {
 	// distance along the line to the nearest node.
 	vec3 off = abs(fract(world_pos / cell_size + 0.5) - 0.5) * cell_size;
 	float node = 1.0 - smoothstep(0.0, node_size, max(off.x, max(off.y, off.z)));
+	// The same for module corners only; the nodes between them glint with the cell grid.
+	vec3 off_module = abs(fract(world_pos / major_size + 0.5) - 0.5) * major_size;
+	float module_node = 1.0 - smoothstep(0.0, node_size, max(off_module.x, max(off_module.y, off_module.z)));
+	node = mix(module_node, node, minor_visibility);
 
 	// A line is major when both coordinates across it sit on the major grid (the one along it doesn't count).
 	vec3 off_major = abs(fract(world_pos / major_size + 0.5) - 0.5) * major_size * (1.0 - line_axis);
 	float major = step(max(off_major.x, max(off_major.y, off_major.z)), 0.25 * cell_size);
-	float weight = mix(minor_strength * minor_reveal, reveal, major);
+	float weight = mix(minor_strength * minor_reveal * minor_visibility, reveal, major);
+	float on_floor = (1.0 - line_axis.y) * step(abs(world_pos.y - floor_y), 0.25 * cell_size);
+	weight *= mix(off_floor_strength, floor_strength, on_floor);
 
 	// Don't let lines right in front of the camera clutter the view.
 	float near = smoothstep(0.25, 1.2, view_depth);
