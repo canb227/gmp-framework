@@ -321,9 +321,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.867846, 2.8820345, -3.09373
 [node name="outputLocation" type="Marker3D" parent="spatial" unique_id=1285099349]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.46613884, 2.478106, -3.041022)
 
-[node name="FmodEventEmitter3D" type="FmodEventEmitter3D" parent="." unique_id=1880866957]
-event_guid = "{0000005f-006e-0000-6f00-000064000000}"
-
 [node name="outputArrow" type="Node3D" parent="." unique_id=827622258]
 transform = Transform3D(-1.0000001, -8.742277e-08, -4.371139e-08, 4.3711392e-08, 1.9106853e-15, -1, 8.7422784e-08, -0.99999994, 1.9106855e-15, 0.10041213, 3.0516224, -3.0231833)
 script = ExtResource("2_cf5xe")

@@ -29,7 +29,7 @@ cull_mode = 2
 albedo_color = Color(0, 0, 0, 1)
 emission_enabled = true
 emission = Color(1, 0.60124344, 0.22091636, 1)
-emission_energy_multiplier = 3.5
+emission_energy_multiplier = 0.0
 emission_texture = SubResource("NoiseTexture2D_1hc2w")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lqu6n"]
@@ -48,7 +48,7 @@ emission_energy_multiplier = 2.0
 emission_texture = ExtResource("8_a7yjs")
 rim_enabled = true
 uv1_scale = Vector3(0.31, 0.31, 0.31)
-uv1_offset = Vector3(0.765, 0, 0)
+uv1_offset = Vector3(-0.225, 0, 0)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pvywp"]
 transparency = 2
@@ -131,10 +131,15 @@ Vector3i(1, 4, -2): 0,
 Vector3i(1, 4, -1): 0,
 Vector3i(1, 4, 0): 0,
 Vector3i(1, 5, -5): 0,
+Vector3i(1, 5, 0): 0,
 Vector3i(1, 6, -5): 0,
+Vector3i(1, 6, 0): 0,
 Vector3i(1, 7, -5): 0,
+Vector3i(1, 7, 0): 0,
 Vector3i(1, 8, -5): 0,
+Vector3i(1, 8, 0): 0,
 Vector3i(1, 9, -5): 0,
+Vector3i(1, 9, 0): 0,
 Vector3i(2, 0, -5): 0,
 Vector3i(2, 0, -4): 0,
 Vector3i(2, 0, -3): 0,
@@ -195,7 +200,6 @@ Vector3i(3, 4, -3): 0,
 Vector3i(3, 4, -2): 0,
 Vector3i(3, 4, -1): 0,
 Vector3i(3, 4, 0): 0,
-Vector3i(3, 5, -4): 0,
 Vector3i(4, 0, -5): 0,
 Vector3i(4, 0, -4): 0,
 Vector3i(4, 0, -3): 0,
@@ -226,11 +230,6 @@ Vector3i(4, 4, -3): 0,
 Vector3i(4, 4, -2): 0,
 Vector3i(4, 4, -1): 0,
 Vector3i(4, 4, 0): 0,
-Vector3i(4, 5, -5): 0,
-Vector3i(4, 5, -4): 0,
-Vector3i(4, 5, -3): 0,
-Vector3i(4, 5, -2): 0,
-Vector3i(4, 5, -1): 0,
 Vector3i(5, 0, -5): 0,
 Vector3i(5, 0, -4): 0,
 Vector3i(5, 0, -3): 0,
@@ -261,10 +260,6 @@ Vector3i(5, 4, -3): 0,
 Vector3i(5, 4, -2): 0,
 Vector3i(5, 4, -1): 0,
 Vector3i(5, 4, 0): 0,
-Vector3i(5, 5, -4): 0,
-Vector3i(5, 5, -3): 0,
-Vector3i(5, 5, -2): 0,
-Vector3i(5, 5, -1): 0,
 Vector3i(6, 0, -5): 0,
 Vector3i(6, 0, -4): 0,
 Vector3i(6, 0, -3): 0,
@@ -295,12 +290,116 @@ Vector3i(6, 4, -3): 0,
 Vector3i(6, 4, -2): 0,
 Vector3i(6, 4, -1): 0,
 Vector3i(6, 4, 0): 0,
+Vector3i(6, 5, -3): 0,
+Vector3i(6, 5, -2): 0,
+Vector3i(7, 0, -5): 0,
+Vector3i(7, 0, -4): 0,
+Vector3i(7, 0, -3): 0,
+Vector3i(7, 0, -2): 0,
+Vector3i(7, 0, -1): 0,
+Vector3i(7, 0, 0): 0,
+Vector3i(7, 1, -5): 0,
+Vector3i(7, 1, -4): 0,
+Vector3i(7, 1, -3): 0,
+Vector3i(7, 1, -2): 0,
+Vector3i(7, 1, -1): 0,
+Vector3i(7, 1, 0): 0,
+Vector3i(7, 2, -5): 0,
+Vector3i(7, 2, -4): 0,
+Vector3i(7, 2, -3): 0,
+Vector3i(7, 2, -2): 0,
+Vector3i(7, 2, -1): 0,
+Vector3i(7, 2, 0): 0,
+Vector3i(7, 3, -5): 0,
+Vector3i(7, 3, -4): 0,
+Vector3i(7, 3, -3): 0,
+Vector3i(7, 3, -2): 0,
+Vector3i(7, 3, -1): 0,
+Vector3i(7, 3, 0): 0,
 Vector3i(7, 4, -5): 0,
 Vector3i(7, 4, -4): 0,
 Vector3i(7, 4, -3): 0,
 Vector3i(7, 4, -2): 0,
 Vector3i(7, 4, -1): 0,
-Vector3i(7, 4, 0): 0
+Vector3i(7, 4, 0): 0,
+Vector3i(7, 5, -3): 0,
+Vector3i(7, 5, -2): 0,
+Vector3i(8, 0, -5): 0,
+Vector3i(8, 0, -4): 0,
+Vector3i(8, 0, -3): 0,
+Vector3i(8, 0, -2): 0,
+Vector3i(8, 0, -1): 0,
+Vector3i(8, 0, 0): 0,
+Vector3i(8, 1, -5): 0,
+Vector3i(8, 1, -4): 0,
+Vector3i(8, 1, -3): 0,
+Vector3i(8, 1, -2): 0,
+Vector3i(8, 1, -1): 0,
+Vector3i(8, 1, 0): 0,
+Vector3i(8, 2, -5): 0,
+Vector3i(8, 2, -4): 0,
+Vector3i(8, 2, -3): 0,
+Vector3i(8, 2, -2): 0,
+Vector3i(8, 2, -1): 0,
+Vector3i(8, 2, 0): 0,
+Vector3i(8, 3, -5): 0,
+Vector3i(8, 3, -4): 0,
+Vector3i(8, 3, -3): 0,
+Vector3i(8, 3, -2): 0,
+Vector3i(8, 3, -1): 0,
+Vector3i(8, 3, 0): 0,
+Vector3i(8, 4, -5): 0,
+Vector3i(8, 4, -4): 0,
+Vector3i(8, 4, -3): 0,
+Vector3i(8, 4, -2): 0,
+Vector3i(8, 4, -1): 0,
+Vector3i(8, 4, 0): 0,
+Vector3i(8, 5, -3): 0,
+Vector3i(8, 5, -2): 0,
+Vector3i(9, 0, -5): 0,
+Vector3i(9, 0, -4): 0,
+Vector3i(9, 0, -3): 0,
+Vector3i(9, 0, -2): 0,
+Vector3i(9, 0, -1): 0,
+Vector3i(9, 0, 0): 0,
+Vector3i(9, 1, -5): 0,
+Vector3i(9, 1, -4): 0,
+Vector3i(9, 1, -3): 0,
+Vector3i(9, 1, -2): 0,
+Vector3i(9, 1, -1): 0,
+Vector3i(9, 1, 0): 0,
+Vector3i(9, 2, -5): 0,
+Vector3i(9, 2, -4): 0,
+Vector3i(9, 2, -3): 0,
+Vector3i(9, 2, -2): 0,
+Vector3i(9, 2, -1): 0,
+Vector3i(9, 2, 0): 0,
+Vector3i(9, 3, -5): 0,
+Vector3i(9, 3, -4): 0,
+Vector3i(9, 3, -3): 0,
+Vector3i(9, 3, -2): 0,
+Vector3i(9, 3, -1): 0,
+Vector3i(9, 3, 0): 0,
+Vector3i(9, 4, -5): 0,
+Vector3i(9, 4, -4): 0,
+Vector3i(9, 4, -3): 0,
+Vector3i(9, 4, -2): 0,
+Vector3i(9, 4, -1): 0,
+Vector3i(9, 4, 0): 0,
+Vector3i(9, 5, -4): 0,
+Vector3i(9, 5, -3): 0,
+Vector3i(9, 5, -2): 0,
+Vector3i(9, 5, -1): 0,
+Vector3i(10, 4, -5): 0,
+Vector3i(10, 4, -4): 0,
+Vector3i(10, 4, -3): 0,
+Vector3i(10, 4, -2): 0,
+Vector3i(10, 4, -1): 0,
+Vector3i(10, 4, 0): 0,
+Vector3i(10, 5, -4): 0,
+Vector3i(10, 5, -3): 0,
+Vector3i(10, 5, -2): 0,
+Vector3i(10, 5, -1): 0
 })
 blueprintItemID = "blueprint_smelter"
 hoverName = "Smelter"
@@ -308,15 +407,12 @@ hoverName = "Smelter"
 [node name="spatial" type="Node3D" parent="." unique_id=660388029]
 
 [node name="inputVolume" type="Box3DBody" parent="spatial" unique_id=245078656]
-box_size = Vector3(4, 2.5, 3)
+box_size = Vector3(7.51, 3.81, 4.925)
 is_sensor = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.867846, 2.8820345, -3.0937324)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.867846, 2.8820345, -2.8264654)
 
 [node name="outputLocation" type="Marker3D" parent="spatial" unique_id=1285099349]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.46613884, 2.478106, -3.041022)
-
-[node name="FmodEventEmitter3D" type="FmodEventEmitter3D" parent="." unique_id=1880866957]
-event_guid = "{0000005f-006e-0000-6f00-000064000000}"
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5174713, 2.5811498, -3.0410218)
 
 [node name="outputArrow" type="Node3D" parent="." unique_id=827622258]
 transform = Transform3D(-1.0000001, -8.742277e-08, -4.371139e-08, 4.3711392e-08, 1.9106853e-15, -1, 8.7422784e-08, -0.99999994, 1.9106855e-15, 0.10041213, 3.0516224, -3.0231833)
@@ -335,30 +431,31 @@ metadata/_custom_type_script = "uid://bv13olg4g30nl"
 
 [node name="smelter_old" parent="model" unique_id=1429250052 instance=ExtResource("3_vu106")]
 
-[node name="Bars" parent="model/smelter_old" index="0" unique_id=671429155]
+[node name="Bars" parent="model/smelter_old" index="0" unique_id=255444607]
 surface_material_override/0 = ExtResource("3_kj0j5")
 
-[node name="Body" parent="model/smelter_old" index="1" unique_id=453925298]
+[node name="Body" parent="model/smelter_old" index="1" unique_id=931550475]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9914894, 0.9999995, -3.0261762)
 surface_material_override/1 = SubResource("StandardMaterial3D_4vaoy")
 surface_material_override/2 = SubResource("StandardMaterial3D_y6o07")
 
-[node name="Chimney" parent="model/smelter_old" index="2" unique_id=1792940719]
+[node name="Chimney" parent="model/smelter_old" index="2" unique_id=1319291161]
 surface_material_override/0 = ExtResource("6_keb0p")
 
-[node name="Chimney_001" parent="model/smelter_old" index="3" unique_id=1118825140]
+[node name="Chimney_001" parent="model/smelter_old" index="3" unique_id=644881833]
 surface_material_override/0 = ExtResource("6_keb0p")
 
-[node name="Door" parent="model/smelter_old" index="4" unique_id=748502467]
-transform = Transform3D(0.70710677, -0.70710677, 0, 0.70710677, 0.70710677, 0, 0, 0, 1, 11.104587, 4.682018, -3.0156198)
+[node name="Door" parent="model/smelter_old" index="4" unique_id=674669746]
+transform = Transform3D(0.7071067, -0.7071067, 0, 0.7071067, 0.7071067, 0, 0, 0, 1, 11.104587, 4.682018, -3.0156198)
 surface_material_override/0 = SubResource("StandardMaterial3D_lqu6n")
 
-[node name="MoltenMetal" parent="model/smelter_old" index="6" unique_id=1961327507]
+[node name="MoltenMetal" parent="model/smelter_old" index="6" unique_id=1332109914]
 surface_material_override/0 = SubResource("StandardMaterial3D_gh3qe")
 
-[node name="Vent1" parent="model/smelter_old" index="11" unique_id=1510175134]
+[node name="Vent1" parent="model/smelter_old" index="11" unique_id=81151560]
 surface_material_override/0 = SubResource("StandardMaterial3D_pvywp")
 
-[node name="Vent2" parent="model/smelter_old" index="12" unique_id=1515774949]
+[node name="Vent2" parent="model/smelter_old" index="12" unique_id=1626141085]
 surface_material_override/0 = SubResource("StandardMaterial3D_pvywp")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="model/smelter_old" unique_id=1526897162]
