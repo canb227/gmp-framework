@@ -616,7 +616,7 @@ hoverName = "Broken Smelter"
 hoverText = "Repair this at the nearby button "
 
 [node name="RecyclerBroken" parent="WorldStuff" unique_id=1829331707 instance=ExtResource("32_brokenrecycler")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 45, 0, -46.041515)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 45, 0, -46)
 
 [node name="Repair Source Button" type="Node3D" parent="WorldStuff" unique_id=846980836]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36.388847, 1.6260744, -37.41516)

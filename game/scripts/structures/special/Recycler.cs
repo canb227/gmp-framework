@@ -1,6 +1,5 @@
 using Godot;
 using PolyType;
-using System.Collections.Generic;
 
 [GenerateShape]
 public partial record struct RecyclerSave
@@ -13,7 +12,7 @@ public partial record struct RecyclerSave
 /// Spawns a free item at its first output every <see cref="baseInterval"/>. On top of that it eats items from its
 /// valley (oldest first) for points, and each cycle spends a point on a bonus item at its second output.
 /// </summary>
-public partial class Recycler : Machine
+public partial class Recycler : RecipeMachine
 {
     /// <summary>Item ids to spawn and their relative weights.</summary>
     [Export] public Godot.Collections.Dictionary<string, float> itemWeights = new() { { "scrap_ball", 1f } };
@@ -26,8 +25,6 @@ public partial class Recycler : Machine
 
     int points;
     double untilBase;
-    // When each item now in the valley was first seen there (authority only, not saved: a load restarts the dwell).
-    Dictionary<ulong, ulong> firstSeen = new();
 
     public override void AfterInit()
     {
@@ -41,7 +38,7 @@ public partial class Recycler : Machine
     {
         if (runsMachineLogic)
         {
-            untilBase -= delta * speedMultiplier;
+            untilBase -= delta * processingSpeed;
             if (untilBase <= 0)
             {
                 untilBase += baseInterval;
@@ -55,8 +52,8 @@ public partial class Recycler : Machine
     {
         if (points == 0)
         {
-            PhysicalFactoryItem ready = OldestReady();
-            if (ready == null) return false;
+            if (inputItems.Count == 0) return false;
+            PhysicalFactoryItem ready = inputItems[0];
             if (itemPoints.TryGetValue(ready.itemID ?? "", out int p))
             {
                 points += p;
@@ -65,11 +62,11 @@ public partial class Recycler : Machine
             {
                 points += 1;
             }
-            firstSeen.Remove(ready.id);
-            GameWorld.DespawnObject(ready.id, DespawnReason.Consumed);
+            ConsumeInputItem(ready);
         }
         if (points <= 0) return false;
         points--;
+        processTimeRemaining = 1f;
         return true;
     }
 
@@ -88,30 +85,6 @@ public partial class Recycler : Machine
         RecyclerSave s = GMPObject.serializer.Deserialize<RecyclerSave>(state);
         points = s.points;
         untilBase = s.untilBase;
-    }
-
-    PhysicalFactoryItem OldestReady()
-    {
-        ulong now = Time.GetTicksMsec();
-        Dictionary<ulong, ulong> seen = new();
-        PhysicalFactoryItem oldest = null;
-        ulong oldestSince = ulong.MaxValue;
-        foreach (PhysicalFactoryItem item in ItemsInInputs())
-        {
-            ulong since = now;
-            if (firstSeen.TryGetValue(item.id, out ulong t))
-            {
-                since = t;
-            }
-            seen[item.id] = since;
-            if (since < oldestSince)
-            {
-                oldest = item;
-                oldestSince = since;
-            }
-        }
-        firstSeen = seen;
-        return oldest;
     }
 
     // Spawns one item at the output'th output (0: the regular stream, 1: the bonus items).

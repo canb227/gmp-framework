@@ -1,17 +1,4 @@
-using Godot;
-using System;
-
-public partial class Assembler : Machine
+/// <summary>Assembles what reaches its inputs by its <see cref="RecipeMachine.recipes"/> (all the work is in <see cref="RecipeMachine"/>).</summary>
+public partial class Assembler : RecipeMachine
 {
-    
-
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-    }
-
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
-    {
-    }
 }

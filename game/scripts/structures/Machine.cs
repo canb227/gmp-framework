@@ -1,6 +1,5 @@
 using Godot;
 using PolyType;
-using System;
 
 [GenerateShape]
 public partial record struct MachineSave
@@ -12,44 +11,33 @@ public partial record struct MachineSave
 }
 
 /// <summary>
-/// A structure that works in cycles: when idle it tries to start one (<see cref="TryStartProcess"/>, usually by
-/// taking an item from its <see cref="inputVolumes"/>), then after <see cref="processTime"/> (sped up by
-/// <see cref="speedMultiplier"/>) it finishes it (<see cref="FinishProcess"/>, usually by spawning items at its
-/// <see cref="outputLocations"/>). The cycle runs on the machine's authority; every peer is told when it starts
-/// and stops operating (<see cref="OnOperatingChanged"/>) for sounds and visuals.
+/// A structure that works in cycles. Only its authority runs it: when idle it asks the machine to start a cycle
+/// (<see cref="TryStartProcess"/>, which sets <see cref="processTimeRemaining"/>), and once that has counted down
+/// it finishes it (<see cref="FinishProcess"/>). Every peer is told when a cycle starts and stops
+/// (<see cref="isOperating"/>, <see cref="OnOperatingChanged"/>) for sounds and visuals.
+/// Most machines take items in and put items out: see <see cref="RecipeMachine"/>.
 /// </summary>
-public partial class Machine : Structure
+public abstract partial class Machine : Structure
 {
-    /// <summary>Sensor bodies items are taken in from.</summary>
-    [Export] public Godot.Collections.Array<Node3D> inputVolumes = new();
-    /// <summary>Where outputs spawn (see <see cref="OutputPosition"/>).</summary>
-    [Export] public Godot.Collections.Array<Node3D> outputLocations = new();
-    /// <summary>Seconds one cycle takes at a speed multiplier of 1.</summary>
-    [Export] public float processTime = 1f;
-    [Export] public float speedMultiplier = 1f;
+    /// <summary>How fast cycles count down: 2 is twice as fast.</summary>
+    [Export] public float processingSpeed = 1f;
 
-    /// <summary>Seconds left in the current cycle (authority only).</summary>
-    public float processTimeRemaining = 0f;
-    /// <summary>Whether a cycle is running, on every peer.</summary>
+    /// <summary>Every peer: whether a cycle is running.</summary>
     public bool isOperating { get; private set; }
+    /// <summary>Authority only: seconds left in the current cycle at a processingSpeed of 1.</summary>
+    public float processTimeRemaining = 0f;
 
-    public override void _Ready()
-    {
-        base._Ready();
-        foreach (Node3D volume in inputVolumes)
-        {
-            if (volume is GMPOBox3DBody body)
-            {
-                body.SensorEntered += inputVolumeSensorEntered;
-            }
-            
-        }
-    }
+    /// <summary>
+    /// Authority only, while idle: start a cycle if there's something to do (take the inputs, set
+    /// <see cref="processTimeRemaining"/> to the cycle's base time) and return true.
+    /// </summary>
+    protected abstract bool TryStartProcess();
 
-    protected virtual void inputVolumeSensorEntered(Node3D other)
-    {
+    /// <summary>Authority only: the current cycle is done (spawn the outputs).</summary>
+    protected abstract void FinishProcess();
 
-    }
+    /// <summary>Every peer, when <see cref="isOperating"/> changes: sounds, animation, particles.</summary>
+    protected virtual void OnOperatingChanged() { }
 
     public override void _PhysicsProcess(double delta)
     {
@@ -57,7 +45,7 @@ public partial class Machine : Structure
 
         if (isOperating)
         {
-            processTimeRemaining -= (float)delta * speedMultiplier;
+            processTimeRemaining -= (float)delta * processingSpeed;
             if (processTimeRemaining <= 0)
             {
                 FinishProcess();
@@ -66,25 +54,8 @@ public partial class Machine : Structure
         }
         else if (TryStartProcess())
         {
-            processTimeRemaining = processTime;
             RPCManager.RPC(this, nameof(SetOperating), [true]);
         }
-    }
-
-    /// <summary>Authority only, while idle: start a cycle if there's something to do (take the input) and return true.</summary>
-    protected virtual bool TryStartProcess()
-    {
-        return false;
-    }
-
-    /// <summary>Authority only: the current cycle is done (spawn the outputs).</summary>
-    protected virtual void FinishProcess()
-    {
-    }
-
-    /// <summary>Every peer, when <see cref="isOperating"/> changes: sounds, animation, particles.</summary>
-    protected virtual void OnOperatingChanged()
-    {
     }
 
     [RPC(requireAuthority = true)]
@@ -95,19 +66,19 @@ public partial class Machine : Structure
     }
 
     /// <summary>Extra state a machine saves on top of its cycle (e.g. the item it's holding), or null.</summary>
-    protected virtual byte[] SaveMachineState()
-    {
-        return null;
-    }
+    protected virtual byte[] SaveMachineState() { return null; }
 
     /// <summary>Reads back what <see cref="SaveMachineState"/> returned (never called with null). Must be silent.</summary>
-    protected virtual void LoadMachineState(byte[] state)
-    {
-    }
+    protected virtual void LoadMachineState(byte[] state) { }
 
     public override byte[] SaveState()
     {
-        return GMPObject.serializer.Serialize(new MachineSave { isOperating = isOperating, processTimeRemaining = processTimeRemaining, extra = SaveMachineState() });
+        return GMPObject.serializer.Serialize(new MachineSave
+        {
+            isOperating = isOperating,
+            processTimeRemaining = processTimeRemaining,
+            extra = SaveMachineState(),
+        });
     }
 
     public override void LoadState(byte[] state)
@@ -115,42 +86,6 @@ public partial class Machine : Structure
         MachineSave s = GMPObject.serializer.Deserialize<MachineSave>(state);
         isOperating = s.isOperating;
         processTimeRemaining = s.processTimeRemaining;
-        if (s.extra != null)
-        {
-            LoadMachineState(s.extra);
-        }
-    }
-
-    /// <summary>
-    /// The synced items in the input volumes, skipping players, structures and items already despawning.
-    /// </summary>
-    protected System.Collections.Generic.List<PhysicalFactoryItem> ItemsInInputs()
-    {
-        System.Collections.Generic.List<PhysicalFactoryItem> items = new();
-        foreach (Node3D volume in inputVolumes)
-        {
-            // Dispose the Godot wrappers here rather than leave them to the garbage collector.
-            using Variant result = volume.Call(Box3DNames.getOverlappingBodies);
-            using Godot.Collections.Array bodies = result.AsGodotArray();
-            for (int i = 0; i < bodies.Count; i++)
-            {
-                if (bodies[i].AsGodotObject() is PhysicalFactoryItem item && GameWorld.syncedObjs.ContainsKey(item.id))
-                {
-                    items.Add(item);
-                }
-            }
-        }
-        return items;
-    }
-
-    /// <summary>Where the output'th output spawns; the machine's own position (with a warning) if it has no such output.</summary>
-    protected Vector3 OutputPosition(int output = 0)
-    {
-        if (output >= outputLocations.Count)
-        {
-            Logging.Warn($"{Name} has no output location {output}; spawning at its root", "Machine");
-            return GlobalPosition;
-        }
-        return outputLocations[output].GlobalPosition;
+        if (s.extra != null) LoadMachineState(s.extra);
     }
 }

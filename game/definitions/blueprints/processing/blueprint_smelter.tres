@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://b1gkymveoy02p" path="res://game/assets/icons/blueprints/shittysmelter.png" id="1_5hxoc"]
 [ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_pbxo8"]
-[ext_resource type="PackedScene" uid="uid://drwujr4mjdb84" path="res://game/scenes/structures/processing/Smelter.tscn" id="3_cnuc2"]
+[ext_resource type="PackedScene" uid="uid://dn7r2vkw8uls4" path="res://game/scenes/structures/processing/smelter.tscn" id="3_cnuc2"]
 [ext_resource type="PackedScene" uid="uid://e450hsdm0ju3" path="res://game/scenes/structures/BlueprintGhost.tscn" id="4_ghost"]
 
 [resource]
