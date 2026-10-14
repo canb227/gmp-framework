@@ -4,10 +4,10 @@
 [ext_resource type="Material" uid="uid://bosg7vc1hulq8" path="res://game/assets/materials/temp_metal.tres" id="2_i2cxf"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_pet1e"]
-size = Vector3(0.05, 1.5, 1.5)
+size = Vector3(0.05, 1.3, 1.3)
 
 [node name="scrap_piece2" type="Box3DBody" unique_id=1636194786]
-box_size = Vector3(0.05, 1.5, 1.5)
+box_size = Vector3(0.05, 1.3, 1.3)
 sphere_radius = 0.22
 density = 2000.0
 friction = 0.5
