@@ -37,6 +37,7 @@ _surfaces = [{
 [node name="ConveyorTurnLeft" type="Box3DBody" unique_id=1324107816 node_paths=PackedStringArray("beltSurfaces")]
 body_type = 0
 box_size = Vector3(0, 0, 0)
+baked_compound = true
 transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 0, 0)
 script = ExtResource("1_r")
 beltSurfaces = []

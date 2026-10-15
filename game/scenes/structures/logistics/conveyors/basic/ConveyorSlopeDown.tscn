@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://f84cilvcke1a"]
+[gd_scene format=4 uid="uid://f84cilvcke1a"]
 
 [ext_resource type="PackedScene" uid="uid://blimcbugiyy2c" path="res://game/assets/models/conveyors/conveyor_slope_down.glb" id="1_r"]
 [ext_resource type="Script" uid="uid://c8jn3gvcakhgp" path="res://game/scripts/structures/logistics/conveyors/Conveyor.cs" id="2_r"]
@@ -11,7 +11,7 @@ _surfaces = [{
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 54,
-"vertex_data": PackedByteArray(115, 211, 130, 61, 123, 20, 254, 63, 52, 88, 226, 61, 113, 112, 244, 188, 215, 163, 24, 64, 190, 14, 13, 188, 20, 139, 24, 190, 123, 20, 254, 63, 183, 77, 174, 61, 222, 171, 148, 187, 252, 169, 25, 64, 102, 188, 97, 190, 113, 112, 244, 188, 215, 163, 24, 64, 190, 14, 13, 188, 115, 211, 130, 61, 123, 20, 254, 63, 52, 88, 226, 61, 20, 139, 24, 190, 123, 20, 254, 63, 183, 77, 174, 61, 113, 112, 244, 188, 215, 163, 24, 64, 190, 14, 13, 188, 147, 30, 101, 187, 133, 235, 25, 64, 213, 153, 137, 190, 147, 30, 101, 187, 133, 235, 25, 64, 213, 153, 137, 190, 113, 112, 244, 188, 215, 163, 24, 64, 190, 14, 13, 188, 222, 171, 148, 187, 252, 169, 25, 64, 102, 188, 97, 190, 83, 144, 163, 188, 173, 189, 133, 189, 89, 243, 116, 192, 115, 211, 130, 61, 123, 20, 254, 63, 52, 88, 226, 61, 20, 139, 24, 190, 123, 20, 254, 63, 183, 77, 174, 61, 222, 171, 148, 187, 252, 169, 25, 64, 102, 188, 97, 190, 115, 211, 130, 61, 123, 20, 254, 63, 52, 88, 226, 61, 59, 28, 209, 61, 98, 16, 0, 64, 225, 192, 86, 190, 59, 28, 209, 61, 98, 16, 0, 64, 225, 192, 86, 190, 115, 211, 130, 61, 123, 20, 254, 63, 52, 88, 226, 61, 184, 252, 70, 62, 173, 189, 133, 189, 209, 153, 116, 192, 184, 252, 70, 62, 173, 189, 133, 189, 209, 153, 116, 192, 115, 211, 130, 61, 123, 20, 254, 63, 52, 88, 226, 61, 83, 144, 163, 188, 173, 189, 133, 189, 89, 243, 116, 192, 183, 151, 226, 189, 236, 81, 0, 64, 242, 255, 138, 190, 20, 139, 24, 190, 123, 20, 254, 63, 183, 77, 174, 61, 147, 30, 101, 187, 133, 235, 25, 64, 213, 153, 137, 190, 83, 144, 163, 188, 173, 189, 133, 189, 89, 243, 116, 192, 20, 139, 24, 190, 123, 20, 254, 63, 183, 77, 174, 61, 183, 151, 226, 189, 236, 81, 0, 64, 242, 255, 138, 190, 205, 69, 212, 61, 236, 81, 0, 64, 184, 51, 136, 190, 222, 171, 148, 187, 252, 169, 25, 64, 102, 188, 97, 190, 59, 28, 209, 61, 98, 16, 0, 64, 225, 192, 86, 190, 147, 30, 101, 187, 133, 235, 25, 64, 213, 153, 137, 190, 222, 171, 148, 187, 252, 169, 25, 64, 102, 188, 97, 190, 205, 69, 212, 61, 236, 81, 0, 64, 184, 51, 136, 190, 205, 69, 212, 61, 236, 81, 0, 64, 184, 51, 136, 190, 59, 28, 209, 61, 98, 16, 0, 64, 225, 192, 86, 190, 184, 252, 70, 62, 173, 189, 133, 189, 209, 153, 116, 192, 184, 252, 70, 62, 173, 189, 133, 189, 209, 153, 116, 192, 173, 138, 178, 61, 98, 93, 171, 62, 149, 198, 116, 192, 147, 30, 101, 187, 133, 235, 25, 64, 213, 153, 137, 190, 184, 252, 70, 62, 173, 189, 133, 189, 209, 153, 116, 192, 147, 30, 101, 187, 133, 235, 25, 64, 213, 153, 137, 190, 205, 69, 212, 61, 236, 81, 0, 64, 184, 51, 136, 190, 83, 144, 163, 188, 173, 189, 133, 189, 89, 243, 116, 192, 183, 151, 226, 189, 236, 81, 0, 64, 242, 255, 138, 190, 147, 30, 101, 187, 133, 235, 25, 64, 213, 153, 137, 190, 83, 144, 163, 188, 173, 189, 133, 189, 89, 243, 116, 192, 147, 30, 101, 187, 133, 235, 25, 64, 213, 153, 137, 190, 173, 138, 178, 61, 98, 93, 171, 62, 149, 198, 116, 192, 83, 144, 163, 188, 173, 189, 133, 189, 89, 243, 116, 192, 173, 138, 178, 61, 98, 93, 171, 62, 149, 198, 116, 192, 184, 252, 70, 62, 173, 189, 133, 189, 209, 153, 116, 192)
+"vertex_data": PackedByteArray("c9OCPXsU/j80WOI9cXD0vNejGEC+Dg28FIsYvnsU/j+3Ta493quUu/ypGUBmvGG+cXD0vNejGEC+Dg28c9OCPXsU/j80WOI9FIsYvnsU/j+3Ta49cXD0vNejGEC+Dg28kx5lu4XrGUDVmYm+kx5lu4XrGUDVmYm+cXD0vNejGEC+Dg283quUu/ypGUBmvGG+U5CjvK29hb1Z83TAc9OCPXsU/j80WOI9FIsYvnsU/j+3Ta493quUu/ypGUBmvGG+c9OCPXsU/j80WOI9OxzRPWIQAEDhwFa+OxzRPWIQAEDhwFa+c9OCPXsU/j80WOI9uPxGPq29hb3RmXTAuPxGPq29hb3RmXTAc9OCPXsU/j80WOI9U5CjvK29hb1Z83TAt5fivexRAEDy/4q+FIsYvnsU/j+3Ta49kx5lu4XrGUDVmYm+U5CjvK29hb1Z83TAFIsYvnsU/j+3Ta49t5fivexRAEDy/4q+zUXUPexRAEC4M4i+3quUu/ypGUBmvGG+OxzRPWIQAEDhwFa+kx5lu4XrGUDVmYm+3quUu/ypGUBmvGG+zUXUPexRAEC4M4i+zUXUPexRAEC4M4i+OxzRPWIQAEDhwFa+uPxGPq29hb3RmXTAuPxGPq29hb3RmXTArYqyPWJdqz6VxnTAkx5lu4XrGUDVmYm+uPxGPq29hb3RmXTAkx5lu4XrGUDVmYm+zUXUPexRAEC4M4i+U5CjvK29hb1Z83TAt5fivexRAEDy/4q+kx5lu4XrGUDVmYm+U5CjvK29hb1Z83TAkx5lu4XrGUDVmYm+rYqyPWJdqz6VxnTAU5CjvK29hb1Z83TArYqyPWJdqz6VxnTAuPxGPq29hb3RmXTA")
 }]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_WallLExit"]
@@ -21,7 +21,7 @@ _surfaces = [{
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 24,
-"vertex_data": PackedByteArray(124, 38, 66, 62, 93, 207, 76, 189, 238, 190, 104, 192, 53, 222, 168, 61, 225, 50, 179, 62, 178, 235, 104, 192, 50, 66, 202, 188, 93, 207, 76, 189, 118, 24, 105, 192, 172, 202, 187, 61, 41, 92, 207, 62, 69, 14, 128, 192, 53, 222, 168, 61, 225, 50, 179, 62, 178, 235, 104, 192, 124, 38, 66, 62, 93, 207, 76, 189, 238, 190, 104, 192, 50, 66, 202, 188, 93, 207, 76, 189, 118, 24, 105, 192, 53, 222, 168, 61, 225, 50, 179, 62, 178, 235, 104, 192, 172, 202, 187, 61, 41, 92, 207, 62, 69, 14, 128, 192, 9, 93, 80, 188, 10, 215, 163, 59, 98, 146, 131, 192, 241, 104, 78, 62, 10, 215, 163, 59, 158, 101, 131, 192, 124, 38, 66, 62, 93, 207, 76, 189, 238, 190, 104, 192, 9, 93, 80, 188, 10, 215, 163, 59, 98, 146, 131, 192, 124, 38, 66, 62, 93, 207, 76, 189, 238, 190, 104, 192, 50, 66, 202, 188, 93, 207, 76, 189, 118, 24, 105, 192, 172, 202, 187, 61, 41, 92, 207, 62, 69, 14, 128, 192, 124, 38, 66, 62, 93, 207, 76, 189, 238, 190, 104, 192, 241, 104, 78, 62, 10, 215, 163, 59, 158, 101, 131, 192, 9, 93, 80, 188, 10, 215, 163, 59, 98, 146, 131, 192, 50, 66, 202, 188, 93, 207, 76, 189, 118, 24, 105, 192, 172, 202, 187, 61, 41, 92, 207, 62, 69, 14, 128, 192, 9, 93, 80, 188, 10, 215, 163, 59, 98, 146, 131, 192, 172, 202, 187, 61, 41, 92, 207, 62, 69, 14, 128, 192, 241, 104, 78, 62, 10, 215, 163, 59, 158, 101, 131, 192)
+"vertex_data": PackedByteArray("fCZCPl3PTL3uvmjANd6oPeEysz6y62jAMkLKvF3PTL12GGnArMq7PSlczz5FDoDANd6oPeEysz6y62jAfCZCPl3PTL3uvmjAMkLKvF3PTL12GGnANd6oPeEysz6y62jArMq7PSlczz5FDoDACV1QvArXoztikoPA8WhOPgrXozueZYPAfCZCPl3PTL3uvmjACV1QvArXoztikoPAfCZCPl3PTL3uvmjAMkLKvF3PTL12GGnArMq7PSlczz5FDoDAfCZCPl3PTL3uvmjA8WhOPgrXozueZYPACV1QvArXoztikoPAMkLKvF3PTL12GGnArMq7PSlczz5FDoDACV1QvArXoztikoPArMq7PSlczz5FDoDA8WhOPgrXozueZYPA")
 }]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_WallR"]
@@ -31,7 +31,7 @@ _surfaces = [{
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 54,
-"vertex_data": PackedByteArray(177, 136, 9, 64, 123, 20, 254, 63, 183, 77, 174, 61, 225, 232, 1, 64, 215, 163, 24, 64, 190, 14, 13, 188, 201, 210, 247, 63, 123, 20, 254, 63, 52, 88, 226, 61, 201, 210, 247, 63, 123, 20, 254, 63, 52, 88, 226, 61, 225, 232, 1, 64, 215, 163, 24, 64, 190, 14, 13, 188, 86, 74, 0, 64, 252, 169, 25, 64, 102, 188, 97, 190, 72, 57, 0, 64, 133, 235, 25, 64, 213, 153, 137, 190, 225, 232, 1, 64, 215, 163, 24, 64, 190, 14, 13, 188, 177, 136, 9, 64, 123, 20, 254, 63, 183, 77, 174, 61, 86, 74, 0, 64, 252, 169, 25, 64, 102, 188, 97, 190, 225, 232, 1, 64, 215, 163, 24, 64, 190, 14, 13, 188, 72, 57, 0, 64, 133, 235, 25, 64, 213, 153, 137, 190, 177, 136, 9, 64, 123, 20, 254, 63, 183, 77, 174, 61, 201, 210, 247, 63, 123, 20, 254, 63, 52, 88, 226, 61, 33, 71, 1, 64, 173, 189, 133, 189, 89, 243, 116, 192, 60, 238, 242, 63, 98, 16, 0, 64, 225, 192, 86, 190, 201, 210, 247, 63, 123, 20, 254, 63, 52, 88, 226, 61, 86, 74, 0, 64, 252, 169, 25, 64, 102, 188, 97, 190, 105, 32, 231, 63, 173, 189, 133, 189, 209, 153, 116, 192, 201, 210, 247, 63, 123, 20, 254, 63, 52, 88, 226, 61, 60, 238, 242, 63, 98, 16, 0, 64, 225, 192, 86, 190, 33, 71, 1, 64, 173, 189, 133, 189, 89, 243, 116, 192, 201, 210, 247, 63, 123, 20, 254, 63, 52, 88, 226, 61, 105, 32, 231, 63, 173, 189, 133, 189, 209, 153, 116, 192, 72, 57, 0, 64, 133, 235, 25, 64, 213, 153, 137, 190, 177, 136, 9, 64, 123, 20, 254, 63, 183, 77, 174, 61, 190, 20, 7, 64, 236, 81, 0, 64, 242, 255, 138, 190, 190, 20, 7, 64, 236, 81, 0, 64, 242, 255, 138, 190, 177, 136, 9, 64, 123, 20, 254, 63, 183, 77, 174, 61, 33, 71, 1, 64, 173, 189, 133, 189, 89, 243, 116, 192, 60, 238, 242, 63, 98, 16, 0, 64, 225, 192, 86, 190, 86, 74, 0, 64, 252, 169, 25, 64, 102, 188, 97, 190, 163, 187, 242, 63, 236, 81, 0, 64, 184, 51, 136, 190, 163, 187, 242, 63, 236, 81, 0, 64, 184, 51, 136, 190, 86, 74, 0, 64, 252, 169, 25, 64, 102, 188, 97, 190, 72, 57, 0, 64, 133, 235, 25, 64, 213, 153, 137, 190, 105, 32, 231, 63, 173, 189, 133, 189, 209, 153, 116, 192, 60, 238, 242, 63, 98, 16, 0, 64, 225, 192, 86, 190, 163, 187, 242, 63, 236, 81, 0, 64, 184, 51, 136, 190, 163, 187, 242, 63, 236, 81, 0, 64, 184, 51, 136, 190, 72, 57, 0, 64, 133, 235, 25, 64, 213, 153, 137, 190, 85, 215, 244, 63, 98, 93, 171, 62, 149, 198, 116, 192, 163, 187, 242, 63, 236, 81, 0, 64, 184, 51, 136, 190, 85, 215, 244, 63, 98, 93, 171, 62, 149, 198, 116, 192, 105, 32, 231, 63, 173, 189, 133, 189, 209, 153, 116, 192, 85, 215, 244, 63, 98, 93, 171, 62, 149, 198, 116, 192, 72, 57, 0, 64, 133, 235, 25, 64, 213, 153, 137, 190, 190, 20, 7, 64, 236, 81, 0, 64, 242, 255, 138, 190, 85, 215, 244, 63, 98, 93, 171, 62, 149, 198, 116, 192, 190, 20, 7, 64, 236, 81, 0, 64, 242, 255, 138, 190, 33, 71, 1, 64, 173, 189, 133, 189, 89, 243, 116, 192, 105, 32, 231, 63, 173, 189, 133, 189, 209, 153, 116, 192, 85, 215, 244, 63, 98, 93, 171, 62, 149, 198, 116, 192, 33, 71, 1, 64, 173, 189, 133, 189, 89, 243, 116, 192)
+"vertex_data": PackedByteArray("sYgJQHsU/j+3Ta494egBQNejGEC+Dg28ydL3P3sU/j80WOI9ydL3P3sU/j80WOI94egBQNejGEC+Dg28VkoAQPypGUBmvGG+SDkAQIXrGUDVmYm+4egBQNejGEC+Dg28sYgJQHsU/j+3Ta49VkoAQPypGUBmvGG+4egBQNejGEC+Dg28SDkAQIXrGUDVmYm+sYgJQHsU/j+3Ta49ydL3P3sU/j80WOI9IUcBQK29hb1Z83TAPO7yP2IQAEDhwFa+ydL3P3sU/j80WOI9VkoAQPypGUBmvGG+aSDnP629hb3RmXTAydL3P3sU/j80WOI9PO7yP2IQAEDhwFa+IUcBQK29hb1Z83TAydL3P3sU/j80WOI9aSDnP629hb3RmXTASDkAQIXrGUDVmYm+sYgJQHsU/j+3Ta49vhQHQOxRAEDy/4q+vhQHQOxRAEDy/4q+sYgJQHsU/j+3Ta49IUcBQK29hb1Z83TAPO7yP2IQAEDhwFa+VkoAQPypGUBmvGG+o7vyP+xRAEC4M4i+o7vyP+xRAEC4M4i+VkoAQPypGUBmvGG+SDkAQIXrGUDVmYm+aSDnP629hb3RmXTAPO7yP2IQAEDhwFa+o7vyP+xRAEC4M4i+o7vyP+xRAEC4M4i+SDkAQIXrGUDVmYm+Vdf0P2Jdqz6VxnTAo7vyP+xRAEC4M4i+Vdf0P2Jdqz6VxnTAaSDnP629hb3RmXTAVdf0P2Jdqz6VxnTASDkAQIXrGUDVmYm+vhQHQOxRAEDy/4q+Vdf0P2Jdqz6VxnTAvhQHQOxRAEDy/4q+IUcBQK29hb1Z83TAaSDnP629hb3RmXTAVdf0P2Jdqz6VxnTAIUcBQK29hb1Z83TA")
 }]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_WallRExit"]
@@ -41,12 +41,13 @@ _surfaces = [{
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 24,
-"vertex_data": PackedByteArray(132, 148, 1, 64, 93, 207, 76, 189, 118, 24, 105, 192, 29, 114, 245, 63, 225, 50, 179, 62, 178, 235, 104, 192, 49, 187, 231, 63, 93, 207, 76, 189, 238, 190, 104, 192, 49, 187, 231, 63, 93, 207, 76, 189, 238, 190, 104, 192, 29, 114, 245, 63, 225, 50, 179, 62, 178, 235, 104, 192, 85, 67, 244, 63, 41, 92, 207, 62, 69, 14, 128, 192, 85, 67, 244, 63, 41, 92, 207, 62, 69, 14, 128, 192, 29, 114, 245, 63, 225, 50, 179, 62, 178, 235, 104, 192, 132, 148, 1, 64, 93, 207, 76, 189, 118, 24, 105, 192, 132, 148, 1, 64, 93, 207, 76, 189, 118, 24, 105, 192, 49, 187, 231, 63, 93, 207, 76, 189, 238, 190, 104, 192, 226, 50, 230, 63, 10, 215, 163, 59, 158, 101, 131, 192, 132, 148, 1, 64, 93, 207, 76, 189, 118, 24, 105, 192, 226, 50, 230, 63, 10, 215, 163, 59, 158, 101, 131, 192, 93, 208, 0, 64, 10, 215, 163, 59, 98, 146, 131, 192, 226, 50, 230, 63, 10, 215, 163, 59, 158, 101, 131, 192, 49, 187, 231, 63, 93, 207, 76, 189, 238, 190, 104, 192, 85, 67, 244, 63, 41, 92, 207, 62, 69, 14, 128, 192, 85, 67, 244, 63, 41, 92, 207, 62, 69, 14, 128, 192, 132, 148, 1, 64, 93, 207, 76, 189, 118, 24, 105, 192, 93, 208, 0, 64, 10, 215, 163, 59, 98, 146, 131, 192, 226, 50, 230, 63, 10, 215, 163, 59, 158, 101, 131, 192, 85, 67, 244, 63, 41, 92, 207, 62, 69, 14, 128, 192, 93, 208, 0, 64, 10, 215, 163, 59, 98, 146, 131, 192)
+"vertex_data": PackedByteArray("hJQBQF3PTL12GGnAHXL1P+Eysz6y62jAMbvnP13PTL3uvmjAMbvnP13PTL3uvmjAHXL1P+Eysz6y62jAVUP0Pylczz5FDoDAVUP0Pylczz5FDoDAHXL1P+Eysz6y62jAhJQBQF3PTL12GGnAhJQBQF3PTL12GGnAMbvnP13PTL3uvmjA4jLmPwrXozueZYPAhJQBQF3PTL12GGnA4jLmPwrXozueZYPAXdAAQArXoztikoPA4jLmPwrXozueZYPAMbvnP13PTL3uvmjAVUP0Pylczz5FDoDAVUP0Pylczz5FDoDAhJQBQF3PTL12GGnAXdAAQArXoztikoPA4jLmPwrXozueZYPAVUP0Pylczz5FDoDAXdAAQArXoztikoPA")
 }]
 
 [node name="ConveyorSlopeDown" type="Box3DBody" unique_id=1434477856 node_paths=PackedStringArray("beltSurfaces")]
 body_type = 0
 box_size = Vector3(0, 0, 0)
+baked_compound = true
 script = ExtResource("2_r")
 beltSurfaces = []
 cells = Dictionary[Vector3i, int]({
@@ -67,9 +68,6 @@ blueprintItemID = "blueprint_conveyor_slope"
 
 [node name="Model" parent="." unique_id=1336257386 instance=ExtResource("1_r")]
 
-[node name="Belt" parent="Model" index="0"]
-instance_shader_parameters/belt_speed = -2.0
-
 [node name="WallL" type="Box3DBody" parent="." unique_id=1175274396]
 body_type = 0
 shape_type = 5
@@ -77,7 +75,7 @@ collision_mesh = SubResource("ArrayMesh_WallL")
 friction = 0.0
 user_material_id = 3
 
-[node name="WallLExit" type="Box3DBody" parent="."]
+[node name="WallLExit" type="Box3DBody" parent="." unique_id=31760328]
 body_type = 0
 shape_type = 5
 collision_mesh = SubResource("ArrayMesh_WallLExit")
@@ -91,7 +89,7 @@ collision_mesh = SubResource("ArrayMesh_WallR")
 friction = 0.0
 user_material_id = 3
 
-[node name="WallRExit" type="Box3DBody" parent="."]
+[node name="WallRExit" type="Box3DBody" parent="." unique_id=2071561781]
 body_type = 0
 shape_type = 5
 collision_mesh = SubResource("ArrayMesh_WallRExit")

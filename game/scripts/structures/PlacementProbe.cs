@@ -51,6 +51,9 @@ public class PlacementProbe
         probe.CollectBodies(structure, Transform3D.Identity);
         foreach (var (body, _) in probe.bodies)
         {
+            // A baked compound can't be a sensor (Box3D falls back to a runtime compound and warns), so the probe's
+            // copy builds its compound at runtime.
+            body.Set(Box3DNames.bakedCompound, false);
             body.Set(Box3DNames.isSensor, true);
             body.Set(Box3DNames.sensorEvents, true);
             body.Set(Box3DNames.collisionLayer, GameWorld.QueryHiddenLayer);
