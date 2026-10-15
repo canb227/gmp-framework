@@ -174,7 +174,6 @@ public partial class GameWorld : Node3D
     internal static void Preload(GameInfo gameInfo)
     {
         //This runs on all players. Use it to preload the shit from the gameinfo you know you'll need.
-        maxTickSize = Lobby.isHost ? baseMaxTickSize * 4 : baseMaxTickSize;
         GameBootstrap.Preload(gameInfo);
     }
 
@@ -197,7 +196,6 @@ public partial class GameWorld : Node3D
         ResetResync();
         GameBootstrap.ResetSession();
         started = false;
-        maxTickSize = baseMaxTickSize;
         if (instance != null)
         {
             instance.GetTree().Paused = true;

@@ -36,10 +36,10 @@ public class SteamNetwork :  Network
         // than this many bytes are waiting to go out, 512 KB by default.
         SetGlobalConfigInt(ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_SendBufferSize, 32 * 1024 * 1024);
         // Steam sends to each peer at a fixed rate, 256 KB/s by default (it doesn't estimate bandwidth, so min and max
-        // should match). State sync alone may send up to 2 MB/s on the host (GameWorld.maxTickSize), and anything
-        // sent faster than this rate queues up until the send buffer above is full and every send fails.
-        SetGlobalConfigInt(ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_SendRateMin, 3 * 1024 * 1024);
-        SetGlobalConfigInt(ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_SendRateMax, 3 * 1024 * 1024);
+        // should match). State sync may send up to 10 MB/s (GameWorld.maxTickSize), and anything sent faster than
+        // this rate queues up until the send buffer above is full and every send fails.
+        SetGlobalConfigInt(ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_SendRateMin, 10 * 1024 * 1024);
+        SetGlobalConfigInt(ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_SendRateMax, 10 * 1024 * 1024);
         _started = true;
         Logging.Log($"Steam messaging ready (SteamID {SelfId})", "NetworkSession");
         return Error.Ok;

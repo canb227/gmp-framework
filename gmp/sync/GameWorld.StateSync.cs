@@ -75,11 +75,11 @@ public partial class GameWorld
 
     public static MessagePackSerializer pack = new();
 
-    /// <summary>Outbound state bytes allowed per physics tick: 500 KB/s spread over the physics rate.</summary>
-    private static readonly int baseMaxTickSize = 1024 * 500 / Engine.PhysicsTicksPerSecond;
-
-    /// <summary>This session's per-tick budget; the host gets 4× (set in <see cref="Preload"/>).</summary>
-    private static int maxTickSize = baseMaxTickSize;
+    /// <summary>
+    /// Outbound state bytes allowed per physics tick: 10 MB/s spread over the physics rate. Keep it within the
+    /// transport's send rate (<see cref="SteamNetwork.Host"/>), or Steam queues the excess until its sends fail.
+    /// </summary>
+    private static readonly int maxTickSize = 10 * 1024 * 1024 / Engine.PhysicsTicksPerSecond;
 
     /// <summary>
     /// An object's update is due once its <see cref="GMPObject.priorityAccumulator"/> reaches this. Priority accumulates
