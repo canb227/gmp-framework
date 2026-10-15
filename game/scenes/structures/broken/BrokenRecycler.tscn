@@ -1,354 +1,1713 @@
 [gd_scene format=3 uid="uid://ci3gdnftondij"]
 
-[ext_resource type="Script" uid="uid://x8l68nnxddi3" path="res://game/scripts/structures/BrokenStructure.cs" id="script"]
-[ext_resource type="PackedScene" uid="uid://cqqcwna2yv27h" path="res://game/assets/models/machines/recycler/recycler_broken.glb" id="body"]
+[ext_resource type="PackedScene" uid="uid://pqjvhgupmo08" path="res://game/assets/models/machines/recycler/recycler_roller.glb" id="3_pfkmd"]
 [ext_resource type="PackedScene" uid="uid://ydmfekqvhgei" path="res://game/scenes/structures/special/Recycler.tscn" id="repaired"]
+[ext_resource type="Script" uid="uid://x8l68nnxddi3" path="res://game/scripts/structures/BrokenStructure.cs" id="script"]
 
 [node name="RecyclerBroken" type="Box3DBody" unique_id=703975338]
 body_type = 0
 box_size = Vector3(0, 0, 0)
 script = ExtResource("script")
+repairedScene = ExtResource("repaired")
 cells = Dictionary[Vector3i, int]({
 Vector3i(0, 0, -7): 0,
-Vector3i(1, 0, -7): 0,
-Vector3i(2, 0, -7): 0,
-Vector3i(3, 0, -7): 0,
-Vector3i(4, 0, -7): 0,
-Vector3i(5, 0, -7): 0,
-Vector3i(6, 0, -7): 0,
-Vector3i(7, 0, -7): 0,
 Vector3i(0, 0, -6): 0,
-Vector3i(1, 0, -6): 0,
-Vector3i(2, 0, -6): 0,
-Vector3i(3, 0, -6): 0,
-Vector3i(4, 0, -6): 0,
-Vector3i(5, 0, -6): 0,
-Vector3i(6, 0, -6): 0,
-Vector3i(7, 0, -6): 0,
 Vector3i(0, 0, -5): 0,
-Vector3i(1, 0, -5): 0,
-Vector3i(2, 0, -5): 0,
-Vector3i(3, 0, -5): 0,
-Vector3i(4, 0, -5): 0,
-Vector3i(5, 0, -5): 0,
-Vector3i(6, 0, -5): 0,
-Vector3i(7, 0, -5): 0,
 Vector3i(0, 0, -4): 0,
-Vector3i(1, 0, -4): 0,
-Vector3i(2, 0, -4): 0,
-Vector3i(3, 0, -4): 0,
-Vector3i(4, 0, -4): 0,
-Vector3i(5, 0, -4): 0,
-Vector3i(6, 0, -4): 0,
-Vector3i(7, 0, -4): 0,
 Vector3i(0, 0, -3): 0,
-Vector3i(1, 0, -3): 0,
-Vector3i(2, 0, -3): 0,
-Vector3i(3, 0, -3): 0,
-Vector3i(4, 0, -3): 0,
-Vector3i(5, 0, -3): 0,
-Vector3i(6, 0, -3): 0,
-Vector3i(7, 0, -3): 0,
 Vector3i(0, 0, -2): 0,
-Vector3i(1, 0, -2): 0,
-Vector3i(2, 0, -2): 0,
-Vector3i(3, 0, -2): 0,
-Vector3i(4, 0, -2): 0,
-Vector3i(5, 0, -2): 0,
-Vector3i(6, 0, -2): 0,
-Vector3i(7, 0, -2): 0,
 Vector3i(0, 0, -1): 0,
-Vector3i(1, 0, -1): 0,
-Vector3i(2, 0, -1): 0,
-Vector3i(3, 0, -1): 0,
-Vector3i(4, 0, -1): 0,
-Vector3i(5, 0, -1): 0,
-Vector3i(6, 0, -1): 0,
-Vector3i(7, 0, -1): 0,
 Vector3i(0, 0, 0): 0,
-Vector3i(1, 0, 0): 0,
-Vector3i(2, 0, 0): 0,
-Vector3i(3, 0, 0): 0,
-Vector3i(4, 0, 0): 0,
-Vector3i(5, 0, 0): 0,
-Vector3i(6, 0, 0): 0,
-Vector3i(7, 0, 0): 0,
 Vector3i(0, 1, -7): 0,
-Vector3i(1, 1, -7): 0,
-Vector3i(2, 1, -7): 0,
-Vector3i(3, 1, -7): 0,
-Vector3i(4, 1, -7): 0,
-Vector3i(5, 1, -7): 0,
-Vector3i(6, 1, -7): 0,
-Vector3i(7, 1, -7): 0,
 Vector3i(0, 1, -6): 0,
-Vector3i(1, 1, -6): 0,
-Vector3i(2, 1, -6): 0,
-Vector3i(3, 1, -6): 0,
-Vector3i(4, 1, -6): 0,
-Vector3i(5, 1, -6): 0,
-Vector3i(6, 1, -6): 0,
-Vector3i(7, 1, -6): 0,
 Vector3i(0, 1, -5): 0,
-Vector3i(1, 1, -5): 0,
-Vector3i(2, 1, -5): 0,
-Vector3i(3, 1, -5): 0,
-Vector3i(4, 1, -5): 0,
-Vector3i(5, 1, -5): 0,
-Vector3i(6, 1, -5): 0,
-Vector3i(7, 1, -5): 0,
 Vector3i(0, 1, -4): 0,
-Vector3i(1, 1, -4): 0,
-Vector3i(2, 1, -4): 0,
-Vector3i(3, 1, -4): 0,
-Vector3i(4, 1, -4): 0,
-Vector3i(5, 1, -4): 0,
-Vector3i(6, 1, -4): 0,
-Vector3i(7, 1, -4): 0,
 Vector3i(0, 1, -3): 0,
-Vector3i(1, 1, -3): 0,
-Vector3i(2, 1, -3): 0,
-Vector3i(3, 1, -3): 0,
-Vector3i(4, 1, -3): 0,
-Vector3i(5, 1, -3): 0,
-Vector3i(6, 1, -3): 0,
-Vector3i(7, 1, -3): 0,
 Vector3i(0, 1, -2): 0,
-Vector3i(1, 1, -2): 0,
-Vector3i(2, 1, -2): 0,
-Vector3i(3, 1, -2): 0,
-Vector3i(4, 1, -2): 0,
-Vector3i(5, 1, -2): 0,
-Vector3i(6, 1, -2): 0,
-Vector3i(7, 1, -2): 0,
 Vector3i(0, 1, -1): 0,
-Vector3i(1, 1, -1): 0,
-Vector3i(2, 1, -1): 0,
-Vector3i(3, 1, -1): 0,
-Vector3i(4, 1, -1): 0,
-Vector3i(5, 1, -1): 0,
-Vector3i(6, 1, -1): 0,
-Vector3i(7, 1, -1): 0,
 Vector3i(0, 1, 0): 0,
-Vector3i(1, 1, 0): 0,
-Vector3i(2, 1, 0): 0,
-Vector3i(3, 1, 0): 0,
-Vector3i(4, 1, 0): 0,
-Vector3i(5, 1, 0): 0,
-Vector3i(6, 1, 0): 0,
-Vector3i(7, 1, 0): 0,
 Vector3i(0, 2, -7): 0,
-Vector3i(1, 2, -7): 0,
-Vector3i(2, 2, -7): 0,
-Vector3i(3, 2, -7): 0,
-Vector3i(4, 2, -7): 0,
-Vector3i(5, 2, -7): 0,
-Vector3i(6, 2, -7): 0,
-Vector3i(7, 2, -7): 0,
 Vector3i(0, 2, -6): 0,
-Vector3i(1, 2, -6): 0,
-Vector3i(2, 2, -6): 0,
-Vector3i(3, 2, -6): 0,
-Vector3i(4, 2, -6): 0,
-Vector3i(5, 2, -6): 0,
-Vector3i(6, 2, -6): 0,
-Vector3i(7, 2, -6): 0,
 Vector3i(0, 2, -5): 0,
-Vector3i(1, 2, -5): 0,
-Vector3i(2, 2, -5): 0,
-Vector3i(3, 2, -5): 0,
-Vector3i(4, 2, -5): 0,
-Vector3i(5, 2, -5): 0,
-Vector3i(6, 2, -5): 0,
-Vector3i(7, 2, -5): 0,
 Vector3i(0, 2, -4): 0,
-Vector3i(1, 2, -4): 0,
-Vector3i(2, 2, -4): 0,
-Vector3i(3, 2, -4): 0,
-Vector3i(4, 2, -4): 0,
-Vector3i(5, 2, -4): 0,
-Vector3i(6, 2, -4): 0,
-Vector3i(7, 2, -4): 0,
 Vector3i(0, 2, -3): 0,
-Vector3i(1, 2, -3): 0,
-Vector3i(2, 2, -3): 0,
-Vector3i(3, 2, -3): 0,
-Vector3i(4, 2, -3): 0,
-Vector3i(5, 2, -3): 0,
-Vector3i(6, 2, -3): 0,
-Vector3i(7, 2, -3): 0,
 Vector3i(0, 2, -2): 0,
-Vector3i(1, 2, -2): 0,
-Vector3i(2, 2, -2): 0,
-Vector3i(3, 2, -2): 0,
-Vector3i(4, 2, -2): 0,
-Vector3i(5, 2, -2): 0,
-Vector3i(6, 2, -2): 0,
-Vector3i(7, 2, -2): 0,
 Vector3i(0, 2, -1): 0,
-Vector3i(1, 2, -1): 0,
-Vector3i(2, 2, -1): 0,
-Vector3i(3, 2, -1): 0,
-Vector3i(4, 2, -1): 0,
-Vector3i(5, 2, -1): 0,
-Vector3i(6, 2, -1): 0,
-Vector3i(7, 2, -1): 0,
 Vector3i(0, 2, 0): 0,
-Vector3i(1, 2, 0): 0,
-Vector3i(2, 2, 0): 0,
-Vector3i(3, 2, 0): 0,
-Vector3i(4, 2, 0): 0,
-Vector3i(5, 2, 0): 0,
-Vector3i(6, 2, 0): 0,
-Vector3i(7, 2, 0): 0,
 Vector3i(0, 3, -7): 0,
-Vector3i(1, 3, -7): 0,
-Vector3i(2, 3, -7): 0,
-Vector3i(3, 3, -7): 0,
-Vector3i(4, 3, -7): 0,
-Vector3i(5, 3, -7): 0,
-Vector3i(6, 3, -7): 0,
-Vector3i(7, 3, -7): 0,
 Vector3i(0, 3, -6): 0,
-Vector3i(1, 3, -6): 0,
-Vector3i(2, 3, -6): 0,
-Vector3i(3, 3, -6): 0,
-Vector3i(4, 3, -6): 0,
-Vector3i(5, 3, -6): 0,
-Vector3i(6, 3, -6): 0,
-Vector3i(7, 3, -6): 0,
 Vector3i(0, 3, -5): 0,
-Vector3i(1, 3, -5): 0,
-Vector3i(2, 3, -5): 0,
-Vector3i(3, 3, -5): 0,
-Vector3i(4, 3, -5): 0,
-Vector3i(5, 3, -5): 0,
-Vector3i(6, 3, -5): 0,
-Vector3i(7, 3, -5): 0,
 Vector3i(0, 3, -4): 0,
-Vector3i(1, 3, -4): 0,
-Vector3i(2, 3, -4): 0,
-Vector3i(3, 3, -4): 0,
-Vector3i(4, 3, -4): 0,
-Vector3i(5, 3, -4): 0,
-Vector3i(6, 3, -4): 0,
-Vector3i(7, 3, -4): 0,
 Vector3i(0, 3, -3): 0,
-Vector3i(1, 3, -3): 0,
-Vector3i(2, 3, -3): 0,
-Vector3i(3, 3, -3): 0,
-Vector3i(4, 3, -3): 0,
-Vector3i(5, 3, -3): 0,
-Vector3i(6, 3, -3): 0,
-Vector3i(7, 3, -3): 0,
 Vector3i(0, 3, -2): 0,
-Vector3i(1, 3, -2): 0,
-Vector3i(2, 3, -2): 0,
-Vector3i(3, 3, -2): 0,
-Vector3i(4, 3, -2): 0,
-Vector3i(5, 3, -2): 0,
-Vector3i(6, 3, -2): 0,
-Vector3i(7, 3, -2): 0,
 Vector3i(0, 3, -1): 0,
-Vector3i(1, 3, -1): 0,
-Vector3i(2, 3, -1): 0,
-Vector3i(3, 3, -1): 0,
-Vector3i(4, 3, -1): 0,
-Vector3i(5, 3, -1): 0,
-Vector3i(6, 3, -1): 0,
-Vector3i(7, 3, -1): 0,
 Vector3i(0, 3, 0): 0,
+Vector3i(1, 0, -7): 0,
+Vector3i(1, 0, -6): 0,
+Vector3i(1, 0, -5): 0,
+Vector3i(1, 0, -4): 0,
+Vector3i(1, 0, -3): 0,
+Vector3i(1, 0, -2): 0,
+Vector3i(1, 0, -1): 0,
+Vector3i(1, 0, 0): 0,
+Vector3i(1, 1, -7): 0,
+Vector3i(1, 1, -6): 0,
+Vector3i(1, 1, -5): 0,
+Vector3i(1, 1, -4): 0,
+Vector3i(1, 1, -3): 0,
+Vector3i(1, 1, -2): 0,
+Vector3i(1, 1, -1): 0,
+Vector3i(1, 1, 0): 0,
+Vector3i(1, 2, -7): 0,
+Vector3i(1, 2, -6): 0,
+Vector3i(1, 2, -5): 0,
+Vector3i(1, 2, -4): 0,
+Vector3i(1, 2, -3): 0,
+Vector3i(1, 2, -2): 0,
+Vector3i(1, 2, -1): 0,
+Vector3i(1, 2, 0): 0,
+Vector3i(1, 3, -7): 0,
+Vector3i(1, 3, -6): 0,
+Vector3i(1, 3, -5): 0,
+Vector3i(1, 3, -4): 0,
+Vector3i(1, 3, -3): 0,
+Vector3i(1, 3, -2): 0,
+Vector3i(1, 3, -1): 0,
 Vector3i(1, 3, 0): 0,
+Vector3i(2, 0, -7): 0,
+Vector3i(2, 0, -6): 0,
+Vector3i(2, 0, -5): 0,
+Vector3i(2, 0, -4): 0,
+Vector3i(2, 0, -3): 0,
+Vector3i(2, 0, -2): 0,
+Vector3i(2, 0, -1): 0,
+Vector3i(2, 0, 0): 0,
+Vector3i(2, 1, -7): 0,
+Vector3i(2, 1, -6): 0,
+Vector3i(2, 1, -5): 0,
+Vector3i(2, 1, -4): 0,
+Vector3i(2, 1, -3): 0,
+Vector3i(2, 1, -2): 0,
+Vector3i(2, 1, -1): 0,
+Vector3i(2, 1, 0): 0,
+Vector3i(2, 2, -7): 0,
+Vector3i(2, 2, -6): 0,
+Vector3i(2, 2, -5): 0,
+Vector3i(2, 2, -4): 0,
+Vector3i(2, 2, -3): 0,
+Vector3i(2, 2, -2): 0,
+Vector3i(2, 2, -1): 0,
+Vector3i(2, 2, 0): 0,
+Vector3i(2, 3, -7): 0,
+Vector3i(2, 3, -6): 0,
+Vector3i(2, 3, -5): 0,
+Vector3i(2, 3, -4): 0,
+Vector3i(2, 3, -3): 0,
+Vector3i(2, 3, -2): 0,
+Vector3i(2, 3, -1): 0,
 Vector3i(2, 3, 0): 0,
+Vector3i(3, 0, -7): 0,
+Vector3i(3, 0, -6): 0,
+Vector3i(3, 0, -5): 0,
+Vector3i(3, 0, -4): 0,
+Vector3i(3, 0, -3): 0,
+Vector3i(3, 0, -2): 0,
+Vector3i(3, 0, -1): 0,
+Vector3i(3, 0, 0): 0,
+Vector3i(3, 1, -7): 0,
+Vector3i(3, 1, -6): 0,
+Vector3i(3, 1, -5): 0,
+Vector3i(3, 1, -4): 0,
+Vector3i(3, 1, -3): 0,
+Vector3i(3, 1, -2): 0,
+Vector3i(3, 1, -1): 0,
+Vector3i(3, 1, 0): 0,
+Vector3i(3, 2, -7): 0,
+Vector3i(3, 2, -6): 0,
+Vector3i(3, 2, -5): 0,
+Vector3i(3, 2, -4): 0,
+Vector3i(3, 2, -3): 0,
+Vector3i(3, 2, -2): 0,
+Vector3i(3, 2, -1): 0,
+Vector3i(3, 2, 0): 0,
+Vector3i(3, 3, -7): 0,
+Vector3i(3, 3, -6): 0,
+Vector3i(3, 3, -5): 0,
+Vector3i(3, 3, -4): 0,
+Vector3i(3, 3, -3): 0,
+Vector3i(3, 3, -2): 0,
+Vector3i(3, 3, -1): 0,
 Vector3i(3, 3, 0): 0,
+Vector3i(4, 0, -7): 0,
+Vector3i(4, 0, -6): 0,
+Vector3i(4, 0, -5): 0,
+Vector3i(4, 0, -4): 0,
+Vector3i(4, 0, -3): 0,
+Vector3i(4, 0, -2): 0,
+Vector3i(4, 0, -1): 0,
+Vector3i(4, 0, 0): 0,
+Vector3i(4, 1, -7): 0,
+Vector3i(4, 1, -6): 0,
+Vector3i(4, 1, -5): 0,
+Vector3i(4, 1, -4): 0,
+Vector3i(4, 1, -3): 0,
+Vector3i(4, 1, -2): 0,
+Vector3i(4, 1, -1): 0,
+Vector3i(4, 1, 0): 0,
+Vector3i(4, 2, -7): 0,
+Vector3i(4, 2, -6): 0,
+Vector3i(4, 2, -5): 0,
+Vector3i(4, 2, -4): 0,
+Vector3i(4, 2, -3): 0,
+Vector3i(4, 2, -2): 0,
+Vector3i(4, 2, -1): 0,
+Vector3i(4, 2, 0): 0,
+Vector3i(4, 3, -7): 0,
+Vector3i(4, 3, -6): 0,
+Vector3i(4, 3, -5): 0,
+Vector3i(4, 3, -4): 0,
+Vector3i(4, 3, -3): 0,
+Vector3i(4, 3, -2): 0,
+Vector3i(4, 3, -1): 0,
 Vector3i(4, 3, 0): 0,
+Vector3i(5, 0, -7): 0,
+Vector3i(5, 0, -6): 0,
+Vector3i(5, 0, -5): 0,
+Vector3i(5, 0, -4): 0,
+Vector3i(5, 0, -3): 0,
+Vector3i(5, 0, -2): 0,
+Vector3i(5, 0, -1): 0,
+Vector3i(5, 0, 0): 0,
+Vector3i(5, 1, -7): 0,
+Vector3i(5, 1, -6): 0,
+Vector3i(5, 1, -5): 0,
+Vector3i(5, 1, -4): 0,
+Vector3i(5, 1, -3): 0,
+Vector3i(5, 1, -2): 0,
+Vector3i(5, 1, -1): 0,
+Vector3i(5, 1, 0): 0,
+Vector3i(5, 2, -7): 0,
+Vector3i(5, 2, -6): 0,
+Vector3i(5, 2, -5): 0,
+Vector3i(5, 2, -4): 0,
+Vector3i(5, 2, -3): 0,
+Vector3i(5, 2, -2): 0,
+Vector3i(5, 2, -1): 0,
+Vector3i(5, 2, 0): 0,
+Vector3i(5, 3, -7): 0,
+Vector3i(5, 3, -6): 0,
+Vector3i(5, 3, -5): 0,
+Vector3i(5, 3, -4): 0,
+Vector3i(5, 3, -3): 0,
+Vector3i(5, 3, -2): 0,
+Vector3i(5, 3, -1): 0,
 Vector3i(5, 3, 0): 0,
+Vector3i(6, 0, -7): 0,
+Vector3i(6, 0, -6): 0,
+Vector3i(6, 0, -5): 0,
+Vector3i(6, 0, -4): 0,
+Vector3i(6, 0, -3): 0,
+Vector3i(6, 0, -2): 0,
+Vector3i(6, 0, -1): 0,
+Vector3i(6, 0, 0): 0,
+Vector3i(6, 1, -7): 0,
+Vector3i(6, 1, -6): 0,
+Vector3i(6, 1, -5): 0,
+Vector3i(6, 1, -4): 0,
+Vector3i(6, 1, -3): 0,
+Vector3i(6, 1, -2): 0,
+Vector3i(6, 1, -1): 0,
+Vector3i(6, 1, 0): 0,
+Vector3i(6, 2, -7): 0,
+Vector3i(6, 2, -6): 0,
+Vector3i(6, 2, -5): 0,
+Vector3i(6, 2, -4): 0,
+Vector3i(6, 2, -3): 0,
+Vector3i(6, 2, -2): 0,
+Vector3i(6, 2, -1): 0,
+Vector3i(6, 2, 0): 0,
+Vector3i(6, 3, -7): 0,
+Vector3i(6, 3, -6): 0,
+Vector3i(6, 3, -5): 0,
+Vector3i(6, 3, -4): 0,
+Vector3i(6, 3, -3): 0,
+Vector3i(6, 3, -2): 0,
+Vector3i(6, 3, -1): 0,
 Vector3i(6, 3, 0): 0,
+Vector3i(7, 0, -7): 0,
+Vector3i(7, 0, -6): 0,
+Vector3i(7, 0, -5): 0,
+Vector3i(7, 0, -4): 0,
+Vector3i(7, 0, -3): 0,
+Vector3i(7, 0, -2): 0,
+Vector3i(7, 0, -1): 0,
+Vector3i(7, 0, 0): 0,
+Vector3i(7, 1, -7): 0,
+Vector3i(7, 1, -6): 0,
+Vector3i(7, 1, -5): 0,
+Vector3i(7, 1, -4): 0,
+Vector3i(7, 1, -3): 0,
+Vector3i(7, 1, -2): 0,
+Vector3i(7, 1, -1): 0,
+Vector3i(7, 1, 0): 0,
+Vector3i(7, 2, -7): 0,
+Vector3i(7, 2, -6): 0,
+Vector3i(7, 2, -5): 0,
+Vector3i(7, 2, -4): 0,
+Vector3i(7, 2, -3): 0,
+Vector3i(7, 2, -2): 0,
+Vector3i(7, 2, -1): 0,
+Vector3i(7, 2, 0): 0,
+Vector3i(7, 3, -7): 0,
+Vector3i(7, 3, -6): 0,
+Vector3i(7, 3, -5): 0,
+Vector3i(7, 3, -4): 0,
+Vector3i(7, 3, -3): 0,
+Vector3i(7, 3, -2): 0,
+Vector3i(7, 3, -1): 0,
 Vector3i(7, 3, 0): 0
 })
 hoverName = "Broken Scrap Recycler"
-repairedScene = ExtResource("repaired")
 
-[node name="Model" parent="." unique_id=703983257 instance=ExtResource("body")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -4)
+[node name="Node3D" type="Node3D" parent="." unique_id=731038500]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0214114, 0)
 
-[node name="Core" type="Box3DCollisionShape" parent="." unique_id=703991176]
-box_size = Vector3(8, 1.4, 6)
+[node name="Roller0" type="Box3DBody" parent="Node3D" unique_id=10232392]
+body_type = 1
+shape_type = 1
+sphere_radius = 0.05
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 3, -1.5)
+
+[node name="Model" parent="Node3D/Roller0" unique_id=138331307 instance=ExtResource("3_pfkmd")]
+
+[node name="CoreA" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=213806232]
+box_size = Vector3(6.5, 0.56, 0.56)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.7, -3)
 
-[node name="Front0" type="Box3DCollisionShape" parent="." unique_id=703999095]
-box_size = Vector3(0.12, 1.4, 2)
+[node name="CoreB" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1187470402]
+box_size = Vector3(6.5, 0.56, 0.56)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06, 0.7, -7)
+transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
 
-[node name="Front1" type="Box3DCollisionShape" parent="." unique_id=704007014]
-box_size = Vector3(1.24, 1.4, 2)
+[node name="Tooth0_0" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1677719799]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.7, -7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.925, 0.45, 0)
 
-[node name="Front2" type="Box3DCollisionShape" parent="." unique_id=704014933]
-box_size = Vector3(1.24, 1.4, 2)
+[node name="Tooth0_1" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=10887112]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0.7, -7)
+transform = Transform3D(1, 0, 0, 0, 0.309017, -0.951057, 0, 0.951057, 0.309017, -2.925, 0.139058, 0.427975)
 
-[node name="Front3" type="Box3DCollisionShape" parent="." unique_id=704022852]
-box_size = Vector3(0.12, 1.4, 2)
+[node name="Tooth0_2" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=442108202]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.94, 0.7, -7)
+transform = Transform3D(1, 0, 0, 0, -0.809017, -0.587785, 0, 0.587785, -0.809017, -2.925, -0.364058, 0.264503)
 
-[node name="MouthRoof1" type="Box3DCollisionShape" parent="." unique_id=704030771]
-box_size = Vector3(1.76, 0.1, 2)
+[node name="Tooth0_3" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1747198820]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1.35, -7)
+transform = Transform3D(1, 0, 0, 0, -0.809017, 0.587785, 0, -0.587785, -0.809017, -2.925, -0.364058, -0.264503)
 
-[node name="MouthRoof2" type="Box3DCollisionShape" parent="." unique_id=704038690]
-box_size = Vector3(1.76, 0.1, 2)
+[node name="Tooth0_4" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=70597950]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.35, -7)
+transform = Transform3D(1, 0, 0, 0, 0.309017, 0.951057, 0, -0.951057, 0.309017, -2.925, 0.139058, -0.427975)
 
-[node name="MouthRoof3" type="Box3DCollisionShape" parent="." unique_id=704046609]
-box_size = Vector3(1.76, 0.1, 2)
+[node name="Tooth1_0" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1978999051]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1.35, -7)
+transform = Transform3D(1, 0, 0, 0, 0.808028, -0.589145, 0, 0.589145, 0.808028, -2.025, 0.363612, 0.265115)
 
-[node name="FrontWall" type="Box3DCollisionShape" parent="." unique_id=704054528]
+[node name="Tooth1_1" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1360435688]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.310616, -0.950536, 0, 0.950536, -0.310616, -2.025, -0.139777, 0.427741)
+
+[node name="Tooth1_2" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=641935410]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999999, 0.00168147, 0, -0.00168147, -0.999999, -2.025, -0.449999, -0.000756661)
+
+[node name="Tooth1_3" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=500128173]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.307417, 0.951575, 0, -0.951575, -0.307417, -2.025, -0.138338, -0.428209)
+
+[node name="Tooth1_4" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1019725602]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.810004, 0.586424, 0, -0.586424, 0.810004, -2.025, 0.364502, -0.263891)
+
+[node name="Tooth2_0" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1756463825]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.305817, -0.95209, 0, 0.95209, 0.305817, -1.125, 0.137618, 0.428441)
+
+[node name="Tooth2_1" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1950298507]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.810989, -0.585061, 0, 0.585061, -0.810989, -1.125, -0.364945, 0.263278)
+
+[node name="Tooth2_2" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1863220106]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.807036, 0.590503, 0, -0.590503, -0.807036, -1.125, -0.363166, -0.265726)
+
+[node name="Tooth2_3" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=306492899]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.312214, 0.950012, 0, -0.950012, 0.312214, -1.125, 0.140496, -0.427505)
+
+[node name="Tooth2_4" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1728950626]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999994, -0.00336293, 0, 0.00336293, 0.999994, -1.125, 0.449997, 0.00151332)
+
+[node name="Tooth3_0" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=711806751]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.313811, -0.949486, 0, 0.949486, -0.313811, -0.225, -0.141215, 0.427269)
+
+[node name="Tooth3_1" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1626766790]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999987, 0.00504439, 0, -0.00504439, -0.999987, -0.225, -0.449994, -0.00226997)
+
+[node name="Tooth3_2" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=721391547]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.304216, 0.952603, 0, -0.952603, -0.304216, -0.225, -0.136897, -0.428671)
+
+[node name="Tooth3_3" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=2062271599]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.811972, 0.583697, 0, -0.583697, 0.811972, -0.225, 0.365387, -0.262664)
+
+[node name="Tooth3_4" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1123165901]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.806042, -0.591859, 0, 0.591859, 0.806042, -0.225, 0.362719, 0.266336)
+
+[node name="Tooth4_0" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1311850802]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.812952, -0.582331, 0, 0.582331, -0.812952, 0.675, -0.365828, 0.262049)
+
+[node name="Tooth4_1" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1533083261]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.805045, 0.593213, 0, -0.593213, -0.805045, 0.675, -0.36227, -0.266946)
+
+[node name="Tooth4_2" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1972853472]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.315407, 0.948957, 0, -0.948957, 0.315407, 0.675, 0.141933, -0.42703)
+
+[node name="Tooth4_3" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=2107850285]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999977, -0.00672583, 0, 0.00672583, 0.999977, 0.675, 0.44999, 0.00302662)
+
+[node name="Tooth4_4" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=146833136]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.302613, -0.953113, 0, 0.953113, 0.302613, 0.675, 0.136176, 0.428901)
+
+[node name="Tooth5_0" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1220051922]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999965, 0.00840725, 0, -0.00840725, -0.999965, 1.575, -0.449984, -0.00378326)
+
+[node name="Tooth5_1" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=93303097]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.30101, 0.953621, 0, -0.953621, -0.30101, 1.575, -0.135455, -0.429129)
+
+[node name="Tooth5_2" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1911359421]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.81393, 0.580963, 0, -0.580963, 0.81393, 1.575, 0.366269, -0.261433)
+
+[node name="Tooth5_3" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=2110444768]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.804047, -0.594566, 0, 0.594566, 0.804047, 1.575, 0.361821, 0.267555)
+
+[node name="Tooth5_4" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=329687736]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.317002, -0.948425, 0, 0.948425, -0.317002, 1.575, -0.142651, 0.426791)
+
+[node name="Tooth6_0" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=868141623]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.803046, 0.595917, 0, -0.595917, -0.803046, 2.475, -0.361371, -0.268163)
+
+[node name="Tooth6_1" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=766120775]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.318596, 0.947891, 0, -0.947891, 0.318596, 2.475, 0.143368, -0.426551)
+
+[node name="Tooth6_2" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=941461174]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999949, -0.0100886, 0, 0.0100886, 0.999949, 2.475, 0.449977, 0.00453989)
+
+[node name="Tooth6_3" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1148002102]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.299406, -0.954126, 0, 0.954126, 0.299406, 2.475, 0.134733, 0.429357)
+
+[node name="Tooth6_4" type="Box3DCollisionShape" parent="Node3D/Roller0" unique_id=1752698394]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906, 2.475, -0.366708, 0.260817)
+
+[node name="Roller1" type="Box3DBody" parent="Node3D" unique_id=231886918]
+body_type = 1
+shape_type = 1
+sphere_radius = 0.05
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 4, 2.55, -2.5)
+
+[node name="Model" parent="Node3D/Roller1" unique_id=868505878 instance=ExtResource("3_pfkmd")]
+
+[node name="CoreA" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=454695649]
+box_size = Vector3(6.5, 0.56, 0.56)
+user_material_id = 3
+
+[node name="CoreB" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1103633816]
+box_size = Vector3(6.5, 0.56, 0.56)
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
+
+[node name="Tooth0_0" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=2038246012]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.925, 0.45, 0)
+
+[node name="Tooth0_1" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1813661814]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.309017, -0.951057, 0, 0.951057, 0.309017, -2.925, 0.139058, 0.427975)
+
+[node name="Tooth0_2" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1143065838]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.809017, -0.587785, 0, 0.587785, -0.809017, -2.925, -0.364058, 0.264503)
+
+[node name="Tooth0_3" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1952450135]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.809017, 0.587785, 0, -0.587785, -0.809017, -2.925, -0.364058, -0.264503)
+
+[node name="Tooth0_4" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1807533828]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.309017, 0.951057, 0, -0.951057, 0.309017, -2.925, 0.139058, -0.427975)
+
+[node name="Tooth1_0" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1760114813]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.808028, -0.589145, 0, 0.589145, 0.808028, -2.025, 0.363612, 0.265115)
+
+[node name="Tooth1_1" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1460712843]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.310616, -0.950536, 0, 0.950536, -0.310616, -2.025, -0.139777, 0.427741)
+
+[node name="Tooth1_2" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1732447597]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999999, 0.00168147, 0, -0.00168147, -0.999999, -2.025, -0.449999, -0.000756661)
+
+[node name="Tooth1_3" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1856856564]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.307417, 0.951575, 0, -0.951575, -0.307417, -2.025, -0.138338, -0.428209)
+
+[node name="Tooth1_4" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=431825048]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.810004, 0.586424, 0, -0.586424, 0.810004, -2.025, 0.364502, -0.263891)
+
+[node name="Tooth2_0" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1273198160]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.305817, -0.95209, 0, 0.95209, 0.305817, -1.125, 0.137618, 0.428441)
+
+[node name="Tooth2_1" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=2047527754]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.810989, -0.585061, 0, 0.585061, -0.810989, -1.125, -0.364945, 0.263278)
+
+[node name="Tooth2_2" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=2041507504]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.807036, 0.590503, 0, -0.590503, -0.807036, -1.125, -0.363166, -0.265726)
+
+[node name="Tooth2_3" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=191721031]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.312214, 0.950012, 0, -0.950012, 0.312214, -1.125, 0.140496, -0.427505)
+
+[node name="Tooth2_4" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=546244652]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999994, -0.00336293, 0, 0.00336293, 0.999994, -1.125, 0.449997, 0.00151332)
+
+[node name="Tooth3_0" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1883336077]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.313811, -0.949486, 0, 0.949486, -0.313811, -0.225, -0.141215, 0.427269)
+
+[node name="Tooth3_1" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=476946400]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999987, 0.00504439, 0, -0.00504439, -0.999987, -0.225, -0.449994, -0.00226997)
+
+[node name="Tooth3_2" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=336230291]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.304216, 0.952603, 0, -0.952603, -0.304216, -0.225, -0.136897, -0.428671)
+
+[node name="Tooth3_3" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=424365067]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.811972, 0.583697, 0, -0.583697, 0.811972, -0.225, 0.365387, -0.262664)
+
+[node name="Tooth3_4" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=2104696173]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.806042, -0.591859, 0, 0.591859, 0.806042, -0.225, 0.362719, 0.266336)
+
+[node name="Tooth4_0" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=498526505]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.812952, -0.582331, 0, 0.582331, -0.812952, 0.675, -0.365828, 0.262049)
+
+[node name="Tooth4_1" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=568597981]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.805045, 0.593213, 0, -0.593213, -0.805045, 0.675, -0.36227, -0.266946)
+
+[node name="Tooth4_2" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=968724209]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.315407, 0.948957, 0, -0.948957, 0.315407, 0.675, 0.141933, -0.42703)
+
+[node name="Tooth4_3" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=215668777]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999977, -0.00672583, 0, 0.00672583, 0.999977, 0.675, 0.44999, 0.00302662)
+
+[node name="Tooth4_4" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1280853680]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.302613, -0.953113, 0, 0.953113, 0.302613, 0.675, 0.136176, 0.428901)
+
+[node name="Tooth5_0" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=162858954]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999965, 0.00840725, 0, -0.00840725, -0.999965, 1.575, -0.449984, -0.00378326)
+
+[node name="Tooth5_1" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1642709292]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.30101, 0.953621, 0, -0.953621, -0.30101, 1.575, -0.135455, -0.429129)
+
+[node name="Tooth5_2" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1790893461]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.81393, 0.580963, 0, -0.580963, 0.81393, 1.575, 0.366269, -0.261433)
+
+[node name="Tooth5_3" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1117734623]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.804047, -0.594566, 0, 0.594566, 0.804047, 1.575, 0.361821, 0.267555)
+
+[node name="Tooth5_4" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1889089647]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.317002, -0.948425, 0, 0.948425, -0.317002, 1.575, -0.142651, 0.426791)
+
+[node name="Tooth6_0" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1952637564]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.803046, 0.595917, 0, -0.595917, -0.803046, 2.475, -0.361371, -0.268163)
+
+[node name="Tooth6_1" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=949347793]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.318596, 0.947891, 0, -0.947891, 0.318596, 2.475, 0.143368, -0.426551)
+
+[node name="Tooth6_2" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1677749616]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999949, -0.0100886, 0, 0.0100886, 0.999949, 2.475, 0.449977, 0.00453989)
+
+[node name="Tooth6_3" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1252983173]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.299406, -0.954126, 0, 0.954126, 0.299406, 2.475, 0.134733, 0.429357)
+
+[node name="Tooth6_4" type="Box3DCollisionShape" parent="Node3D/Roller1" unique_id=1382539361]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906, 2.475, -0.366708, 0.260817)
+
+[node name="Roller2" type="Box3DBody" parent="Node3D" unique_id=1774619725]
+body_type = 1
+shape_type = 1
+sphere_radius = 0.05
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.1, -3.5)
+
+[node name="Model" parent="Node3D/Roller2" unique_id=400834253 instance=ExtResource("3_pfkmd")]
+
+[node name="CoreA" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=542555200]
+box_size = Vector3(6.5, 0.56, 0.56)
+user_material_id = 3
+
+[node name="CoreB" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=2133428666]
+box_size = Vector3(6.5, 0.56, 0.56)
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
+
+[node name="Tooth0_0" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1856216947]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.925, 0.45, 0)
+
+[node name="Tooth0_1" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1314660544]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.309017, -0.951057, 0, 0.951057, 0.309017, -2.925, 0.139058, 0.427975)
+
+[node name="Tooth0_2" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=299852110]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.809017, -0.587785, 0, 0.587785, -0.809017, -2.925, -0.364058, 0.264503)
+
+[node name="Tooth0_3" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=835886951]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.809017, 0.587785, 0, -0.587785, -0.809017, -2.925, -0.364058, -0.264503)
+
+[node name="Tooth0_4" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1004249789]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.309017, 0.951057, 0, -0.951057, 0.309017, -2.925, 0.139058, -0.427975)
+
+[node name="Tooth1_0" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1354159409]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.808028, -0.589145, 0, 0.589145, 0.808028, -2.025, 0.363612, 0.265115)
+
+[node name="Tooth1_1" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1528661815]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.310616, -0.950536, 0, 0.950536, -0.310616, -2.025, -0.139777, 0.427741)
+
+[node name="Tooth1_2" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=324115252]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999999, 0.00168147, 0, -0.00168147, -0.999999, -2.025, -0.449999, -0.000756661)
+
+[node name="Tooth1_3" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=277925304]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.307417, 0.951575, 0, -0.951575, -0.307417, -2.025, -0.138338, -0.428209)
+
+[node name="Tooth1_4" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=155259346]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.810004, 0.586424, 0, -0.586424, 0.810004, -2.025, 0.364502, -0.263891)
+
+[node name="Tooth2_0" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=2100468140]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.305817, -0.95209, 0, 0.95209, 0.305817, -1.125, 0.137618, 0.428441)
+
+[node name="Tooth2_1" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=571457765]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.810989, -0.585061, 0, 0.585061, -0.810989, -1.125, -0.364945, 0.263278)
+
+[node name="Tooth2_2" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1075180496]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.807036, 0.590503, 0, -0.590503, -0.807036, -1.125, -0.363166, -0.265726)
+
+[node name="Tooth2_3" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=417213007]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.312214, 0.950012, 0, -0.950012, 0.312214, -1.125, 0.140496, -0.427505)
+
+[node name="Tooth2_4" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=971753312]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999994, -0.00336293, 0, 0.00336293, 0.999994, -1.125, 0.449997, 0.00151332)
+
+[node name="Tooth3_0" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1203955653]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.313811, -0.949486, 0, 0.949486, -0.313811, -0.225, -0.141215, 0.427269)
+
+[node name="Tooth3_1" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1831858937]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999987, 0.00504439, 0, -0.00504439, -0.999987, -0.225, -0.449994, -0.00226997)
+
+[node name="Tooth3_2" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1311226897]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.304216, 0.952603, 0, -0.952603, -0.304216, -0.225, -0.136897, -0.428671)
+
+[node name="Tooth3_3" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=2064262757]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.811972, 0.583697, 0, -0.583697, 0.811972, -0.225, 0.365387, -0.262664)
+
+[node name="Tooth3_4" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1905115601]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.806042, -0.591859, 0, 0.591859, 0.806042, -0.225, 0.362719, 0.266336)
+
+[node name="Tooth4_0" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1660601166]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.812952, -0.582331, 0, 0.582331, -0.812952, 0.675, -0.365828, 0.262049)
+
+[node name="Tooth4_1" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1685004635]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.805045, 0.593213, 0, -0.593213, -0.805045, 0.675, -0.36227, -0.266946)
+
+[node name="Tooth4_2" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=452286872]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.315407, 0.948957, 0, -0.948957, 0.315407, 0.675, 0.141933, -0.42703)
+
+[node name="Tooth4_3" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1098517533]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999977, -0.00672583, 0, 0.00672583, 0.999977, 0.675, 0.44999, 0.00302662)
+
+[node name="Tooth4_4" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1500282673]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.302613, -0.953113, 0, 0.953113, 0.302613, 0.675, 0.136176, 0.428901)
+
+[node name="Tooth5_0" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=2069072259]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999965, 0.00840725, 0, -0.00840725, -0.999965, 1.575, -0.449984, -0.00378326)
+
+[node name="Tooth5_1" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=216661736]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.30101, 0.953621, 0, -0.953621, -0.30101, 1.575, -0.135455, -0.429129)
+
+[node name="Tooth5_2" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=462738341]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.81393, 0.580963, 0, -0.580963, 0.81393, 1.575, 0.366269, -0.261433)
+
+[node name="Tooth5_3" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1597667037]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.804047, -0.594566, 0, 0.594566, 0.804047, 1.575, 0.361821, 0.267555)
+
+[node name="Tooth5_4" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=933003747]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.317002, -0.948425, 0, 0.948425, -0.317002, 1.575, -0.142651, 0.426791)
+
+[node name="Tooth6_0" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=845022412]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.803046, 0.595917, 0, -0.595917, -0.803046, 2.475, -0.361371, -0.268163)
+
+[node name="Tooth6_1" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=725265200]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.318596, 0.947891, 0, -0.947891, 0.318596, 2.475, 0.143368, -0.426551)
+
+[node name="Tooth6_2" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1678943588]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999949, -0.0100886, 0, 0.0100886, 0.999949, 2.475, 0.449977, 0.00453989)
+
+[node name="Tooth6_3" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=2094166570]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.299406, -0.954126, 0, 0.954126, 0.299406, 2.475, 0.134733, 0.429357)
+
+[node name="Tooth6_4" type="Box3DCollisionShape" parent="Node3D/Roller2" unique_id=1021622150]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906, 2.475, -0.366708, 0.260817)
+
+[node name="Roller3" type="Box3DBody" parent="Node3D" unique_id=1270848776]
+body_type = 1
+shape_type = 1
+sphere_radius = 0.05
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 4, 2.1, -4.5)
+
+[node name="Model" parent="Node3D/Roller3" unique_id=776219293 instance=ExtResource("3_pfkmd")]
+
+[node name="CoreA" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=877443628]
+box_size = Vector3(6.5, 0.56, 0.56)
+user_material_id = 3
+
+[node name="CoreB" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=1078636924]
+box_size = Vector3(6.5, 0.56, 0.56)
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
+
+[node name="Tooth0_0" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=568677540]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.925, 0.45, 0)
+
+[node name="Tooth0_1" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=1841014621]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.309017, -0.951057, 0, 0.951057, 0.309017, -2.925, 0.139058, 0.427975)
+
+[node name="Tooth0_2" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=518145093]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.809017, -0.587785, 0, 0.587785, -0.809017, -2.925, -0.364058, 0.264503)
+
+[node name="Tooth0_3" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=2082056067]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.809017, 0.587785, 0, -0.587785, -0.809017, -2.925, -0.364058, -0.264503)
+
+[node name="Tooth0_4" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=446707589]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.309017, 0.951057, 0, -0.951057, 0.309017, -2.925, 0.139058, -0.427975)
+
+[node name="Tooth1_0" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=603084768]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.808028, -0.589145, 0, 0.589145, 0.808028, -2.025, 0.363612, 0.265115)
+
+[node name="Tooth1_1" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=226348257]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.310616, -0.950536, 0, 0.950536, -0.310616, -2.025, -0.139777, 0.427741)
+
+[node name="Tooth1_2" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=1671779176]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999999, 0.00168147, 0, -0.00168147, -0.999999, -2.025, -0.449999, -0.000756661)
+
+[node name="Tooth1_3" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=1044473841]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.307417, 0.951575, 0, -0.951575, -0.307417, -2.025, -0.138338, -0.428209)
+
+[node name="Tooth1_4" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=2067936994]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.810004, 0.586424, 0, -0.586424, 0.810004, -2.025, 0.364502, -0.263891)
+
+[node name="Tooth2_0" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=1843464621]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.305817, -0.95209, 0, 0.95209, 0.305817, -1.125, 0.137618, 0.428441)
+
+[node name="Tooth2_1" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=50174613]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.810989, -0.585061, 0, 0.585061, -0.810989, -1.125, -0.364945, 0.263278)
+
+[node name="Tooth2_2" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=1031789926]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.807036, 0.590503, 0, -0.590503, -0.807036, -1.125, -0.363166, -0.265726)
+
+[node name="Tooth2_3" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=2100551816]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.312214, 0.950012, 0, -0.950012, 0.312214, -1.125, 0.140496, -0.427505)
+
+[node name="Tooth2_4" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=1677512583]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999994, -0.00336293, 0, 0.00336293, 0.999994, -1.125, 0.449997, 0.00151332)
+
+[node name="Tooth3_0" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=1235683150]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.313811, -0.949486, 0, 0.949486, -0.313811, -0.225, -0.141215, 0.427269)
+
+[node name="Tooth3_1" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=567657630]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999987, 0.00504439, 0, -0.00504439, -0.999987, -0.225, -0.449994, -0.00226997)
+
+[node name="Tooth3_2" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=1531284320]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.304216, 0.952603, 0, -0.952603, -0.304216, -0.225, -0.136897, -0.428671)
+
+[node name="Tooth3_3" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=634067606]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.811972, 0.583697, 0, -0.583697, 0.811972, -0.225, 0.365387, -0.262664)
+
+[node name="Tooth3_4" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=247151143]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.806042, -0.591859, 0, 0.591859, 0.806042, -0.225, 0.362719, 0.266336)
+
+[node name="Tooth4_0" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=753380967]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.812952, -0.582331, 0, 0.582331, -0.812952, 0.675, -0.365828, 0.262049)
+
+[node name="Tooth4_1" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=185600188]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.805045, 0.593213, 0, -0.593213, -0.805045, 0.675, -0.36227, -0.266946)
+
+[node name="Tooth4_2" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=978514049]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.315407, 0.948957, 0, -0.948957, 0.315407, 0.675, 0.141933, -0.42703)
+
+[node name="Tooth4_3" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=22553826]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999977, -0.00672583, 0, 0.00672583, 0.999977, 0.675, 0.44999, 0.00302662)
+
+[node name="Tooth4_4" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=1220249214]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.302613, -0.953113, 0, 0.953113, 0.302613, 0.675, 0.136176, 0.428901)
+
+[node name="Tooth5_0" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=655245001]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999965, 0.00840725, 0, -0.00840725, -0.999965, 1.575, -0.449984, -0.00378326)
+
+[node name="Tooth5_1" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=163376949]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.30101, 0.953621, 0, -0.953621, -0.30101, 1.575, -0.135455, -0.429129)
+
+[node name="Tooth5_2" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=1526950656]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.81393, 0.580963, 0, -0.580963, 0.81393, 1.575, 0.366269, -0.261433)
+
+[node name="Tooth5_3" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=607383869]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.804047, -0.594566, 0, 0.594566, 0.804047, 1.575, 0.361821, 0.267555)
+
+[node name="Tooth5_4" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=1334623229]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.317002, -0.948425, 0, 0.948425, -0.317002, 1.575, -0.142651, 0.426791)
+
+[node name="Tooth6_0" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=721609807]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.803046, 0.595917, 0, -0.595917, -0.803046, 2.475, -0.361371, -0.268163)
+
+[node name="Tooth6_1" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=522691612]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.318596, 0.947891, 0, -0.947891, 0.318596, 2.475, 0.143368, -0.426551)
+
+[node name="Tooth6_2" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=589608501]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999949, -0.0100886, 0, 0.0100886, 0.999949, 2.475, 0.449977, 0.00453989)
+
+[node name="Tooth6_3" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=2008180938]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.299406, -0.954126, 0, 0.954126, 0.299406, 2.475, 0.134733, 0.429357)
+
+[node name="Tooth6_4" type="Box3DCollisionShape" parent="Node3D/Roller3" unique_id=1087241253]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906, 2.475, -0.366708, 0.260817)
+
+[node name="Roller4" type="Box3DBody" parent="Node3D" unique_id=642109654]
+body_type = 1
+shape_type = 1
+sphere_radius = 0.05
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.55, -5.5)
+
+[node name="Model" parent="Node3D/Roller4" unique_id=1572644988 instance=ExtResource("3_pfkmd")]
+
+[node name="CoreA" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1340622419]
+box_size = Vector3(6.5, 0.56, 0.56)
+user_material_id = 3
+
+[node name="CoreB" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=723310803]
+box_size = Vector3(6.5, 0.56, 0.56)
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
+
+[node name="Tooth0_0" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=419896396]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.925, 0.45, 0)
+
+[node name="Tooth0_1" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1241571005]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.309017, -0.951057, 0, 0.951057, 0.309017, -2.925, 0.139058, 0.427975)
+
+[node name="Tooth0_2" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1730281032]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.809017, -0.587785, 0, 0.587785, -0.809017, -2.925, -0.364058, 0.264503)
+
+[node name="Tooth0_3" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=280926429]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.809017, 0.587785, 0, -0.587785, -0.809017, -2.925, -0.364058, -0.264503)
+
+[node name="Tooth0_4" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1060292488]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.309017, 0.951057, 0, -0.951057, 0.309017, -2.925, 0.139058, -0.427975)
+
+[node name="Tooth1_0" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1093716660]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.808028, -0.589145, 0, 0.589145, 0.808028, -2.025, 0.363612, 0.265115)
+
+[node name="Tooth1_1" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=2070357548]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.310616, -0.950536, 0, 0.950536, -0.310616, -2.025, -0.139777, 0.427741)
+
+[node name="Tooth1_2" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1554968338]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999999, 0.00168147, 0, -0.00168147, -0.999999, -2.025, -0.449999, -0.000756661)
+
+[node name="Tooth1_3" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1348222268]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.307417, 0.951575, 0, -0.951575, -0.307417, -2.025, -0.138338, -0.428209)
+
+[node name="Tooth1_4" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1632749384]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.810004, 0.586424, 0, -0.586424, 0.810004, -2.025, 0.364502, -0.263891)
+
+[node name="Tooth2_0" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1994584465]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.305817, -0.95209, 0, 0.95209, 0.305817, -1.125, 0.137618, 0.428441)
+
+[node name="Tooth2_1" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=827826933]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.810989, -0.585061, 0, 0.585061, -0.810989, -1.125, -0.364945, 0.263278)
+
+[node name="Tooth2_2" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1471394142]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.807036, 0.590503, 0, -0.590503, -0.807036, -1.125, -0.363166, -0.265726)
+
+[node name="Tooth2_3" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=535535810]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.312214, 0.950012, 0, -0.950012, 0.312214, -1.125, 0.140496, -0.427505)
+
+[node name="Tooth2_4" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1417301127]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999994, -0.00336293, 0, 0.00336293, 0.999994, -1.125, 0.449997, 0.00151332)
+
+[node name="Tooth3_0" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1489444621]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.313811, -0.949486, 0, 0.949486, -0.313811, -0.225, -0.141215, 0.427269)
+
+[node name="Tooth3_1" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=123290791]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999987, 0.00504439, 0, -0.00504439, -0.999987, -0.225, -0.449994, -0.00226997)
+
+[node name="Tooth3_2" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1563774993]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.304216, 0.952603, 0, -0.952603, -0.304216, -0.225, -0.136897, -0.428671)
+
+[node name="Tooth3_3" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=660722291]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.811972, 0.583697, 0, -0.583697, 0.811972, -0.225, 0.365387, -0.262664)
+
+[node name="Tooth3_4" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1807157201]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.806042, -0.591859, 0, 0.591859, 0.806042, -0.225, 0.362719, 0.266336)
+
+[node name="Tooth4_0" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1453384320]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.812952, -0.582331, 0, 0.582331, -0.812952, 0.675, -0.365828, 0.262049)
+
+[node name="Tooth4_1" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=765388518]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.805045, 0.593213, 0, -0.593213, -0.805045, 0.675, -0.36227, -0.266946)
+
+[node name="Tooth4_2" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1223362745]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.315407, 0.948957, 0, -0.948957, 0.315407, 0.675, 0.141933, -0.42703)
+
+[node name="Tooth4_3" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=754168808]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999977, -0.00672583, 0, 0.00672583, 0.999977, 0.675, 0.44999, 0.00302662)
+
+[node name="Tooth4_4" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1578773016]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.302613, -0.953113, 0, 0.953113, 0.302613, 0.675, 0.136176, 0.428901)
+
+[node name="Tooth5_0" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1402380003]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999965, 0.00840725, 0, -0.00840725, -0.999965, 1.575, -0.449984, -0.00378326)
+
+[node name="Tooth5_1" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1260578886]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.30101, 0.953621, 0, -0.953621, -0.30101, 1.575, -0.135455, -0.429129)
+
+[node name="Tooth5_2" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1638134487]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.81393, 0.580963, 0, -0.580963, 0.81393, 1.575, 0.366269, -0.261433)
+
+[node name="Tooth5_3" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=703053541]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.804047, -0.594566, 0, 0.594566, 0.804047, 1.575, 0.361821, 0.267555)
+
+[node name="Tooth5_4" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1959718819]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.317002, -0.948425, 0, 0.948425, -0.317002, 1.575, -0.142651, 0.426791)
+
+[node name="Tooth6_0" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1493509549]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.803046, 0.595917, 0, -0.595917, -0.803046, 2.475, -0.361371, -0.268163)
+
+[node name="Tooth6_1" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=141724564]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.318596, 0.947891, 0, -0.947891, 0.318596, 2.475, 0.143368, -0.426551)
+
+[node name="Tooth6_2" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1978676877]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999949, -0.0100886, 0, 0.0100886, 0.999949, 2.475, 0.449977, 0.00453989)
+
+[node name="Tooth6_3" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1015582325]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.299406, -0.954126, 0, 0.954126, 0.299406, 2.475, 0.134733, 0.429357)
+
+[node name="Tooth6_4" type="Box3DCollisionShape" parent="Node3D/Roller4" unique_id=1340326339]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906, 2.475, -0.366708, 0.260817)
+
+[node name="Roller5" type="Box3DBody" parent="Node3D" unique_id=1092205495]
+body_type = 1
+shape_type = 1
+sphere_radius = 0.05
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 4, 3, -6.5)
+
+[node name="Model" parent="Node3D/Roller5" unique_id=448248414 instance=ExtResource("3_pfkmd")]
+
+[node name="CoreA" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=2122107255]
+box_size = Vector3(6.5, 0.56, 0.56)
+user_material_id = 3
+
+[node name="CoreB" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=324794972]
+box_size = Vector3(6.5, 0.56, 0.56)
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
+
+[node name="Tooth0_0" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=415698369]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.925, 0.45, 0)
+
+[node name="Tooth0_1" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=950681166]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.309017, -0.951057, 0, 0.951057, 0.309017, -2.925, 0.139058, 0.427975)
+
+[node name="Tooth0_2" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1663925407]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.809017, -0.587785, 0, 0.587785, -0.809017, -2.925, -0.364058, 0.264503)
+
+[node name="Tooth0_3" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1877482050]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.809017, 0.587785, 0, -0.587785, -0.809017, -2.925, -0.364058, -0.264503)
+
+[node name="Tooth0_4" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=368766744]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.309017, 0.951057, 0, -0.951057, 0.309017, -2.925, 0.139058, -0.427975)
+
+[node name="Tooth1_0" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=464423321]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.808028, -0.589145, 0, 0.589145, 0.808028, -2.025, 0.363612, 0.265115)
+
+[node name="Tooth1_1" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=325040759]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.310616, -0.950536, 0, 0.950536, -0.310616, -2.025, -0.139777, 0.427741)
+
+[node name="Tooth1_2" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1125182327]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999999, 0.00168147, 0, -0.00168147, -0.999999, -2.025, -0.449999, -0.000756661)
+
+[node name="Tooth1_3" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1710809766]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.307417, 0.951575, 0, -0.951575, -0.307417, -2.025, -0.138338, -0.428209)
+
+[node name="Tooth1_4" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=518102995]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.810004, 0.586424, 0, -0.586424, 0.810004, -2.025, 0.364502, -0.263891)
+
+[node name="Tooth2_0" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1670608765]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.305817, -0.95209, 0, 0.95209, 0.305817, -1.125, 0.137618, 0.428441)
+
+[node name="Tooth2_1" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=786326045]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.810989, -0.585061, 0, 0.585061, -0.810989, -1.125, -0.364945, 0.263278)
+
+[node name="Tooth2_2" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1530651378]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.807036, 0.590503, 0, -0.590503, -0.807036, -1.125, -0.363166, -0.265726)
+
+[node name="Tooth2_3" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1602126065]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.312214, 0.950012, 0, -0.950012, 0.312214, -1.125, 0.140496, -0.427505)
+
+[node name="Tooth2_4" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1675995295]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999994, -0.00336293, 0, 0.00336293, 0.999994, -1.125, 0.449997, 0.00151332)
+
+[node name="Tooth3_0" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=2105788375]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.313811, -0.949486, 0, 0.949486, -0.313811, -0.225, -0.141215, 0.427269)
+
+[node name="Tooth3_1" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=139256533]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999987, 0.00504439, 0, -0.00504439, -0.999987, -0.225, -0.449994, -0.00226997)
+
+[node name="Tooth3_2" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1659788859]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.304216, 0.952603, 0, -0.952603, -0.304216, -0.225, -0.136897, -0.428671)
+
+[node name="Tooth3_3" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1648716054]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.811972, 0.583697, 0, -0.583697, 0.811972, -0.225, 0.365387, -0.262664)
+
+[node name="Tooth3_4" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1000678817]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.806042, -0.591859, 0, 0.591859, 0.806042, -0.225, 0.362719, 0.266336)
+
+[node name="Tooth4_0" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1687387098]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.812952, -0.582331, 0, 0.582331, -0.812952, 0.675, -0.365828, 0.262049)
+
+[node name="Tooth4_1" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=418101694]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.805045, 0.593213, 0, -0.593213, -0.805045, 0.675, -0.36227, -0.266946)
+
+[node name="Tooth4_2" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1553851470]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.315407, 0.948957, 0, -0.948957, 0.315407, 0.675, 0.141933, -0.42703)
+
+[node name="Tooth4_3" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=2083686312]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999977, -0.00672583, 0, 0.00672583, 0.999977, 0.675, 0.44999, 0.00302662)
+
+[node name="Tooth4_4" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1446992973]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.302613, -0.953113, 0, 0.953113, 0.302613, 0.675, 0.136176, 0.428901)
+
+[node name="Tooth5_0" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1941421433]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.999965, 0.00840725, 0, -0.00840725, -0.999965, 1.575, -0.449984, -0.00378326)
+
+[node name="Tooth5_1" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=2037300922]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.30101, 0.953621, 0, -0.953621, -0.30101, 1.575, -0.135455, -0.429129)
+
+[node name="Tooth5_2" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1450669621]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.81393, 0.580963, 0, -0.580963, 0.81393, 1.575, 0.366269, -0.261433)
+
+[node name="Tooth5_3" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1813278895]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.804047, -0.594566, 0, 0.594566, 0.804047, 1.575, 0.361821, 0.267555)
+
+[node name="Tooth5_4" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1983012465]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.317002, -0.948425, 0, 0.948425, -0.317002, 1.575, -0.142651, 0.426791)
+
+[node name="Tooth6_0" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1717695942]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.803046, 0.595917, 0, -0.595917, -0.803046, 2.475, -0.361371, -0.268163)
+
+[node name="Tooth6_1" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=655134489]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.318596, 0.947891, 0, -0.947891, 0.318596, 2.475, 0.143368, -0.426551)
+
+[node name="Tooth6_2" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=2102460140]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.999949, -0.0100886, 0, 0.0100886, 0.999949, 2.475, 0.449977, 0.00453989)
+
+[node name="Tooth6_3" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=2028655608]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, 0.299406, -0.954126, 0, 0.954126, 0.299406, 2.475, 0.134733, 0.429357)
+
+[node name="Tooth6_4" type="Box3DCollisionShape" parent="Node3D/Roller5" unique_id=1679037176]
+box_size = Vector3(0.17, 0.18, 0.2)
+friction = 0.7
+user_material_id = 3
+transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906, 2.475, -0.366708, 0.260817)
+
+[node name="Valley" type="Box3DBody" parent="Node3D" unique_id=1181216794]
+body_type = 0
+box_size = Vector3(6.5, 1.825, 6.1)
+is_sensor = true
+collision_layer = 1073741824
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.7875, -4)
+
+[node name="outputSpawn1" type="Marker3D" parent="Node3D" unique_id=1020638523]
+transform = Transform3D(0.9967116, -0.08089818, 0.004628014, 0.07962337, 0.9884026, 0.1293078, -0.015035085, -0.12851411, 0.9915937, 3.8778415, 0.41501093, -3.9596665)
+
+[node name="outputSpawn2" type="Marker3D" parent="Node3D" unique_id=2137324573]
+transform = Transform3D(0.9967116, -0.08089818, 0.0046279905, 0.07962337, 0.98840255, 0.12930782, -0.015035085, -0.1285141, 0.9915937, 3.8778415, 0.41501093, -3.9596665)
+
+[node name="FrontWall" type="Box3DCollisionShape" parent="." unique_id=171403305]
 box_size = Vector3(8, 2.6, 0.9)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.7, -7.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 6.7214117, -7.55)
 
-[node name="BackWall" type="Box3DCollisionShape" parent="." unique_id=704062447]
+[node name="BackWall" type="Box3DCollisionShape" parent="." unique_id=736543744]
 box_size = Vector3(8, 2.6, 0.9)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.7, -0.45)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 6.7214117, -0.45)
 
-[node name="WallL" type="Box3DCollisionShape" parent="." unique_id=704070366]
+[node name="WallL" type="Box3DCollisionShape" parent="." unique_id=1686450195]
 box_size = Vector3(0.7, 2.6, 6.2)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 2.7, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 6.7214117, -4)
 
-[node name="WallR" type="Box3DCollisionShape" parent="." unique_id=704078285]
+[node name="WallR" type="Box3DCollisionShape" parent="." unique_id=894681464]
 box_size = Vector3(0.7, 2.6, 6.2)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.65, 2.7, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.65, 6.7214117, -4)
 
-[node name="Jam" type="Box3DCollisionShape" parent="." unique_id=703967419]
-box_size = Vector3(6.6, 0.2, 6.2)
+[node name="ValleyBack" type="Box3DCollisionShape" parent="." unique_id=477329451]
+box_size = Vector3(6.6, 0.1, 3.49942)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.3, -4)
+transform = Transform3D(1, 0, 0, 0, 0.911922, 0.410365, 0, -0.410365, 0.911922, 4, 6.548311, -2.42948)
 
-[node name="MouthPlate1" type="Box3DCollisionShape" parent="." unique_id=704086204]
-box_size = Vector3(1.76, 1.3, 0.1)
+[node name="ValleyFront" type="Box3DCollisionShape" parent="." unique_id=408864449]
+box_size = Vector3(6.6, 0.1, 3.49942)
 user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.65, -7.95)
+transform = Transform3D(1, 0, 0, 0, 0.911922, -0.410365, 0, 0.410365, 0.911922, 4, 6.548311, -5.57052)
 
-[node name="MouthPlate2" type="Box3DCollisionShape" parent="." unique_id=704094123]
-box_size = Vector3(1.76, 1.3, 0.1)
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.65, -7.95)
+[node name="Box3DCollisionShape" type="Box3DCollisionShape" parent="." unique_id=1258724699]
+box_size = Vector3(1, 4, 1)
+transform = Transform3D(0.615416, 0, 0, 0, 1.3388085, 0, 0, 0, 0.73106647, 0.28211844, 2.7258444, -0.36482584)
 
-[node name="MouthPlate3" type="Box3DCollisionShape" parent="." unique_id=704102042]
-box_size = Vector3(1.76, 1.3, 0.1)
-user_material_id = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.65, -7.95)
+[node name="Box3DCollisionShape2" type="Box3DCollisionShape" parent="." unique_id=1379429985]
+box_size = Vector3(1, 4, 1)
+transform = Transform3D(0.615416, 0, 0, 0, 1.3388085, 0, 0, 0, 0.73106647, 0.28211844, 2.7258444, -7.6158442)
 
+[node name="Box3DCollisionShape3" type="Box3DCollisionShape" parent="." unique_id=2127766293]
+box_size = Vector3(1, 4, 1)
+transform = Transform3D(0.615416, 0, 0, 0, 1.3388085, 0, 0, 0, 0.73106647, 7.450972, 2.7258444, -0.36482584)
+
+[node name="Box3DCollisionShape4" type="Box3DCollisionShape" parent="." unique_id=1325493839]
+box_size = Vector3(1, 4, 1)
+transform = Transform3D(0.8196938, 0, 0, 0, 1.3388085, 0, 0, 0, 0.73106647, 7.5867753, 2.7258444, -7.624973)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1964664383]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.001213, 4.0317802, -4.011655)
+size = Vector3(7.981552, 7.988983, 7.9320374)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="CSGBox3D" unique_id=578552614]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.03963852, 0.21020126, 0.02305603)
+operation = 2
+size = Vector3(6.547264, 10.283562, 6.03067)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="CSGBox3D" unique_id=303311258]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1437378, -1.3757784, 0.0026168823)
+operation = 2
+size = Vector3(6.570923, 5.4868164, 10.000748)
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="CSGBox3D" unique_id=1630406868]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -0.1437378, -1.3757784, 0.0026168823)
+operation = 2
+size = Vector3(6.570923, 5.4868164, 10.000748)
