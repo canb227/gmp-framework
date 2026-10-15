@@ -1,26 +1,32 @@
 using Godot;
+using Nerdbank.MessagePack;
 using PolyType;
+
+// The per-tick sync states below are sent as arrays of values rather than maps of field names, which is about a
+// quarter smaller. The [Key] number is each field's place in the array: give a new field the next number, and never
+// renumber or reuse one, or older saves read into the wrong fields. A save from before a field was added reads it as
+// its default.
 
 /// <summary>Position + Euler rotation snapshot sent by the authority for transform-synced objects.</summary>
 [GenerateShape]
 public partial record struct TransformSyncState
 {
-    public Vector3 pos;
-    public Vector3 rot;
+    [Key(0)] public Vector3 pos;
+    [Key(1)] public Vector3 rot;
 }
 
 /// <summary>
 /// What a Box3D body's authority sends: its transform plus its velocities, so followers can keep pace with it between
-/// updates and a new authority can carry on at the same speed and spin. Older saves without them read as at rest.
+/// updates and a new authority can carry on at the same speed and spin.
 /// </summary>
 [GenerateShape]
 public partial record struct BodySyncState
 {
-    public Vector3 pos;
-    public Vector3 rot;
-    public Vector3 vel;
+    [Key(0)] public Vector3 pos;
+    [Key(1)] public Vector3 rot;
+    [Key(2)] public Vector3 vel;
     /// <summary>Angular velocity, world space (rad/s about each axis).</summary>
-    public Vector3 angVel;
+    [Key(3)] public Vector3 angVel;
 }
 
 /// <summary>

@@ -5,14 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+/// <summary>One packet of state updates. Sent as an array of values; see the note on <see cref="BodySyncState"/> about [Key] numbers.</summary>
 [GenerateShape]
 public partial record WorldTickMessage
 {
     /// <summary>When it was sent (<see cref="GameWorld.netTime"/>).</summary>
-    public ulong sendTime = 0;
+    [Key(0)] public ulong sendTime = 0;
     /// <summary>The sender's physics tick it was sent on, which followers interpolate by (<see cref="GameWorld.PlaybackTick"/>).</summary>
-    public ulong tick = 0;
-    public List<(ulong, byte[])> updates = new();
+    [Key(1)] public ulong tick = 0;
+    [Key(2)] public List<(ulong, byte[])> updates = new();
 }
 
 [GenerateShapeFor<List<(ulong,byte[])>>]

@@ -1,5 +1,6 @@
 using Godot;
 using ImGuiNET;
+using Nerdbank.MessagePack;
 using PolyType;
 
 /// <summary>
@@ -290,16 +291,17 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     }
 }
 
+/// <summary>Sent as an array of values; see the note on <see cref="BodySyncState"/> about [Key] numbers.</summary>
 [GenerateShape]
 public partial record struct PlayerSync
 {
-    public ulong controllingPeerID;
-    public bool isHuman;
-    public Vector3 pos;
-    public Vector3 rot;
-    public Vector3 headRot;
-    public int equippedSlot;
-    public Vector3 vel;
+    [Key(0)] public ulong controllingPeerID;
+    [Key(1)] public bool isHuman;
+    [Key(2)] public Vector3 pos;
+    [Key(3)] public Vector3 rot;
+    [Key(4)] public Vector3 headRot;
+    [Key(5)] public int equippedSlot;
+    [Key(6)] public Vector3 vel;
     /// <summary>The held tool's state for the other peers (<see cref="HeldItem.GenerateSyncState"/>), or null.</summary>
-    public byte[] heldItemState;
+    [Key(7)] public byte[] heldItemState;
 }

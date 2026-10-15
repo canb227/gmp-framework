@@ -1,4 +1,5 @@
 using Godot;
+using Nerdbank.MessagePack;
 using PolyType;
 using System.Collections.Generic;
 
@@ -6,15 +7,16 @@ using System.Collections.Generic;
 public enum MagnetMode : byte { Off, Single, Area }
 
 /// <summary>What the other peers' copies of a magnet rod need each tick (<see cref="MagnetRod.GenerateSyncState"/>).</summary>
+/// <remarks>Sent as an array of values; see the note on <see cref="BodySyncState"/> about [Key] numbers.</remarks>
 [GenerateShape]
 public partial record struct MagnetSync
 {
-    public MagnetMode mode;
+    [Key(0)] public MagnetMode mode;
     /// <summary>Where the rod pulls to, and how fast that point moves.</summary>
-    public Vector3 target;
-    public Vector3 targetVelocity;
+    [Key(1)] public Vector3 target;
+    [Key(2)] public Vector3 targetVelocity;
     /// <summary>The item a single grab holds; 0 in area mode, where every copy catches the items around the target itself.</summary>
-    public ulong itemId;
+    [Key(3)] public ulong itemId;
 }
 
 /// <summary>
