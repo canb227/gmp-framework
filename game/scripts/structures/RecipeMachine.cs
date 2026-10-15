@@ -136,7 +136,7 @@ public partial class RecipeMachine : Machine
     }
 
     [RPC(requireAuthority = true)]
-    void SetRecipe(int recipeIndex)
+    protected void SetRecipe(int recipeIndex)
     {
         currentRecipe = null;
         if (recipeIndex >= 0) currentRecipe = recipes[recipeIndex];

@@ -1,7 +1,9 @@
 [gd_scene format=3 uid="uid://bnsoik2afhc2i"]
 
 [ext_resource type="Script" uid="uid://bn4s85elvvobt" path="res://game/scripts/structures/processing/BasicSmelter.cs" id="1_j57kp"]
+[ext_resource type="Script" uid="uid://bptcoo3qayabg" path="res://game/scripts/structures/Recipe.cs" id="2_kj0j5"]
 [ext_resource type="Script" uid="uid://bv13olg4g30nl" path="res://game/scripts/structures/StructureArrow.cs" id="2_msb01"]
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="3_bsvsb"]
 [ext_resource type="Material" uid="uid://bosg7vc1hulq8" path="res://game/assets/materials/temp_metal.tres" id="3_kj0j5"]
 [ext_resource type="PackedScene" uid="uid://d4fwb6sgvwu10" path="res://game/assets/models/machines/processing/smelter_old.blend" id="3_vu106"]
 [ext_resource type="Animation" uid="uid://dxjv4v03jo8by" path="res://game/assets/animations/smelter/RESET_oldsmelter.tres" id="4_vu106"]
@@ -12,6 +14,10 @@
 [ext_resource type="Texture2D" uid="uid://cff3ql7psjvfh" path="res://game/assets/textures/misc/door_temp.png" id="7_kd3jk"]
 [ext_resource type="Texture2D" uid="uid://sm45c72ro5nu" path="res://game/assets/textures/misc/lava_texture.png" id="8_a7yjs"]
 [ext_resource type="Texture2D" uid="uid://8ao7sytkjw8q" path="res://game/assets/textures/misc/exhaust_fan.png" id="9_n1tt5"]
+
+[sub_resource type="Resource" id="Resource_h435h"]
+script = ExtResource("2_kj0j5")
+metadata/_custom_type_script = "uid://bptcoo3qayabg"
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4vaoy"]
 albedo_texture = ExtResource("5_jnp0f")
@@ -58,17 +64,19 @@ albedo_texture = ExtResource("9_n1tt5")
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_qb6y1"]
 _data = {
-&"RESET_oldsmelter": ExtResource("4_vu106"),
-&"finish_processing_oldsmelter": ExtResource("5_xp3u8"),
-&"process_oldsmelter": ExtResource("6_stjsf")
+&"RESET": ExtResource("4_vu106"),
+&"finish_process": ExtResource("5_xp3u8"),
+&"process": ExtResource("6_stjsf")
 }
 
-[node name="Smelter" type="Box3DBody" unique_id=1461321437 node_paths=PackedStringArray("inputVolumes", "outputLocations")]
+[node name="Smelter" type="Box3DBody" unique_id=1461321437 node_paths=PackedStringArray("inputVolumes", "outputLocations", "animationPlayer")]
 body_type = 0
 shape_type = 6
 script = ExtResource("1_j57kp")
 inputVolumes = [NodePath("spatial/inputVolume")]
 outputLocations = [NodePath("spatial/outputLocation")]
+recipes = Array[ExtResource("2_kj0j5")]([SubResource("Resource_h435h")])
+animationPlayer = NodePath("model/smelter_old/AnimationPlayer")
 cells = Dictionary[Vector3i, int]({
 Vector3i(0, 0, -5): 0,
 Vector3i(0, 0, -4): 0,
@@ -431,31 +439,31 @@ metadata/_custom_type_script = "uid://bv13olg4g30nl"
 
 [node name="smelter_old" parent="model" unique_id=1429250052 instance=ExtResource("3_vu106")]
 
-[node name="Bars" parent="model/smelter_old" index="0" unique_id=255444607]
+[node name="Bars" parent="model/smelter_old" index="0" unique_id=85899168]
 surface_material_override/0 = ExtResource("3_kj0j5")
 
-[node name="Body" parent="model/smelter_old" index="1" unique_id=931550475]
+[node name="Body" parent="model/smelter_old" index="1" unique_id=1807934725]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9914894, 0.9999995, -3.0261762)
 surface_material_override/1 = SubResource("StandardMaterial3D_4vaoy")
 surface_material_override/2 = SubResource("StandardMaterial3D_y6o07")
 
-[node name="Chimney" parent="model/smelter_old" index="2" unique_id=1319291161]
+[node name="Chimney" parent="model/smelter_old" index="2" unique_id=432605041]
 surface_material_override/0 = ExtResource("6_keb0p")
 
-[node name="Chimney_001" parent="model/smelter_old" index="3" unique_id=644881833]
+[node name="Chimney_001" parent="model/smelter_old" index="3" unique_id=1732661747]
 surface_material_override/0 = ExtResource("6_keb0p")
 
-[node name="Door" parent="model/smelter_old" index="4" unique_id=674669746]
+[node name="Door" parent="model/smelter_old" index="4" unique_id=716943769]
 transform = Transform3D(0.7071067, -0.7071067, 0, 0.7071067, 0.7071067, 0, 0, 0, 1, 11.104587, 4.682018, -3.0156198)
 surface_material_override/0 = SubResource("StandardMaterial3D_lqu6n")
 
-[node name="MoltenMetal" parent="model/smelter_old" index="6" unique_id=1332109914]
+[node name="MoltenMetal" parent="model/smelter_old" index="6" unique_id=429442513]
 surface_material_override/0 = SubResource("StandardMaterial3D_gh3qe")
 
-[node name="Vent1" parent="model/smelter_old" index="11" unique_id=81151560]
+[node name="Vent1" parent="model/smelter_old" index="11" unique_id=1064001957]
 surface_material_override/0 = SubResource("StandardMaterial3D_pvywp")
 
-[node name="Vent2" parent="model/smelter_old" index="12" unique_id=1626141085]
+[node name="Vent2" parent="model/smelter_old" index="12" unique_id=1682688662]
 surface_material_override/0 = SubResource("StandardMaterial3D_pvywp")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="model/smelter_old" unique_id=1526897162]

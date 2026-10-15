@@ -21,6 +21,7 @@ public abstract partial class Machine : Structure
 {
     /// <summary>How fast cycles count down: 2 is twice as fast.</summary>
     [Export] public float processingSpeed = 1f;
+    [Export] public AnimationPlayer animationPlayer;
 
     /// <summary>Every peer: whether a cycle is running.</summary>
     public bool isOperating { get; private set; }

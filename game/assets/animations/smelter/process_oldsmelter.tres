@@ -7,7 +7,7 @@ colors = PackedColorArray(0.65834004, 0.6583399, 0.6583399, 1, 0.737193, 0.73719
 gradient = SubResource("Gradient_1hc2w")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_6lx7a"]
-offset = Vector3(250, 30, 0)
+offset = Vector3(250, 61.91, 0)
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_1hc2w"]
 noise = SubResource("FastNoiseLite_6lx7a")
@@ -46,10 +46,10 @@ tracks/2/path = NodePath("smelter_old/Body:surface_material_override/2:emission_
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
-"times": PackedFloat32Array(1.5, 10),
-"transitions": PackedFloat32Array(1, 1),
+"times": PackedFloat32Array(1.6333333, 10),
+"transitions": PackedFloat32Array(1, 1.035265),
 "update": 0,
-"values": [Vector3(0, 0, 0), Vector3(250, 30, 0)]
+"values": [Vector3(0, 0, 0), Vector3(250, 61.91, 0)]
 }
 tracks/3/type = "value"
 tracks/3/imported = false

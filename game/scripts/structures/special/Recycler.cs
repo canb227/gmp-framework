@@ -50,22 +50,27 @@ public partial class Recycler : RecipeMachine
 
     protected override bool TryStartProcess()
     {
-        if (points == 0)
+        if (inputItems.Count == 0) return false;
+        PhysicalFactoryItem ready = inputItems[0];
+        if (itemPoints.TryGetValue(ready.itemID ?? "", out int p))
         {
-            if (inputItems.Count == 0) return false;
-            PhysicalFactoryItem ready = inputItems[0];
-            if (itemPoints.TryGetValue(ready.itemID ?? "", out int p))
+            if(points < int.MaxValue-10000)
             {
                 points += p;
             }
-            else
+        }
+        else
+        {
+            if(points < int.MaxValue-10000)
             {
                 points += 1;
             }
-            ConsumeInputItem(ready);
         }
+        ConsumeInputItem(ready);
+
         if (points <= 0) return false;
         points--;
+        //animationPlayer.Play("process");
         processTimeRemaining = 1f;
         return true;
     }
