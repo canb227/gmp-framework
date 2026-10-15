@@ -31,8 +31,8 @@ public partial class GameWorld
 {
     public static WorldTickMessage pendingOutgoingTick = new();
 
-    /// <summary>This tick's objects with an update due, reused between ticks.</summary>
-    private static readonly List<GMPObject> dueUpdates = new();
+    /// <summary>The objects that may send this time, reused between sends.</summary>
+    private static readonly List<GMPObject> candidates = new();
     private static readonly Comparison<GMPObject> ByAccumulatorDescending = (a, b) => b.priorityAccumulator.CompareTo(a.priorityAccumulator);
 
     /// <summary>Received states in arrival order, applied (and cleared) at the start of the next physics tick.</summary>
@@ -45,10 +45,26 @@ public partial class GameWorld
     public static ulong stateTick { get; private set; }
 
     /// <summary>
-    /// Followers play other peers' states back this many ticks behind the newest one received, so there is nearly always
-    /// a newer state to interpolate toward even when packets arrive unevenly.
+    /// The physics frame of the latest send (<see cref="Engine.GetPhysicsFrames"/>, read once per send). For
+    /// <see cref="GMPObject.UpdateSyncPriority"/>, which runs for every object each send, to use instead of asking the
+    /// engine itself.
     /// </summary>
-    public const double InterpolationDelay = 2;
+    public static ulong sendFrame { get; private set; }
+
+    /// <summary>
+    /// State sends per second. Physics ticks faster than this (60 Hz) for better collisions, and states go out on every
+    /// <see cref="SendInterval"/>th tick only, which halves the bandwidth.
+    /// </summary>
+    public const int SendRate = 30;
+
+    /// <summary>Physics ticks per state send: 2 at 60 Hz physics, 1 at 30 Hz.</summary>
+    public static readonly int SendInterval = Math.Max(1, Engine.PhysicsTicksPerSecond / SendRate);
+
+    /// <summary>
+    /// Followers play other peers' states back this many ticks behind the newest one received (two sends), so there is
+    /// nearly always a newer state to interpolate toward even when packets arrive unevenly.
+    /// </summary>
+    public static readonly double InterpolationDelay = 2 * SendInterval;
 
     /// <summary>
     /// Per sending peer: the newest tick heard from it, and the (fractional) tick of its states that followers show now.
@@ -63,13 +79,16 @@ public partial class GameWorld
 
     private static readonly Dictionary<ulong, PlaybackClock> playbackClocks = new();
 
-    /// <summary>How much faster or slower playback runs per tick of buffer above or below <see cref="InterpolationDelay"/>.</summary>
-    private const double PlaybackCorrection = 0.1;
+    /// <summary>
+    /// How much faster or slower playback runs per tick of buffer above or below <see cref="InterpolationDelay"/>: 0.1
+    /// per send's worth of ticks.
+    /// </summary>
+    private static readonly double PlaybackCorrection = 0.1 / SendInterval;
     /// <summary>Slowest playback runs while the buffer runs dry (it never stops: a quiet sender would hold everything up).</summary>
     private const double MinPlaybackRate = 0.75;
     private const double MaxPlaybackRate = 1.1;
-    /// <summary>Further behind than this many ticks (after a pause, a stall, or a sender gone quiet), playback jumps ahead.</summary>
-    private const double MaxPlaybackLag = 8;
+    /// <summary>Further behind than this many ticks, 8 sends (after a pause, a stall, or a sender gone quiet), playback jumps ahead.</summary>
+    private static readonly double MaxPlaybackLag = 8 * SendInterval;
 
     /// <summary>Send time of the newest state accepted per object, used to drop out-of-order updates. Forgotten when an object changes authority.</summary>
     private static readonly Dictionary<ulong, ulong> lastStateTime = new();
@@ -77,22 +96,36 @@ public partial class GameWorld
     public static MessagePackSerializer pack = new();
 
     /// <summary>
-    /// Outbound state bytes allowed per physics tick: 10 MB/s spread over the physics rate. Keep it within the
-    /// transport's send rate (<see cref="SteamNetwork.Host"/>), or Steam queues the excess until its sends fail.
+    /// State bytes this peer sends per second to all other peers together (updates with their ids and framing; not
+    /// the transport's own packet headers): split between the connected peers, which changes as they join and leave,
+    /// and evenly over the <see cref="SendRate"/> sends. Every send fills its share with the objects of highest
+    /// <see cref="GMPObject.priorityAccumulator"/>.
+    /// <para>
+    /// 200 Mbps, assuming the player with the best connection hosts: about 60% of a typical fiber upload (the median
+    /// fiber upload is about 320 Mbps), leaving room for everything else on the line. Cable is more like 20-35 Mbps,
+    /// too little for this. Traffic only reaches it with thousands of moving objects. Steam's send rate is set from
+    /// this when hosting or joining (<see cref="SteamNetwork.Host"/>), so set it before then.
+    /// </para>
     /// </summary>
-    private static readonly int maxTickSize = 10 * 1024 * 1024 / Engine.PhysicsTicksPerSecond;
-
-    /// <summary>
-    /// An object's update is due once its <see cref="GMPObject.priorityAccumulator"/> reaches this. Priority accumulates
-    /// every tick, so at 30 Hz a priority of 30 or more sends every tick, 10 every third tick and 1 about once a second.
-    /// </summary>
-    public const int SendThreshold = 30;
+    public static int SendBudget = 200 * 1000 * 1000 / 8;
 
     /// <summary>
     /// State goes out unreliable (a lost update is replaced by a newer one anyway), in packets of about this many bytes:
     /// a bigger packet is split into fragments, and losing any one fragment loses all of it.
     /// </summary>
     private const int MaxPacketSize = 1100;
+
+    /// <summary>
+    /// The most a <see cref="WorldTickMessage"/> adds around its updates: its array header (1), sendTime and tick (up
+    /// to 9 each) and the updates list header (up to 3).
+    /// </summary>
+    private const int PacketHeaderSize = 22;
+
+    /// <summary>
+    /// The most each update adds to a packet besides its own bytes: its (id, bytes) pair header (1), the id (9, as ids
+    /// are random 64-bit numbers) and the bytes' length header (up to 3).
+    /// </summary>
+    private const int UpdateOverhead = 13;
 
     private static void ResetStateSync()
     {
@@ -199,48 +232,61 @@ public partial class GameWorld
         {
             return;
         }
+        // States go out on every SendInterval'th tick only (received ones are applied every tick, above).
+        ulong frame = Engine.GetPhysicsFrames();
+        if (frame % (ulong)SendInterval != 0)
+        {
+            return;
+        }
+        sendFrame = frame;
 
-        int tickSize = 0;
-        int packetSize = 0;
-        dueUpdates.Clear();
+        // Every object this peer is the authority of gains its priority, then they send highest accumulator first
+        // until this send's share of the budget is used up. A sent object starts again from 0; the rest keep what
+        // they have, so they rise up the order until they get sent.
+        int sendSize = 0;
+        int packetSize = PacketHeaderSize;
+        // Every peer is sent the same packets, so each one's share of the budget is what one send may hold.
+        int peers = Lobby.MemberCount - 1;
+        int maxSendSize = SendBudget / SendRate / peers;
+        candidates.Clear();
         foreach (var entity in syncedObjs.Values)
         {
-            if (entity.authority!=Lobby.selfPeerID)
+            if (entity.authority != Lobby.selfPeerID)
             {
-                //not mine hands off
                 continue;
             }
-            if (entity.priority > -1)
+            entity.UpdateSyncPriority();
+            if (entity.priority <= -1)
             {
-                // priority -1 (sleepy boi) never accumulates, but still sends anything queued for it
-                entity.priorityAccumulator += entity.priority;
+                // never sends state
+                continue;
             }
-            if (entity.priorityAccumulator >= SendThreshold)
-            {
-                dueUpdates.Add(entity);
-            }
+            entity.priorityAccumulator += entity.priority;
+            candidates.Add(entity);
         }
-        // Highest accumulated priority first, sorted in place (no per-tick allocation).
-        dueUpdates.Sort(ByAccumulatorDescending);
-        foreach (GMPObject e in dueUpdates)
+        // Sorted in place (no per-tick allocation).
+        candidates.Sort(ByAccumulatorDescending);
+        foreach (GMPObject e in candidates)
         {
             byte[] update = e.GenerateStateUpdate();
-            if (update == null || update.Length ==0)
+            if (update == null || update.Length == 0)
             {
                 e.priorityAccumulator = 0;
                 continue;
             }
-            if (tickSize + update.Length > maxTickSize)
+            int entrySize = update.Length + UpdateOverhead;
+            if (sendSize + entrySize > maxSendSize)
             {
-                break;
+                // Doesn't fit this time, but a smaller one further down might.
+                continue;
             }
-            if (packetSize > 0 && packetSize + update.Length > MaxPacketSize)
+            if (pendingOutgoingTick.updates.Count > 0 && packetSize + entrySize > MaxPacketSize)
             {
                 SendPendingTick();
-                packetSize = 0;
+                packetSize = PacketHeaderSize;
             }
-            tickSize += update.Length;
-            packetSize += update.Length + 10; // plus the id and framing
+            sendSize += entrySize;
+            packetSize += entrySize;
             pendingOutgoingTick.updates.Add((e.id, update));
             e.priorityAccumulator = 0;
         }

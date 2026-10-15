@@ -1,5 +1,6 @@
 using Godot;
 using ImGuiNET;
+using System.Collections.Generic;
 using Nerdbank.MessagePack;
 using PolyType;
 
@@ -14,6 +15,8 @@ using PolyType;
 public partial class FactoryPlayer : GMPOBox3DCharacter
 {
     public static bool displayPlayerDebugInfo = false;
+    /// <summary>Every player in the world, local and remote (e.g. for the items' sync priority by distance).</summary>
+    public static readonly List<FactoryPlayer> all = new();
     public int team;
     public bool isHuman;
     public ulong controllingPeerID;
@@ -69,6 +72,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
         base._Ready();
         // Saved by SaveManager as players, not as part of the world.
         AddToGroup(GameWorld.UnsavedGroup);
+        all.Add(this);
         gravity = gravityDirection * gravityMagnitude;
         camera = GetNode<Camera3D>("Camera3D");
         cameraOffset = camera.Position;
@@ -103,6 +107,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
     public override void _ExitTree()
     {
+        all.Remove(this);
         UIManager.UnbindHud(this);
     }
 

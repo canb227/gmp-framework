@@ -34,10 +34,11 @@ public partial record struct GMPOInitData : IEquatable<GMPOInitData>
 public partial interface GMPObject
 {
     /// <summary>
-    /// How often this object sends its state. Accumulates into <see cref="priorityAccumulator"/> every tick, and an
-    /// update is due once that reaches <c>GameWorld.SendThreshold</c> (30: every tick at 30 or more, about once a
-    /// second at 1). When the per-tick byte budget runs out, the highest accumulators send first. A value of -1 or
-    /// lower means this object never sends a state update at all.
+    /// How much this object's state matters, relative to others. Added to <see cref="priorityAccumulator"/> on every
+    /// send (30 a second, <c>GameWorld.SendRate</c>), and each send fills its byte budget (<c>GameWorld.SendBudget</c>)
+    /// with the highest accumulators first. With budget to spare everything sends every time; when it is short, an
+    /// object with priority 30 sends about 30 times as often as one with 1. A value of -1 or lower means this object
+    /// never sends a state update at all.
     /// </summary>
     public int priority { get; set; }
 
@@ -53,7 +54,7 @@ public partial interface GMPObject
     /// <summary>The peer id this object is considered to belong to (e.g. the controlling player), independent of simulation authority.</summary>
     public ulong owner { get; set; }
 
-    /// <summary>Running per-tick accumulation of <see cref="priority"/>, used to decide send order within the state-update byte budget. Reset to 0 when this object's update is sent, or when <see cref="GenerateStateUpdate"/> returns nothing.</summary>
+    /// <summary>Running per-send accumulation of <see cref="priority"/>, used to decide send order within the state-update byte budget. Reset to 0 when this object's update is sent, or when <see cref="GenerateStateUpdate"/> returns nothing.</summary>
     public int priorityAccumulator { get; set; }
 
     /// <summary>The most recent state stored by <see cref="ApplyStateUpdate"/>. Non-authority peers consume it in <c>_PhysicsProcess</c>; the authority reads it once in <c>AfterInit</c> to move to its spawn state.</summary>
@@ -62,8 +63,17 @@ public partial interface GMPObject
 
     public static MessagePackSerializer serializer = new MessagePackSerializer().WithGodotConverters();
 
-    /// <summary>Called on the authority peer, in priority order, for each object whose update is due, until the tick's byte budget is full (the first update that doesn't fit is discarded and sending stops for that tick). Serializes this object's current state for every other peer to apply via <see cref="ApplyStateUpdate"/>. Return null/empty to send nothing.</summary>
+    /// <summary>Called on the authority peer on every send, highest <see cref="priorityAccumulator"/> first, for each object that may send (an update that doesn't fit what is left of the budget is discarded, and the object keeps its accumulator for next time). Serializes this object's current state for every other peer to apply via <see cref="ApplyStateUpdate"/>. Return null/empty to send nothing.</summary>
     public byte[] GenerateStateUpdate();
+
+    /// <summary>
+    /// Called on the authority peer on every send, just before <see cref="priority"/> is added to
+    /// <see cref="priorityAccumulator"/>: a chance to set <see cref="priority"/> from what is happening now (how near a
+    /// player is, being held). Does nothing unless overridden.
+    /// </summary>
+    public void UpdateSyncPriority()
+    {
+    }
 
     /// <summary>Called on non-authority peers when a state update arrives from the authority, and on <b>every</b> peer (authority included) by <see cref="Init"/> with the spawn-time <c>initState</c>. The transform-synced bases just store it into <see cref="desiredState"/>; overrides may apply it immediately (e.g. FactoryPlayer).</summary>
     public void ApplyStateUpdate(byte[] update);

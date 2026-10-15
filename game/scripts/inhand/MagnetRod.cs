@@ -233,8 +233,11 @@ public partial class MagnetRod : HeldItem
                 CatchNearbyItems();
             }
         }
+        // Held items sync ahead of everything but the players (counts on the item's authority, the host).
+        ulong heldUntil = Engine.GetPhysicsFrames() + PhysicalFactoryItem.HeldLingerFrames;
         foreach (PhysicalFactoryItem item in caught)
         {
+            item.heldUntilFrame = heldUntil;
             if (isLocal)
             {
                 // Show what this player holds as close to now as the host's states allow (nothing on the host).

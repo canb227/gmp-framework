@@ -184,7 +184,7 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     /// How fast <see cref="playbackLead"/> eases, in ticks per second: the whole delay in about half a second, during
     /// which the body plays back a little fast or slow.
     /// </summary>
-    const double PlaybackLeadRate = 4;
+    static readonly double PlaybackLeadRate = GameWorld.InterpolationDelay * 2;
 
     static readonly System.Collections.Generic.Dictionary<Type, bool> customPhysicsProcess = new();
 
@@ -275,6 +275,10 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
             angularVelocity = this.GetAngularVelocity();
         }
         return new BodySyncState { pos = Position, rot = Rotation, vel = velocity, angVel = angularVelocity }.Pack();
+    }
+
+    public virtual void UpdateSyncPriority()
+    {
     }
 
     public virtual byte[] SaveState()

@@ -27,30 +27,43 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
     [Export]
     public Godot.Collections.Dictionary<Currency, int> currencyValue = new();
 
-    [ExportGroup("Sync")]
-    /// <summary>
-    /// Sync <see cref="GMPObject.priority"/> while Box3D has this item asleep (1: about once a second). While it's
-    /// awake the item uses its normal priority (<see cref="DefaultPriority"/> unless the scene sets one). One last
-    /// update is always queued as the item falls asleep, so every peer sees where it came to rest; the slow resends
-    /// after that heal any update the network lost.
-    /// </summary>
-    [Export]
-    public int sleepingPriority = 1;
+    // ---- sync priority ----
+    // An item's sync priority is worked out on every send (UpdateSyncPriority): its basePriority, +1 while awake,
+    // times up to ProximityMultiplier the nearer a player is, and at least HeldPriority while a magnet rod holds it
+    // and for a moment after. It runs for every item on every send, so it keeps calls into the engine to one per item.
 
-    /// <summary>Sync priority of an awake item unless its scene sets its own: every tick (<see cref="GameWorld.SendThreshold"/>).</summary>
-    public const int DefaultPriority = GameWorld.SendThreshold;
+    /// <summary>Up to this many times the priority right next to a player, falling evenly to 1x at <see cref="ProximityRange"/>.</summary>
+    const float ProximityMultiplier = 10f;
+    /// <summary>Metres from the nearest player (any peer's) beyond which an item gets no proximity bonus.</summary>
+    const float ProximityRange = 30f;
+    /// <summary>Priority of an item a magnet rod holds: above any proximity bonus, below the players.</summary>
+    public const int HeldPriority = 100;
+    /// <summary>How long an item keeps <see cref="HeldPriority"/> after a rod lets go, so throws and drops are followed closely: 1 s.</summary>
+    public static readonly ulong HeldLingerFrames = (ulong)Engine.PhysicsTicksPerSecond;
+    /// <summary>Added to the accumulator as the item falls asleep, so its resting pose goes out with the next send or so.</summary>
+    const int RestingPoseBump = 100;
+
+    /// <summary>Until which physics frame this item has <see cref="HeldPriority"/>; kept up by the magnet rods holding it.</summary>
+    public ulong heldUntilFrame;
+
+    /// <summary>Every player's position as of <see cref="playerPositionsFrame"/>: read once per send, for all the items.</summary>
+    static readonly List<Vector3> playerPositions = new();
+    /// <summary>The send (<see cref="GameWorld.sendFrame"/>) <see cref="playerPositions"/> were read for.</summary>
+    static ulong playerPositionsFrame = ulong.MaxValue;
+
+    /// <summary>
+    /// Sync priority before the awake, proximity and held bonuses; -1 or lower never sends. Set here rather than in
+    /// <see cref="GMPObject.priority"/>, which is recalculated on every send (and saved as whatever it was).
+    /// </summary>
+    [ExportGroup("Sync")]
+    [Export]
+    public int basePriority = 1;
 
     /// <summary>Set once a pickup has been granted, so later simultaneous requests lose.</summary>
     bool taken;
 
-    int awakePriority;
     /// <summary>Whether this item is asleep in this peer's simulation (tracked on the authority only).</summary>
     public bool asleep { get; private set; }
-
-    public PhysicalFactoryItem()
-    {
-        priority = DefaultPriority; // scene/spawn values still override (see GMPObject.Init)
-    }
 
     public override void _Ready()
     {
@@ -70,7 +83,6 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
     public override void AfterInit()
     {
         base.AfterInit();
-        awakePriority = priority; // Init has resolved the scene/spawn priority by now
         // Level items can settle while the level loads, before this point, and Box3D won't report it again.
         if (authority == Lobby.selfPeerID && !this.IsAwake()) OnFellAsleep();
         // A small nudge for a fresh spawn, not for a restore (which must leave everything where it was saved).
@@ -91,12 +103,10 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
     // Only the authority simulates the item (everyone else has it Kinematic), so only its sleep state counts.
     public override void OnFellAsleep()
     {
-        if (id == 0 || authority != Lobby.selfPeerID || awakePriority <= 0 || asleep) return;
+        if (id == 0 || authority != Lobby.selfPeerID || basePriority <= -1 || asleep) return;
         asleep = true;
-
-        priority = sleepingPriority;
-        // Queue one more update so peers get the resting pose, not the last one sent while it settled.
-        priorityAccumulator = Math.Max(priorityAccumulator, GameWorld.SendThreshold);
+        // Peers should soon get the resting pose, not the last one sent while it settled.
+        priorityAccumulator += RestingPoseBump;
         GameWorld.WatchForWake(this);
     }
 
@@ -107,9 +117,47 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
 
     void SetAwake()
     {
-
         asleep = false;
-        if (awakePriority > 0) priority = awakePriority;
+    }
+
+    public override void UpdateSyncPriority()
+    {
+        if (basePriority <= -1)
+        {
+            return;
+        }
+        int unscaled = basePriority;
+        if (!asleep)
+        {
+            unscaled += 1;
+        }
+        // The first item to get here in a send reads the players' positions for all of them.
+        if (playerPositionsFrame != GameWorld.sendFrame)
+        {
+            playerPositionsFrame = GameWorld.sendFrame;
+            playerPositions.Clear();
+            foreach (FactoryPlayer player in FactoryPlayer.all)
+            {
+                playerPositions.Add(player.GlobalPosition);
+            }
+        }
+        Vector3 position = GlobalPosition;
+        float nearestSquared = ProximityRange * ProximityRange;
+        foreach (Vector3 playerPosition in playerPositions)
+        {
+            float distanceSquared = position.DistanceSquaredTo(playerPosition);
+            if (distanceSquared < nearestSquared)
+            {
+                nearestSquared = distanceSquared;
+            }
+        }
+        float nearest = Mathf.Sqrt(nearestSquared);
+        float multiplier = 1f + (ProximityMultiplier - 1f) * (1f - nearest / ProximityRange);
+        priority = Mathf.RoundToInt(unscaled * multiplier);
+        if (GameWorld.sendFrame < heldUntilFrame && priority < HeldPriority)
+        {
+            priority = HeldPriority;
+        }
     }
 
     // Reactions run on this item's authority, which is the peer simulating it.

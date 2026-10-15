@@ -218,7 +218,7 @@ freePlace={
 [physics]
 
 3d/run_on_separate_thread=true
-common/physics_ticks_per_second=30
+common/physics_ticks_per_second=60
 common/physics_jitter_fix=0.0
 3d/physics_engine="Dummy"
 common/physics_interpolation=true
