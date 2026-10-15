@@ -35,8 +35,8 @@ public partial class BasicSmelter : RecipeMachine
     protected override void FinishProcess()
     {
         animationPlayer.Play("finish_process");
-        outputQueue.Add("scrap_ingot");
-        outputQueue.Add("scrap_ingot");
+        ItemInfo.SpawnInWorld("scrap_ingot", OutputPosition(0));
+        ItemInfo.SpawnInWorld("scrap_ingot", OutputPosition(1));
     }
 
 }
