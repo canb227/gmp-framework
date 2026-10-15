@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-/// <summary>One packet of state updates. Sent as an array of values; see the note on <see cref="BodySyncState"/> about [Key] numbers.</summary>
+/// <summary>One packet of state updates. Sent as an array of values; see the note on <see cref="TransformSyncState"/> about [Key] numbers.</summary>
 [GenerateShape]
 public partial record WorldTickMessage
 {

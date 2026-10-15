@@ -291,7 +291,7 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
     }
 }
 
-/// <summary>Sent as an array of values; see the note on <see cref="BodySyncState"/> about [Key] numbers.</summary>
+/// <summary>Sent as an array of values; see the note on <see cref="TransformSyncState"/> about [Key] numbers.</summary>
 [GenerateShape]
 public partial record struct PlayerSync
 {

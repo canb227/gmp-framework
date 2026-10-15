@@ -67,7 +67,7 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         // A spawn-time state (a restored save, a late join) puts the body exactly where it was, on every peer.
         if (desiredState != null && desiredState.Length > 0)
         {
-            BodySyncState s = GMPObject.serializer.Deserialize<BodySyncState>(desiredState);
+            BodySyncState s = BodySyncState.Unpack(desiredState);
             this.Teleport(s.pos, s.rot);
         }
         if (authority != Lobby.selfPeerID)
@@ -274,7 +274,7 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
             velocity = this.GetLinearVelocity();
             angularVelocity = this.GetAngularVelocity();
         }
-        return GMPObject.serializer.Serialize(new BodySyncState { pos = Position, rot = Rotation, vel = velocity, angVel = angularVelocity });
+        return new BodySyncState { pos = Position, rot = Rotation, vel = velocity, angVel = angularVelocity }.Pack();
     }
 
     public virtual byte[] SaveState()
@@ -308,7 +308,7 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         {
             return;
         }
-        BodySyncState s = GMPObject.serializer.Deserialize<BodySyncState>(update);
+        BodySyncState s = BodySyncState.Unpack(update);
         snapshots.Add(new Snapshot { tick = GameWorld.stateTick, pos = s.pos, rot = Quaternion.FromEuler(s.rot), vel = s.vel, angVel = s.angVel });
         if (snapshots.Count > MaxSnapshots)
         {

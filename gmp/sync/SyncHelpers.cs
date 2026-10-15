@@ -1,13 +1,19 @@
 using Godot;
 using Nerdbank.MessagePack;
 using PolyType;
+using System;
+using System.Buffers.Binary;
 
-// The per-tick sync states below are sent as arrays of values rather than maps of field names, which is about a
-// quarter smaller. The [Key] number is each field's place in the array: give a new field the next number, and never
-// renumber or reuse one, or older saves read into the wrong fields. A save from before a field was added reads it as
-// its default.
-
-/// <summary>Position + Euler rotation snapshot sent by the authority for transform-synced objects.</summary>
+/// <summary>
+/// Position + Euler rotation snapshot sent by the authority for transform-synced objects.
+/// <para>
+/// This and the other per-tick sync states (<see cref="PlayerSync"/>, <see cref="MagnetSync"/>,
+/// <see cref="WorldTickMessage"/>) are sent as arrays of values rather than maps of field names, which is about a
+/// quarter smaller. The [Key] number is each field's place in the array: give a new field the next number, and never
+/// renumber or reuse one, or older saves read into the wrong fields. A save from before a field was added reads it as
+/// its default.
+/// </para>
+/// </summary>
 [GenerateShape]
 public partial record struct TransformSyncState
 {
@@ -18,15 +24,83 @@ public partial record struct TransformSyncState
 /// <summary>
 /// What a Box3D body's authority sends: its transform plus its velocities, so followers can keep pace with it between
 /// updates and a new authority can carry on at the same speed and spin.
+/// <para>
+/// There can be hundreds of these a tick, so they are packed by hand into 30 bytes (MessagePack takes 65): position as
+/// full floats, rotation as 16-bit angles (steps of 0.0001 rad), and velocities as half floats (about 3 significant
+/// digits). A body at rest leaves the velocities off (18 bytes), and they read back as zero.
+/// </para>
 /// </summary>
-[GenerateShape]
-public partial record struct BodySyncState
+public struct BodySyncState
 {
-    [Key(0)] public Vector3 pos;
-    [Key(1)] public Vector3 rot;
-    [Key(2)] public Vector3 vel;
+    public Vector3 pos;
+    public Vector3 rot;
+    public Vector3 vel;
     /// <summary>Angular velocity, world space (rad/s about each axis).</summary>
-    [Key(3)] public Vector3 angVel;
+    public Vector3 angVel;
+
+    private const int RestingSize = 18;
+    private const int MovingSize = 30;
+
+    /// <summary>A rotation angle (-π to π) times this is stored as a short.</summary>
+    private const float AngleScale = short.MaxValue / Mathf.Pi;
+
+    public byte[] Pack()
+    {
+        bool resting = vel == Vector3.Zero && angVel == Vector3.Zero;
+        byte[] bytes;
+        if (resting)
+        {
+            bytes = new byte[RestingSize];
+        }
+        else
+        {
+            bytes = new byte[MovingSize];
+        }
+        Span<byte> b = bytes;
+        BinaryPrimitives.WriteSingleLittleEndian(b.Slice(0), pos.X);
+        BinaryPrimitives.WriteSingleLittleEndian(b.Slice(4), pos.Y);
+        BinaryPrimitives.WriteSingleLittleEndian(b.Slice(8), pos.Z);
+        BinaryPrimitives.WriteInt16LittleEndian(b.Slice(12), PackAngle(rot.X));
+        BinaryPrimitives.WriteInt16LittleEndian(b.Slice(14), PackAngle(rot.Y));
+        BinaryPrimitives.WriteInt16LittleEndian(b.Slice(16), PackAngle(rot.Z));
+        if (!resting)
+        {
+            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(18), (Half)vel.X);
+            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(20), (Half)vel.Y);
+            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(22), (Half)vel.Z);
+            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(24), (Half)angVel.X);
+            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(26), (Half)angVel.Y);
+            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(28), (Half)angVel.Z);
+        }
+        return bytes;
+    }
+
+    public static BodySyncState Unpack(byte[] bytes)
+    {
+        ReadOnlySpan<byte> b = bytes;
+        BodySyncState s = new BodySyncState();
+        s.pos.X = BinaryPrimitives.ReadSingleLittleEndian(b.Slice(0));
+        s.pos.Y = BinaryPrimitives.ReadSingleLittleEndian(b.Slice(4));
+        s.pos.Z = BinaryPrimitives.ReadSingleLittleEndian(b.Slice(8));
+        s.rot.X = BinaryPrimitives.ReadInt16LittleEndian(b.Slice(12)) / AngleScale;
+        s.rot.Y = BinaryPrimitives.ReadInt16LittleEndian(b.Slice(14)) / AngleScale;
+        s.rot.Z = BinaryPrimitives.ReadInt16LittleEndian(b.Slice(16)) / AngleScale;
+        if (bytes.Length >= MovingSize)
+        {
+            s.vel.X = (float)BinaryPrimitives.ReadHalfLittleEndian(b.Slice(18));
+            s.vel.Y = (float)BinaryPrimitives.ReadHalfLittleEndian(b.Slice(20));
+            s.vel.Z = (float)BinaryPrimitives.ReadHalfLittleEndian(b.Slice(22));
+            s.angVel.X = (float)BinaryPrimitives.ReadHalfLittleEndian(b.Slice(24));
+            s.angVel.Y = (float)BinaryPrimitives.ReadHalfLittleEndian(b.Slice(26));
+            s.angVel.Z = (float)BinaryPrimitives.ReadHalfLittleEndian(b.Slice(28));
+        }
+        return s;
+    }
+
+    private static short PackAngle(float angle)
+    {
+        return (short)Math.Clamp(Mathf.RoundToInt(angle * AngleScale), -short.MaxValue, short.MaxValue);
+    }
 }
 
 /// <summary>
