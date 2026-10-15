@@ -173,7 +173,19 @@ public partial class BuildGrid : Node3D
     {
         anchor = default;
         direction = direction.Normalized();
-        var ray = GameWorld.Raycast(from, from + direction * range);
+        // Loose items aren't surfaces to build on: take the nearest hit that isn't one.
+        RayHit ray = default;
+        var hits = GameWorld.b3droot.RaycastAll(from, from + direction * range, ~GameWorld.QueryHiddenLayer);
+        foreach (var hitInfo in hits)
+        {
+            RayHit candidate = RayHit.From(hitInfo);
+            hitInfo.Dispose();
+            if (candidate.hit && candidate.collider is not PhysicalFactoryItem)
+            {
+                ray = candidate;
+                break;
+            }
+        }
         bool hit = ray.hit;
         float hitDistance = hit ? from.DistanceTo(ray.position) : range;
 

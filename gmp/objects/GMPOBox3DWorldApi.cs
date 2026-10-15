@@ -108,12 +108,14 @@ public static class Box3DKeys
     public static readonly Variant point = "point";
 }
 
-/// <summary>A raycast result, read out of the extension's result Dictionary once (see <see cref="GMPOBox3DWorldApi.Raycast"/>).</summary>
+/// <summary>A raycast result, read out of the extension's result Dictionary once (see <see cref="GMPOBox3DWorldApi.Raycast"/>).
+/// Also reads the entries of <see cref="GMPOBox3DWorldApi.RaycastAll"/>, which are all hits and carry no "hit" key.</summary>
 public readonly record struct RayHit(bool hit, Vector3 position, Vector3 normal, float fraction, Node collider, long userMaterial)
 {
     public static RayHit From(Godot.Collections.Dictionary result)
     {
-        if (!result[Box3DKeys.hit].AsBool()) return default;
+        if (result.TryGetValue(Box3DKeys.hit, out Variant hitValue) && !hitValue.AsBool()) return default;
+        if (!result.ContainsKey(Box3DKeys.position)) return default;
         // No collider when the shape's body has no node (shouldn't happen for scene bodies, but the key is optional).
         Node collider = null;
         if (result.TryGetValue(Box3DKeys.collider, out Variant c))
@@ -121,7 +123,11 @@ public readonly record struct RayHit(bool hit, Vector3 position, Vector3 normal,
             collider = c.As<Node>();
             c.Dispose(); // an Object Variant carries a finalizable disposer; the Node wrapper outlives it
         }
+        float fraction = 0f;
+        if (result.TryGetValue(Box3DKeys.fraction, out Variant fractionValue)) fraction = fractionValue.AsSingle();
+        long userMaterial = 0;
+        if (result.TryGetValue(Box3DKeys.userMaterial, out Variant materialValue)) userMaterial = materialValue.AsInt64();
         return new RayHit(true, result[Box3DKeys.position].AsVector3(), result[Box3DKeys.normal].AsVector3(),
-            result[Box3DKeys.fraction].AsSingle(), collider, result[Box3DKeys.userMaterial].AsInt64());
+            fraction, collider, userMaterial);
     }
 }
