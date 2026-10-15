@@ -1,0 +1,37 @@
+[gd_scene format=4 uid="uid://b6uy4bxhbcgvq"]
+
+[ext_resource type="Script" uid="uid://b10te24frnknc" path="res://game/scripts/structures/Structure.cs" id="1_8jfql"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_4txvu"]
+_surfaces = [{
+"aabb": AABB(-1, -1, -0.15, 2, 2, 0.3),
+"attribute_data": PackedByteArray("AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/"),
+"format": 34359738391,
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 36,
+"vertex_data": PackedByteArray("AACAvwAAgL+amRk+AACAvwAAgL+amRm+AACAvwAAgD+amRm+AACAPwAAgL+amRm+AACAvwAAgL+amRm+AACAvwAAgL+amRk+AACAvwAAgD+amRm+AACAvwAAgL+amRm+AACAPwAAgL+amRm+AACAvwAAgD+amRm+AACAvwAAgD+amRk+AACAvwAAgL+amRk+AACAvwAAgL+amRk+AACAvwAAgD+amRk+AACAPwAAgD+amRk+AACAPwAAgD+amRk+AACAvwAAgD+amRk+AACAvwAAgD+amRm+AACAvwAAgL+amRk+AACAPwAAgL+amRk+AACAPwAAgL+amRm+AACAPwAAgD+amRk+AACAPwAAgL+amRk+AACAvwAAgL+amRk+AACAPwAAgL+amRm+AACAPwAAgL+amRk+AACAPwAAgD+amRk+AACAPwAAgL+amRm+AACAPwAAgD+amRm+AACAvwAAgD+amRm+AACAvwAAgD+amRm+AACAPwAAgD+amRm+AACAPwAAgD+amRk+AACAPwAAgD+amRk+AACAPwAAgD+amRm+AACAPwAAgL+amRm+AAD/f/9//n8AAP9//3/+fwAA/3//f/5//38AAP//AAD/fwAA//8AAP9/AAD//wAA/////wAA/z//////AAD/P/////8AAP8/AAD/f/9//n8AAP9//3/+fwAA/3//f/5//3//fwAA/z//f/9/AAD/P/9//38AAP8//3//////AAD/f/////8AAP9//////wAA/38AAP//AAD/fwAA//8AAP9/AAD//wAA/3//fwAA/z//f/9/AAD/P/9//38AAP8/////f/9//n////9//3/+f////3//f/5//////wAA/z//////AAD/P/////8AAP8//3//////AAD/f/////8AAP9//////wAA////f/9//n////9//3/+f////3//f/5/")
+}]
+
+[node name="Target" type="Box3DBody" unique_id=497503289]
+body_type = 0
+shape_type = 6
+baked_compound = true
+script = ExtResource("1_8jfql")
+cells = Dictionary[Vector3i, int]({
+Vector3i(0, 0, 0): 0,
+Vector3i(0, 1, 0): 0,
+Vector3i(1, 0, 0): 0,
+Vector3i(1, 1, 0): 0
+})
+blueprintItemID = "blueprint_target"
+
+[node name="model" type="Node3D" parent="." unique_id=1466403325]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="model" unique_id=696195369]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, -0.5)
+size = Vector3(2, 2, 0.3)
+
+[node name="CSGBakedMeshInstance3D" type="MeshInstance3D" parent="." unique_id=624302090]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, -0.5)
+mesh = SubResource("ArrayMesh_4txvu")

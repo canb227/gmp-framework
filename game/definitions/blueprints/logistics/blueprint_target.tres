@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="BlueprintItem" format=3 uid="uid://csw2v6h0l2yu0"]
+
+[ext_resource type="Texture2D" uid="uid://clbsr0jvo0o6p" path="res://game/assets/icons/blueprints/shitty target.png" id="1_58gh8"]
+[ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_lngib"]
+[ext_resource type="PackedScene" uid="uid://b6uy4bxhbcgvq" path="res://game/scenes/structures/logistics/Target.tscn" id="3_er24t"]
+
+[resource]
+script = ExtResource("1_lngib")
+structureScene = ExtResource("3_er24t")
+cost = Dictionary[int, int]({
+0: 1
+})
+itemID = "blueprint_target"
+displayName = "Target/Wall"
+description = "To block stuff"
+icon = ExtResource("1_58gh8")
+maxStackSize = 99
+metadata/_custom_type_script = "uid://blmd28f80x7rh"

@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://dgigpl74ykttk"]
+
+[node name="Sluice" type="Box3DBody" unique_id=1712912752]
