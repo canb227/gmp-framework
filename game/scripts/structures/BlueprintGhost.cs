@@ -8,13 +8,24 @@ using System.Collections.Generic;
 /// probe's sensors check against the simulation. While shown it reveals the grid around itself
 /// and highlights the face it's snapped to (<see cref="BuildGrid.placementActive"/>, BuildGrid.Reveal.cs). Other players' copies stay empty. As a <see cref="HeldItem"/>
 /// it handles its own input: "rotate" turns the preview, "alternate" switches a two-form blueprint (e.g. uphill/downhill
-/// slope) to its other form, and primary builds it (host-arbitrated, see BuildGrid.Placement.cs). Deconstructing is an interact on a structure (FactoryPlayer.Interaction.cs).
+/// slope) to its other form, and releasing primary builds it (host-arbitrated, see BuildGrid.Placement.cs). Deconstructing is an interact on a structure (FactoryPlayer.Interaction.cs).
+/// <para>
+/// A belt blueprint (<see cref="ConveyorBlueprint"/>) is dragged, like Factorio: holding primary lays a straight line of
+/// ghosts, end to end, from where it was pressed toward the crosshair, every belt facing away from the first, and releasing
+/// builds the line. Aimed at a belt of its own blueprint, it targets that belt's cells, and its ghosts may cover such
+/// belts exactly: they're replaced (turned to face the line's way) rather than blocking it.
+/// </para>
 /// </summary>
 public partial class BlueprintGhost : HeldItem
 {
     [Export] public float placeRange = 10f;
     [Export] public Color validColor = new(0.2f, 1f, 0.3f, 0.35f);
     [Export] public Color invalidColor = new(1f, 0.2f, 0.2f, 0.35f);
+    /// <summary>
+    /// When on, a dragged belt line with any blocked cell builds nothing; when off, its buildable cells are built and the
+    /// blocked ones skipped. A belt the line replaces doesn't block it; running out of blueprints only cuts the line short.
+    /// </summary>
+    [Export] public bool refuseBlockedLines = false;
 
     public BlueprintItem blueprint => item as BlueprintItem;
     /// <summary>The anchor cell the structure would be built at, or null when not looking at anything in range.</summary>
@@ -66,6 +77,20 @@ public partial class BlueprintGhost : HeldItem
         Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
     };
 
+    /// <summary>
+    /// While primary is held with a belt blueprint: the min corner of the footprint's bounding box where the line starts.
+    /// The first belt keeps those cells whichever way the line runs, so a module-aligned start stays module aligned.
+    /// </summary>
+    Vector3I? dragCorner;
+    /// <summary>The line's ghosts, one per belt out from <see cref="dragCorner"/>, each tinted on its own.</summary>
+    readonly List<(PlacementProbe probe, StandardMaterial3D material)> lineGhosts = new();
+    /// <summary>Quarter turns every belt of the line faces.</summary>
+    int lineTurns;
+    /// <summary>The line's cells to build on release and whether each replaces a belt, worked out every physics tick.</summary>
+    readonly List<(Vector3I anchor, bool replace)> linePlan = new();
+    /// <summary>Whether any cell of the line can't be built (see <see cref="refuseBlockedLines"/>).</summary>
+    bool lineBlocked;
+
     /// <summary>Builds the preview (on the holder's peer only).</summary>
     public override void Equip(ItemInfo item, FactoryPlayer player)
     {
@@ -100,14 +125,18 @@ public partial class BlueprintGhost : HeldItem
         {
             scene = conveyorBlueprint.SceneFor(previewShape);
         }
-        probe = PlacementProbe.Create(scene, false);
-        if (probe == null)
+        probe = CreateGhost(scene, material);
+    }
+
+    // A translucent probe of scene drawn in ghostMaterial, with its arrows showing; hidden until moved into place.
+    static PlacementProbe CreateGhost(PackedScene scene, StandardMaterial3D ghostMaterial)
+    {
+        PlacementProbe ghost = PlacementProbe.Create(scene, false);
+        if (ghost == null)
         {
-
-            return;
+            return null;
         }
-
-        foreach (Node n in probe.structure.FindChildren("*", nameof(MeshInstance3D), true, false))
+        foreach (Node n in ghost.structure.FindChildren("*", nameof(MeshInstance3D), true, false))
         {
             // The structure's arrows keep their own colours.
             if (n.GetParent() is StructureArrow)
@@ -116,24 +145,25 @@ public partial class BlueprintGhost : HeldItem
             }
             // Set through the engine rather than casting: a mesh can carry its own script (e.g. a Spinner),
             // which makes its managed type something other than MeshInstance3D.
-            n.Set(GeometryInstance3D.PropertyName.MaterialOverride, material);
+            n.Set(GeometryInstance3D.PropertyName.MaterialOverride, ghostMaterial);
             n.Set(GeometryInstance3D.PropertyName.CastShadow, (int)GeometryInstance3D.ShadowCastingSetting.Off);
         }
         // Arrows hide themselves in game; the preview is where they're for.
-        foreach (Node n in probe.structure.FindChildren("*", nameof(Node3D), true, false))
+        foreach (Node n in ghost.structure.FindChildren("*", nameof(Node3D), true, false))
         {
             if (n is StructureArrow arrow)
             {
                 arrow.Visible = true;
             }
-
         }
+        return ghost;
     }
 
     public override void _ExitTree()
     {
         probe?.Free();
         probe = null;
+        ClearLine();
         if (isLocal)
         {
             BuildGrid.placementActive = false;
@@ -161,10 +191,31 @@ public partial class BlueprintGhost : HeldItem
         }
         if (@event.IsActionPressed(InputActions.primary))
         {
-            if (canPlace && targetCell is Vector3I cell)
+            // Builds on release; a belt is first dragged into a line from here.
+            if (blueprint is ConveyorBlueprint && targetCell is Vector3I start)
+            {
+                dragCorner = FootprintMin(start, quarterTurns);
+            }
+            return true;
+        }
+        if (@event.IsActionReleased(InputActions.primary))
+        {
+            if (dragCorner != null)
+            {
+                if (linePlan.Count > 0 && !(refuseBlockedLines && lineBlocked))
+                {
+                    // The next belt carries on the line's way.
+                    quarterTurns = lineTurns;
+                    placing = true;
+                    BuildGrid.RequestPlace(player, blueprint, linePlan, lineTurns);
+                    placing = false;
+                }
+                ClearLine();
+            }
+            else if (blueprint is not ConveyorBlueprint && canPlace && targetCell is Vector3I cell)
             {
                 placing = true;
-                BuildGrid.RequestPlace(player, blueprint, cell, quarterTurns, showingAlternate);
+                BuildGrid.RequestPlace(player, blueprint, new() { (cell, false) }, quarterTurns, showingAlternate);
                 placing = false;
             }
             return true;
@@ -188,9 +239,16 @@ public partial class BlueprintGhost : HeldItem
         }
         BuildGrid.placementActive = true;
         BuildGrid.placementFree = !smartPlacement;
+        if (dragCorner is Vector3I corner)
+        {
+            UpdateLine(corner);
+            return;
+        }
 
         Camera3D camera = player.camera;
-        if (!BuildGrid.TryGetPlacementTarget(camera.GlobalPosition, -camera.GlobalTransform.Basis.Z, placeRange,
+        Vector3 from = camera.GlobalPosition;
+        Vector3 direction = -camera.GlobalTransform.Basis.Z;
+        if (!BuildGrid.TryGetPlacementTarget(from, direction, placeRange,
                 probe.structure.cells.Keys, quarterTurns, smartPlacement, out Vector3I anchor, out _, out Vector3I faceNormal))
         {
             targetCell = null;
@@ -200,7 +258,19 @@ public partial class BlueprintGhost : HeldItem
             BuildGrid.placementFace = null;
             return;
         }
-        if (snaps && smartPlacement)
+        // Aimed at a belt of its own blueprint, a belt blueprint targets that belt's cells, to turn it or start a line on it.
+        Conveyor aimedBelt = null;
+        if (blueprint is ConveyorBlueprint && BuildGrid.FindStructure(BuildGrid.RaycastPastItems(from, from + direction * placeRange)) is Conveyor belt
+            && belt.blueprintItemID == blueprint.itemID)
+        {
+            aimedBelt = belt;
+        }
+        if (aimedBelt != null)
+        {
+            // The anchor that, at the preview's rotation, covers the same cells as the belt.
+            anchor = FootprintMin(aimedBelt.anchor, aimedBelt.quarterTurns) - FootprintMin(Vector3I.Zero, quarterTurns);
+        }
+        else if (snaps && smartPlacement)
         {
             anchor = SnapToOutput(anchor);
         }
@@ -236,9 +306,188 @@ public partial class BlueprintGhost : HeldItem
             canPlace = false;
             return;
         }
-        canPlace = BuildGrid.IsPlacementAllowed(probe, out _);
+        canPlace = BuildGrid.IsPlacementAllowed(probe, aimedBelt != null, out _);
         material.AlbedoColor = canPlace ? validColor : invalidColor;
         BuildGrid.placementTint = material.AlbedoColor;
+    }
+
+    // Lays the line of belt ghosts from the footprint at corner toward the crosshair, along whichever horizontal axis
+    // that's further on, and works out which belts to build on release (linePlan). Belts follow one another a
+    // footprint's depth apart (its size along the way it carries items), so they line up end to end.
+    void UpdateLine(Vector3I corner)
+    {
+        ConveyorBlueprint conveyorBlueprint = (ConveyorBlueprint)blueprint;
+        probe.structure.Visible = false;
+        int minZ = int.MaxValue, maxZ = int.MinValue;
+        foreach (Vector3I offset in probe.structure.cells.Keys)
+        {
+            minZ = Mathf.Min(minZ, offset.Z);
+            maxZ = Mathf.Max(maxZ, offset.Z);
+        }
+        int depth = maxZ - minZ + 1;
+
+        // The crosshair's cell: where it meets the floor of the line, or placeRange out if that's further or behind.
+        Camera3D camera = player.camera;
+        Vector3 from = camera.GlobalPosition;
+        Vector3 direction = -camera.GlobalTransform.Basis.Z;
+        float distance = placeRange;
+        if (direction.Y != 0)
+        {
+            float toFloor = (corner.Y * BuildGrid.CellSize - from.Y) / direction.Y;
+            if (toFloor > 0 && toFloor < placeRange)
+            {
+                distance = toFloor;
+            }
+        }
+        Vector3I end = BuildGrid.WorldToCell(from + direction * distance);
+        // How many footprints along each axis the crosshair is from the first one.
+        int alongX = Mathf.FloorToInt((end.X - corner.X) / (float)depth);
+        int alongZ = Mathf.FloorToInt((end.Z - corner.Z) / (float)depth);
+        Vector3I step;
+        int length;
+        if (Mathf.Abs(alongX) >= Mathf.Abs(alongZ))
+        {
+            step = new Vector3I(Mathf.Sign(alongX), 0, 0);
+            length = Mathf.Abs(alongX);
+        }
+        else
+        {
+            step = new Vector3I(0, 0, Mathf.Sign(alongZ));
+            length = Mathf.Abs(alongZ);
+        }
+        // Belts face away from the start; a click without a drag keeps the preview's rotation.
+        lineTurns = quarterTurns;
+        if (length > 0)
+        {
+            lineTurns = Mathf.PosMod(Mathf.RoundToInt(Mathf.Atan2(-step.X, -step.Z) / (Mathf.Pi / 2)), 4);
+        }
+
+        int blueprintsLeft = 0;
+        InventorySlot slot = player.inventory.GetSlot(player.inventory.ActiveHotbarSlot);
+        if (slot.itemID == blueprint.itemID)
+        {
+            blueprintsLeft = slot.Count;
+        }
+        // The first belt's anchor that, turned the line's way, covers the cells at corner.
+        Vector3I firstAnchor = corner - FootprintMin(Vector3I.Zero, lineTurns);
+        linePlan.Clear();
+        lineBlocked = false;
+        for (int i = 0; i <= length; i++)
+        {
+            Vector3I anchor = firstAnchor + step * depth * i;
+            // Only the first belt can be fed from a side; the rest are fed from behind by the one before.
+            PackedScene scene = conveyorBlueprint.structureScene;
+            if (i == 0)
+            {
+                scene = conveyorBlueprint.SceneFor(Conveyor.ShapeAt(conveyorBlueprint, anchor, lineTurns));
+            }
+            if (i == lineGhosts.Count)
+            {
+                StandardMaterial3D ghostMaterial = (StandardMaterial3D)material.Duplicate();
+                lineGhosts.Add((CreateGhost(scene, ghostMaterial), ghostMaterial));
+            }
+            else if (lineGhosts[i].probe.structure.SceneFilePath != scene.ResourcePath)
+            {
+                lineGhosts[i].probe.Free();
+                lineGhosts[i] = (CreateGhost(scene, lineGhosts[i].material), lineGhosts[i].material);
+            }
+            PlacementProbe ghost = lineGhosts[i].probe;
+            if (ghost.anchor != anchor || ghost.quarterTurns != lineTurns || !ghost.structure.Visible)
+            {
+                ghost.MoveTo(anchor, lineTurns);
+                ghost.structure.Visible = true;
+            }
+
+            Conveyor replaced = BuildGrid.ReplaceableBelt(blueprint.itemID, BuildGrid.FootprintCells(anchor, ghost.structure.cells.Keys, lineTurns));
+            bool replace = replaced != null;
+            bool buildable;
+            if (replace && replaced.quarterTurns == lineTurns)
+            {
+                // Already the belt the line would build: left as it is.
+                buildable = true;
+            }
+            else
+            {
+                // Until the ghost settles its overlaps describe its previous cells: go by the grid alone, and let the host check the rest.
+                if (ghost.settled)
+                {
+                    buildable = BuildGrid.IsPlacementAllowed(ghost, replace, out _);
+                }
+                else
+                {
+                    buildable = replace || BuildGrid.FootprintClear(anchor, ghost.structure.cells.Keys, lineTurns);
+                }
+                if (!buildable)
+                {
+                    lineBlocked = true;
+                }
+                else if (!replace && blueprintsLeft == 0)
+                {
+                    buildable = false;
+                }
+                else
+                {
+                    if (!replace)
+                    {
+                        blueprintsLeft--;
+                    }
+                    linePlan.Add((anchor, replace));
+                }
+            }
+            if (buildable)
+            {
+                lineGhosts[i].material.AlbedoColor = validColor;
+            }
+            else
+            {
+                lineGhosts[i].material.AlbedoColor = invalidColor;
+            }
+        }
+        while (lineGhosts.Count > length + 1)
+        {
+            lineGhosts[^1].probe.Free();
+            lineGhosts.RemoveAt(lineGhosts.Count - 1);
+        }
+        BuildGrid.placementTint = validColor;
+        if (refuseBlockedLines && lineBlocked)
+        {
+            // Nothing will be built.
+            foreach (var lineGhost in lineGhosts)
+            {
+                lineGhost.material.AlbedoColor = invalidColor;
+            }
+            BuildGrid.placementTint = invalidColor;
+        }
+
+        // The grid reveal follows the last belt.
+        BuildGrid.placementFocus = BuildGrid.CellToWorld(corner + step * depth * length);
+        BuildGrid.placementHalfSize = depth * BuildGrid.CellSize / 2f;
+        BuildGrid.placementFloor = corner.Y * BuildGrid.CellSize;
+        BuildGrid.placementFace = null;
+    }
+
+    // The min corner of the footprint's bounding box at anchor, turned turns.
+    Vector3I FootprintMin(Vector3I anchor, int turns)
+    {
+        Vector3I min = new(int.MaxValue, int.MaxValue, int.MaxValue);
+        foreach (Vector3I cell in BuildGrid.FootprintCells(anchor, probe.structure.cells.Keys, turns))
+        {
+            min = min.Min(cell);
+        }
+        return min;
+    }
+
+    // Ends a drag: frees the line's ghosts and shows the ordinary preview again.
+    void ClearLine()
+    {
+        foreach (var lineGhost in lineGhosts)
+        {
+            lineGhost.probe.Free();
+        }
+        lineGhosts.Clear();
+        linePlan.Clear();
+        dragCorner = null;
+        targetCell = null;
     }
 
     // Aimed within a cell of a placed structure's open output end, the preview is pulled so that one of its input ends

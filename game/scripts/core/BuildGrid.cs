@@ -173,19 +173,7 @@ public partial class BuildGrid : Node3D
     {
         anchor = default;
         direction = direction.Normalized();
-        // Loose items aren't surfaces to build on: take the nearest hit that isn't one.
-        RayHit ray = default;
-        var hits = GameWorld.b3droot.RaycastAll(from, from + direction * range, ~GameWorld.QueryHiddenLayer);
-        foreach (var hitInfo in hits)
-        {
-            RayHit candidate = RayHit.From(hitInfo);
-            hitInfo.Dispose();
-            if (candidate.hit && candidate.collider is not PhysicalFactoryItem)
-            {
-                ray = candidate;
-                break;
-            }
-        }
+        RayHit ray = RaycastPastItems(from, from + direction * range);
         bool hit = ray.hit;
         float hitDistance = hit ? from.DistanceTo(ray.position) : range;
 
@@ -378,6 +366,22 @@ public partial class BuildGrid : Node3D
                 return true;
             }
         }
+    }
+
+    /// <summary>The nearest hit along the ray that isn't a loose item: items aren't surfaces to build on or aim at.</summary>
+    public static RayHit RaycastPastItems(Vector3 from, Vector3 to)
+    {
+        var hits = GameWorld.b3droot.RaycastAll(from, to, ~GameWorld.QueryHiddenLayer);
+        foreach (var hitInfo in hits)
+        {
+            RayHit candidate = RayHit.From(hitInfo);
+            hitInfo.Dispose();
+            if (candidate.hit && candidate.collider is not PhysicalFactoryItem)
+            {
+                return candidate;
+            }
+        }
+        return default;
     }
 
     /// <summary>The unit grid axis closest to <paramref name="v"/>.</summary>

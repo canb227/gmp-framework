@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://thk4l2a8yecs"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/PhysicalFactoryItem.cs" id="1_bwal6"]
+
+[node name="DroppedWrench" type="Box3DBody" unique_id=1833110805]
+script = ExtResource("1_bwal6")
+itemID = "wrench"
+canBePickTarget = true
+canBeGrabbed = true
+canBePickedUp = true

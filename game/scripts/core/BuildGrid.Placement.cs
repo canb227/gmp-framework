@@ -13,10 +13,14 @@ using System.Collections.Generic;
 /// place request until its probe settles, then re-checks the grid at decision time: of several requests
 /// for the same cells, the first decided wins and the rest are refunded.
 /// </para>
+/// <para>
+/// A straight or turn belt can be built over another of the same blueprint (<see cref="ReplaceableBelt"/>), replacing
+/// it, e.g. to turn it round. A replacement costs no blueprint, since the old belt's would come straight back.
+/// </para>
 /// </summary>
 public partial class BuildGrid
 {
-    record PendingPlacement(PlacementProbe probe, string blueprintItemID, bool alternate, ulong requester, ulong playerObjectId);
+    record PendingPlacement(PlacementProbe probe, string blueprintItemID, bool alternate, bool replace, ulong requester, ulong playerObjectId);
     static readonly List<PendingPlacement> pendingPlacements = new(); // host only
 
     /// <summary>Drops the host's undecided place requests. Called from <see cref="GameWorld.ResetSession"/>.</summary>
@@ -32,31 +36,77 @@ public partial class BuildGrid
     }
 
     /// <summary>
-    /// True if the footprint is clear (<see cref="FootprintClear"/>: free grid cells, none blocked by level geometry)
-    /// and the probe overlaps none of the level's static colliders.
+    /// True if the probe overlaps none of the level's static colliders and its cells can take it: for a replacement
+    /// (<paramref name="replace"/>), its anchor cell holds a belt it replaces (<see cref="ReplaceableBelt"/>); otherwise
+    /// the footprint is clear (<see cref="FootprintClear"/>: free grid cells, none blocked by level geometry).
     /// </summary>
-    public static bool IsPlacementAllowed(PlacementProbe probe, out List<Node> levelOverlaps)
+    public static bool IsPlacementAllowed(PlacementProbe probe, bool replace, out List<Node> levelOverlaps)
     {
         levelOverlaps = probe.LevelOverlaps();
-        return FootprintClear(probe.anchor, probe.structure.cells.Keys, probe.quarterTurns)
-            && levelOverlaps.Count == 0;
+        if (levelOverlaps.Count > 0)
+        {
+            return false;
+        }
+        if (replace)
+        {
+            return ReplaceableBelt(probe.structure.blueprintItemID, FootprintCells(probe.anchor, probe.structure.cells.Keys, probe.quarterTurns)) != null;
+        }
+        return FootprintClear(probe.anchor, probe.structure.cells.Keys, probe.quarterTurns);
     }
 
     /// <summary>
-    /// Consumes one <paramref name="blueprint"/> from <paramref name="player"/>'s active hotbar slot and asks
-    /// the host to build its structure at <paramref name="anchor"/>, in its <see cref="BlueprintItem.alternateStructureScene"/>
-    /// form if <paramref name="alternate"/>. The blueprint is refunded if the host refuses.
+    /// The belt that a belt of <paramref name="blueprintItemID"/> built over <paramref name="footprint"/> replaces rather
+    /// than being blocked by: one straight or turn belt (a <see cref="ConveyorBlueprint"/>'s) of the same blueprint
+    /// filling every cell of it, so exactly those cells. Null if there is none.
     /// </summary>
-    public static void RequestPlace(FactoryPlayer player, BlueprintItem blueprint, Vector3I anchor, int quarterTurns, bool alternate = false)
+    public static Conveyor ReplaceableBelt(string blueprintItemID, IEnumerable<Vector3I> footprint)
     {
-        InventorySlot slot = player.inventory.GetSlot(player.inventory.ActiveHotbarSlot);
-        if (slot.IsEmpty || slot.itemID != blueprint.itemID)
+        if (ItemInfo.Fetch(blueprintItemID) is not ConveyorBlueprint)
         {
-            return;
+            return null;
         }
-        player.inventory.RemoveFromSlot(player.inventory.ActiveHotbarSlot, 1);
-        player.UpdateEquippedItem();
-        RPCManager.RPCTo(Lobby.hostID, instance, nameof(_RequestPlace), [blueprint.itemID, anchor, quarterTurns, alternate, player.id]);
+        Conveyor belt = null;
+        foreach (Vector3I cell in footprint)
+        {
+            if (GetStructureAt(cell) is not Conveyor c || c.blueprintItemID != blueprintItemID || (belt != null && c != belt))
+            {
+                return null;
+            }
+            belt = c;
+        }
+        return belt;
+    }
+
+    /// <summary>
+    /// Asks the host to build <paramref name="blueprint"/>'s structure at each of <paramref name="placements"/>' anchors in
+    /// order, all turned <paramref name="quarterTurns"/>, in its <see cref="BlueprintItem.alternateStructureScene"/> form if
+    /// <paramref name="alternate"/>. Each one that isn't a replacement takes a blueprint from <paramref name="player"/>'s
+    /// active hotbar slot, refunded if the host refuses it; nothing is sent unless the slot holds enough.
+    /// </summary>
+    public static void RequestPlace(FactoryPlayer player, BlueprintItem blueprint, List<(Vector3I anchor, bool replace)> placements, int quarterTurns, bool alternate = false)
+    {
+        int needed = 0;
+        foreach (var placement in placements)
+        {
+            if (!placement.replace)
+            {
+                needed++;
+            }
+        }
+        if (needed > 0)
+        {
+            InventorySlot slot = player.inventory.GetSlot(player.inventory.ActiveHotbarSlot);
+            if (slot.IsEmpty || slot.itemID != blueprint.itemID || slot.Count < needed)
+            {
+                return;
+            }
+            player.inventory.RemoveFromSlot(player.inventory.ActiveHotbarSlot, needed);
+            player.UpdateEquippedItem();
+        }
+        foreach (var placement in placements)
+        {
+            RPCManager.RPCTo(Lobby.hostID, instance, nameof(_RequestPlace), [blueprint.itemID, placement.anchor, quarterTurns, alternate, placement.replace, player.id]);
+        }
     }
 
     /// <summary>Asks the host to remove <paramref name="structure"/> and give its blueprint to <paramref name="player"/>.</summary>
@@ -67,7 +117,7 @@ public partial class BuildGrid
 
     // Runs on the host: quick grid check now, collision check once the probe has settled (_PhysicsProcess).
     [RPC]
-    private void _RequestPlace(string blueprintItemID, Vector3I anchor, int quarterTurns, bool alternate, ulong playerObjectId)
+    private void _RequestPlace(string blueprintItemID, Vector3I anchor, int quarterTurns, bool alternate, bool replace, ulong playerObjectId)
     {
         if (!RequesterControls(playerObjectId))
         {
@@ -79,14 +129,29 @@ public partial class BuildGrid
             return;
         }
         PlacementProbe probe = PlacementProbe.Create(blueprint.StructureScene(alternate), false);
-        if (probe == null || !CanPlace(anchor, probe.structure.cells.Keys, quarterTurns))
+        bool cellsFree = false;
+        if (probe != null)
+        {
+            if (replace)
+            {
+                cellsFree = ReplaceableBelt(blueprintItemID, FootprintCells(anchor, probe.structure.cells.Keys, quarterTurns)) != null;
+            }
+            else
+            {
+                cellsFree = CanPlace(anchor, probe.structure.cells.Keys, quarterTurns);
+            }
+        }
+        if (!cellsFree)
         {
             probe?.Free();
-            Refund(blueprintItemID, RPCManager.sender, playerObjectId);
+            if (!replace)
+            {
+                Refund(blueprintItemID, RPCManager.sender, playerObjectId);
+            }
             return;
         }
         probe.MoveTo(anchor, Mathf.PosMod(quarterTurns, 4));
-        pendingPlacements.Add(new PendingPlacement(probe, blueprintItemID, alternate, RPCManager.sender, playerObjectId));
+        pendingPlacements.Add(new PendingPlacement(probe, blueprintItemID, alternate, replace, RPCManager.sender, playerObjectId));
     }
 
     public override void _PhysicsProcess(double delta)
@@ -111,7 +176,7 @@ public partial class BuildGrid
     private static void DecidePlacement(PendingPlacement p)
     {
         PlacementProbe probe = p.probe;
-        if (!IsPlacementAllowed(probe, out List<Node> levelOverlaps))
+        if (!IsPlacementAllowed(probe, p.replace, out List<Node> levelOverlaps))
         {
             foreach (Node hit in levelOverlaps)
             {
@@ -121,21 +186,33 @@ public partial class BuildGrid
             {
                 Logging.Log($"Refused {p.blueprintItemID} at {probe.anchor}: its cells are taken or blocked", "BuildGrid");
             }
-            Refund(p.blueprintItemID, p.requester, p.playerObjectId);
+            if (!p.replace)
+            {
+                Refund(p.blueprintItemID, p.requester, p.playerObjectId);
+            }
             return;
         }
 
-        // Loose items inside the new structure would be stuck in it. The host simulates them all, so it lifts each one
-        // by the structure's height (plus a little), which puts them on top in the same arrangement, to fall back down.
-        int height = 0;
-        foreach (Vector3I cell in probe.structure.cells.Keys)
+        if (p.replace)
         {
-            height = Mathf.Max(height, cell.Y + 1);
+            // Despawning frees the old belt's cells at once (Structure.OnDespawned) for the new one. The items riding
+            // it stay put: lifting them like below would throw them off whenever a belt is turned.
+            GameWorld.DespawnObject(ReplaceableBelt(p.blueprintItemID, FootprintCells(probe.anchor, probe.structure.cells.Keys, probe.quarterTurns)).id);
         }
-        foreach (PhysicalFactoryItem item in probe.ItemOverlaps())
+        else
         {
-            item.Teleport(item.GlobalPosition + Vector3.Up * (height * CellSize + 0.5f));
-            item.SetAwake(true); // a resting item may be asleep and would hang in the air
+            // Loose items inside the new structure would be stuck in it. The host simulates them all, so it lifts each one
+            // by the structure's height (plus a little), which puts them on top in the same arrangement, to fall back down.
+            int height = 0;
+            foreach (Vector3I cell in probe.structure.cells.Keys)
+            {
+                height = Mathf.Max(height, cell.Y + 1);
+            }
+            foreach (PhysicalFactoryItem item in probe.ItemOverlaps())
+            {
+                item.Teleport(item.GlobalPosition + Vector3.Up * (height * CellSize + 0.5f));
+                item.SetAwake(true); // a resting item may be asleep and would hang in the air
+            }
         }
 
         StructureState state = new() { anchor = probe.anchor, quarterTurns = probe.quarterTurns };
