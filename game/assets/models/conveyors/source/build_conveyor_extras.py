@@ -214,7 +214,7 @@ def build_loader():
     build_belt(path, "Belt", coll, 2.0)
     B = Builder()
     for side in (-1, 1):
-        build_side(B, path, side, rng, panel_len=(0.5, 0.8))
+        build_side(B, path, side, rng, panel_len=(0.5, 0.8), lean_deg=GUARD_LEAN)
     build_cable(B, path)
     # scaffold legs under the raised front, outside the stringers
     for side in (-1, 1):
@@ -237,7 +237,7 @@ def build_loader():
         stud(B, p, (0, 1, 0), rust=0.4)
         if k in (1, 4):
             streak(B, p, (0, 1, 0), 0.05)
-    status_light(B, path, 0.6, 1)
+    status_light(B, path, 0.6, 1, lean_deg=GUARD_LEAN)
     B.to_object("Frame", coll)
     # Into the structure frame (Structure.cs): origin at the anchor cell's left-bottom-back corner, growing
     # +X +Y -Z in Godot (+X -Y +Z here).

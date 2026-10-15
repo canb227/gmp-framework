@@ -1,8 +1,38 @@
-[gd_scene format=3 uid="uid://kntxrimjqyhh"]
+[gd_scene format=4 uid="uid://kntxrimjqyhh"]
 
 [ext_resource type="Script" uid="uid://c8jn3gvcakhgp" path="res://game/scripts/structures/logistics/conveyors/Conveyor.cs" id="1_r"]
 [ext_resource type="PackedScene" uid="uid://c0sgkso4dld8d" path="res://game/assets/models/conveyors/conveyor_turn_left.glb" id="2_r"]
 [ext_resource type="Script" uid="uid://bv13olg4g30nl" path="res://game/scripts/structures/StructureArrow.cs" id="3_pktch"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_WallOuter0"]
+_surfaces = [{
+"aabb": AABB(-0.10855, -0.005, -0.37686, 1.1599, 0.4, 0.54296),
+"format": 34359738369,
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 39,
+"vertex_data": PackedByteArray("LocKvQrXo7uhFio+Js/vPHE9yj5Gsec8J03evQrXo7selg69J03evQrXo7selg69Js/vPHE9yj5Gsec8BVWFPnE9yj6002y9ztSCP3E9yj41KIy+Js/vPHE9yj5Gsec8LocKvQrXo7uhFio+BVWFPnE9yj6002y9Js/vPHE9yj5Gsec8ztSCP3E9yj41KIy+Bk+VPgrXo7vYKTc9LocKvQrXo7uhFio+J03evQrXo7selg69Bk+VPgrXo7vYKTc9J03evQrXo7selg69C7ZqPgrXo7tQNCS+Bk+VPgrXo7vYKTc9C7ZqPgrXo7tQNCS+0S1+PwrXo7vX88C+Bk+VPgrXo7vYKTc90S1+PwrXo7vX88C+tJKGPwrXo7sluS6+C7ZqPgrXo7tQNCS+J03evQrXo7selg69BVWFPnE9yj6002y9ztSCP3E9yj41KIy+LocKvQrXo7uhFio+tJKGPwrXo7sluS6+C7ZqPgrXo7tQNCS+BVWFPnE9yj6002y90S1+PwrXo7vX88C+0S1+PwrXo7vX88C+BVWFPnE9yj6002y9ztSCP3E9yj41KIy+0S1+PwrXo7vX88C+ztSCP3E9yj41KIy+tJKGPwrXo7sluS6+")
+}]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_WallOuter1"]
+_surfaces = [{
+"aabb": AABB(0.88679, -0.005, -1.09826, 0.9263, 0.4, 0.98594),
+"format": 34359738369,
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 39,
+"vertex_data": PackedByteArray("NtKGPwrXo7ufCea9dM6EP3E9yj48soa+/wRjPwrXo7ttRn2+/wRjPwrXo7ttRn2+dM6EP3E9yj48soa+MK6YP3E9yj4a1Oi+2iTeP3E9yj42HYO/dM6EP3E9yj48soa+NtKGPwrXo7ufCea9MK6YP3E9yj4a1Oi+dM6EP3E9yj48soa+2iTeP3E9yj42HYO/JsuiPwrXo7t4v8O+NtKGPwrXo7ufCea9/wRjPwrXo7ttRn2+JsuiPwrXo7t4v8O+/wRjPwrXo7ttRn2+O5GOPwrXo7te9Aa/JsuiPwrXo7t4v8O+O5GOPwrXo7te9Aa/FzbUPwrXo7vNk4y/JsuiPwrXo7t4v8O+FzbUPwrXo7vNk4y/nhPoPwrXo7s/TXO/O5GOPwrXo7te9Aa//wRjPwrXo7ttRn2+MK6YP3E9yj4a1Oi+2iTeP3E9yj42HYO/NtKGPwrXo7ufCea9nhPoPwrXo7s/TXO/O5GOPwrXo7te9Aa/MK6YP3E9yj4a1Oi+FzbUPwrXo7vNk4y/FzbUPwrXo7vNk4y/MK6YP3E9yj4a1Oi+2iTeP3E9yj42HYO/FzbUPwrXo7vNk4y/2iTeP3E9yj42HYO/nhPoPwrXo7s/TXO/")
+}]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_WallOuter2"]
+_surfaces = [{
+"aabb": AABB(1.63135, -0.005, -2.11331, 0.46444, 0.4, 1.21391),
+"format": 34359738369,
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 39,
+"vertex_data": PackedByteArray("EunrPwrXo7s5P2a/rIPgP3E9yj5P04K/+s/QPwrXo7vS226/+s/QPwrXo7vS226/rIPgP3E9yj5P04K/e3TlP3E9yj5+BKK/V7P7P3E9yj5u8f2/rIPgP3E9yj5P04K/EunrPwrXo7s5P2a/e3TlP3E9yj5+BKK/rIPgP3E9yj5P04K/V7P7P3E9yj5u8f2/BNryPwrXo7uYD5+/EunrPwrXo7s5P2a/+s/QPwrXo7vS226/BNryPwrXo7uYD5+/+s/QPwrXo7vS226/8w7YPwrXo7tk+aS/BNryPwrXo7uYD5+/8w7YPwrXo7tk+aS/yJfxPwrXo7t9QAfABNryPwrXo7uYD5+/yJfxPwrXo7t9QAfAcSEGQArXo7t+BgTA8w7YPwrXo7tk+aS/+s/QPwrXo7vS226/e3TlP3E9yj5+BKK/V7P7P3E9yj5u8f2/EunrPwrXo7s5P2a/cSEGQArXo7t+BgTA8w7YPwrXo7tk+aS/e3TlP3E9yj5+BKK/yJfxPwrXo7t9QAfAyJfxPwrXo7t9QAfAe3TlP3E9yj5+BKK/V7P7P3E9yj5u8f2/yJfxPwrXo7t9QAfAV7P7P3E9yj5u8f2/cSEGQArXo7t+BgTA")
+}]
 
 [node name="ConveyorTurnLeft" type="Box3DBody" unique_id=1324107816 node_paths=PackedStringArray("beltSurfaces")]
 body_type = 0
@@ -23,89 +53,61 @@ blueprintItemID = "blueprint_conveyor"
 
 [node name="Floor0" type="Box3DBody" parent="." unique_id=1007537442]
 body_type = 0
-box_size = Vector3(1.68, 0.1, 0.98605)
+box_size = Vector3(2, 0.1, 1.06401)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
 user_material_id = 5
-transform = Transform3D(0.25882, 0, -0.96593, 0, 1, 0, 0.96593, 0, 0.25882, 0.25882, 0.1, -1.03407)
+transform = Transform3D(0, -0.005, -0.99999, 0.00047, 0.99999, -0.005, 1, -0.00047, 0, 0.53025, 0.08622, -0.99998)
 
 [node name="Floor1" type="Box3DBody" parent="." unique_id=337974952]
 body_type = 0
-box_size = Vector3(1.68, 0.1, 0.98605)
+box_size = Vector3(1.43, 0.1, 1.06532)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
 user_material_id = 5
-transform = Transform3D(0.70711, 0, -0.70711, 0, 1, 0, 0.70711, 0, 0.70711, 0.70711, 0.1, -1.29289)
+transform = Transform3D(0.70711, -0.03531, -0.70622, 0, 0.99875, -0.04994, 0.70711, 0.03531, 0.70622, 0.88211, 0.08469, -1.12142)
 
 [node name="Floor2" type="Box3DBody" parent="." unique_id=334643199]
 body_type = 0
-box_size = Vector3(1.68, 0.1, 0.98605)
+box_size = Vector3(2, 0.1, 1.06504)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
 user_material_id = 5
-transform = Transform3D(0.96593, 0, -0.25882, 0, 1, 0, 0.25882, 0, 0.96593, 0.96593, 0.1, -1.74118)
+transform = Transform3D(0.9998, -0.01991, 0, 0.01989, 0.99882, -0.04429, 0.00088, 0.04428, 0.99902, 1.001, 0.08751, -1.47221)
 
-[node name="WallOuter0" type="Box3DCollisionShape" parent="." unique_id=1107121708]
-box_size = Vector3(0.11, 0.4, 1.045)
+[node name="WallOuter0" type="Box3DBody" parent="." unique_id=1107121708]
+body_type = 0
+shape_type = 5
+collision_mesh = SubResource("ArrayMesh_WallOuter0")
 friction = 0.0
-tangent_velocity = Vector3(0, 0, -0.1)
 user_material_id = 3
-transform = Transform3D(0.25882, 0, -0.96593, 0, 1, 0, 0.96593, 0, 0.25882, 0.49046, 0.2, -0.16957)
 
-[node name="WallOuter1" type="Box3DCollisionShape" parent="." unique_id=1060106689]
-box_size = Vector3(0.11, 0.4, 1.045)
+[node name="WallOuter1" type="Box3DBody" parent="." unique_id=1060106689]
+body_type = 0
+shape_type = 5
+collision_mesh = SubResource("ArrayMesh_WallOuter1")
 friction = 0.0
-tangent_velocity = Vector3(0, 0, -0.1)
 user_material_id = 3
-transform = Transform3D(0.70711, 0, -0.70711, 0, 1, 0, 0.70711, 0, 0.70711, 1.33997, 0.2, -0.66003)
 
-[node name="WallOuter2" type="Box3DCollisionShape" parent="." unique_id=51411012]
-box_size = Vector3(0.11, 0.4, 1.045)
+[node name="WallOuter2" type="Box3DBody" parent="." unique_id=51411012]
+body_type = 0
+shape_type = 5
+collision_mesh = SubResource("ArrayMesh_WallOuter2")
 friction = 0.0
-tangent_velocity = Vector3(0, 0, -0.1)
 user_material_id = 3
-transform = Transform3D(0.96593, 0, -0.25882, 0, 1, 0, 0.25882, 0, 0.96593, 1.83043, 0.2, -1.50954)
 
-[node name="Post" type="Box3DCollisionShape" parent="." unique_id=1747350150]
-shape_type = 3
-box_size = Vector3(0.16, 0.4, 0.16)
-sphere_radius = 0.01
-capsule_radius = 0.08
-capsule_height = 0.4
-friction = 0.1
-tangent_velocity = Vector3(0.1, 0, 0.1)
+[node name="CornerDeflector" type="Box3DBody" parent="." unique_id=1747350150]
+body_type = 0
+shape_type = 4
+capsule_radius = 0.1
+capsule_height = 0.30000000000000004
+friction = 0.5
+tangent_velocity = Vector3(1.414, 0, -1.414)
 user_material_id = 3
-transform = Transform3D(0.99999934, 0, 0, 0, 1, 0, 0, 0, 0.99999934, 0.06070797, 0.26764405, -1.9450451)
+transform = Transform3D(0.9999992, 0, 0, 0, 1, 0, 0, 0, 0.9999992, 0.040430095, 0.29963547, -1.9580303)
 
 [node name="StructureArrow" type="Node3D" parent="." unique_id=362824754]
 transform = Transform3D(4.371139e-08, 3.821371e-15, -1, 8.742278e-08, -1, 0, -1, -8.742278e-08, -4.371139e-08, 0.16272354, 0.8026422, -0.78694737)
 script = ExtResource("3_pktch")
 shape = 1
 metadata/_custom_type_script = "uid://bv13olg4g30nl"
-
-[node name="Floor0Lip" type="Box3DCollisionShape" parent="." unique_id=468265542]
-shape_type = 2
-capsule_radius = 0.05
-capsule_height = 1.58
-friction = 0.8
-tangent_velocity = Vector3(1.93186, 0, -0.51764)
-user_material_id = 5
-transform = Transform3D(0, 0.25882, -0.96593, -1, 0, 0, 0, 0.96593, 0.25882, -0.2174, 0.104, -0.90647)
-
-[node name="Floor1Lip" type="Box3DCollisionShape" parent="." unique_id=1687289959]
-shape_type = 2
-capsule_radius = 0.05
-capsule_height = 1.58
-friction = 0.8
-tangent_velocity = Vector3(1.41422, 0, -1.41422)
-user_material_id = 5
-transform = Transform3D(0, 0.70711, -0.70711, -1, 0, 0, 0, 0.70711, 0.70711, 0.35849, 0.104, -0.94427)
-
-[node name="Floor2Lip" type="Box3DCollisionShape" parent="." unique_id=1244877856]
-shape_type = 2
-capsule_radius = 0.05
-capsule_height = 1.58
-friction = 0.8
-tangent_velocity = Vector3(0.51764, 0, -1.93186)
-user_material_id = 5
-transform = Transform3D(0, 0.96593, -0.25882, -1, 0, 0, 0, 0.25882, 0.96593, 0.83833, 0.104, -1.26496)

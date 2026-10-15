@@ -41,6 +41,11 @@ LIP_X = (0.812, 0.842)    # underside guide lips, just inside the stringers, cov
 LIP_O = (-0.15, -0.095)   # ...from the cell floor up to just under the return run
 GUARD_X = (0.868, 0.902)  # salvaged panels standing on the stringer
 GUARD_TOP = 0.25          # nominal guard height above the belt
+# The basic belts' collider walls lean outward 15 degrees (so a jam can push items up and over), and their lane
+# reaches further out than these guards. Leaning guards say so visually: they stand on the outer edge of the
+# stringer and tip outward by the same angle.
+GUARD_LEAN = 15.0         # degrees
+GUARD_LEAN_X = (0.915, 0.949)
 CABLE_X = -0.975          # cable run along the left stringer
 CABLE_O = -0.06
 RIB_PITCH = 0.25          # belt pattern repeat; every run length is a multiple of this
@@ -295,9 +300,15 @@ def panel_splits(length, lo, hi, rng):
     cuts.append(length)
     return cuts
 
-def build_side(B, path, side, rng, panel_len=(0.5, 0.95), guards=True, brackets=True, hubs=True):
-    """Stringer + salvaged guard panels + brackets/bolts + roller hubs on one side (side = +1 right, -1 left)."""
+def build_side(B, path, side, rng, panel_len=(0.5, 0.95), guards=True, brackets=True, hubs=True, lean_deg=0.0):
+    """Stringer + salvaged guard panels + brackets/bolts + roller hubs on one side (side = +1 right, -1 left).
+    lean_deg tips the guards (and their brackets) outward, away from the belt, standing on the stringer's outer edge."""
     L = path.L
+    tilt = math.tan(math.radians(lean_deg))
+    guard_x = GUARD_LEAN_X if lean_deg else GUARD_X
+    def out(o):
+        """How far a leaning guard has moved outward at height o above the belt."""
+        return side * tilt * (o - STR_O[1])
     x0, x1 = sorted((side * STR_X[0], side * STR_X[1]))
     B.sweep(path, 0, L, x0, x1, STR_O[0], STR_O[1], "metal", C_FRAME, 0.2, rust=0.25)
     # underside guide lip: bright where loads have worn it, with a row of countersunk fasteners on the inner face
@@ -321,8 +332,9 @@ def build_side(B, path, side, rng, panel_len=(0.5, 0.95), guards=True, brackets=
             B.cyl(p, p + sd * side * 0.034, 0.012, 6, "steel", C_STEEL, rust=0.2)
     if not guards:
         return
-    gx0, gx1 = sorted((side * GUARD_X[0], side * GUARD_X[1]))
+    gx0, gx1 = sorted((side * guard_x[0], side * guard_x[1]))
     inner_x = gx0 if side > 0 else gx1          # the panel face the belt sees
+    shift = side * (guard_x[0] - GUARD_X[0])     # how far leaning guards (and their brackets) stand further out
     cuts = panel_splits(L, panel_len[0], panel_len[1], rng)
     heights = []
     for i in range(len(cuts) - 1):
@@ -336,26 +348,27 @@ def build_side(B, path, side, rng, panel_len=(0.5, 0.95), guards=True, brackets=
         if r < 0.1 and internal and brackets:
             # panel missing: two scaffold pipes clamped between the neighbouring brackets instead
             for o in (0.09, h - 0.04):
-                B.pipe([path.point(s, side * 0.915, o) for s in path.samples(a - 0.03, b + 0.03, 8)], 0.018, 8, "steel", C_STEEL)
+                B.pipe([path.point(s, side * 0.915 + shift + out(o), o) for s in path.samples(a - 0.03, b + 0.03, 8)], 0.018, 8, "steel", C_STEEL)
             continue
-        lean = side * rng.uniform(0.025, 0.05) if (r > 0.9 and brackets) else 0.0
+        sag = side * rng.uniform(0.025, 0.05) if (r > 0.9 and brackets) else 0.0
+        lean = sag + out(h)                      # how far the panel's top edge sits out from its foot
         if r < 0.62:
             B.sweep(path, a, b, gx0 + jx, gx1 + jx, STR_O[1], h, "panel", C_WHITE, 0.3, lean=lean)
             # facility panel seam line on the belt-facing side
-            sx = inner_x + jx - side * 0.003 + lean * (h - 0.06) / h
+            sx = inner_x + jx - side * 0.003 + sag * (h - 0.06) / h + out(h - 0.0685)
             B.sweep(path, a + 0.01, b - 0.01, min(sx, sx - side * 0.004), max(sx, sx - side * 0.004), h - 0.075, h - 0.062,
                     "metal", (0.25, 0.25, 0.25), 0.2)
         elif r < 0.8:
             B.sweep(path, a, b, gx0 + jx, gx1 + jx, STR_O[1], h, "metal", C_DARK, 0.2, rust=0.1, lean=lean)
         else:
             # hazard-striped plate: slanted stripes painted as strips on the outer face
-            B.sweep(path, a, b, gx0 + jx, gx1 + jx, STR_O[1], h, "panel", C_BLACK, 0.2)
+            B.sweep(path, a, b, gx0 + jx, gx1 + jx, STR_O[1], h, "panel", C_BLACK, 0.2, lean=out(h))
             face_x = (gx1 if side > 0 else gx0) + jx + side * 0.002
             nstr = max(2, int((b - a) / 0.09))
             for k in range(nstr):
                 s0 = a + (b - a) * k / nstr; s1 = a + (b - a) * (k + 0.5) / nstr
                 sk = 0.06
-                vs = [B.bm.verts.new(path.point(s, face_x, o)) for s, o in
+                vs = [B.bm.verts.new(path.point(s, face_x + out(o), o)) for s, o in
                       ((s0, STR_O[1] + 0.02), (s1, STR_O[1] + 0.02), (min(b, s1 + sk), h - 0.02), (min(b, s0 + sk), h - 0.02))]
                 f = B.quad(vs if side > 0 else vs[::-1], "panel")
                 B.paint([f], C_YELLOW, 0.3)
@@ -365,16 +378,18 @@ def build_side(B, path, side, rng, panel_len=(0.5, 0.95), guards=True, brackets=
             break
         s = cuts[i]
         h = max(heights[i - 1], heights[i])
-        bas = frame_basis(path, s)
+        bas = frame_basis(path, s) @ Matrix.Rotation(side * math.radians(lean_deg), 3, 'Y')   # tipped like the guards
         if rng.random() < 0.2:
-            c = path.point(s, side * (GUARD_X[0] + GUARD_X[1]) / 2, h - 0.06)
+            o = h - 0.06
+            c = path.point(s, side * (GUARD_X[0] + GUARD_X[1]) / 2 + shift + out(o), o)
             B.box(c, (0.06, 0.07, 0.07), bas, "tape", C_TAPE, 0.25)
         else:
-            c = path.point(s, side * 0.93, (STR_O[0] + h) / 2 - 0.01)
+            o = (STR_O[0] + h) / 2 - 0.01
+            c = path.point(s, side * 0.93 + shift + out(o), o)
             B.box(c, (0.05, 0.055, h - STR_O[0] - 0.04), bas, "steel", C_STEEL, 0.2, rust=0.6)
             _, _, sd, _ = path.frame(s)
             for o in (-0.1, h - 0.08):
-                p = path.point(s, side * 0.955, o)
+                p = path.point(s, side * 0.955 + shift + out(o), o)
                 B.cyl(p, p + sd * side * 0.012, 0.012, 6, "steel", C_STEEL, rust=0.4)
     # patch plates bolted over holes in the stringer
     for _ in range(rng.randint(1, 2) if brackets else 0):
@@ -404,11 +419,15 @@ def build_cable(B, path, x=CABLE_X, sag=0.035, clip_every=0.66):
     # clip plate at the start of the cell so each cell reads as its own section
     B.box(path.point(0.05, x + 0.012, CABLE_O), (0.01, 0.03, 0.05), frame_basis(path, 0.05), "steel", C_STEEL, rust=0.5)
 
-def status_light(B, path, s, side):
-    """A salvaged facility status beacon bolted onto the guard: white housing, amber lens."""
+def status_light(B, path, s, side, lean_deg=0.0):
+    """A salvaged facility status beacon bolted onto the guard: white housing, amber lens. lean_deg matches a
+    leaning guard (build_side) so the beacon stays on its outer face."""
     bas = frame_basis(path, s)
     _, _, sd, up = path.frame(s)
-    c = path.point(s, side * 0.945, GUARD_TOP - 0.02)
+    x = 0.945
+    if lean_deg:
+        x += GUARD_LEAN_X[0] - GUARD_X[0] + math.tan(math.radians(lean_deg)) * (GUARD_TOP - 0.02 - STR_O[1])
+    c = path.point(s, side * x, GUARD_TOP - 0.02)
     B.box(c, (0.06, 0.11, 0.09), bas, "panel", C_WHITE, 0.3)
     B.box(c + up * 0.055, (0.05, 0.08, 0.025), bas, "glow", C_AMBER, 0.05)
     B.pipe([c - up * 0.045, c - up * 0.09 + sd * side * 0.03, path.point(s + 0.1, side * 0.975, CABLE_O)], 0.006, 5)
@@ -432,10 +451,10 @@ def build_straight():
     path = PATHS["straight"]
     build_belt(path, "Belt", coll, 2.0)
     B = Builder()
-    build_side(B, path, +1, rng)
-    build_side(B, path, -1, rng)
+    build_side(B, path, +1, rng, lean_deg=GUARD_LEAN)
+    build_side(B, path, -1, rng, lean_deg=GUARD_LEAN)
     build_cable(B, path)
-    status_light(B, path, 1.35, +1)
+    status_light(B, path, 1.35, +1, lean_deg=GUARD_LEAN)
     B.to_object("Frame", coll)
     return coll
 
@@ -446,9 +465,10 @@ def build_turn():
     build_belt(path, "Belt", coll, 1.5)
     B = Builder()
     # outer side (left of travel): full stringer, guards and a cable
-    build_side(B, path, -1, rng, panel_len=(0.34, 0.5))
+    build_side(B, path, -1, rng, panel_len=(0.34, 0.5), lean_deg=GUARD_LEAN)
     build_cable(B, path, clip_every=0.5)
-    # inner side wraps round the pivot corner: stringer and a stub guard, no brackets
+    # inner side wraps round the pivot corner: stringer and a stub guard, no brackets (kept upright: there's no
+    # room to lean it out past the pivot post)
     build_side(B, path, +1, rng, panel_len=(2.0, 2.0), brackets=False, hubs=False)
     # pivot post: a scavenged scaffold pipe, capped, holding the inner edge down
     piv = Vector((1 - 0.07, -1 + 0.07, 0))
@@ -479,8 +499,8 @@ def build_slope():
     path = PATHS["slope"]
     build_belt(path, "Belt", coll, 4.5)
     B = Builder()
-    build_side(B, path, +1, rng, panel_len=(0.7, 1.2))
-    build_side(B, path, -1, rng, panel_len=(0.7, 1.2))
+    build_side(B, path, +1, rng, panel_len=(0.7, 1.2), lean_deg=GUARD_LEAN)
+    build_side(B, path, -1, rng, panel_len=(0.7, 1.2), lean_deg=GUARD_LEAN)
     build_cable(B, path, clip_every=0.75)
     # legs: scaffold pipes on the outside of each stringer (never under the belt, so the return run stays clear)
     for side in (-1, 1):
@@ -501,7 +521,7 @@ def build_slope():
         (t0, b0), (t1, b1) = tops
         B.cyl(b0 + Vector((0, 0, 0.0)), t1 - Vector((0, 0, 0.12)), 0.017, 6, "steel", C_STEEL, rust=0.6)
         B.cyl(Vector((x, b0.y, FLOOR + 0.35)), Vector((x, b1.y, FLOOR + 0.35)), 0.017, 6, "steel", C_STEEL, rust=0.6)
-    status_light(B, path, 1.3, -1)
+    status_light(B, path, 1.3, -1, lean_deg=GUARD_LEAN)
     B.to_object("Frame", coll)
     return coll
 
