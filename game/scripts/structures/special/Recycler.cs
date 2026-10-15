@@ -12,7 +12,7 @@ public partial record struct RecyclerSave
 /// Spawns a free item at its first output every <see cref="baseInterval"/>. On top of that it eats items from its
 /// valley (oldest first) for points, and each cycle spends a point on a bonus item at its second output.
 /// </summary>
-public partial class Recycler : RecipeMachine
+public partial class Recycler : IOMachine
 {
     /// <summary>Item ids to spawn and their relative weights.</summary>
     [Export] public Godot.Collections.Dictionary<string, float> itemWeights = new() { { "scrap_ball", 1f } };
