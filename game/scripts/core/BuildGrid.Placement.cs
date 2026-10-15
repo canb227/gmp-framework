@@ -125,6 +125,19 @@ public partial class BuildGrid
             return;
         }
 
+        // Loose items inside the new structure would be stuck in it. The host simulates them all, so it lifts each one
+        // by the structure's height (plus a little), which puts them on top in the same arrangement, to fall back down.
+        int height = 0;
+        foreach (Vector3I cell in probe.structure.cells.Keys)
+        {
+            height = Mathf.Max(height, cell.Y + 1);
+        }
+        foreach (PhysicalFactoryItem item in probe.ItemOverlaps())
+        {
+            item.Teleport(item.GlobalPosition + Vector3.Up * (height * CellSize + 0.5f));
+            item.SetAwake(true); // a resting item may be asleep and would hang in the air
+        }
+
         StructureState state = new() { anchor = probe.anchor, quarterTurns = probe.quarterTurns };
         GMPOInitData init = new() { owner = p.requester };
         Transform3D pose = Structure.PlacementTransform(probe.anchor, probe.quarterTurns);

@@ -5,7 +5,8 @@ using System.Collections.Generic;
 /// <summary>
 /// A sensor copy of a structure scene, used to ask the Box3D simulation whether the structure's colliders
 /// would overlap the level's static colliders at a candidate cell (<see cref="LevelOverlaps"/>). Placed structures,
-/// items, players and every other synced object are ignored: structures keep out of each other through the grid's cells.
+/// items, players and every other synced object don't block it: structures keep out of each other through the grid's cells,
+/// and the host lifts the items it overlaps out of the way when it builds (<see cref="ItemOverlaps"/>).
 /// Every <c>Box3DBody</c> in the copy (the root and any child bodies) that isn't already a trigger sensor is turned into a sensor on <see cref="GameWorld.QueryHiddenLayer"/> so it affects nothing and world
 /// raycasts pass through it. Used by the local <see cref="BlueprintGhost"/> (visible, as the preview) and
 /// by the host to validate a place request (hidden).
@@ -110,6 +111,23 @@ public class PlacementProbe
             }
         }
         return hits;
+    }
+
+    /// <summary>The loose items the probe currently overlaps (only meaningful once <see cref="settled"/>): they'd be stuck inside the structure.</summary>
+    public HashSet<PhysicalFactoryItem> ItemOverlaps()
+    {
+        var items = new HashSet<PhysicalFactoryItem>();
+        foreach (var (body, _) in bodies)
+        {
+            foreach (Node other in body.Call(Box3DNames.getOverlappingBodies).AsGodotArray<Node>())
+            {
+                if (other is PhysicalFactoryItem item)
+                {
+                    items.Add(item);
+                }
+            }
+        }
+        return items;
     }
 
     public void Free()
