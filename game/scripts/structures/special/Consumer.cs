@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>Eats one item from its inputs per cycle and turns it in for the quests (<see cref="ProgressManager.RequestDeposit"/>).</summary>
-public partial class Consumer : RecipeMachine
+public partial class Consumer : IOMachine
 {
     protected override bool TryStartProcess()
     {

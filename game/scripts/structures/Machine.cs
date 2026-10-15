@@ -15,7 +15,7 @@ public partial record struct MachineSave
 /// (<see cref="TryStartProcess"/>, which sets <see cref="processTimeRemaining"/>), and once that has counted down
 /// it finishes it (<see cref="FinishProcess"/>). Every peer is told when a cycle starts and stops
 /// (<see cref="isOperating"/>, <see cref="OnOperatingChanged"/>) for sounds and visuals.
-/// Most machines take items in and put items out: see <see cref="RecipeMachine"/>.
+/// Most machines take items in and put items out: see <see cref="IOMachine"/> and <see cref="RecipeMachine"/>.
 /// </summary>
 public abstract partial class Machine : Structure
 {
@@ -42,20 +42,21 @@ public abstract partial class Machine : Structure
 
     public override void _PhysicsProcess(double delta)
     {
-        if (!runsMachineLogic) return;
-
-        if (isOperating)
+        if (runsMachineLogic)
         {
-            processTimeRemaining -= (float)delta * processingSpeed;
-            if (processTimeRemaining <= 0)
+            if (isOperating)
             {
-                FinishProcess();
-                RPCManager.RPC(this, nameof(SetOperating), [false]);
+                processTimeRemaining -= (float)delta * processingSpeed;
+                if (processTimeRemaining <= 0)
+                {
+                    FinishProcess();
+                    RPCManager.RPC(this, nameof(SetOperating), [false]);
+                }
             }
-        }
-        else if (TryStartProcess())
-        {
-            RPCManager.RPC(this, nameof(SetOperating), [true]);
+            else if (TryStartProcess())
+            {
+                RPCManager.RPC(this, nameof(SetOperating), [true]);
+            }
         }
     }
 
