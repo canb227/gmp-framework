@@ -3,7 +3,165 @@
 [ext_resource type="PackedScene" uid="uid://pqjvhgupmo08" path="res://game/assets/models/machines/recycler/recycler_roller.glb" id="roller"]
 [ext_resource type="Script" uid="uid://bgn8523q15leq" path="res://game/scripts/structures/special/Recycler.cs" id="script"]
 
-[node name="Recycler" type="Box3DBody" unique_id=700023757 node_paths=PackedStringArray("inputVolumes", "outputLocations")]
+[sub_resource type="Animation" id="Animation_h435h"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Roller0:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Roller1:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 3.1415927, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Roller2:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Roller3:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 3.1415927, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Roller4:rotation")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Roller5:rotation")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 3.1415927, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_4t0w2"]
+resource_name = "spin"
+length = 4.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Roller0:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(6.2831855, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Roller1:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 3.1415927, 0), Vector3(6.2831855, 3.1415927, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Roller2:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 3.9916668),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(6.2831855, 0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Roller3:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 3.9916668),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 3.1415927, 0), Vector3(6.2831855, 3.1415927, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Roller4:rotation")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 3.9916668),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(6.2831855, 0, 0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Roller5:rotation")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 3.9916668),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 3.1415927, 0), Vector3(6.2831855, 3.1415927, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_cc8ri"]
+_data = {
+&"RESET": SubResource("Animation_h435h"),
+&"spin": SubResource("Animation_4t0w2")
+}
+
+[node name="Recycler" type="Box3DBody" unique_id=700023757 node_paths=PackedStringArray("inputVolumes", "outputLocations", "inputVolumes", "outputLocations")]
 body_type = 0
 box_size = Vector3(0, 0, 0)
 script = ExtResource("script")
@@ -14,6 +172,10 @@ itemWeights = Dictionary[String, float]({
 })
 inputVolumes = [NodePath("Node3D/Valley")]
 outputLocations = [NodePath("Node3D/outputSpawn1"), NodePath("Node3D/outputSpawn2")]
+inputVolumes = [NodePath("Node3D/Valley")]
+outputLocations = [NodePath("Node3D/outputSpawn1"), NodePath("Node3D/outputSpawn2")]
+processTime = null
+speedMultiplier = null
 cells = Dictionary[Vector3i, int]({
 Vector3i(0, 0, -7): 0,
 Vector3i(0, 0, 0): 0,
@@ -428,7 +590,7 @@ transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906
 body_type = 1
 shape_type = 1
 sphere_radius = 0.05
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 4, 2.55, -2.5)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 4, 2.55, -2.5)
 
 [node name="Model" parent="Node3D/Roller1" unique_id=700459302 instance=ExtResource("roller")]
 
@@ -882,7 +1044,7 @@ transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906
 body_type = 1
 shape_type = 1
 sphere_radius = 0.05
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 4, 2.1, -4.5)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 4, 2.1, -4.5)
 
 [node name="Model" parent="Node3D/Roller3" unique_id=701076984 instance=ExtResource("roller")]
 
@@ -1336,7 +1498,7 @@ transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906
 body_type = 1
 shape_type = 1
 sphere_radius = 0.05
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 4, 3, -6.5)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 4, 3, -6.5)
 
 [node name="Model" parent="Node3D/Roller5" unique_id=701694666 instance=ExtResource("roller")]
 
@@ -1571,6 +1733,9 @@ transform = Transform3D(0.9967116, -0.08089818, 0.004628014, 0.07962337, 0.98840
 
 [node name="outputSpawn2" type="Marker3D" parent="Node3D" unique_id=702027264]
 transform = Transform3D(0.9967116, -0.08089818, 0.0046279905, 0.07962337, 0.98840255, 0.12930782, -0.015035085, -0.1285141, 0.9915937, 3.8778415, 0.41501093, -3.9596665)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Node3D" unique_id=1807940705]
+libraries/ = SubResource("AnimationLibrary_cc8ri")
 
 [node name="FrontWall" type="Box3DCollisionShape" parent="." unique_id=700102947]
 box_size = Vector3(8, 2.6, 0.9)
