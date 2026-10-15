@@ -1,0 +1,92 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" uid="uid://c8jn3gvcakhgp" path="res://game/scripts/structures/logistics/conveyors/Conveyor.cs" id="1_r"]
+[ext_resource type="Script" uid="uid://bv13olg4g30nl" path="res://game/scripts/structures/StructureArrow.cs" id="3_e26cu"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_WallL"]
+_surfaces = [{
+"aabb": AABB(-0.06008, 0.00000, -1.10698, 0.16747, 0.40500, 1.21697),
+"format": 34359738369,
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 60,
+"vertex_data": PackedByteArray("n3b4vClczz4kC4C/6iEaPQAAAABwQuE9chZ2vbgexT7nAMG7n3b4vClczz4kC4C/pn6ePQrXozuGsY2/6iEaPQAAAABwQuE9A3iLPQAAAAC3Yn++6iEaPQAAAABwQuE9pn6ePQrXozuGsY2/3QcgvWZmxj5ihIC+n3b4vClczz4kC4C/chZ2vbgexT7nAMG72gOtuSlczz4kC4C/p+jIPQAAAAC3Yn++Su/bPQrXozuGsY2/VpoUvGZmxj5ihIC+p+jIPQAAAAC3Yn++2gOtuSlczz4kC4C/VpoUvGZmxj5ihIC+mYGKPQAAAABwQuE9p+jIPQAAAAC3Yn++VpoUvGZmxj5ihIC+VWr2vLgexT7nAMG7mYGKPQAAAABwQuE9A3iLPQAAAAC3Yn++Su/bPQrXozuGsY2/p+jIPQAAAAC3Yn++A3iLPQAAAAC3Yn++pn6ePQrXozuGsY2/Su/bPQrXozuGsY2/mYGKPQAAAABwQuE9A3iLPQAAAAC3Yn++p+jIPQAAAAC3Yn++mYGKPQAAAABwQuE96iEaPQAAAABwQuE9A3iLPQAAAAC3Yn++mYGKPQAAAABwQuE9chZ2vbgexT7nAMG76iEaPQAAAABwQuE9mYGKPQAAAABwQuE9VWr2vLgexT7nAMG7chZ2vbgexT7nAMG72gOtuSlczz4kC4C/Su/bPQrXozuGsY2/pn6ePQrXozuGsY2/2gOtuSlczz4kC4C/pn6ePQrXozuGsY2/n3b4vClczz4kC4C/VpoUvGZmxj5ihIC+chZ2vbgexT7nAMG7VWr2vLgexT7nAMG7VpoUvGZmxj5ihIC+3QcgvWZmxj5ihIC+chZ2vbgexT7nAMG7VpoUvGZmxj5ihIC+2gOtuSlczz4kC4C/n3b4vClczz4kC4C/VpoUvGZmxj5ihIC+n3b4vClczz4kC4C/3QcgvWZmxj5ihIC+")
+}]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_WallR"]
+_surfaces = [{
+"aabb": AABB(1.89261, 0.00000, -1.10698, 0.16747, 0.40500, 1.21697),
+"format": 34359738369,
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 60,
+"vertex_data": PackedByteArray("dnHzPwAAAAC3Yn++aAUAQClczz4kC4C/C0HyPwrXozuGsY2/7fABQClczz4kC4C/WtgDQLgexT7nAMG78S77PwAAAABwQuE9mpQAQGZmxj5ihIC+aAUAQClczz4kC4C/dnHzPwAAAAC3Yn++Fhj2PwrXozuGsY2/7fABQClczz4kC4C/8S77PwAAAABwQuE9Fhj2PwrXozuGsY2/8S77PwAAAABwQuE9gEj3PwAAAAC3Yn++H4ACQGZmxj5ihIC+WtgDQLgexT7nAMG77fABQClczz4kC4C/5lf3PwAAAABwQuE91ewBQLgexT7nAMG7mpQAQGZmxj5ihIC+5lf3PwAAAABwQuE9mpQAQGZmxj5ihIC+dnHzPwAAAAC3Yn++Fhj2PwrXozuGsY2/aAUAQClczz4kC4C/7fABQClczz4kC4C/Fhj2PwrXozuGsY2/C0HyPwrXozuGsY2/aAUAQClczz4kC4C/Fhj2PwrXozuGsY2/dnHzPwAAAAC3Yn++C0HyPwrXozuGsY2/Fhj2PwrXozuGsY2/gEj3PwAAAAC3Yn++dnHzPwAAAAC3Yn++H4ACQGZmxj5ihIC+7fABQClczz4kC4C/aAUAQClczz4kC4C/H4ACQGZmxj5ihIC+aAUAQClczz4kC4C/mpQAQGZmxj5ihIC+1ewBQLgexT7nAMG7H4ACQGZmxj5ihIC+mpQAQGZmxj5ihIC+1ewBQLgexT7nAMG7WtgDQLgexT7nAMG7H4ACQGZmxj5ihIC+5lf3PwAAAABwQuE9dnHzPwAAAAC3Yn++gEj3PwAAAAC3Yn++5lf3PwAAAABwQuE9gEj3PwAAAAC3Yn++8S77PwAAAABwQuE95lf3PwAAAABwQuE9WtgDQLgexT7nAMG71ewBQLgexT7nAMG75lf3PwAAAABwQuE98S77PwAAAABwQuE9WtgDQLgexT7nAMG7")
+}]
+
+[sub_resource type="Shader" id="Shader_DevWhite"]
+code = "shader_type spatial;
+
+// Dev placeholder: plain white, flat shaded from the triangles themselves (the collider meshes carry no normals).
+void fragment() {
+	ALBEDO = vec3(1.0);
+	ROUGHNESS = 0.8;
+	NORMAL = normalize(cross(dFdy(VERTEX), dFdx(VERTEX)));
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_DevWhite"]
+render_priority = 0
+shader = SubResource("Shader_DevWhite")
+
+[sub_resource type="BoxMesh" id="BoxMesh_Belt"]
+size = Vector3(1.885, 0.1, 1.0001)
+
+[node name="ConveyorShort" type="Box3DBody" unique_id=1416023118 node_paths=PackedStringArray("beltSurfaces")]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("1_r")
+beltSurfaces = []
+cells = Dictionary[Vector3i, int]({
+Vector3i(0, 0, 0): 66,
+Vector3i(1, 0, 0): 66
+})
+blueprintItemID = "blueprint_conveyor_short"
+
+[node name="WallL" type="Box3DBody" parent="." unique_id=1093368241]
+body_type = 0
+shape_type = 5
+collision_mesh = SubResource("ArrayMesh_WallL")
+user_material_id = 3
+
+[node name="WallR" type="Box3DBody" parent="." unique_id=1938412650]
+body_type = 0
+shape_type = 5
+collision_mesh = SubResource("ArrayMesh_WallR")
+user_material_id = 3
+baked_compound = true
+
+[node name="Belt" type="Box3DBody" parent="." unique_id=742913560]
+body_type = 0
+box_size = Vector3(1.885, 0.1, 1.0001)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+user_material_id = 5
+transform = Transform3D(1, 0, 0, 0, 0.9998, -0.02, 0, 0.02, 0.9998, 1, 0.09, -0.5005)
+
+[node name="WallLMesh" type="MeshInstance3D" parent="." unique_id=1675140937]
+mesh = SubResource("ArrayMesh_WallL")
+surface_material_override/0 = SubResource("ShaderMaterial_DevWhite")
+
+[node name="WallRMesh" type="MeshInstance3D" parent="." unique_id=380946725]
+mesh = SubResource("ArrayMesh_WallR")
+surface_material_override/0 = SubResource("ShaderMaterial_DevWhite")
+
+[node name="BeltMesh" type="MeshInstance3D" parent="." unique_id=1259804117]
+transform = Transform3D(1, 0, 0, 0, 0.9998, -0.02, 0, 0.02, 0.9998, 1, 0.09, -0.5005)
+mesh = SubResource("BoxMesh_Belt")
+surface_material_override/0 = SubResource("ShaderMaterial_DevWhite")
+
+[node name="StructureArrow" type="Node3D" parent="." unique_id=1520378836]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.96666133, 0.71025324, -0.5)
+script = ExtResource("3_e26cu")
+metadata/_custom_type_script = "uid://bv13olg4g30nl"
