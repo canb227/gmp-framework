@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://bn7oty7r872g3"]
+
+[ext_resource type="Shader" uid="uid://2u122t0xrggs" path="res://addons/Imposter/imposter/materials/shaders/ImpostorShader.gdshader" id="1_w30ko"]
+[ext_resource type="Texture2D" uid="uid://ccyyf0qak5qqa" path="res://game/assets/imposters/testing/base_RecyclerBroken_albedo.png" id="2_gndk5"]
+[ext_resource type="Texture2D" uid="uid://cu624jxvh73t7" path="res://game/assets/imposters/testing/base_RecyclerBroken_depth.png" id="3_vrl37"]
+[ext_resource type="Texture2D" uid="uid://bs4rgk2tsj2uk" path="res://game/assets/imposters/testing/base_RecyclerBroken_normal.png" id="4_3lexd"]
+[ext_resource type="Texture2D" uid="uid://ci45mobioqnfl" path="res://game/assets/imposters/testing/base_RecyclerBroken_orm.png" id="5_gj74a"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_w30ko"]
+render_priority = 0
+shader = ExtResource("1_w30ko")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/imposterTextureAlbedo = ExtResource("2_gndk5")
+shader_parameter/imposterTextureNormal = ExtResource("4_3lexd")
+shader_parameter/imposterTextureDepth = ExtResource("3_vrl37")
+shader_parameter/imposterTextureOrm = ExtResource("5_gj74a")
+shader_parameter/imposterFrames = Vector2(16, 16)
+shader_parameter/positionOffset = Vector3(2.3459947, 3.7427757, -3.718049)
+shader_parameter/isFullSphere = true
+shader_parameter/alpha_clamp = 0.5
+shader_parameter/dither = false
+shader_parameter/scale = 8.268615
+shader_parameter/depth_scale = 0.0
+shader_parameter/normalmap_depth = 1.0
+shader_parameter/aabb_max = 4.1343074
+
+[sub_resource type="QuadMesh" id="QuadMesh_gndk5"]
+material = SubResource("ShaderMaterial_w30ko")
+custom_aabb = AABB(-3.3, -0.5407207, -7.9776735, 16.937984, 12.850489, 12.778873)
+
+[node name="Impostor" type="Node3D" unique_id=1363377160]
+
+[node name="mesh-impostor" type="MeshInstance3D" parent="." unique_id=820823014]
+cast_shadow = 0
+mesh = SubResource("QuadMesh_gndk5")

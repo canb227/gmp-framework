@@ -201,6 +201,30 @@ albedo_texture = ExtResource("3_d2mjd")
 material = SubResource("StandardMaterial3D_tt1o4")
 size = Vector3(1, 0.1, 1)
 
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_qiak6"]
+emission_shape_scale = Vector3(0.19, 1.315, 5.25)
+use_rotation_3d = true
+rotation_3d_min = Vector3(0, 0, 0)
+rotation_3d_max = Vector3(180, 180, 180)
+spread = 10.0
+flatness = 1.0
+initial_velocity_min = 20.0
+initial_velocity_max = 22.0
+radial_velocity_min = 0.99997765
+radial_velocity_max = 0.99997765
+gravity = Vector3(0, -28, 0)
+linear_accel_min = 1.9999977
+linear_accel_max = 2.9999976
+
+[sub_resource type="BoxMesh" id="BoxMesh_c5vbb"]
+material = ExtResource("8_kuy7m")
+size = Vector3(1, 0.5, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_pet1e"]
+top_radius = 3.0761719
+bottom_radius = 3.0761719
+height = 9.736328
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_68s35"]
 transparency = 1
 cull_mode = 2
@@ -663,18 +687,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, -20.5, 0)
 size = Vector3(10, 36, 102)
 material = SubResource("FogMaterial_pet1e")
 
-[node name="FogVolume2" type="FogVolume" parent="WorldStuff" unique_id=1480038194]
-transform = Transform3D(0.5632096, 0, 0.82631403, 0, 1, 0, -0.82631403, 0, 0.5632096, 46.12591, 4.5, -49.83853)
-size = Vector3(10, 14, 29)
-material = SubResource("FogMaterial_pet1e")
-
 [node name="FogVolume3" type="FogVolume" parent="WorldStuff" unique_id=53364436]
 transform = Transform3D(0.9999999, 0, 0, 0, 1, 0, 0, 0, 0.9999999, 56.662506, 9, 42.222733)
 size = Vector3(8, 15, 29)
 material = SubResource("FogMaterial_pet1e")
 
-[node name="GPUParticles3D" type="GPUParticles3D" parent="WorldStuff/FogVolume3" unique_id=324007357]
-transform = Transform3D(-0.70710677, -0.70710677, -6.181724e-08, -0.7071068, 0.7071068, -6.181723e-08, 8.742278e-08, -1.7158291e-15, -1, -2, 5, 2)
+[node name="CircuitParticles" type="GPUParticles3D" parent="WorldStuff/FogVolume3" unique_id=324007357]
+transform = Transform3D(-0.70710677, -0.70710677, -6.181724e-08, -0.7071068, 0.7071068, -6.181723e-08, 8.742278e-08, -1.7158291e-15, -1, -5.433201, 3.2696524, 2)
+amount = 1
 lifetime = 0.5
 process_material = SubResource("ParticleProcessMaterial_pet1e")
 draw_pass_1 = SubResource("BoxMesh_4x2dv")
@@ -732,6 +752,19 @@ light_color = Color(0.9529412, 0.94509804, 1, 1)
 light_energy = 20.0
 shadow_enabled = true
 omni_range = 15.0
+
+[node name="ScrapParticles" type="GPUParticles3D" parent="WorldStuff" unique_id=1470794151]
+transform = Transform3D(-0.5496354, -0.5372827, -0.6397092, -0.65616715, 0.7515929, -0.067476206, 0.5170546, 0.38266876, -0.7656492, 49.280262, 21.654531, -49.775745)
+amount = 1
+lifetime = 0.62
+speed_scale = 0.62
+process_material = SubResource("ParticleProcessMaterial_qiak6")
+draw_pass_1 = SubResource("BoxMesh_c5vbb")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff" unique_id=1065212514]
+transform = Transform3D(-0.49999994, -0.49999994, 0.70710665, 0.7071067, -0.7071067, 0, 0.49999994, 0.49999994, 0.70710665, 48.365925, 19.623766, -48.92063)
+mesh = SubResource("CylinderMesh_pet1e")
+surface_material_override/0 = ExtResource("8_kuy7m")
 
 [node name="GoalScreen" parent="WorldStuff" unique_id=923969412 instance=ExtResource("3_yv5q0")]
 box_size = Vector3(3, 2.6, 0.14)
@@ -820,10 +853,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 
 [node name="CSGBakedMeshInstance3D2" type="MeshInstance3D" parent="WorldBody" unique_id=1954943411]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+visible = false
 mesh = SubResource("ArrayMesh_qiak6")
 
 [node name="Node3D" type="Node3D" parent="." unique_id=2006237166]
-visible = false
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="Node3D" unique_id=1196497492]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, -0.5, 0)
@@ -866,17 +899,17 @@ size = Vector3(2, 37, 100)
 material = ExtResource("2_jhkrf")
 
 [node name="CSGBox3D14" type="CSGBox3D" parent="Node3D" unique_id=1033241195]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, -36.5, 0)
-size = Vector3(10, 3, 96)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, -36.5, 0.12686157)
+size = Vector3(10, 3, 100.96869)
 material = ExtResource("2_jhkrf")
 
 [node name="CSGBox3D12" type="CSGBox3D" parent="Node3D" unique_id=276277740]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, -19.5, -49)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, -19.5, -51.024704)
 size = Vector3(10, 37, 2)
 material = ExtResource("2_jhkrf")
 
 [node name="CSGBox3D13" type="CSGBox3D" parent="Node3D" unique_id=1224860472]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, -19.5, 49)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, -19.5, 51.031128)
 size = Vector3(10, 37, 2)
 material = ExtResource("2_jhkrf")
 
@@ -884,12 +917,6 @@ material = ExtResource("2_jhkrf")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 14, -51)
 size = Vector3(103, 30, 2)
 material = SubResource("StandardMaterial3D_2elwl")
-
-[node name="CSGBox3D5" type="CSGBox3D" parent="Node3D/EastWall" unique_id=1560510895]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, -9.5, -2.5)
-operation = 2
-size = Vector3(17, 11, 7)
-material = ExtResource("3_5cgpr")
 
 [node name="CSGBox3D6" type="CSGBox3D" parent="Node3D/EastWall" unique_id=1923365976]
 transform = Transform3D(-1, -4.371139e-08, -4.371138e-08, -4.3711385e-08, 1, -8.742278e-08, 4.371139e-08, -8.742278e-08, -1, 20, 2.5, 0.5)
@@ -1108,12 +1135,6 @@ operation = 2
 size = Vector3(10, 12, 6)
 material = ExtResource("4_5cgpr")
 
-[node name="CSGBox3D4" type="CSGBox3D" parent="Node3D/SouthWall" unique_id=36537147]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -45.99997, 7.500003)
-operation = 2
-size = Vector3(3, 11, 11)
-material = ExtResource("4_5cgpr")
-
 [node name="CSGBox3D6" type="CSGBox3D" parent="Node3D/SouthWall" unique_id=399487560]
 transform = Transform3D(-4.371139e-08, 4.371139e-08, 1, 1, 0, 4.3711385e-08, 0, 1, -4.371139e-08, -0.25, -3.9999998, -3.25)
 operation = 2
@@ -1226,37 +1247,12 @@ material = ExtResource("4_5cgpr")
 [node name="CSGBox3D15" type="CSGBox3D" parent="Node3D" unique_id=1735644355]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -49, 0)
 
-[node name="CSGCylinder3D" type="CSGCylinder3D" parent="Node3D" unique_id=1637450199]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -14, 24, 27.1875)
-radius = 1.0
-height = 48.125
-
-[node name="CSGCylinder3D3" type="CSGCylinder3D" parent="Node3D" unique_id=117919231]
-transform = Transform3D(0, -1.0000001, -4.371139e-08, 0, -4.371139e-08, 1, -1.0000001, 0, -8.881784e-16, -35.53125, 12, -0.8125)
-radius = 1.0
-height = 33.0625
-
-[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="Node3D" unique_id=802083644]
-transform = Transform3D(0.83651626, 0.48296294, -0.258819, 0.22414389, 0.1294095, 0.96592593, 0.5, -0.8660254, -4.6923518e-08, -32.59215, 23.305435, 28.83562)
-radius = 1.0
-height = 59.265625
-
 [node name="CSGSphere3D" type="CSGSphere3D" parent="Node3D" unique_id=1377843712]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 131.8497, 0, -53)
 radius = 13.0
 radial_segments = 32
 rings = 12
 material = ExtResource("8_kuy7m")
-
-[node name="CSGSphere3D2" type="CSGSphere3D" parent="Node3D" unique_id=1286503416]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, 4, 41)
-radius = 5.0
-material = SubResource("StandardMaterial3D_c5vbb")
-
-[node name="CSGSphere3D3" type="CSGSphere3D" parent="Node3D" unique_id=1793448790]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 4, 49)
-radius = 5.0
-material = SubResource("StandardMaterial3D_c5vbb")
 
 [node name="CSGBox3D35" type="CSGBox3D" parent="Node3D" unique_id=901685708]
 transform = Transform3D(-4.371139e-08, -1, 4.371139e-08, 0, -4.371139e-08, -1, 1, -4.371139e-08, 1.9106855e-15, 33.5, 1.9999996, 40.5)

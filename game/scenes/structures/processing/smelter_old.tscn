@@ -743,7 +743,7 @@ transform = Transform3D(0.34202012, 0.9396925, 0, -0.9396925, 0.34202012, 0, 0, 
 surface_material_override/0 = SubResource("StandardMaterial3D_lqu6n")
 
 [node name="Box3DBody" type="Box3DBody" parent="model/smelter_old/Door" index="0" unique_id=1179865656]
-body_type = 0
+body_type = 1
 box_size = Vector3(0.08, 1.745, 2.48)
 transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, -0.057436943, 0.86952305, 0)
 
