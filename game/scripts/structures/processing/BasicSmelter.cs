@@ -25,7 +25,7 @@ public partial class BasicSmelter : RecipeMachine
             }
             inputItems.Clear();
             processTimeRemaining = cookTime;
-        RPCManager.RPC(this, "PlayAnimation", ["process"]);
+            RPCManager.RPC(this, "PlayAnimation", ["process"]);
             return true;
         }
         
@@ -37,6 +37,12 @@ public partial class BasicSmelter : RecipeMachine
         RPCManager.RPC(this, "PlayAnimation", ["finish_process"]);
         ItemInfo.SpawnInWorld("scrap_ingot", OutputPosition(0));
         ItemInfo.SpawnInWorld("scrap_ingot", OutputPosition(1));
+    }
+
+    [RPC]
+    protected virtual void PlayAnimation(string animationName)
+    {
+        animationPlayer.Play(animationName);
     }
 
 }

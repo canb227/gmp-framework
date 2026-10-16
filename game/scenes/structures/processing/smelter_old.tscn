@@ -713,10 +713,93 @@ surface_material_override/2 = SubResource("StandardMaterial3D_y6o07")
 
 [node name="Box3DBody" type="Box3DBody" parent="model/smelter_old/Body" index="0" unique_id=429870284]
 body_type = 0
-shape_type = 6
-box_size = Vector3(0.08, 1.745, 2.48)
+box_size = Vector3(0.13, 2.72, 5.945)
 collision_mesh = SubResource("ArrayMesh_jnp0f")
-transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, 0, 0, 0)
+transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, 5.912985, 0.4579804, 0)
+
+[node name="Box3DBody2" type="Box3DBody" parent="model/smelter_old/Body" index="1" unique_id=366641533]
+body_type = 0
+box_size = Vector3(0.13, 4.935, 5.945)
+collision_mesh = SubResource("ArrayMesh_jnp0f")
+transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, -3.1109784, 1.5305345, 0)
+
+[node name="Box3DBody3" type="Box3DBody" parent="model/smelter_old/Body" index="2" unique_id=1056081165]
+body_type = 0
+box_size = Vector3(0.13, 4.935, 8.135)
+collision_mesh = SubResource("ArrayMesh_jnp0f")
+transform = Transform3D(-4.3711392e-08, 0, 1, 0, 1.0000001, 0, -1.0000001, 0, -4.371139e-08, 1.8708682, 1.5305345, -2.9746754)
+
+[node name="Box3DBody4" type="Box3DBody" parent="model/smelter_old/Body" index="3" unique_id=1147920062]
+body_type = 0
+box_size = Vector3(0.13, 4.935, 8.135)
+collision_mesh = SubResource("ArrayMesh_jnp0f")
+transform = Transform3D(-4.3711392e-08, 0, 1, 0, 1.0000001, 0, -1.0000001, 0, -4.371139e-08, 1.8708682, 1.5305345, 2.9323452)
+
+[node name="Box3DBody5" type="Box3DBody" parent="model/smelter_old/Body" index="4" unique_id=537408286]
+body_type = 0
+box_size = Vector3(0.13, 5.975, 4.215)
+collision_mesh = SubResource("ArrayMesh_jnp0f")
+transform = Transform3D(1.9106857e-15, 4.3711392e-08, 1, 1.0000001, -4.3711392e-08, 0, 4.3711392e-08, 1.0000001, -4.371139e-08, -1.006206, 3.9837413, 0.0011560917)
+
+[node name="Box3DBody6" type="Box3DBody" parent="model/smelter_old/Body" index="5" unique_id=894065993]
+body_type = 0
+box_size = Vector3(0.13, 1.49, 5.945)
+collision_mesh = SubResource("ArrayMesh_jnp0f")
+transform = Transform3D(0.7071068, 0.7071068, 0, -0.7071068, 0.7071068, 0, 0, 0, 1, 6.483857, 2.3460202, 0)
+
+[node name="Box3DBody7" type="Box3DBody" parent="model/smelter_old/Body" index="6" unique_id=1609529274]
+body_type = 0
+box_size = Vector3(0.1, 0.81, 5.155)
+collision_mesh = SubResource("ArrayMesh_jnp0f")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0531483, 3.1974897, 0)
+
+[node name="Box3DBody8" type="Box3DBody" parent="model/smelter_old/Body" index="7" unique_id=787140644]
+body_type = 0
+box_size = Vector3(0.13, 2.805, 4.215)
+collision_mesh = SubResource("ArrayMesh_jnp0f")
+transform = Transform3D(-0.1740833, 5.0653387e-08, 0.98473096, 0.9847311, -3.5434542e-08, 0.17408329, 4.3711395e-08, 1.0000001, -4.3711392e-08, 3.780067, 4.521851, 0.0011560917)
+
+[node name="Box3DBody11" type="Box3DBody" parent="model/smelter_old/Body" index="8" unique_id=424676340]
+body_type = 0
+box_size = Vector3(0.1, 1.78, 4.215)
+collision_mesh = SubResource("ArrayMesh_jnp0f")
+transform = Transform3D(1.9106863e-15, 4.3711395e-08, 1.0000001, 0.88636094, -0.46299547, 2.0238174e-08, 0.46299553, 0.8863608, -3.8744062e-08, 3.7533398, 4.451579, 2.0858946)
+
+[node name="Box3DBody9" type="Box3DBody" parent="model/smelter_old/Body" index="9" unique_id=1727384864]
+body_type = 0
+box_size = Vector3(0.13, 1.21, 0.605)
+collision_mesh = SubResource("ArrayMesh_jnp0f")
+transform = Transform3D(0.7384553, 1.1432482e-08, 0.67430234, 0.67430234, -2.9474698e-08, -0.7384553, 1.1432479e-08, 1.0000001, -2.9474691e-08, 6.800232, 3.7827334, 1.9258358)
+
+[node name="Box3DBody10" type="Box3DBody" parent="model/smelter_old/Body" index="10" unique_id=1603533411]
+body_type = 0
+box_size = Vector3(0.13, 1.26, 0.605)
+collision_mesh = SubResource("ArrayMesh_jnp0f")
+transform = Transform3D(-2.1370838e-08, -0.48890778, 0.87233543, 0.99999994, -4.371139e-08, -1.400929e-15, 3.8130988e-08, 0.87233543, 0.48890778, 6.1109734, 3.9404554, 2.27891)
+
+[node name="Box3DBody15" type="Box3DBody" parent="model/smelter_old/Body" index="11" unique_id=1175453405]
+body_type = 0
+box_size = Vector3(0.08, 1.26, 0.605)
+collision_mesh = SubResource("ArrayMesh_jnp0f")
+transform = Transform3D(0.5484318, -0.6035086, 0.5787915, 0.7156454, -0.01926734, -0.69819766, 0.43252018, 0.79712343, 0.4213315, 5.9607687, 4.2714844, 1.8926197)
+
+[node name="Box3DBody14" type="Box3DBody" parent="model/smelter_old/Body" index="12" unique_id=866707471]
+body_type = 0
+box_size = Vector3(0.13, 0.82, 0.765)
+collision_mesh = SubResource("ArrayMesh_jnp0f")
+transform = Transform3D(0.8032728, 0.21054202, 0.5571575, 0.5687108, 0.006825554, -0.82250917, -0.17697565, 0.977561, -0.11425474, 6.2895203, 4.3166723, -1.7082741)
+
+[node name="Box3DBody13" type="Box3DBody" parent="model/smelter_old/Body" index="13" unique_id=394398554]
+body_type = 0
+box_size = Vector3(0.13, 1.21, 0.605)
+collision_mesh = SubResource("ArrayMesh_jnp0f")
+transform = Transform3D(0.7384553, 1.1432482e-08, 0.67430234, 0.67430234, -2.9474698e-08, -0.7384553, 1.1432479e-08, 1.0000001, -2.9474691e-08, 6.800232, 3.7827334, -1.9054062)
+
+[node name="Box3DBody12" type="Box3DBody" parent="model/smelter_old/Body" index="14" unique_id=2085081543]
+body_type = 0
+box_size = Vector3(0.1, 1.78, 4.215)
+collision_mesh = SubResource("ArrayMesh_jnp0f")
+transform = Transform3D(-2.18557e-08, 3.785518e-08, 1.0000001, 0.89019924, 0.45557183, 2.2101665e-09, -0.4555719, 0.8901992, -4.365548e-08, 3.7533398, 4.4351873, -2.0555222)
 
 [node name="Chimney" parent="model/smelter_old" index="2" unique_id=432605041]
 surface_material_override/0 = ExtResource("6_keb0p")
@@ -764,7 +847,16 @@ transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 
 [node name="MoltenMetal" parent="model/smelter_old" index="6" unique_id=429442513]
 surface_material_override/0 = SubResource("StandardMaterial3D_gh3qe")
 
-[node name="Box3DBody" type="Box3DBody" parent="model/smelter_old/SmelterCage" parent_id_path=PackedInt32Array(1429250052, 2129433113) index="0" unique_id=1086012170]
+[node name="Pipes_1" parent="model/smelter_old" index="7" unique_id=2128755955]
+surface_material_override/0 = ExtResource("3_kj0j5")
+
+[node name="Pipes_2" parent="model/smelter_old" index="8" unique_id=1131387119]
+surface_material_override/0 = ExtResource("3_kj0j5")
+
+[node name="SmelterCage" parent="model/smelter_old" index="9" unique_id=2129433113]
+surface_material_override/0 = ExtResource("3_kj0j5")
+
+[node name="Box3DBody" type="Box3DBody" parent="model/smelter_old/SmelterCage" index="0" unique_id=1086012170]
 body_type = 0
 shape_type = 6
 box_size = Vector3(0.08, 1.745, 2.48)
