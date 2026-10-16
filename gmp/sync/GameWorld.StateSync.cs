@@ -4,6 +4,7 @@ using PolyType;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Stopwatch = System.Diagnostics.Stopwatch;
 
 /// <summary>One packet of state updates. Sent as an array of values; see the note on <see cref="TransformSyncState"/> about [Key] numbers.</summary>
 [GenerateShape]
@@ -127,6 +128,22 @@ public partial class GameWorld
     /// </summary>
     private const int UpdateOverhead = 13;
 
+    // ---- cost, for the perf window and log (PerfDebug) ----
+    // Running totals since startup, in Stopwatch ticks and states; PerfDebug turns them into per-second figures.
+
+    /// <summary>Applying received states at the start of each physics tick.</summary>
+    public static long applyCost;
+    public static long appliedCount;
+    /// <summary>Working out every object's priority and generating its state, each send.</summary>
+    public static long buildCost;
+    public static long builtCount;
+    /// <summary>Serializing the packets and handing them to the network, each send.</summary>
+    public static long sendCost;
+    public static long sentCount;
+    /// <summary>Reading received state packets (as they arrive, in <see cref="Lobby"/>'s _Process).</summary>
+    public static long receiveCost;
+    public static long receivedCount;
+
     private static void ResetStateSync()
     {
         pendingOutgoingTick = new();
@@ -177,6 +194,7 @@ public partial class GameWorld
         {
             return;
         }
+        long receiveStart = Stopwatch.GetTimestamp();
         WorldTickMessage tickmsg = pack.Deserialize<WorldTickMessage>(msg);
         if (!playbackClocks.TryGetValue(from, out PlaybackClock clock))
         {
@@ -203,6 +221,8 @@ public partial class GameWorld
             lastStateTime[id] = tickmsg.sendTime;
             pendingStates.Add((id, from, tickmsg.tick, state));
         }
+        receivedCount += tickmsg.updates.Count;
+        receiveCost += Stopwatch.GetTimestamp() - receiveStart;
     }
 
     public override void _PhysicsProcess(double delta)
@@ -213,6 +233,8 @@ public partial class GameWorld
             return;
         }
         CheckLeases();
+        long applyStart = Stopwatch.GetTimestamp();
+        appliedCount += pendingStates.Count;
         foreach ((ulong id, ulong sender, ulong tick, byte[] state) in pendingStates)
         {
             // Only the object's current authority may move it (drops stragglers after a Claim).
@@ -224,6 +246,7 @@ public partial class GameWorld
         }
         stateTick = 0;
         pendingStates.Clear();
+        applyCost += Stopwatch.GetTimestamp() - applyStart;
         AdvancePlaybackClocks();
         CheckSleepers();
 
@@ -239,6 +262,9 @@ public partial class GameWorld
             return;
         }
         sendFrame = frame;
+        long buildStart = Stopwatch.GetTimestamp();
+        // Packets go out part way through; their cost is counted in sendCost, so it is taken off buildCost below.
+        long sendCostBefore = sendCost;
 
         // Every object this peer is the authority of gains its priority, then they send highest accumulator first
         // until this send's share of the budget is used up. A sent object starts again from 0; the rest keep what
@@ -264,6 +290,7 @@ public partial class GameWorld
             entity.priorityAccumulator += entity.priority;
             candidates.Add(entity);
         }
+        builtCount += candidates.Count;
         // Sorted in place (no per-tick allocation).
         candidates.Sort(ByAccumulatorDescending);
         foreach (GMPObject e in candidates)
@@ -294,14 +321,18 @@ public partial class GameWorld
         {
             SendPendingTick();
         }
+        buildCost += Stopwatch.GetTimestamp() - buildStart - (sendCost - sendCostBefore);
     }
 
     private static void SendPendingTick()
     {
+        long sendStart = Stopwatch.GetTimestamp();
+        sentCount += pendingOutgoingTick.updates.Count;
         pendingOutgoingTick.sendTime = netTime;
         pendingOutgoingTick.tick = Engine.GetPhysicsFrames();
         byte[] packet = pack.Serialize<WorldTickMessage>(pendingOutgoingTick);
         Lobby.SendToAllExceptSelf(Channel.GAME_State, packet, Network.k_nSteamNetworkingSend_Unreliable | Network.k_nSteamNetworkingSend_NoNagle);
         pendingOutgoingTick.updates.Clear();
+        sendCost += Stopwatch.GetTimestamp() - sendStart;
     }
 }

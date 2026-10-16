@@ -186,6 +186,12 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     /// </summary>
     static readonly double PlaybackLeadRate = GameWorld.InterpolationDelay * 2;
 
+    /// <summary>
+    /// Running totals for the perf window (PerfDebug): physics ticks of following played by all bodies, and the
+    /// Stopwatch ticks spent inside them (not counting Godot's cost of calling into C#, a few microseconds each).
+    /// </summary>
+    public static long followTicks, followCost;
+
     static readonly System.Collections.Generic.Dictionary<Type, bool> customPhysicsProcess = new();
 
     /// <summary>Whether this node's class (or one between it and this base) overrides <c>_PhysicsProcess</c>.</summary>
@@ -352,6 +358,10 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
             return;
         }
 
+        // For the perf window (PerfDebug): follower ticks run and the time spent in them, since startup.
+        followTicks++;
+        long followStart = System.Diagnostics.Stopwatch.GetTimestamp();
+
         double wantedLead = 0;
         // Asked for this tick or the last: bodies and whatever asks run in no fixed order within a tick.
         if (showNewestFrame + 1 >= Engine.GetPhysicsFrames())
@@ -388,6 +398,7 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
             following = false;
             RefreshPhysicsProcess();
         }
+        followCost += System.Diagnostics.Stopwatch.GetTimestamp() - followStart;
     }
 
     /// <summary>

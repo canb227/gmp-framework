@@ -22,12 +22,51 @@ public static class PerfDebug
     private static double statsTimer = 0;
     private static float minMs, avgMs, maxMs, lowFps1;
 
+    // ---- where the frame goes, sampled once a second ----
+    // Network sync and follower costs come from running totals (GameWorld.StateSync, GMPOBox3DBody) as ms of
+    // main-thread time per second of play: 1000 ms/s is one whole core. Written to the log every few seconds during a
+    // game, so a test's logs from every peer show it afterwards.
+    private const double sampleInterval = 1.0;
+    private const double logInterval = 5.0;
+    private static double sampleTimer = 0;
+    private static double logTimer = 0;
+    private static bool measuringRenderTime = false;
+
+    private static long lastApplyCost, lastBuildCost, lastSendCost, lastReceiveCost, lastFollowCost;
+    private static long lastApplied, lastBuilt, lastSent, lastReceived, lastFollowTicks;
+    private static double applyMs, buildMs, sendMs, receiveMs, followMs;
+    private static double appliedPerSecond, builtPerSecond, sentPerSecond, receivedPerSecond, followers;
+    private static double renderCpuMs, renderGpuMs, physicsTickMs, processMs, stepMs;
+    private static int awakeBodies;
+
     public static void Process(double delta)
     {
         // Sample even when hidden so the graph is already full when opened.
         frameTimes[historyHead] = (float)(delta * 1000.0);
         historyHead = (historyHead + 1) % historySize;
         historyCount = Math.Min(historyCount + 1, historySize);
+
+        if (!measuringRenderTime)
+        {
+            measuringRenderTime = true;
+            RenderingServer.ViewportSetMeasureRenderTime(((SceneTree)Engine.GetMainLoop()).Root.GetViewportRid(), true);
+        }
+        sampleTimer += delta;
+        if (sampleTimer >= sampleInterval)
+        {
+            Sample(sampleTimer);
+            sampleTimer = 0;
+        }
+        logTimer += delta;
+        if (logTimer >= logInterval)
+        {
+            logTimer = 0;
+            if (GameWorld.syncedObjs.Count > 0)
+            {
+                RecomputeStats();
+                LogSample();
+            }
+        }
 
         if (!displayPerfDebugInfo)
         {
@@ -70,6 +109,57 @@ public static class PerfDebug
         lowFps1 = 1000f / (worstSum / worstCount);
     }
 
+    /// <summary>Turns the running totals into per-second figures over the last <paramref name="seconds"/>.</summary>
+    private static void Sample(double seconds)
+    {
+        double msPerTick = 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+        applyMs = (GameWorld.applyCost - lastApplyCost) * msPerTick / seconds;
+        buildMs = (GameWorld.buildCost - lastBuildCost) * msPerTick / seconds;
+        sendMs = (GameWorld.sendCost - lastSendCost) * msPerTick / seconds;
+        receiveMs = (GameWorld.receiveCost - lastReceiveCost) * msPerTick / seconds;
+        followMs = (GMPOBox3DBody.followCost - lastFollowCost) * msPerTick / seconds;
+        appliedPerSecond = (GameWorld.appliedCount - lastApplied) / seconds;
+        builtPerSecond = (GameWorld.builtCount - lastBuilt) / seconds;
+        sentPerSecond = (GameWorld.sentCount - lastSent) / seconds;
+        receivedPerSecond = (GameWorld.receivedCount - lastReceived) / seconds;
+        // Follower ticks per second over physics ticks per second: how many bodies follow at once, on average.
+        followers = (GMPOBox3DBody.followTicks - lastFollowTicks) / seconds / Engine.PhysicsTicksPerSecond;
+
+        lastApplyCost = GameWorld.applyCost;
+        lastBuildCost = GameWorld.buildCost;
+        lastSendCost = GameWorld.sendCost;
+        lastReceiveCost = GameWorld.receiveCost;
+        lastFollowCost = GMPOBox3DBody.followCost;
+        lastApplied = GameWorld.appliedCount;
+        lastBuilt = GameWorld.builtCount;
+        lastSent = GameWorld.sentCount;
+        lastReceived = GameWorld.receivedCount;
+        lastFollowTicks = GMPOBox3DBody.followTicks;
+
+        Rid viewport = ((SceneTree)Engine.GetMainLoop()).Root.GetViewportRid();
+        renderCpuMs = RenderingServer.ViewportGetMeasuredRenderTimeCpu(viewport) + RenderingServer.GetFrameSetupTimeCpu();
+        renderGpuMs = RenderingServer.ViewportGetMeasuredRenderTimeGpu(viewport);
+        processMs = Mon(Performance.Monitor.TimeProcess) * 1000;
+        physicsTickMs = Mon(Performance.Monitor.TimePhysicsProcess) * 1000;
+        stepMs = 0;
+        awakeBodies = 0;
+        if (GodotObject.IsInstanceValid(GameWorld.b3droot))
+        {
+            stepMs = GameWorld.b3droot.GetStepTimeMs();
+            awakeBodies = GameWorld.b3droot.GetAwakeBodyCount();
+        }
+    }
+
+    private static void LogSample()
+    {
+        Logging.Log($"fps {Mon(Performance.Monitor.TimeFps):0} (frame avg {avgMs:0.0} max {maxMs:0.0} ms)"
+            + $" | process {processMs:0.0} ms | physics tick {physicsTickMs:0.0} ms (Box3D step {stepMs:0.0} ms, awake {awakeBodies})"
+            + $" | render cpu {renderCpuMs:0.0} gpu {renderGpuMs:0.0} ms, draw calls {Mon(Performance.Monitor.RenderTotalDrawCallsInFrame):0}, objects {Mon(Performance.Monitor.RenderTotalObjectsInFrame):0}"
+            + $" | synced {GameWorld.syncedObjs.Count}, followers {followers:0} ({followMs:0} ms/s)"
+            + $" | sync ms/s: build {buildMs:0} ({builtPerSecond:0}/s), send {sendMs:0} ({sentPerSecond:0}/s), receive {receiveMs:0} ({receivedPerSecond:0}/s), apply {applyMs:0} ({appliedPerSecond:0}/s)",
+            "Perf");
+    }
+
     private static double Mon(Performance.Monitor m) => Performance.GetMonitor(m);
 
     private static string Mb(double bytes) => $"{bytes / (1024.0 * 1024.0):0.0} MB";
@@ -93,6 +183,17 @@ public static class PerfDebug
             ImGui.Text($"Physics process: {Mon(Performance.Monitor.TimePhysicsProcess) * 1000:0.00} ms (tick {Engine.PhysicsTicksPerSecond} Hz)");
             ImGui.Text($"Navigation: {Mon(Performance.Monitor.TimeNavigationProcess) * 1000:0.00} ms");
             ImGui.Text($"Time scale: {Engine.TimeScale:0.00} | Frames drawn: {Engine.GetFramesDrawn()}");
+            ImGui.Text($"Render: cpu {renderCpuMs:0.00} ms | gpu {renderGpuMs:0.00} ms");
+        }
+
+        // ms of main-thread time per second of play (1000 = one whole core), over the last second.
+        if (ImGui.CollapsingHeader("Network sync cost", ImGuiTreeNodeFlags.DefaultOpen))
+        {
+            ImGui.Text($"Build (priority + state): {buildMs:0.0} ms/s | {builtPerSecond:0} objects/s");
+            ImGui.Text($"Send (serialize + Steam): {sendMs:0.0} ms/s | {sentPerSecond:0} states/s");
+            ImGui.Text($"Receive (deserialize): {receiveMs:0.0} ms/s | {receivedPerSecond:0} states/s");
+            ImGui.Text($"Apply: {applyMs:0.0} ms/s | {appliedPerSecond:0} states/s");
+            ImGui.Text($"Followers: {followers:0} | {followMs:0.0} ms/s inside (plus Godot's call overhead)");
         }
 
         if (ImGui.CollapsingHeader("Rendering", ImGuiTreeNodeFlags.DefaultOpen))
