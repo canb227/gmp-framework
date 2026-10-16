@@ -49,6 +49,11 @@ public interface Network
     public event PeerConnected PeerConnectedEvent;
     public event PeerDisconnected PeerDisconnectedEvent;
 
+    // Raised when a link that dropped without the peer leaving has been made again. The peer was never reported
+    // disconnected, but anything sent to or from it in the gap was lost.
+    public delegate void PeerRepaired(ulong peerID);
+    public event PeerRepaired PeerRepairedEvent;
+
     public Error Send(ulong peerID, Channel ch, byte[] msg, int SENDFLAGS = k_nSteamNetworkingSend_Reliable);
     public Error Broadcast(List<ulong> peerIDs, Channel ch, byte[] msg, int SENDFLAGS = k_nSteamNetworkingSend_Reliable);
     public Error Host();

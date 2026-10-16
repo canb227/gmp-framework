@@ -25,24 +25,37 @@ public partial record struct TransformSyncState
 /// What a Box3D body's authority sends: its transform plus its velocities, so followers can keep pace with it between
 /// updates and a new authority can carry on at the same speed and spin.
 /// <para>
-/// There can be hundreds of these a tick, so they are packed by hand into 30 bytes (MessagePack takes 65): position as
-/// full floats, rotation as 16-bit angles (steps of 0.0001 rad), and velocities as half floats (about 3 significant
-/// digits). A body at rest leaves the velocities off (18 bytes), and they read back as zero.
+/// There can be hundreds of these a tick, so they are packed by hand into 31 bytes (MessagePack takes 65): position as
+/// full floats, rotation as a quaternion's three smallest parts in 16 bits each plus which part was left out (about
+/// 0.003° steps), and velocities as half floats (about 3 significant digits). A body at rest leaves the velocities off
+/// (19 bytes), and they read back as zero.
+/// </para>
+/// <para>
+/// Rotation used to be sent as Euler angles (18 and 30 bytes), which saves from before still hold. Turning angles into a
+/// quaternion takes sin and cos, which measured about 1 µs per state on the client; the quaternion needs one square root.
 /// </para>
 /// </summary>
 public struct BodySyncState
 {
     public Vector3 pos;
-    public Vector3 rot;
+    public Quaternion rot;
     public Vector3 vel;
     /// <summary>Angular velocity, world space (rad/s about each axis).</summary>
     public Vector3 angVel;
 
-    private const int RestingSize = 18;
-    private const int MovingSize = 30;
+    private const int RestingSize = 19;
+    private const int MovingSize = 31;
+    /// <summary>The sizes of the old Euler-angle format, still read from saves.</summary>
+    private const int OldRestingSize = 18;
+    private const int OldMovingSize = 30;
 
-    /// <summary>A rotation angle (-π to π) times this is stored as a short.</summary>
+    /// <summary>A rotation angle (-π to π) times this was stored as a short, in the old format.</summary>
     private const float AngleScale = short.MaxValue / Mathf.Pi;
+
+    /// <summary>
+    /// A quaternion part other than the largest is at most 1/√2 in size, so times this it fits a short.
+    /// </summary>
+    private const float PartScale = short.MaxValue * Mathf.Sqrt2;
 
     public byte[] Pack()
     {
@@ -60,32 +73,108 @@ public struct BodySyncState
         BinaryPrimitives.WriteSingleLittleEndian(b.Slice(0), pos.X);
         BinaryPrimitives.WriteSingleLittleEndian(b.Slice(4), pos.Y);
         BinaryPrimitives.WriteSingleLittleEndian(b.Slice(8), pos.Z);
-        BinaryPrimitives.WriteInt16LittleEndian(b.Slice(12), PackAngle(rot.X));
-        BinaryPrimitives.WriteInt16LittleEndian(b.Slice(14), PackAngle(rot.Y));
-        BinaryPrimitives.WriteInt16LittleEndian(b.Slice(16), PackAngle(rot.Z));
+
+        // The largest part is left out (the other three give it back, as the quaternion has length 1). With it made
+        // positive, which is the same rotation, it needs no sign either.
+        Quaternion q = rot.Normalized();
+        int largest = 0;
+        float largestSize = Math.Abs(q.X);
+        if (Math.Abs(q.Y) > largestSize)
+        {
+            largest = 1;
+            largestSize = Math.Abs(q.Y);
+        }
+        if (Math.Abs(q.Z) > largestSize)
+        {
+            largest = 2;
+            largestSize = Math.Abs(q.Z);
+        }
+        if (Math.Abs(q.W) > largestSize)
+        {
+            largest = 3;
+        }
+        if (q[largest] < 0)
+        {
+            q = -q;
+        }
+        int written = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            if (i != largest)
+            {
+                BinaryPrimitives.WriteInt16LittleEndian(b.Slice(12 + 2 * written), PackPart(q[i]));
+                written++;
+            }
+        }
+        b[18] = (byte)largest;
+
         if (!resting)
         {
-            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(18), (Half)vel.X);
-            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(20), (Half)vel.Y);
-            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(22), (Half)vel.Z);
-            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(24), (Half)angVel.X);
-            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(26), (Half)angVel.Y);
-            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(28), (Half)angVel.Z);
+            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(19), (Half)vel.X);
+            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(21), (Half)vel.Y);
+            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(23), (Half)vel.Z);
+            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(25), (Half)angVel.X);
+            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(27), (Half)angVel.Y);
+            BinaryPrimitives.WriteHalfLittleEndian(b.Slice(29), (Half)angVel.Z);
         }
         return bytes;
     }
 
     public static BodySyncState Unpack(byte[] bytes)
     {
+        if (bytes.Length == OldRestingSize || bytes.Length == OldMovingSize)
+        {
+            return UnpackOld(bytes);
+        }
         ReadOnlySpan<byte> b = bytes;
         BodySyncState s = new BodySyncState();
         s.pos.X = BinaryPrimitives.ReadSingleLittleEndian(b.Slice(0));
         s.pos.Y = BinaryPrimitives.ReadSingleLittleEndian(b.Slice(4));
         s.pos.Z = BinaryPrimitives.ReadSingleLittleEndian(b.Slice(8));
-        s.rot.X = BinaryPrimitives.ReadInt16LittleEndian(b.Slice(12)) / AngleScale;
-        s.rot.Y = BinaryPrimitives.ReadInt16LittleEndian(b.Slice(14)) / AngleScale;
-        s.rot.Z = BinaryPrimitives.ReadInt16LittleEndian(b.Slice(16)) / AngleScale;
+
+        int largest = b[18];
+        float sumOfSquares = 0;
+        int read = 0;
+        Quaternion q = new Quaternion();
+        for (int i = 0; i < 4; i++)
+        {
+            if (i != largest)
+            {
+                float part = BinaryPrimitives.ReadInt16LittleEndian(b.Slice(12 + 2 * read)) / PartScale;
+                q[i] = part;
+                sumOfSquares += part * part;
+                read++;
+            }
+        }
+        q[largest] = Mathf.Sqrt(Math.Max(0, 1 - sumOfSquares));
+        s.rot = q;
+
         if (bytes.Length >= MovingSize)
+        {
+            s.vel.X = (float)BinaryPrimitives.ReadHalfLittleEndian(b.Slice(19));
+            s.vel.Y = (float)BinaryPrimitives.ReadHalfLittleEndian(b.Slice(21));
+            s.vel.Z = (float)BinaryPrimitives.ReadHalfLittleEndian(b.Slice(23));
+            s.angVel.X = (float)BinaryPrimitives.ReadHalfLittleEndian(b.Slice(25));
+            s.angVel.Y = (float)BinaryPrimitives.ReadHalfLittleEndian(b.Slice(27));
+            s.angVel.Z = (float)BinaryPrimitives.ReadHalfLittleEndian(b.Slice(29));
+        }
+        return s;
+    }
+
+    /// <summary>The old format, with rotation as Euler angles (saves from before 2026-10-16).</summary>
+    private static BodySyncState UnpackOld(byte[] bytes)
+    {
+        ReadOnlySpan<byte> b = bytes;
+        BodySyncState s = new BodySyncState();
+        s.pos.X = BinaryPrimitives.ReadSingleLittleEndian(b.Slice(0));
+        s.pos.Y = BinaryPrimitives.ReadSingleLittleEndian(b.Slice(4));
+        s.pos.Z = BinaryPrimitives.ReadSingleLittleEndian(b.Slice(8));
+        Vector3 euler;
+        euler.X = BinaryPrimitives.ReadInt16LittleEndian(b.Slice(12)) / AngleScale;
+        euler.Y = BinaryPrimitives.ReadInt16LittleEndian(b.Slice(14)) / AngleScale;
+        euler.Z = BinaryPrimitives.ReadInt16LittleEndian(b.Slice(16)) / AngleScale;
+        s.rot = Quaternion.FromEuler(euler);
+        if (bytes.Length == OldMovingSize)
         {
             s.vel.X = (float)BinaryPrimitives.ReadHalfLittleEndian(b.Slice(18));
             s.vel.Y = (float)BinaryPrimitives.ReadHalfLittleEndian(b.Slice(20));
@@ -97,9 +186,9 @@ public struct BodySyncState
         return s;
     }
 
-    private static short PackAngle(float angle)
+    private static short PackPart(float part)
     {
-        return (short)Math.Clamp(Mathf.RoundToInt(angle * AngleScale), -short.MaxValue, short.MaxValue);
+        return (short)Math.Clamp(Mathf.RoundToInt(part * PartScale), -short.MaxValue, short.MaxValue);
     }
 }
 

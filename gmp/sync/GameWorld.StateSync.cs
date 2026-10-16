@@ -53,12 +53,13 @@ public partial class GameWorld
     public static ulong sendFrame { get; private set; }
 
     /// <summary>
-    /// State sends per second. Physics ticks faster than this (60 Hz) for better collisions, and states go out on every
-    /// <see cref="SendInterval"/>th tick only, which halves the bandwidth.
+    /// States sent per object per second. Physics ticks faster than this (60 Hz) for better collisions, and each object
+    /// sends on every <see cref="SendInterval"/>th tick only, which halves the bandwidth. The objects take turns (by id),
+    /// so every tick sends some: building thousands of states all on one tick made the host's worst ticks twice as long.
     /// </summary>
     public const int SendRate = 30;
 
-    /// <summary>Physics ticks per state send: 2 at 60 Hz physics, 1 at 30 Hz.</summary>
+    /// <summary>Physics ticks between an object's states: 2 at 60 Hz physics, 1 at 30 Hz.</summary>
     public static readonly int SendInterval = Math.Max(1, Engine.PhysicsTicksPerSecond / SendRate);
 
     /// <summary>
@@ -99,16 +100,18 @@ public partial class GameWorld
     /// <summary>
     /// State bytes this peer sends per second to all other peers together (updates with their ids and framing; not
     /// the transport's own packet headers): split between the connected peers, which changes as they join and leave,
-    /// and evenly over the <see cref="SendRate"/> sends. Every send fills its share with the objects of highest
+    /// and evenly over the physics ticks (each sends the objects whose turn it is, see <see cref="SendRate"/>). Every
+    /// tick fills its share with the objects of highest
     /// <see cref="GMPObject.priorityAccumulator"/>.
     /// <para>
-    /// 200 Mbps, assuming the player with the best connection hosts: about 60% of a typical fiber upload (the median
-    /// fiber upload is about 320 Mbps), leaving room for everything else on the line. Cable is more like 20-35 Mbps,
-    /// too little for this. Traffic only reaches it with thousands of moving objects. Steam's send rate is set from
-    /// this when hosting or joining (<see cref="SteamNetwork.Host"/>), so set it before then.
+    /// 8 Mbps: what actually got through over Steam in testing (2026-10-15), though both ends had well over 100 Mbps.
+    /// Sending 200 Mbps worth, about 1 MB/s of state reached the client and the rest was dropped on the way, without
+    /// Steam noticing (its send rate is pinned, below). Sending more than arrives only wastes the host's time building
+    /// states, and lets the network pick at random which ones are lost instead of the priorities. Steam's send rate is
+    /// set from this when hosting or joining (<see cref="SteamNetwork.Host"/>), so set it before then.
     /// </para>
     /// </summary>
-    public static int SendBudget = 200 * 1000 * 1000 / 8;
+    public static int SendBudget = 8 * 1000 * 1000 / 8;
 
     /// <summary>
     /// State goes out unreliable (a lost update is replaced by a newer one anyway), in packets of about this many bytes:
@@ -134,7 +137,7 @@ public partial class GameWorld
     /// <summary>Applying received states at the start of each physics tick.</summary>
     public static long applyCost;
     public static long appliedCount;
-    /// <summary>Working out every object's priority and generating its state, each send.</summary>
+    /// <summary>Working out every object's priority and generating the states of those that are sent, each send.</summary>
     public static long buildCost;
     public static long builtCount;
     /// <summary>Serializing the packets and handing them to the network, each send.</summary>
@@ -143,6 +146,9 @@ public partial class GameWorld
     /// <summary>Reading received state packets (as they arrive, in <see cref="Lobby"/>'s _Process).</summary>
     public static long receiveCost;
     public static long receivedCount;
+    /// <summary>State packet bytes handed to the network (once per peer sent to) and received, without transport headers.</summary>
+    public static long sentBytes;
+    public static long receivedBytes;
 
     private static void ResetStateSync()
     {
@@ -195,6 +201,7 @@ public partial class GameWorld
             return;
         }
         long receiveStart = Stopwatch.GetTimestamp();
+        receivedBytes += msg.Length;
         WorldTickMessage tickmsg = pack.Deserialize<WorldTickMessage>(msg);
         if (!playbackClocks.TryGetValue(from, out PlaybackClock clock))
         {
@@ -248,36 +255,36 @@ public partial class GameWorld
         pendingStates.Clear();
         applyCost += Stopwatch.GetTimestamp() - applyStart;
         AdvancePlaybackClocks();
+        GMPOBox3DBody.PlayFollowers(delta, GetViewport().GetCamera3D());
         CheckSleepers();
+        CheckKillPlane();
 
         // Nobody to send to (solo, or the last peer left): skip building updates, which costs per object per tick.
         if (Lobby.MemberCount <= 1)
         {
             return;
         }
-        // States go out on every SendInterval'th tick only (received ones are applied every tick, above).
+        // Each object sends on every SendInterval'th tick, the ones whose id gives this tick's turn, so every tick sends
+        // some of them (received ones are applied every tick, above).
         ulong frame = Engine.GetPhysicsFrames();
-        if (frame % (ulong)SendInterval != 0)
-        {
-            return;
-        }
+        ulong turn = frame % (ulong)SendInterval;
         sendFrame = frame;
         long buildStart = Stopwatch.GetTimestamp();
         // Packets go out part way through; their cost is counted in sendCost, so it is taken off buildCost below.
         long sendCostBefore = sendCost;
 
-        // Every object this peer is the authority of gains its priority, then they send highest accumulator first
-        // until this send's share of the budget is used up. A sent object starts again from 0; the rest keep what
-        // they have, so they rise up the order until they get sent.
+        // Every object whose turn it is gains its priority, then they send highest accumulator first until this tick's
+        // share of the budget is used up. A sent object starts again from 0; the rest keep what they have, so they
+        // rise up the order until they get sent.
         int sendSize = 0;
         int packetSize = PacketHeaderSize;
-        // Every peer is sent the same packets, so each one's share of the budget is what one send may hold.
+        // Every peer is sent the same packets, so each one's share of the budget is what one tick may hold.
         int peers = Lobby.MemberCount - 1;
-        int maxSendSize = SendBudget / SendRate / peers;
+        int maxSendSize = SendBudget / (SendRate * SendInterval) / peers;
         candidates.Clear();
         foreach (var entity in syncedObjs.Values)
         {
-            if (entity.authority != Lobby.selfPeerID)
+            if (entity.authority != Lobby.selfPeerID || entity.id % (ulong)SendInterval != turn)
             {
                 continue;
             }
@@ -290,12 +297,12 @@ public partial class GameWorld
             entity.priorityAccumulator += entity.priority;
             candidates.Add(entity);
         }
-        builtCount += candidates.Count;
         // Sorted in place (no per-tick allocation).
         candidates.Sort(ByAccumulatorDescending);
         foreach (GMPObject e in candidates)
         {
             byte[] update = e.GenerateStateUpdate();
+            builtCount++;
             if (update == null || update.Length == 0)
             {
                 e.priorityAccumulator = 0;
@@ -304,8 +311,9 @@ public partial class GameWorld
             int entrySize = update.Length + UpdateOverhead;
             if (sendSize + entrySize > maxSendSize)
             {
-                // Doesn't fit this time, but a smaller one further down might.
-                continue;
+                // This send is full. Building the states of everything further down only to drop them cost the host
+                // most of its frame with thousands of objects, so they wait for the next send.
+                break;
             }
             if (pendingOutgoingTick.updates.Count > 0 && packetSize + entrySize > MaxPacketSize)
             {
@@ -331,6 +339,7 @@ public partial class GameWorld
         pendingOutgoingTick.sendTime = netTime;
         pendingOutgoingTick.tick = Engine.GetPhysicsFrames();
         byte[] packet = pack.Serialize<WorldTickMessage>(pendingOutgoingTick);
+        sentBytes += packet.Length * (Lobby.MemberCount - 1);
         Lobby.SendToAllExceptSelf(Channel.GAME_State, packet, Network.k_nSteamNetworkingSend_Unreliable | Network.k_nSteamNetworkingSend_NoNagle);
         pendingOutgoingTick.updates.Clear();
         sendCost += Stopwatch.GetTimestamp() - sendStart;

@@ -65,19 +65,16 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
     /// <summary>Whether this item is asleep in this peer's simulation (tracked on the authority only).</summary>
     public bool asleep { get; private set; }
 
+    /// <summary>Whether this item reports its touches for TagInteractions (it has a watcher tag; see TagInteractions).</summary>
+    public bool reportsTouches { get; private set; }
+
     public override void _Ready()
     {
         base._Ready();
         // Items without a definition resource (e.g. test props) fall back to their id.
         if (string.IsNullOrEmpty(hoverName)) hoverName = ItemInfo.Fetch(itemID)?.displayName ?? itemID;
         if (canBePickedUp && string.IsNullOrEmpty(hoverText)) hoverText = "Press F to pick up!";
-        // Items with interaction tags report touches so TagInteractions can react (Box3D then signals both bodies
-        // of a contact). Material-only tags don't need it: impact sounds come from the world's hit events.
-        if (tags != null && TagInteractions.HasRulesFor(tags))
-        {
-            contactMonitor = true;
-            Connect("body_entered", Callable.From<Node>(OnBodyEntered));
-        }
+        RefreshTouchReporting();
     }
 
     public override void AfterInit()
@@ -90,6 +87,38 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
         {
             this.ApplyCentralForce(new Vector3(Random.Shared.Next(-5, 5), Random.Shared.Next(-5, 5), Random.Shared.Next(-5, 5)));
         }
+    }
+
+    /// <summary>
+    /// Only items that can start a reaction report their touches (TagInteractions' watcher tags), and they run the
+    /// other item's side too. Every report is a call into C# per new contact, which cost a few milliseconds a physics
+    /// tick in a tumbling pile of scrap when every tagged item reported. Material-only tags don't need it: impact sounds
+    /// come from the world's hit events. Call again after changing <see cref="tags"/> (e.g. a rule that makes an item HOT).
+    /// </summary>
+    public void RefreshTouchReporting()
+    {
+        bool watch = tags != null && TagInteractions.IsWatcher(tags);
+        if (watch == reportsTouches)
+        {
+            return;
+        }
+        reportsTouches = watch;
+        contactMonitor = watch;
+        if (watch)
+        {
+            ContactStarted += OnTouched;
+        }
+        else
+        {
+            ContactStarted -= OnTouched;
+        }
+    }
+
+    // The authority tracks sleep through Box3D's sleep signal (and GameWorld.WatchForWake), so building a state
+    // needn't ask Box3D. Just woken but not yet noticed, a state goes out without its velocity; its position is right.
+    protected override bool IsResting()
+    {
+        return asleep;
     }
 
     public override void OnAuthorityChanged()
@@ -126,6 +155,12 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
         {
             return;
         }
+        // At rest with its pose already sent: nothing to send until it moves (see GMPOBox3DBody.AtRestAndSent).
+        if (AtRestAndSent())
+        {
+            priority = -1;
+            return;
+        }
         int unscaled = basePriority;
         if (!asleep)
         {
@@ -160,14 +195,19 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
         }
     }
 
-    // Reactions run on this item's authority, which is the peer simulating it.
-    void OnBodyEntered(Node other)
+    // Reactions run on this item's authority, which is the peer simulating it. An item that doesn't report its own
+    // touches has its side of the rules run here, by the watcher that touched it, if this peer simulates it too.
+    void OnTouched(Node other)
     {
         if (id != 0 && authority == Lobby.selfPeerID)
         {
             if (other is PhysicalFactoryItem otherItem && otherItem.id != 0)
             {
                 TagInteractions.OnTouch(this, otherItem);
+                if (!otherItem.reportsTouches && otherItem.authority == Lobby.selfPeerID)
+                {
+                    TagInteractions.OnTouch(otherItem, this);
+                }
             }
             else
             {

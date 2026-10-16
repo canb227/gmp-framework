@@ -46,6 +46,14 @@ public partial class Lobby : Node
     public static int incomingBandwidth = 0;
     public static int outgoingBandwidth = 0;
 
+    /// <summary>
+    /// Running total of main-thread time in the transport's service() (Stopwatch ticks), for PerfDebug: receiving and
+    /// handling every message (state receive is also counted on its own, GameWorld.receiveCost), and for ENet all the
+    /// socket work, including actually sending what was queued since the last frame. Steam does its sending on its own
+    /// threads.
+    /// </summary>
+    public static long serviceCost;
+
     public delegate void NewPeerConnected(ulong peerID);
     public delegate void PeerDisconnected(ulong peerID);
     public delegate void DisconnectedFromHost(ulong HostID);
@@ -57,6 +65,8 @@ public partial class Lobby : Node
 
     public static event NewPeerConnected PeerConnectedEvent;
     public static event PeerDisconnected PeerDisconnectedEvent;
+    /// <summary>A link to this peer dropped and was made again; it stayed a member, but messages in the gap were lost.</summary>
+    public static event NewPeerConnected PeerRepairedEvent;
     public static event ConnectedToHost ConnectedToHostEvent;
     public static event DisconnectedFromHost DisconnectedFromHostEvent;
     public static event LobbyMembersChanged LobbyMembersChangedEvent;   // any add/remove/rename
@@ -73,6 +83,13 @@ public partial class Lobby : Node
         instance = this;
     }
 
+    // Quitting the game (closing the window, or the console's quit) skips LeaveLobby: still tell the transport, so the
+    // other peers hear this one left instead of waiting for its link to time out.
+    public override void _ExitTree()
+    {
+        network?.Disconnect();
+    }
+
     public double timerMax = 2;
     public double timer = 0;
     public override void _Process(double delta)
@@ -81,7 +98,9 @@ public partial class Lobby : Node
         {
             renderLobbyDebugInfo();
         }
+        long serviceStart = System.Diagnostics.Stopwatch.GetTimestamp();
         network?.service();
+        serviceCost += System.Diagnostics.Stopwatch.GetTimestamp() - serviceStart;
         incomingBandwidth = PruneAndSum(incomingTracker, timer * 1000);
         outgoingBandwidth = PruneAndSum(outgoingTracker, timer * 1000);
 
@@ -139,6 +158,7 @@ public partial class Lobby : Node
         net.MessageReceivedEvent += OnIncomingNetworkMessage;
         net.PeerConnectedEvent += OnPeerConnected;
         net.PeerDisconnectedEvent += OnPeerDisconnected;
+        net.PeerRepairedEvent += OnPeerRepaired;
 
         members.Clear();
 
@@ -180,6 +200,7 @@ public partial class Lobby : Node
             network.MessageReceivedEvent -= OnIncomingNetworkMessage;
             network.PeerConnectedEvent -= OnPeerConnected;
             network.PeerDisconnectedEvent -= OnPeerDisconnected;
+            network.PeerRepairedEvent -= OnPeerRepaired;
             network.Disconnect();
             network = null;
         }
@@ -222,6 +243,12 @@ public partial class Lobby : Node
             DisconnectedFromHostEvent?.Invoke(peerID);
         PeerDisconnectedEvent?.Invoke(peerID);
         LobbyMembersChangedEvent?.Invoke();
+    }
+
+    private static void OnPeerRepaired(ulong peerID)
+    {
+        Logging.Log($"link to {NameFor(peerID)} ({peerID}) repaired", "Lobby");
+        PeerRepairedEvent?.Invoke(peerID);
     }
 
     private static void OnIncomingNetworkMessage(ulong from, Channel ch, byte[] msg)

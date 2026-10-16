@@ -320,6 +320,23 @@ public partial class GameWorld
         }
     }
 
+    /// <summary>
+    /// A dropped link came back (the transport repaired it): whatever was sent across it in the gap, spawns and other
+    /// reliable messages included, was lost, so the host has every peer rebuild from its world.
+    /// </summary>
+    private static void OnPeerRepaired(ulong peer)
+    {
+        if (!Lobby.isHost || !started)
+        {
+            return;
+        }
+        Logging.Log($"Link to {peer} was repaired: resyncing everyone", "GameWorld");
+        if (!Resync())
+        {
+            Logging.Warn("Resync after a link repair didn't start (one already under way?)", "GameWorld");
+        }
+    }
+
     private static void OnPeerUnlinked(ulong peer)
     {
         linkedPeers.Remove(peer);

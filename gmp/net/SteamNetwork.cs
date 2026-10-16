@@ -35,6 +35,10 @@ public class SteamNetwork :  Network
     public event Network.MessageReceived MessageReceivedEvent;
     public event Network.PeerConnected PeerConnectedEvent;
     public event Network.PeerDisconnected PeerDisconnectedEvent;
+    // Never raised: Steam re-establishes its own sessions.
+#pragma warning disable CS0067
+    public event Network.PeerRepaired PeerRepairedEvent;
+#pragma warning restore CS0067
 
     private static ulong SelfId => SteamUser.GetSteamID().m_SteamID;
 
@@ -263,6 +267,30 @@ public class SteamNetwork :  Network
         finally
         {
             Marshal.FreeHGlobal(result);
+        }
+    }
+
+    /// <summary>
+    /// Logs what Steam reports about each peer's connection (with the perf log, PerfDebug): whether it is relayed
+    /// through Valve's servers or direct, ping, how many packets get through each way (quality: 1 is all of them),
+    /// what is actually on the wire, Steam's send rate, and what is queued waiting to go out.
+    /// </summary>
+    public void LogConnectionStatus()
+    {
+        foreach (ulong id in _connected)
+        {
+            var ident = IdentityFor(id);
+            ESteamNetworkingConnectionState state = SteamNetworkingMessages.GetSessionConnectionInfo(ref ident, out SteamNetConnectionInfo_t info, out SteamNetConnectionRealTimeStatus_t status);
+            string route = "direct";
+            if ((info.m_nFlags & Constants.k_nSteamNetworkConnectionInfoFlags_Relayed) != 0)
+            {
+                route = "relayed";
+            }
+            Logging.Log($"peer {id}: {state}, {route} ({info.m_szConnectionDescription})"
+                + $" | ping {status.m_nPing} ms | quality local {status.m_flConnectionQualityLocal:0.00} remote {status.m_flConnectionQualityRemote:0.00}"
+                + $" | out {status.m_flOutBytesPerSec / 1024:0} KB/s ({status.m_flOutPacketsPerSec:0} pkt/s), in {status.m_flInBytesPerSec / 1024:0} KB/s ({status.m_flInPacketsPerSec:0} pkt/s)"
+                + $" | send rate {status.m_nSendRateBytesPerSecond / 1024} KB/s | pending unreliable {status.m_cbPendingUnreliable / 1024} KB, reliable {status.m_cbPendingReliable / 1024} KB, queue {status.m_usecQueueTime.m_SteamNetworkingMicroseconds / 1000} ms",
+                "Perf");
         }
     }
 

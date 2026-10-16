@@ -32,11 +32,20 @@ public static class PerfDebug
     private static double logTimer = 0;
     private static bool measuringRenderTime = false;
 
-    private static long lastApplyCost, lastBuildCost, lastSendCost, lastReceiveCost, lastFollowCost;
-    private static long lastApplied, lastBuilt, lastSent, lastReceived, lastFollowTicks;
-    private static double applyMs, buildMs, sendMs, receiveMs, followMs;
-    private static double appliedPerSecond, builtPerSecond, sentPerSecond, receivedPerSecond, followers;
+    private static long lastApplyCost, lastBuildCost, lastSendCost, lastReceiveCost, lastFollowCost, lastServiceCost;
+    private static long lastApplied, lastBuilt, lastSent, lastReceived, lastFollowTicks, lastFollowPlaced, lastSentBytes, lastReceivedBytes;
+    private static double applyMs, buildMs, sendMs, receiveMs, followMs, serviceMs;
+    private static double appliedPerSecond, builtPerSecond, sentPerSecond, receivedPerSecond, followers, followersPlaced, sentKBps, receivedKBps;
     private static double renderCpuMs, renderGpuMs, physicsTickMs, processMs, stepMs;
+
+    // ---- average physics tick ----
+    // Godot's physics monitor is the worst tick of each second. These time every tick from the first node's physics
+    // callback to the last one's (PhysicsTimer nodes at the lowest and highest process_physics_priority, made by
+    // Console): every _PhysicsProcess, Box3D's step and its writing transforms to the nodes. Not included: what the
+    // engine does between ticks, such as physics interpolation's bookkeeping.
+    public static long physicsTickStart, physicsTickCost, physicsTicks;
+    private static long lastPhysicsTickCost, lastPhysicsTicks;
+    private static double physicsTickAvgMs;
     private static int awakeBodies;
 
     public static void Process(double delta)
@@ -118,29 +127,44 @@ public static class PerfDebug
         sendMs = (GameWorld.sendCost - lastSendCost) * msPerTick / seconds;
         receiveMs = (GameWorld.receiveCost - lastReceiveCost) * msPerTick / seconds;
         followMs = (GMPOBox3DBody.followCost - lastFollowCost) * msPerTick / seconds;
+        serviceMs = (Lobby.serviceCost - lastServiceCost) * msPerTick / seconds;
+        sentKBps = (GameWorld.sentBytes - lastSentBytes) / 1024.0 / seconds;
+        receivedKBps = (GameWorld.receivedBytes - lastReceivedBytes) / 1024.0 / seconds;
         appliedPerSecond = (GameWorld.appliedCount - lastApplied) / seconds;
         builtPerSecond = (GameWorld.builtCount - lastBuilt) / seconds;
         sentPerSecond = (GameWorld.sentCount - lastSent) / seconds;
         receivedPerSecond = (GameWorld.receivedCount - lastReceived) / seconds;
         // Follower ticks per second over physics ticks per second: how many bodies follow at once, on average.
         followers = (GMPOBox3DBody.followTicks - lastFollowTicks) / seconds / Engine.PhysicsTicksPerSecond;
+        // How many of them are placed each tick (far and unseen ones every other tick).
+        followersPlaced = (GMPOBox3DBody.followPlaced - lastFollowPlaced) / seconds / Engine.PhysicsTicksPerSecond;
 
         lastApplyCost = GameWorld.applyCost;
         lastBuildCost = GameWorld.buildCost;
         lastSendCost = GameWorld.sendCost;
         lastReceiveCost = GameWorld.receiveCost;
         lastFollowCost = GMPOBox3DBody.followCost;
+        lastServiceCost = Lobby.serviceCost;
+        lastSentBytes = GameWorld.sentBytes;
+        lastReceivedBytes = GameWorld.receivedBytes;
         lastApplied = GameWorld.appliedCount;
         lastBuilt = GameWorld.builtCount;
         lastSent = GameWorld.sentCount;
         lastReceived = GameWorld.receivedCount;
         lastFollowTicks = GMPOBox3DBody.followTicks;
+        lastFollowPlaced = GMPOBox3DBody.followPlaced;
 
         Rid viewport = ((SceneTree)Engine.GetMainLoop()).Root.GetViewportRid();
         renderCpuMs = RenderingServer.ViewportGetMeasuredRenderTimeCpu(viewport) + RenderingServer.GetFrameSetupTimeCpu();
         renderGpuMs = RenderingServer.ViewportGetMeasuredRenderTimeGpu(viewport);
         processMs = Mon(Performance.Monitor.TimeProcess) * 1000;
         physicsTickMs = Mon(Performance.Monitor.TimePhysicsProcess) * 1000;
+        long ticks = physicsTicks - lastPhysicsTicks;
+        physicsTickAvgMs = 0;
+        if (ticks > 0)
+            physicsTickAvgMs = (physicsTickCost - lastPhysicsTickCost) * msPerTick / ticks;
+        lastPhysicsTickCost = physicsTickCost;
+        lastPhysicsTicks = physicsTicks;
         stepMs = 0;
         awakeBodies = 0;
         if (GodotObject.IsInstanceValid(GameWorld.b3droot))
@@ -153,11 +177,27 @@ public static class PerfDebug
     private static void LogSample()
     {
         Logging.Log($"fps {Mon(Performance.Monitor.TimeFps):0} (frame avg {avgMs:0.0} max {maxMs:0.0} ms)"
-            + $" | process {processMs:0.0} ms | physics tick {physicsTickMs:0.0} ms (Box3D step {stepMs:0.0} ms, awake {awakeBodies})"
+            + $" | process {processMs:0.0} ms | physics tick avg {physicsTickAvgMs:0.0} worst {physicsTickMs:0.0} ms (Box3D step {stepMs:0.0} ms, awake {awakeBodies})"
             + $" | render cpu {renderCpuMs:0.0} gpu {renderGpuMs:0.0} ms, draw calls {Mon(Performance.Monitor.RenderTotalDrawCallsInFrame):0}, objects {Mon(Performance.Monitor.RenderTotalObjectsInFrame):0}"
-            + $" | synced {GameWorld.syncedObjs.Count}, followers {followers:0} ({followMs:0} ms/s)"
-            + $" | sync ms/s: build {buildMs:0} ({builtPerSecond:0}/s), send {sendMs:0} ({sentPerSecond:0}/s), receive {receiveMs:0} ({receivedPerSecond:0}/s), apply {applyMs:0} ({appliedPerSecond:0}/s)",
+            + $" | synced {GameWorld.syncedObjs.Count}, followers {followers:0} ({followMs:0} ms/s), {followersPlaced:0} placed per tick"
+            + $" | sync ms/s: build {buildMs:0} ({builtPerSecond:0}/s), send {sendMs:0} ({sentPerSecond:0}/s), receive {receiveMs:0} ({receivedPerSecond:0}/s), apply {applyMs:0} ({appliedPerSecond:0}/s)"
+            + $" | transport service {serviceMs:0} ms/s | state out {sentKBps:0} KB/s, in {receivedKBps:0} KB/s",
             "Perf");
+        if (Lobby.network is SteamNetwork steam)
+        {
+            steam.LogConnectionStatus();
+        }
+        if (Lobby.network is ENetNetwork enet)
+        {
+            Logging.Log(enet.ConnectionStatus(), "Perf");
+        }
+    }
+
+    /// <summary>Logs the latest second's sample now (the console's perf command), as the log does every few seconds.</summary>
+    public static void LogNow()
+    {
+        RecomputeStats();
+        LogSample();
     }
 
     private static double Mon(Performance.Monitor m) => Performance.GetMonitor(m);
@@ -180,7 +220,7 @@ public static class PerfDebug
         if (ImGui.CollapsingHeader("Timings", ImGuiTreeNodeFlags.DefaultOpen))
         {
             ImGui.Text($"Process: {Mon(Performance.Monitor.TimeProcess) * 1000:0.00} ms");
-            ImGui.Text($"Physics process: {Mon(Performance.Monitor.TimePhysicsProcess) * 1000:0.00} ms (tick {Engine.PhysicsTicksPerSecond} Hz)");
+            ImGui.Text($"Physics process: {Mon(Performance.Monitor.TimePhysicsProcess) * 1000:0.00} ms worst, {physicsTickAvgMs:0.00} ms avg (tick {Engine.PhysicsTicksPerSecond} Hz)");
             ImGui.Text($"Navigation: {Mon(Performance.Monitor.TimeNavigationProcess) * 1000:0.00} ms");
             ImGui.Text($"Time scale: {Engine.TimeScale:0.00} | Frames drawn: {Engine.GetFramesDrawn()}");
             ImGui.Text($"Render: cpu {renderCpuMs:0.00} ms | gpu {renderGpuMs:0.00} ms");
@@ -193,7 +233,8 @@ public static class PerfDebug
             ImGui.Text($"Send (serialize + Steam): {sendMs:0.0} ms/s | {sentPerSecond:0} states/s");
             ImGui.Text($"Receive (deserialize): {receiveMs:0.0} ms/s | {receivedPerSecond:0} states/s");
             ImGui.Text($"Apply: {applyMs:0.0} ms/s | {appliedPerSecond:0} states/s");
-            ImGui.Text($"Followers: {followers:0} | {followMs:0.0} ms/s inside (plus Godot's call overhead)");
+            ImGui.Text($"Followers: {followers:0}, {followersPlaced:0} placed per tick | {followMs:0.0} ms/s");
+            ImGui.Text($"Transport service: {serviceMs:0.0} ms/s | state out {sentKBps:0} KB/s, in {receivedKBps:0} KB/s");
         }
 
         if (ImGui.CollapsingHeader("Rendering", ImGuiTreeNodeFlags.DefaultOpen))
@@ -244,5 +285,43 @@ public static class PerfDebug
         }
 
         ImGui.End();
+    }
+}
+
+/// <summary>
+/// Marks the start (lowest process_physics_priority, runs first) or end (highest, runs last) of each physics tick for
+/// <see cref="PerfDebug"/>'s average physics tick. Console adds one of each.
+/// </summary>
+public partial class PhysicsTimer : Node
+{
+    readonly bool isStart;
+
+    public PhysicsTimer(bool start)
+    {
+        isStart = start;
+        if (start)
+        {
+            Name = "PhysicsTimerStart";
+            ProcessPhysicsPriority = int.MinValue;
+        }
+        else
+        {
+            Name = "PhysicsTimerEnd";
+            ProcessPhysicsPriority = int.MaxValue;
+        }
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        if (isStart)
+        {
+            PerfDebug.physicsTickStart = System.Diagnostics.Stopwatch.GetTimestamp();
+            return;
+        }
+        if (PerfDebug.physicsTickStart != 0)
+        {
+            PerfDebug.physicsTickCost += System.Diagnostics.Stopwatch.GetTimestamp() - PerfDebug.physicsTickStart;
+            PerfDebug.physicsTicks++;
+        }
     }
 }

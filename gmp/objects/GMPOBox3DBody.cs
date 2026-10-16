@@ -68,13 +68,12 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         if (desiredState != null && desiredState.Length > 0)
         {
             BodySyncState s = BodySyncState.Unpack(desiredState);
-            this.Teleport(s.pos, s.rot);
+            this.Teleport(new Transform3D(new Basis(s.rot), s.pos));
         }
         if (authority != Lobby.selfPeerID)
         {
             this.SetBodyType(BodyTypeEnum.Kinematic);
         }
-        RefreshPhysicsProcess();
     }
 
     /// <summary>
@@ -85,6 +84,8 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     public virtual void OnAuthorityChanged()
     {
         desiredState = null;
+        // A new authority's followers need its resting pose again, even if this peer sent it once before.
+        lastBuiltResting = false;
         // Their ticks were counted by the old authority's clock.
         snapshots?.Clear();
         if (authority == Lobby.selfPeerID)
@@ -104,24 +105,33 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
             this.SetLinearVelocity(Vector3.Zero);
             this.SetAngularVelocity(Vector3.Zero);
         }
+        // Dropped from the followers list at the next playback (see PlayFollowers).
         following = false;
-        RefreshPhysicsProcess();
     }
 
     public virtual void OnDespawned(DespawnReason reason)
     {
     }
 
-    // ---- physics processing ----
-    // Godot calling into C# costs a few microseconds per node per tick, which adds up across thousands of items
-    // (about 7 of a 7.4 ms tick at 2000 resting items, measured). So the base class only keeps physics processing on
-    // while a non-authority copy is following. Subclasses that override _PhysicsProcess keep it on all the time.
-
     // ---- following ----
     // A non-authority copy plays the authority's states back from a short buffer instead of chasing the newest one:
     // it shows the authority's tick GameWorld.PlaybackTick, about GameWorld.InterpolationDelay ticks behind the newest
     // state heard, interpolating between the states either side of it. That smooths over packets arriving unevenly.
     // Past the newest state (packets late) it carries that one on at its velocity, briefly.
+    //
+    // Playback runs from one loop (PlayFollowers, called by GameWorld each physics tick) rather than each body's own
+    // _PhysicsProcess: Godot calling into C# costs a few microseconds per node per tick, and followers cost about 6 µs
+    // each per tick that way (14 ms ticks at 2300 followers, measured). The base class has no _PhysicsProcess, so
+    // bodies only get physics processing if a subclass adds its own.
+
+    /// <summary>Every body following right now, played back by <see cref="PlayFollowers"/>.</summary>
+    static readonly List<GMPOBox3DBody> followers = new();
+
+    /// <summary>Whether this body is in <see cref="followers"/>: it can stop and start following again before the list drops it.</summary>
+    bool inFollowers;
+
+    /// <summary>The body's scale when following started, kept while placing it (followers are placed by whole transform).</summary>
+    Vector3 followScale = Vector3.One;
 
     /// <summary>One received state, by the authority's physics tick.</summary>
     struct Snapshot
@@ -162,6 +172,8 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     Quaternion errorRot = Quaternion.Identity;
     /// <summary>Take <see cref="errorPos"/>/<see cref="errorRot"/> from the body's pose at the next playback.</summary>
     bool blendIn;
+    /// <summary>The fade is done: <see cref="errorPos"/> and <see cref="errorRot"/> are zero.</summary>
+    bool blended = true;
 
     /// <summary>Time constant (s) of the fade: most of the gap is gone in about three times this.</summary>
     const float ErrorBlendTime = 0.1f;
@@ -187,34 +199,27 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     static readonly double PlaybackLeadRate = GameWorld.InterpolationDelay * 2;
 
     /// <summary>
-    /// Running totals for the perf window (PerfDebug): physics ticks of following played by all bodies, and the
-    /// Stopwatch ticks spent inside them (not counting Godot's cost of calling into C#, a few microseconds each).
+    /// Running totals for the perf window (PerfDebug): physics ticks of following by all bodies, how many of those
+    /// placed a body (see <see cref="FullRateDistance"/>), and the Stopwatch ticks spent in <see cref="PlayFollowers"/>.
     /// </summary>
-    public static long followTicks, followCost;
+    public static long followTicks, followPlaced, followCost;
 
-    static readonly System.Collections.Generic.Dictionary<Type, bool> customPhysicsProcess = new();
+    // ---- far and unseen followers ----
+    // Placing a follower costs about 1 µs a tick, nearly half of it the one call into the engine that sets its transform
+    // (measured with 3000 moving). A body further than FullRateDistance from the camera, or out of its view, is placed
+    // every other tick only, half of them on each tick. Its states come at that rate anyway (SendRate); in between,
+    // physics interpolation holds it still for a tick, which shows up close but hardly at a distance.
 
-    /// <summary>Whether this node's class (or one between it and this base) overrides <c>_PhysicsProcess</c>.</summary>
-    bool hasCustomPhysicsProcess
-    {
-        get
-        {
-            Type type = GetType();
-            if (!customPhysicsProcess.TryGetValue(type, out bool custom))
-            {
-                var method = type.GetMethod(nameof(_PhysicsProcess), System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, null, [typeof(double)], null);
-                custom = method.DeclaringType != typeof(GMPOBox3DBody);
-                customPhysicsProcess[type] = custom;
-            }
-            return custom;
-        }
-    }
-
-    /// <summary>Turns physics processing on only if this node has per-tick work (see above).</summary>
-    protected void RefreshPhysicsProcess()
-    {
-        SetPhysicsProcess(following || hasCustomPhysicsProcess);
-    }
+    /// <summary>Followers within this many metres of the camera, and in its view, are placed every tick.</summary>
+    const float FullRateDistance = 30;
+    /// <summary>How far outside the camera's view (m) a body still counts as in it: about a body's size.</summary>
+    const float ViewMargin = 2;
+    /// <summary>The camera's position and view planes this tick (Camera3D.GetFrustum: they face out), if there is a camera.</summary>
+    static bool haveView;
+    static Vector3 viewEye;
+    static readonly Plane[] viewPlanes = new Plane[6];
+    /// <summary>The physics frame this follower was last placed on.</summary>
+    ulong lastPlacedFrame;
 
     /// <summary>
     /// Called (via <see cref="GameWorld"/>) when Box3D puts this body to sleep in this peer's simulation, on any
@@ -270,17 +275,109 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         ContactEnded?.Invoke(body);
     }
 
+    // ---- sending ----
+    // Building a state costs about 1 µs per call into Box3D (is_awake, each velocity) but only about 0.05 µs to read the
+    // node's transform (measured, bench_state). So the transform is read once, and a subclass that already knows
+    // whether the body is asleep says so (IsResting) instead of asking Box3D.
+    //
+    // A body at rest stops sending. Once its resting pose has gone out RestingSends times it has nothing new to say
+    // until it moves again; each send checks that by comparing its transform with the last one built (that cheap read
+    // again), so a body knocked awake goes out with the very next send. RestingHeartbeatFrames resends the pose now and
+    // then in case every copy of it was lost. Followers stop playing a body back once they've placed it at rest.
+
+    /// <summary>Times a resting pose is sent before the body goes quiet (each is unreliable).</summary>
+    const int RestingSends = 3;
+    /// <summary>A quiet resting body still sends its pose this often: 10 s.</summary>
+    static readonly ulong RestingHeartbeatFrames = (ulong)(10 * Engine.PhysicsTicksPerSecond);
+
+    /// <summary>The transform (and its rotation), and whether the body was at rest, as of the last state built.</summary>
+    Transform3D lastBuiltTransform;
+    Quaternion lastBuiltRotation;
+    bool lastBuiltResting;
+    /// <summary>Resting sends still to go before <see cref="AtRestAndSent"/>.</summary>
+    int restingSendsLeft;
+    /// <summary>The send (<see cref="GameWorld.sendFrame"/>) the last state was built for.</summary>
+    ulong lastBuiltFrame;
+
+    /// <summary>
+    /// Whether the body is at rest now (asleep in Box3D): its state then carries no velocity, so followers don't drift
+    /// on whatever velocity it went to sleep with. A subclass that tracks sleep itself can answer without asking Box3D.
+    /// </summary>
+    protected virtual bool IsResting()
+    {
+        return !this.IsAwake();
+    }
+
+    /// <summary>
+    /// For <see cref="UpdateSyncPriority"/>: true while this body is at rest, its resting pose has gone out
+    /// <see cref="RestingSends"/> times, and it hasn't moved since, so a send would only repeat it. Give it priority -1
+    /// then (never sends) to skip building it at all.
+    /// </summary>
+    protected bool AtRestAndSent()
+    {
+        if (!lastBuiltResting || restingSendsLeft > 0)
+        {
+            return false;
+        }
+        if (GameWorld.sendFrame - lastBuiltFrame >= RestingHeartbeatFrames)
+        {
+            return false;
+        }
+        return Transform == lastBuiltTransform;
+    }
+
+    /// <summary>
+    /// Velocities are worked out from the last state built when it's at most this many physics ticks old (two sends);
+    /// older than that the average would be too smooth, so Box3D is asked.
+    /// </summary>
+    static readonly ulong DerivedVelocityTicks = (ulong)(2 * GameWorld.SendInterval);
+
     public virtual byte[] GenerateStateUpdate()
     {
-        // A sleeping body is at rest; don't let followers drift on whatever velocity it went to sleep with.
+        Transform3D transform = Transform;
+        // Worked out in C# from the transform already read: no sin or cos, and no call into the engine (Rotation, 0.2 µs).
+        Quaternion rotation = transform.Basis.GetRotationQuaternion();
+        bool resting = IsResting();
         Vector3 velocity = Vector3.Zero;
         Vector3 angularVelocity = Vector3.Zero;
-        if (this.IsAwake())
+        ulong ticksSinceBuilt = GameWorld.sendFrame - lastBuiltFrame;
+        if (!resting && lastBuiltFrame != 0 && ticksSinceBuilt > 0 && ticksSinceBuilt <= DerivedVelocityTicks)
+        {
+            // Sent recently (the usual case when the budget isn't tight): how far it moved since, over the time.
+            // About ten times cheaper than asking Box3D for both velocities (1 µs per call, measured).
+            float seconds = (float)ticksSinceBuilt / Engine.PhysicsTicksPerSecond;
+            velocity = (transform.Origin - lastBuiltTransform.Origin) / seconds;
+            Quaternion turn = rotation * lastBuiltRotation.Inverse();
+            if (turn.W < 0)
+            {
+                turn = -turn;
+            }
+            Vector3 axis = new Vector3(turn.X, turn.Y, turn.Z);
+            float sinHalf = axis.Length();
+            if (sinHalf > 1e-6f)
+            {
+                angularVelocity = axis / sinHalf * (2 * Mathf.Atan2(sinHalf, turn.W) / seconds);
+            }
+        }
+        else if (!resting)
         {
             velocity = this.GetLinearVelocity();
             angularVelocity = this.GetAngularVelocity();
         }
-        return new BodySyncState { pos = Position, rot = Rotation, vel = velocity, angVel = angularVelocity }.Pack();
+        // Counted as built, which is nearly always sent: only the one state that doesn't fit a send isn't.
+        if (resting && lastBuiltResting && transform == lastBuiltTransform)
+        {
+            restingSendsLeft = Math.Max(0, restingSendsLeft - 1);
+        }
+        else if (resting)
+        {
+            restingSendsLeft = RestingSends - 1;
+        }
+        lastBuiltTransform = transform;
+        lastBuiltRotation = rotation;
+        lastBuiltResting = resting;
+        lastBuiltFrame = GameWorld.sendFrame;
+        return new BodySyncState { pos = transform.Origin, rot = rotation, vel = velocity, angVel = angularVelocity }.Pack();
     }
 
     public virtual void UpdateSyncPriority()
@@ -319,7 +416,7 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
             return;
         }
         BodySyncState s = BodySyncState.Unpack(update);
-        snapshots.Add(new Snapshot { tick = GameWorld.stateTick, pos = s.pos, rot = Quaternion.FromEuler(s.rot), vel = s.vel, angVel = s.angVel });
+        snapshots.Add(new Snapshot { tick = GameWorld.stateTick, pos = s.pos, rot = s.rot, vel = s.vel, angVel = s.angVel });
         if (snapshots.Count > MaxSnapshots)
         {
             snapshots.RemoveAt(0);
@@ -334,7 +431,11 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     {
         following = true;
         blendIn = true;
-        RefreshPhysicsProcess();
+        if (!inFollowers)
+        {
+            inFollowers = true;
+            followers.Add(this);
+        }
     }
 
     /// <summary>
@@ -347,58 +448,144 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         showNewestFrame = Engine.GetPhysicsFrames();
     }
 
-    public override void _PhysicsProcess(double delta)
+    /// <summary>
+    /// Each physics tick (from <see cref="GameWorld"/>, after the received states are applied): places every follower
+    /// (far and unseen ones every other tick), and drops the ones that have stopped following or are gone.
+    /// <paramref name="camera"/> is the camera the world is drawn from, if any.
+    /// </summary>
+    public static void PlayFollowers(double delta, Camera3D camera)
+    {
+        long start = System.Diagnostics.Stopwatch.GetTimestamp();
+        followTicks += followers.Count;
+        haveView = false;
+        if (followers.Count > 0 && camera != null && IsInstanceValid(camera))
+        {
+            viewEye = camera.GlobalPosition;
+            Godot.Collections.Array<Plane> planes = camera.GetFrustum();
+            if (planes.Count == viewPlanes.Length)
+            {
+                for (int i = 0; i < viewPlanes.Length; i++)
+                {
+                    viewPlanes[i] = planes[i];
+                }
+                haveView = true;
+            }
+        }
+        ulong frame = Engine.GetPhysicsFrames();
+        // Backwards, so a dropped body can be swapped for the last one, which has already been played.
+        for (int i = followers.Count - 1; i >= 0; i--)
+        {
+            GMPOBox3DBody body = followers[i];
+            bool stillFollowing = false;
+            if (IsInstanceValid(body) && !body.IsQueuedForDeletion())
+            {
+                stillFollowing = body.Follow(frame, delta);
+            }
+            if (!stillFollowing)
+            {
+                if (IsInstanceValid(body))
+                {
+                    body.inFollowers = false;
+                }
+                followers[i] = followers[followers.Count - 1];
+                followers.RemoveAt(followers.Count - 1);
+            }
+        }
+        followCost += System.Diagnostics.Stopwatch.GetTimestamp() - start;
+    }
+
+    /// <summary>Clears the followers list, with the rest of the world (<see cref="GameWorld.ClearWorld"/>).</summary>
+    public static void ClearFollowers()
+    {
+        followers.Clear();
+    }
+
+    /// <summary>Places this follower for physics frame <paramref name="frame"/>; false once it has stopped following.</summary>
+    bool Follow(ulong frame, double delta)
     {
         if (!following || snapshots == null || snapshots.Count == 0)
         {
-            // Nothing to do. Godot can switch processing back on behind AfterInit (it does so at _ready, which on a
-            // client can come after Init), so switch it off again here.
             following = false;
-            if (!hasCustomPhysicsProcess) SetPhysicsProcess(false);
-            return;
+            return false;
         }
 
-        // For the perf window (PerfDebug): follower ticks run and the time spent in them, since startup.
-        followTicks++;
-        long followStart = System.Diagnostics.Stopwatch.GetTimestamp();
+        // Asked for this tick or the last: bodies and whatever asks run in no fixed order within a tick.
+        bool showingNewest = showNewestFrame + 1 >= frame;
+
+        // Far or unseen (judged by its newest state, which needs no call into the engine): every other tick only.
+        if (!blendIn && !showingNewest && haveView && (frame + id) % 2 != 0)
+        {
+            Vector3 at = snapshots[snapshots.Count - 1].pos;
+            bool fullRate = at.DistanceSquaredTo(viewEye) <= FullRateDistance * FullRateDistance;
+            for (int i = 0; i < viewPlanes.Length && fullRate; i++)
+            {
+                if (viewPlanes[i].DistanceTo(at) > ViewMargin)
+                {
+                    fullRate = false;
+                }
+            }
+            if (!fullRate)
+            {
+                return true;
+            }
+        }
+        followPlaced++;
+        // Time since it was last placed: one tick, or two for a far body.
+        double elapsed = delta;
+        if (frame - lastPlacedFrame == 2)
+        {
+            elapsed = 2 * delta;
+        }
+        lastPlacedFrame = frame;
 
         double wantedLead = 0;
-        // Asked for this tick or the last: bodies and whatever asks run in no fixed order within a tick.
-        if (showNewestFrame + 1 >= Engine.GetPhysicsFrames())
+        if (showingNewest)
         {
             wantedLead = GameWorld.InterpolationDelay;
         }
-        playbackLead = Mathf.MoveToward(playbackLead, wantedLead, PlaybackLeadRate * delta);
+        playbackLead = Mathf.MoveToward(playbackLead, wantedLead, PlaybackLeadRate * elapsed);
 
         bool done = PlayBack(GameWorld.PlaybackTick(authority) + playbackLead, out Vector3 pos, out Quaternion rot);
         if (blendIn)
         {
             blendIn = false;
-            errorPos = Position - pos;
-            errorRot = Quaternion * rot.Inverse();
+            Transform3D current = Transform;
+            errorPos = current.Origin - pos;
+            errorRot = current.Basis.GetRotationQuaternion() * rot.Inverse();
+            followScale = current.Basis.Scale;
+            blended = false;
         }
-        else
+        else if (!blended)
         {
-            float keep = Mathf.Exp(-(float)delta / ErrorBlendTime);
+            float keep = Mathf.Exp(-(float)elapsed / ErrorBlendTime);
             errorPos *= keep;
             errorRot = Quaternion.Identity.Slerp(errorRot, keep);
         }
-        bool blended = errorPos.Length() < ArrivedDistance && 1f - Mathf.Abs(errorRot.W) < ArrivedRotation;
-        if (blended)
+        if (!blended && errorPos.Length() < ArrivedDistance && 1f - Mathf.Abs(errorRot.W) < ArrivedRotation)
         {
+            blended = true;
             errorPos = Vector3.Zero;
             errorRot = Quaternion.Identity;
         }
-        // The poses are world space, set as the parent-relative Position and Quaternion: this assumes the body sits
-        // under the world root (as every spawned object does), at the world origin.
-        Position = pos + errorPos;
-        Quaternion = (errorRot * rot).Normalized();
+        // The poses are world space, set as the parent-relative transform: this assumes the body sits under the world
+        // root (as every spawned object does), at the world origin. Set whole, in one call into the engine.
+        // Once blended in at scale 1 (nearly always) the rotation is used as it is: the error and scale maths cost a
+        // quarter of a follower's time (measured).
+        Basis basis;
+        if (blended && followScale.IsEqualApprox(Vector3.One))
+        {
+            basis = new Basis(rot);
+        }
+        else
+        {
+            basis = new Basis((errorRot * rot).Normalized()).ScaledLocal(followScale);
+        }
+        Transform = new Transform3D(basis, pos + errorPos);
         if (done && blended)
         {
             following = false;
-            RefreshPhysicsProcess();
         }
-        followCost += System.Diagnostics.Stopwatch.GetTimestamp() - followStart;
+        return following;
     }
 
     /// <summary>
