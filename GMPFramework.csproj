@@ -4,6 +4,10 @@
     <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- Optimized in every configuration, Debug (what the editor runs) included: unoptimized, applying received states
+         cost about four times as much and the physics tick a fifth more (measured 2026-10-16). Set false for a while
+         to step through code with every local visible. -->
+    <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ImGui.NET" Version="1.91.6.1" />

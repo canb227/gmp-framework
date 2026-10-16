@@ -154,12 +154,12 @@ public partial class Console : Node
         LimboConsole.Info($"net_flood: {mbps} Mbps of filler to each peer");
     }
 
-    /// <summary>Called each physics tick (Console.Game.cs): on state send ticks, sends that send's share of the flood.</summary>
+    /// <summary>Called each physics tick (Console.Game.cs): sends that tick's share of the flood, as state goes out every tick.</summary>
     void FloodTick()
     {
-        if (floodMbps <= 0 || Lobby.MemberCount <= 1 || Engine.GetPhysicsFrames() % (ulong)GameWorld.SendInterval != 0)
+        if (floodMbps <= 0 || Lobby.MemberCount <= 1)
             return;
-        int bytes = floodMbps * 1000 * 1000 / 8 / GameWorld.SendRate;
+        int bytes = floodMbps * 1000 * 1000 / 8 / Engine.PhysicsTicksPerSecond;
         for (; bytes > 0; bytes -= floodPacket.Length)
         {
             Lobby.SendToAllExceptSelf(Channel.GAME_tba2, floodPacket, Network.k_nSteamNetworkingSend_Unreliable);

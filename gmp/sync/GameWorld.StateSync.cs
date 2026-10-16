@@ -53,12 +53,13 @@ public partial class GameWorld
     public static ulong sendFrame { get; private set; }
 
     /// <summary>
-    /// State sends per second. Physics ticks faster than this (60 Hz) for better collisions, and states go out on every
-    /// <see cref="SendInterval"/>th tick only, which halves the bandwidth.
+    /// States sent per object per second. Physics ticks faster than this (60 Hz) for better collisions, and each object
+    /// sends on every <see cref="SendInterval"/>th tick only, which halves the bandwidth. The objects take turns (by id),
+    /// so every tick sends some: building thousands of states all on one tick made the host's worst ticks twice as long.
     /// </summary>
     public const int SendRate = 30;
 
-    /// <summary>Physics ticks per state send: 2 at 60 Hz physics, 1 at 30 Hz.</summary>
+    /// <summary>Physics ticks between an object's states: 2 at 60 Hz physics, 1 at 30 Hz.</summary>
     public static readonly int SendInterval = Math.Max(1, Engine.PhysicsTicksPerSecond / SendRate);
 
     /// <summary>
@@ -99,7 +100,8 @@ public partial class GameWorld
     /// <summary>
     /// State bytes this peer sends per second to all other peers together (updates with their ids and framing; not
     /// the transport's own packet headers): split between the connected peers, which changes as they join and leave,
-    /// and evenly over the <see cref="SendRate"/> sends. Every send fills its share with the objects of highest
+    /// and evenly over the physics ticks (each sends the objects whose turn it is, see <see cref="SendRate"/>). Every
+    /// tick fills its share with the objects of highest
     /// <see cref="GMPObject.priorityAccumulator"/>.
     /// <para>
     /// 8 Mbps: what actually got through over Steam in testing (2026-10-15), though both ends had well over 100 Mbps.
@@ -253,7 +255,7 @@ public partial class GameWorld
         pendingStates.Clear();
         applyCost += Stopwatch.GetTimestamp() - applyStart;
         AdvancePlaybackClocks();
-        GMPOBox3DBody.PlayFollowers(delta);
+        GMPOBox3DBody.PlayFollowers(delta, GetViewport().GetCamera3D());
         CheckSleepers();
         CheckKillPlane();
 
@@ -262,29 +264,27 @@ public partial class GameWorld
         {
             return;
         }
-        // States go out on every SendInterval'th tick only (received ones are applied every tick, above).
+        // Each object sends on every SendInterval'th tick, the ones whose id gives this tick's turn, so every tick sends
+        // some of them (received ones are applied every tick, above).
         ulong frame = Engine.GetPhysicsFrames();
-        if (frame % (ulong)SendInterval != 0)
-        {
-            return;
-        }
+        ulong turn = frame % (ulong)SendInterval;
         sendFrame = frame;
         long buildStart = Stopwatch.GetTimestamp();
         // Packets go out part way through; their cost is counted in sendCost, so it is taken off buildCost below.
         long sendCostBefore = sendCost;
 
-        // Every object this peer is the authority of gains its priority, then they send highest accumulator first
-        // until this send's share of the budget is used up. A sent object starts again from 0; the rest keep what
-        // they have, so they rise up the order until they get sent.
+        // Every object whose turn it is gains its priority, then they send highest accumulator first until this tick's
+        // share of the budget is used up. A sent object starts again from 0; the rest keep what they have, so they
+        // rise up the order until they get sent.
         int sendSize = 0;
         int packetSize = PacketHeaderSize;
-        // Every peer is sent the same packets, so each one's share of the budget is what one send may hold.
+        // Every peer is sent the same packets, so each one's share of the budget is what one tick may hold.
         int peers = Lobby.MemberCount - 1;
-        int maxSendSize = SendBudget / SendRate / peers;
+        int maxSendSize = SendBudget / (SendRate * SendInterval) / peers;
         candidates.Clear();
         foreach (var entity in syncedObjs.Values)
         {
-            if (entity.authority != Lobby.selfPeerID)
+            if (entity.authority != Lobby.selfPeerID || entity.id % (ulong)SendInterval != turn)
             {
                 continue;
             }

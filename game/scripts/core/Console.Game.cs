@@ -250,10 +250,10 @@ public partial class Console
         Transform3D[] transforms = new Transform3D[items.Count];
         for (int i = 0; i < items.Count; i++) transforms[i] = items[i].Transform;
         start = System.Diagnostics.Stopwatch.GetTimestamp();
-        foreach (Transform3D t in transforms) _ = t.Basis.Orthonormalized().GetEuler();
-        double euler = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * usPerTick;
+        foreach (Transform3D t in transforms) _ = t.Basis.GetRotationQuaternion();
+        double quaternion = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * usPerTick;
         start = System.Diagnostics.Stopwatch.GetTimestamp();
-        foreach (Transform3D t in transforms) _ = new BodySyncState { pos = t.Origin, rot = t.Basis.GetEuler(), vel = Vector3.One, angVel = Vector3.One }.Pack();
+        foreach (Transform3D t in transforms) _ = new BodySyncState { pos = t.Origin, rot = t.Basis.GetRotationQuaternion(), vel = Vector3.One, angVel = Vector3.One }.Pack();
         double pack = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * usPerTick;
         bool hasProperty = false;
         foreach (Godot.Collections.Dictionary property in ClassDB.ClassGetPropertyList("Box3DBody"))
@@ -276,7 +276,7 @@ public partial class Console
         start = System.Diagnostics.Stopwatch.GetTimestamp();
         foreach (PhysicalFactoryItem item in items) item.UpdateSyncPriority();
         double priority = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * usPerTick;
-        LimboConsole.Info($"bench_state: {items.Count} bodies, us per call: is_awake {awake:0.00}, linear velocity {linear:0.00}, angular velocity {angular:0.00}, Position {position:0.00}, Rotation {rotation:0.00}, Transform {transform:0.00}, GlobalPosition {globalPosition:0.00} | euler {euler:0.00}, Pack {pack:0.00}, linear_velocity property {hasProperty} {viaProperty:0.00} | GenerateStateUpdate {build:0.00} ({stillAsleep} flagged asleep), UpdateSyncPriority {priority:0.00}");
+        LimboConsole.Info($"bench_state: {items.Count} bodies, us per call: is_awake {awake:0.00}, linear velocity {linear:0.00}, angular velocity {angular:0.00}, Position {position:0.00}, Rotation {rotation:0.00}, Transform {transform:0.00}, GlobalPosition {globalPosition:0.00} | rotation quaternion {quaternion:0.00}, Pack {pack:0.00}, linear_velocity property {hasProperty} {viaProperty:0.00} | GenerateStateUpdate {build:0.00} ({stillAsleep} flagged asleep), UpdateSyncPriority {priority:0.00}");
     }
 
     /// <summary>Makes the first n spawned bodies MAGNETIC (instead of METAL, FERROUS), to test tag reactions.</summary>
