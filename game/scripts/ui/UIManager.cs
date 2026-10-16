@@ -210,6 +210,12 @@ public partial class UIManager : Node
     /// <summary>Captures the mouse while <see cref="GameplayHasMouse"/>, frees it otherwise.</summary>
     public static void RefreshMouseMode()
     {
+        // Test copies (run by a test driver) never take the mouse: they sit beside someone else's work.
+        if (TestControl.folder != null)
+        {
+            Input.MouseMode = Input.MouseModeEnum.Visible;
+            return;
+        }
         Input.MouseMode = GameplayHasMouse ? Input.MouseModeEnum.Captured : Input.MouseModeEnum.Visible;
     }
 }

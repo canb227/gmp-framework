@@ -18,12 +18,49 @@ public partial class Console : Node
         LimboConsole.RegisterCommand(new Callable(this, "save"));
         LimboConsole.RegisterCommand(new Callable(this, "resync"));
         LimboConsole.RegisterCommand(new Callable(this, "load"));
+        LimboConsole.RegisterCommand(new Callable(this, "send_budget"));
+        LimboConsole.RegisterCommand(new Callable(this, "status"));
+        LimboConsole.RegisterCommand(new Callable(this, "start_game"));
+        LimboConsole.RegisterCommand(new Callable(this, "screenshot"));
+        LimboConsole.RegisterCommand(new Callable(this, "perf"));
+        LimboConsole.RegisterCommand(new Callable(this, "physprof"));
+        LimboConsole.RegisterCommand(new Callable(this, "net_sim"));
+        LimboConsole.RegisterCommand(new Callable(this, "net_blackout"));
+        LimboConsole.RegisterCommand(new Callable(this, "net_flood"));
+        // Game-specific commands, in game/scripts/core/Console.Game.cs.
+        LimboConsole.RegisterCommand(new Callable(this, "players"));
+        LimboConsole.RegisterCommand(new Callable(this, "tp"));
+        LimboConsole.RegisterCommand(new Callable(this, "look_at"));
+        LimboConsole.RegisterCommand(new Callable(this, "spawn_bodies"));
+        LimboConsole.RegisterCommand(new Callable(this, "clear_bodies"));
+        LimboConsole.RegisterCommand(new Callable(this, "bodies"));
+        LimboConsole.RegisterCommand(new Callable(this, "test_arena"));
+        LimboConsole.RegisterCommand(new Callable(this, "contacts"));
+        LimboConsole.RegisterCommand(new Callable(this, "magnetize"));
+        LimboConsole.RegisterCommand(new Callable(this, "nodesync"));
+        LimboConsole.RegisterCommand(new Callable(this, "bench_state"));
+        LimboConsole.RegisterCommand(new Callable(this, "interp"));
+        LimboConsole.RegisterCommand(new Callable(this, "stir"));
 
         // Keep debug windows (perf) drawing while the tree is paused, e.g. during world load.
         ProcessMode = ProcessModeEnum.Always;
+        // Times each physics tick for the perf log's average; only unpaused ticks count.
+        PhysicsTimer timerStart = new PhysicsTimer(true);
+        PhysicsTimer timerEnd = new PhysicsTimer(false);
+        timerStart.ProcessMode = ProcessModeEnum.Pausable;
+        timerEnd.ProcessMode = ProcessModeEnum.Pausable;
+        AddChild(timerStart);
+        AddChild(timerEnd);
+
+        // "-- --testctl <folder>" lets a test driver run console commands in this instance (see TestControl).
+        string[] args = OS.GetCmdlineUserArgs();
+        int testFlag = Array.IndexOf(args, "--testctl");
+        if (testFlag >= 0 && testFlag + 1 < args.Length)
+        {
+            AddChild(new TestControl(args[testFlag + 1]));
+        }
 
         // "-- --debugui perf,graphics" opens those windows at startup.
-        string[] args = OS.GetCmdlineUserArgs();
         int flag = Array.IndexOf(args, "--debugui");
         if (flag >= 0 && flag + 1 < args.Length)
         {
@@ -65,6 +102,157 @@ public partial class Console : Node
     public void load(string name)
     {
         if (!GameWorld.LoadFromFile(SavePath(name))) LimboConsole.Error($"Can't load '{name}': host only, in a running game, and the save must be readable.");
+    }
+
+    // ---- network ----
+
+    /// <summary>
+    /// Sets <see cref="GameWorld.SendBudget"/> in Mbps, for testing how much gets through. Steam's send rate is set
+    /// from it when hosting or joining, so use it before then (on the main menu or lobby screen).
+    /// </summary>
+    public void send_budget(int mbps)
+    {
+        GameWorld.SendBudget = mbps * 1000 * 1000 / 8;
+        LimboConsole.Info($"State send budget is now {mbps} Mbps. It applies to the next host or join.");
+        Logging.Log($"send budget set to {mbps} Mbps", "Perf");
+    }
+
+    /// <summary>
+    /// Simulated network conditions for LAN (ENetNetwork): lagMs one-way delay on everything this peer sends, plus or
+    /// minus jitterMs, and lossPercent of unreliable packets dropped. Set it on every peer. "net_sim 0 0 0" turns it off.
+    /// </summary>
+    public void net_sim(int lagMs, int jitterMs, float lossPercent)
+    {
+        ENetNetwork.simLagMs = lagMs;
+        ENetNetwork.simJitterMs = jitterMs;
+        ENetNetwork.simLossPercent = lossPercent;
+        LimboConsole.Info($"net_sim: lag {lagMs} ms ± {jitterMs} ms, loss {lossPercent}% (LAN only, on what this peer sends)");
+    }
+
+    /// <summary>
+    /// LAN only: this peer stops servicing ENet for that many seconds (nothing sent, received or acknowledged), so its
+    /// links time out as if the network went down. For testing link repair.
+    /// </summary>
+    public void net_blackout(float seconds)
+    {
+        ENetNetwork.Blackout(seconds);
+        LimboConsole.Info($"net_blackout: ENet not serviced for {seconds} s");
+    }
+
+    /// <summary>Filler traffic in Mbps from net_flood; 0 is off.</summary>
+    int floodMbps;
+    static readonly byte[] floodPacket = new byte[1100];
+
+    /// <summary>
+    /// Sends this many Mbps of filler to every other peer, to load the transport without needing thousands of bodies:
+    /// unreliable 1100-byte packets on a channel nothing listens to, all of each 30 Hz send's share at once, as state
+    /// goes out. 0 stops.
+    /// </summary>
+    public void net_flood(int mbps)
+    {
+        floodMbps = mbps;
+        LimboConsole.Info($"net_flood: {mbps} Mbps of filler to each peer");
+    }
+
+    /// <summary>Called each physics tick (Console.Game.cs): on state send ticks, sends that send's share of the flood.</summary>
+    void FloodTick()
+    {
+        if (floodMbps <= 0 || Lobby.MemberCount <= 1 || Engine.GetPhysicsFrames() % (ulong)GameWorld.SendInterval != 0)
+            return;
+        int bytes = floodMbps * 1000 * 1000 / 8 / GameWorld.SendRate;
+        for (; bytes > 0; bytes -= floodPacket.Length)
+        {
+            Lobby.SendToAllExceptSelf(Channel.GAME_tba2, floodPacket, Network.k_nSteamNetworkingSend_Unreliable);
+        }
+    }
+
+    /// <summary>Physics interpolation on (1) or off (0) for the whole game (project setting physics/common/physics_interpolation).</summary>
+    public void interp(int on)
+    {
+        GetTree().PhysicsInterpolation = on != 0;
+        LimboConsole.Info($"interp: physics interpolation {on != 0}");
+    }
+
+    // ---- testing ----
+
+    /// <summary>Box3D's own step profile (ms, last step) and counters, as the perf window shows them.</summary>
+    public void physprof()
+    {
+        if (!GodotObject.IsInstanceValid(GameWorld.b3droot))
+        {
+            LimboConsole.Error("No Box3D world.");
+            return;
+        }
+        string profile = "";
+        foreach (var (key, value) in GameWorld.b3droot.GetProfile())
+        {
+            profile += $" {key}={value.AsDouble():0.000}";
+        }
+        string counters = "";
+        foreach (var (key, value) in GameWorld.b3droot.GetCounters())
+        {
+            counters += $" {key}={value}";
+        }
+        LimboConsole.Info($"physprof: step ms{profile}");
+        LimboConsole.Info($"physprof: counters{counters}");
+    }
+
+    /// <summary>Logs the latest second's performance sample (the same line the log gets every 5 s in a game).</summary>
+    public void perf()
+    {
+        PerfDebug.LogNow();
+    }
+
+    /// <summary>One line of where this instance is: lobby role, peers, whether the game is running, object count, fps.</summary>
+    public void status()
+    {
+        string role = "none";
+        if (Lobby.network != null)
+        {
+            if (Lobby.isHost) role = "host";
+            else role = "client";
+        }
+        LimboConsole.Info($"status: role={role} peers={Lobby.MemberCount} ingame={GameWorld.started} paused={GetTree().Paused} " +
+            $"objects={GameWorld.syncedObjs.Count} fps={Engine.GetFramesPerSecond()} level={Lobby.gameInfo.levelIdx}");
+    }
+
+    /// <summary>Host, in the lobby: starts GameResources.LevelsList[level] for everyone connected.</summary>
+    public void start_game(int level)
+    {
+        if (!Lobby.isHost || GameWorld.started)
+        {
+            LimboConsole.Error("Only the host can start a game, from the lobby.");
+            return;
+        }
+        if (level < 0 || level >= GameResources.LevelsList.Count)
+        {
+            LimboConsole.Error($"No level {level}; there are {GameResources.LevelsList.Count}.");
+            return;
+        }
+        Lobby.gameInfo.levelIdx = level;
+        Lobby.SendStartGame();
+        LimboConsole.Info($"Starting {GameResources.LevelsList[level].levelName}");
+    }
+
+    /// <summary>
+    /// Saves what this window shows as a PNG: into the test folder when run by a test driver, otherwise into
+    /// user://screenshots. The name is optional.
+    /// </summary>
+    public void screenshot(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            name = "screenshot_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string folder;
+        if (TestControl.folder != null)
+            folder = TestControl.folder;
+        else
+            folder = ProjectSettings.GlobalizePath("user://screenshots");
+        System.IO.Directory.CreateDirectory(folder);
+        string path = System.IO.Path.Combine(folder, name + ".png");
+        Image image = GetViewport().GetTexture().GetImage();
+        Error err = image.SavePng(path);
+        if (err == Error.Ok) LimboConsole.Info($"screenshot: {path}");
+        else LimboConsole.Error($"Screenshot not saved: {err}");
     }
 
     public void debugui(string which)

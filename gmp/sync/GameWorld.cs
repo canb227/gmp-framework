@@ -12,7 +12,8 @@ public partial class GameWorld : Node3D
     public static GameWorld instance;
     public static GMPOBox3DWorld b3droot;
 
-    private static bool started = false;
+    /// <summary>True once every peer has loaded and the game is running; false in the lobby and menus.</summary>
+    public static bool started { get; private set; }
 
     /// <summary>
     /// The clock every peer stamps its messages with: real time in milliseconds (UTC). Machines whose clocks set
@@ -30,6 +31,7 @@ public partial class GameWorld : Node3D
         Lobby.LobbyDonePreloadingEvent += Instance_LobbyDonePreloadingEvent;
         Lobby.PeerConnectedEvent += OnPeerLinked;
         Lobby.PeerDisconnectedEvent += OnPeerUnlinked;
+        Lobby.PeerRepairedEvent += OnPeerRepaired;
 
 
         //GetTree().Paused = true;
@@ -53,8 +55,9 @@ public partial class GameWorld : Node3D
             // _PhysicsProcess, where the step has had a whole frame to finish, not from _Process.
             b3droot.asyncStep = false;
             // Solver threads (Box3D starts and owns them). Box3D does best on performance cores only, so stay well
-            // under the logical core count; at 2000 bodies the solver was too light (~2 ms) to measure a gain.
-            b3droot.workerCount = 1;
+            // under the logical core count. At 2000 resting bodies one was enough (~2 ms), but with ~2700 awake on
+            // belts the host's step took 7 ms on one (2026-10-15).
+            b3droot.workerCount = 4;
             AddChild(b3droot);
             Logging.Log($"Box3D solver workers: {b3droot.workerCount}", "GameWorld");
             // Box3D reports sleep per world, not per body; hand it to the body (it has no matching wake signal).
@@ -96,6 +99,51 @@ public partial class GameWorld : Node3D
     /// this from <see cref="GMPOBox3DBody.OnFellAsleep"/>; <see cref="GMPOBox3DBody.OnWoke"/> is then called once it
     /// is awake again, or once this peer stops simulating it.
     /// </summary>
+    /// <summary>
+    /// Bodies this peer simulates that fall below this height are despawned: anything that leaves the level (pushed
+    /// through a floor, off an edge) would otherwise fall forever, awake, simulated and synced. Below any level's lowest
+    /// floor (the test facility's chasm is about 40 m deep).
+    /// </summary>
+    public static float KillPlaneY = -200;
+
+    /// <summary>Bodies checked against <see cref="KillPlaneY"/> per tick; a pass over 5000 takes under half a second.</summary>
+    const int KillChecksPerTick = 200;
+    static readonly System.Collections.Generic.List<GMPOBox3DBody> killChecks = new();
+    static readonly System.Collections.Generic.List<ulong> killed = new();
+    static int nextKillCheck;
+
+    /// <summary>Despawns a few of this peer's dynamic bodies each tick if they've fallen out of the world.</summary>
+    static void CheckKillPlane()
+    {
+        if (nextKillCheck >= killChecks.Count)
+        {
+            nextKillCheck = 0;
+            killChecks.Clear();
+            foreach (GMPObject obj in syncedObjs.Values)
+            {
+                if (obj is GMPOBox3DBody body && body.authority == Lobby.selfPeerID && body.authoredBodyType == BodyTypeEnum.Dynamic)
+                {
+                    killChecks.Add(body);
+                }
+            }
+        }
+        int end = Mathf.Min(nextKillCheck + KillChecksPerTick, killChecks.Count);
+        for (; nextKillCheck < end; nextKillCheck++)
+        {
+            GMPOBox3DBody body = killChecks[nextKillCheck];
+            if (IsInstanceValid(body) && !body.IsQueuedForDeletion() && body.authority == Lobby.selfPeerID && body.GlobalPosition.Y < KillPlaneY)
+            {
+                killed.Add(body.id);
+            }
+        }
+        foreach (ulong id in killed)
+        {
+            Logging.Warn($"Despawned {id}: it fell below the kill plane (y {KillPlaneY})", "GameWorld");
+            DespawnObject(id);
+        }
+        killed.Clear();
+    }
+
     public static void WatchForWake(GMPOBox3DBody body)
     {
         sleepers.Add(body);
@@ -222,6 +270,7 @@ public partial class GameWorld : Node3D
         spawnedRoots.Clear();
         syncedObjs.Clear();
         sleepers.Clear();
+        GMPOBox3DBody.ClearFollowers();
         claims.Clear();
         leaseEnds.Clear();
         BuildGrid.ResetSession();

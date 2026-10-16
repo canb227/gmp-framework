@@ -5,10 +5,16 @@ using System.Collections.Generic;
 /// <summary>
 /// Rules for what happens when items with particular <see cref="ItemTags"/> touch. A rule is keyed by
 /// (this item's tag, the other item's tag) and runs from this item's point of view, on this item's authority
-/// (see <c>PhysicalFactoryItem.OnBodyEntered</c>). Both items of a contact are checked, so a HOT/COLD touch
+/// (see <c>PhysicalFactoryItem.OnTouched</c>). Both items of a contact are checked, so a HOT/COLD touch
 /// runs the (HOT, COLD) rule for the hot item and the (COLD, HOT) rule for the cold one, each on its own
 /// authority. Anything a rule changes must therefore be replicated (an RPC or state update), since the
 /// other peers don't run it. Box3D reports every bounce as a new touch, so each pair is debounced.
+/// <para>
+/// Only items with a <see cref="watchers"/> tag report their touches: each report is a call into C# per new contact,
+/// and common materials (METAL, FERROUS...) reporting every bounce in a pile cost milliseconds a physics tick. A
+/// watcher runs both items' sides of the rules when the other item doesn't report its own, so every rule needs a
+/// watcher tag on at least one side; a rule without one is reported at startup.
+/// </para>
 /// </summary>
 public static class TagInteractions
 {
@@ -36,17 +42,39 @@ public static class TagInteractions
         { (ItemTags.CHARGED, ItemTags.CONDUCTIVE), (self, other) => ReportReaction(self, other, "arcs into the metal and loses its charge") },
     };
 
+    /// <summary>
+    /// The tags whose items report their touches: the rarer, active side of each rule (what heats, charges, sticks,
+    /// pulls, dissolves or flows), so that ordinary materials don't. Every rule has one on at least one side.
+    /// </summary>
+    static readonly HashSet<ItemTags> watchers = new()
+    {
+        ItemTags.HOT,
+        ItemTags.CHARGED,
+        ItemTags.MAGNETIC,
+        ItemTags.STICKY,
+        ItemTags.SOLUBLE,
+        ItemTags.LIQUID,
+    };
+
     static readonly Dictionary<(ulong, ulong), ulong> lastReaction = new();
 
-    /// <summary>Whether any rule involves one of <paramref name="tags"/> (such items need touch reports).</summary>
-    public static bool HasRulesFor(IEnumerable<ItemTags> tags)
+    static TagInteractions()
+    {
+        foreach ((ItemTags self, ItemTags other) key in rules.Keys)
+        {
+            if (!watchers.Contains(key.self) && !watchers.Contains(key.other))
+            {
+                GD.PushError($"TagInteractions: rule ({key.self}, {key.other}) has no watcher tag, so it never runs. Add one of them to watchers.");
+            }
+        }
+    }
+
+    /// <summary>Whether an item with <paramref name="tags"/> reports its touches (has a <see cref="watchers"/> tag).</summary>
+    public static bool IsWatcher(IEnumerable<ItemTags> tags)
     {
         foreach (ItemTags tag in tags)
         {
-            foreach ((ItemTags self, ItemTags other) key in rules.Keys)
-            {
-                if (key.self == tag || key.other == tag) return true;
-            }
+            if (watchers.Contains(tag)) return true;
         }
         return false;
     }

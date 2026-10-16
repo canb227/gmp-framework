@@ -167,6 +167,24 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
 
     // ---- movement ---------------------------------------------------------
 
+    /// <summary>Turns the player and its camera to face a point (the console's look_at command).</summary>
+    public void FaceTowards(Vector3 target)
+    {
+        Vector3 eye = GlobalPosition + GlobalBasis * cameraOffset;
+        Vector3 direction = target - eye;
+        Rotation = new Vector3(0, Mathf.Atan2(-direction.X, -direction.Z), 0);
+        float flat = new Vector2(direction.X, direction.Z).Length();
+        lookPitch = Mathf.Clamp(Mathf.Atan2(direction.Y, flat), Mathf.DegToRad(-89f), Mathf.DegToRad(89f));
+        PoseCamera(false);
+    }
+
+    /// <summary>Puts the player at a spot at once, stopped (the console's tp command).</summary>
+    public void Teleport(Vector3 position)
+    {
+        GlobalPosition = position;
+        Velocity = Vector3.Zero;
+    }
+
     public override void _PhysicsProcess(double delta)
     {
         if (!isLocal)

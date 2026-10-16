@@ -173,9 +173,6 @@ public partial class Structure : GMPOBox3DBody, Interactable
         }
         outputEnds = FindEnds(cells, true, anchor, quarterTurns);
         CheckReceiversLater();
-
-        // Structures never follow synced state, so only machines with their own _PhysicsProcess keep processing on.
-        RefreshPhysicsProcess();
     }
 
     public override void OnAuthorityChanged()
