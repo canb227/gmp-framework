@@ -57,30 +57,30 @@ public partial class OptionsMenu : UIScreen
     {
         Section(graphicsRows, "DISPLAY");
         Choice(graphicsRows, "WINDOW MODE", ["Windowed", "Borderless", "Fullscreen"],
-            (int)GameSettings.windowMode, i => { GameSettings.SetWindowMode((GameSettings.WindowModeSetting)i); RefreshResolution(); });
+            (int)GameSettings.windowMode, i => { /* GameSettings.SetWindowMode((GameSettings.WindowModeSetting)i); */ RefreshResolution(); });
 
         List<Vector2I> resolutions = ResolutionChoices();
         resolutionOption = Choice(graphicsRows, "RESOLUTION", resolutions.Select(r => $"{r.X} x {r.Y}").ToArray(),
-            resolutions.IndexOf(GameSettings.resolution), i => GameSettings.SetResolution(resolutions[i]));
+            resolutions.IndexOf(GameSettings.resolution), i => { /* GameSettings.SetResolution(resolutions[i]); */ });
         RefreshResolution();
 
-        Toggle(graphicsRows, "VSYNC", GameSettings.vsync, GameSettings.SetVsync);
+        Toggle(graphicsRows, "VSYNC", GameSettings.vsync, on => { /* GameSettings.SetVsync(on); */ });
         Choice(graphicsRows, "FRAME RATE LIMIT", FpsCaps.Select(f => f == 0 ? "Unlimited" : $"{f} FPS").ToArray(),
-            Math.Max(0, Array.IndexOf(FpsCaps, GameSettings.maxFps)), i => GameSettings.SetMaxFps(FpsCaps[i]));
+            Math.Max(0, Array.IndexOf(FpsCaps, GameSettings.maxFps)), i => { /* GameSettings.SetMaxFps(FpsCaps[i]); */ });
 
         Section(graphicsRows, "RENDERING");
         Slider(graphicsRows, "RENDER SCALE", 50, 100, 5, GameSettings.renderScale * 100f, v => $"{v:0}%",
-            v => GameSettings.SetRenderScale((float)(v / 100)));
+            v => { /* GameSettings.SetRenderScale((float)(v / 100)); */ });
         Choice(graphicsRows, "UPSCALING", ["Bilinear", "FSR 1", "FSR 2"], (int)GameSettings.upscaler,
-            i => GameSettings.SetUpscaler((GameSettings.UpscalerSetting)i));
+            i => { /* GameSettings.SetUpscaler((GameSettings.UpscalerSetting)i); */ });
         Choice(graphicsRows, "ANTI-ALIASING", ["Off", "FXAA", "SMAA", "MSAA 2x", "MSAA 4x", "MSAA 8x", "TAA"],
-            (int)GameSettings.antiAliasing, i => GameSettings.SetAntiAliasing((GameSettings.AntiAliasingSetting)i));
+            (int)GameSettings.antiAliasing, i => { /* GameSettings.SetAntiAliasing((GameSettings.AntiAliasingSetting)i); */ });
         Choice(graphicsRows, "SHADOW QUALITY", ["Low", "Medium", "High", "Ultra"], (int)GameSettings.shadowQuality,
-            i => GameSettings.SetShadowQuality((GameSettings.ShadowQualitySetting)i));
+            i => { /* GameSettings.SetShadowQuality((GameSettings.ShadowQualitySetting)i); */ });
 
         ResetButton(graphicsRows, "RESET GRAPHICS", () =>
         {
-            GameSettings.ResetGraphics();
+            // GameSettings.ResetGraphics();
             Rebuild(graphicsRows, BuildGraphics);
         });
     }
@@ -109,8 +109,8 @@ public partial class OptionsMenu : UIScreen
     {
         Section(inputRows, "MOUSE");
         Slider(inputRows, "LOOK SENSITIVITY", 0.1, 3, 0.05, GameSettings.mouseSensitivity, v => $"{v:0.00}x",
-            v => GameSettings.SetMouseSensitivity((float)v));
-        Toggle(inputRows, "INVERT LOOK Y", GameSettings.invertMouseY, GameSettings.SetInvertMouseY);
+            v => { /* GameSettings.SetMouseSensitivity((float)v); */ });
+        Toggle(inputRows, "INVERT LOOK Y", GameSettings.invertMouseY, on => { /* GameSettings.SetInvertMouseY(on); */ });
 
         Section(inputRows, "KEY BINDINGS");
         var header = new HBoxContainer();
@@ -143,7 +143,7 @@ public partial class OptionsMenu : UIScreen
         ResetButton(inputRows, "RESET BINDINGS", () =>
         {
             CancelCapture();
-            GameSettings.ResetBindings();
+            // GameSettings.ResetBindings();
             RefreshBindings();
         });
     }
@@ -188,14 +188,14 @@ public partial class OptionsMenu : UIScreen
             }
             capturing = null;
             bool clear = key.Keycode == Key.Delete || key.Keycode == Key.Backspace;
-            GameSettings.SetBinding(action, slot, clear ? null : new InputEventKey { PhysicalKeycode = key.PhysicalKeycode });
+            // GameSettings.SetBinding(action, slot, clear ? null : new InputEventKey { PhysicalKeycode = key.PhysicalKeycode });
             RefreshBindings();
         }
         else if (@event is InputEventMouseButton mouse && mouse.Pressed)
         {
             GetViewport().SetInputAsHandled();
             capturing = null;
-            GameSettings.SetBinding(action, slot, new InputEventMouseButton { ButtonIndex = mouse.ButtonIndex });
+            // GameSettings.SetBinding(action, slot, new InputEventMouseButton { ButtonIndex = mouse.ButtonIndex });
             RefreshBindings();
         }
     }
