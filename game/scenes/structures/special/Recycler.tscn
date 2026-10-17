@@ -182,6 +182,7 @@ itemWeights = Dictionary[String, float]({
 "scrap_piece2": 0.0,
 "scrap_piece3": 1.0
 })
+baseInterval = 4.0
 inputVolumes = [NodePath("Node3D/Valley")]
 outputLocations = [NodePath("Node3D/outputSpawn1"), NodePath("Node3D/outputSpawn2")]
 animationPlayer = NodePath("Node3D/AnimationPlayer")

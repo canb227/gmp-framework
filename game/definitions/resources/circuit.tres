@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3 uid="uid://cvatbmla2vpy5"]
+
+[ext_resource type="PackedScene" uid="uid://b3oywkvlueemf" path="res://game/scenes/items/resources/circuit.tscn" id="1_1fav2"]
+[ext_resource type="Texture2D" uid="uid://c5sqpbxsh6lrm" path="res://game/assets/icons/blueprints/circuit_icon.png" id="2_niwpk"]
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="3_uloob"]
+
+[resource]
+script = ExtResource("3_uloob")
+itemID = "circuit"
+droppedScene = ExtResource("1_1fav2")
+displayName = "Circuit"
+description = "A multi-purpose chip board"
+icon = ExtResource("2_niwpk")
+maxStackSize = 999

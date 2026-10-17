@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3 uid="uid://del77s80urbou"]
+
+[ext_resource type="PackedScene" uid="uid://bcnpecgtr5xfk" path="res://game/scenes/items/resources/robot_parts.tscn" id="1_t2g7f"]
+[ext_resource type="Texture2D" uid="uid://c6ncu5ul5d1jq" path="res://game/assets/icons/blueprints/robot_parts_icon.png" id="2_t2g7f"]
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="3_3pk6a"]
+
+[resource]
+script = ExtResource("3_3pk6a")
+itemID = "robot_parts"
+droppedScene = ExtResource("1_t2g7f")
+displayName = "Robot Parts"
+description = "Pieces of ruined and destroyed robots"
+icon = ExtResource("2_t2g7f")
+maxStackSize = 999

@@ -1,20 +1,20 @@
 [gd_resource type="Resource" script_class="BlueprintItem" format=3 uid="uid://dy8h6x7jfk05b"]
 
-[ext_resource type="Texture2D" uid="uid://b1gkymveoy02p" path="res://game/assets/icons/blueprints/shittysmelter.png" id="1_5hxoc"]
+[ext_resource type="Texture2D" uid="uid://bv6nhnv7jyuxn" path="res://game/assets/icons/blueprints/old_smelter_icon.png" id="1_cnuc2"]
 [ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_pbxo8"]
-[ext_resource type="PackedScene" uid="uid://dn7r2vkw8uls4" path="res://game/scenes/structures/processing/smelter.tscn" id="3_cnuc2"]
+[ext_resource type="PackedScene" uid="uid://bnsoik2afhc2i" path="res://game/scenes/structures/processing/smelter_old.tscn" id="4_cnuc2"]
 [ext_resource type="PackedScene" uid="uid://e450hsdm0ju3" path="res://game/scenes/structures/BlueprintGhost.tscn" id="4_ghost"]
 
 [resource]
 script = ExtResource("1_pbxo8")
-structureScene = ExtResource("3_cnuc2")
+structureScene = ExtResource("4_cnuc2")
 cost = Dictionary[int, int]({
-0: 5
+0: 20
 })
 itemID = "blueprint_smelter"
 displayName = "Smelter"
 description = "its a smelter"
-icon = ExtResource("1_5hxoc")
+icon = ExtResource("1_cnuc2")
 inHandScene = ExtResource("4_ghost")
 maxStackSize = 99
 metadata/_custom_type_script = "uid://blmd28f80x7rh"

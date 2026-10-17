@@ -1,6 +1,22 @@
 [gd_scene format=4 uid="uid://bylawd3koqxrb"]
 
 [ext_resource type="Script" uid="uid://bbkovbjsnajma" path="res://game/scripts/structures/processing/Grinder.cs" id="1_j2mte"]
+[ext_resource type="Script" uid="uid://bptcoo3qayabg" path="res://game/scripts/structures/Recipe.cs" id="2_rjx8u"]
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="3_rfl1m"]
+[ext_resource type="Resource" uid="uid://del77s80urbou" path="res://game/definitions/resources/robot_parts.tres" id="4_f11oh"]
+[ext_resource type="Resource" uid="uid://calpxv51e46rb" path="res://game/definitions/resources/scrap_piece3.tres" id="6_f11oh"]
+[ext_resource type="Resource" uid="uid://hyev1inlo1ug" path="res://game/definitions/resources/electronic_bits.tres" id="6_qs3ah"]
+
+[sub_resource type="Resource" id="Resource_k0i4c"]
+script = ExtResource("2_rjx8u")
+inputs = Dictionary[ExtResource("3_rfl1m"), int]({
+ExtResource("4_f11oh"): 1
+})
+outputs = Dictionary[ExtResource("3_rfl1m"), int]({
+ExtResource("6_qs3ah"): 2,
+ExtResource("6_f11oh"): 1
+})
+metadata/_custom_type_script = "uid://bptcoo3qayabg"
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_j2mte"]
 _surfaces = [{
@@ -15,8 +31,9 @@ _surfaces = [{
 
 [node name="Grinder" type="Box3DBody" unique_id=395325896 node_paths=PackedStringArray("inputVolumes", "outputLocations")]
 body_type = 0
-shape_type = 7
+shape_type = 6
 script = ExtResource("1_j2mte")
+recipes = Array[ExtResource("2_rjx8u")]([SubResource("Resource_k0i4c")])
 inputVolumes = [NodePath("spatial/inputVolume1")]
 outputLocations = [NodePath("spatial/outputLocation1")]
 cells = Dictionary[Vector3i, int]({
@@ -79,6 +96,7 @@ size = Vector3(1, 3.1796875, 0.1463623)
 [node name="spatial" type="Node3D" parent="." unique_id=1803810552]
 
 [node name="inputVolume1" type="Box3DBody" parent="spatial" unique_id=1463520651]
+body_type = 0
 is_sensor = true
 transform = Transform3D(1.6852536, 0, 0, 0, 1.0860796, 0, 0, 0, 1.6466045, 1.0018218, 3.409864, -1.001928)
 

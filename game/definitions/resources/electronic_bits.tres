@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3 uid="uid://hyev1inlo1ug"]
+
+[ext_resource type="PackedScene" uid="uid://cvlmuiyneyaja" path="res://game/scenes/items/resources/electronic_bits.tscn" id="1_fykbt"]
+[ext_resource type="Texture2D" uid="uid://3vfqcsq6qfqq" path="res://game/assets/icons/blueprints/electronic_bits_icon.png" id="2_d2xa2"]
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="3_ylqnp"]
+
+[resource]
+script = ExtResource("3_ylqnp")
+itemID = "electronic_bits"
+droppedScene = ExtResource("1_fykbt")
+displayName = "Electronic Bits"
+description = "Random assortment of resistors and doo-dads"
+icon = ExtResource("2_d2xa2")
+maxStackSize = 999

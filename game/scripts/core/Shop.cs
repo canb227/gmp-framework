@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>What the shop takes as payment. Names and icons are in <see cref="Shop.Currencies"/>.</summary>
-public enum Currency { Scrap, MetalBar }
+public enum Currency { Scrap, MetalBar, RobotParts, Circuits }
 
 /// <summary>How a <see cref="Currency"/> is shown in the UI.</summary>
 public record CurrencyInfo(string name, Texture2D icon);
@@ -41,6 +41,8 @@ public partial class Shop : Node
     {
         [Currency.Scrap] = new("Scrap", GD.Load<Texture2D>("res://game/assets/icons/items/scrap_ball.png")),
         [Currency.MetalBar] = new("Metal Bar", GD.Load<Texture2D>("res://game/assets/icons/items/iron_ingot.png")),
+        [Currency.RobotParts] = new("Robot Parts", GD.Load<Texture2D>("res://game/assets/icons/blueprints/robot_parts_icon.png")),
+        [Currency.Circuits] = new("Circuits", GD.Load<Texture2D>("res://game/assets/icons/blueprints/circuit_icon.png")),
     };
 
     static readonly List<string> stock = new();

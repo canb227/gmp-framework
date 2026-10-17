@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://cvlmuiyneyaja"]
+
+[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/PhysicalFactoryItem.cs" id="1_8dpf7"]
+[ext_resource type="Texture2D" uid="uid://b646400pws0lh" path="res://icon.svg" id="2_d7x8v"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_vchc8"]
+radius = 0.1
+height = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4x2dv"]
+albedo_texture = ExtResource("2_d7x8v")
+
+[node name="electronic_bits" type="Box3DBody" unique_id=232515007]
+shape_type = 2
+box_size = Vector3(0.6, 0.07, 0.4)
+capsule_radius = 0.1
+capsule_height = 0.4
+density = 6.0
+friction = 0.55
+script = ExtResource("1_8dpf7")
+itemID = "electronic_bits"
+canBePickTarget = true
+canBeGrabbed = true
+tags = Array[int]([3, 22, 20, 12])
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1940357077]
+mesh = SubResource("CapsuleMesh_vchc8")
+surface_material_override/0 = SubResource("StandardMaterial3D_4x2dv")

@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using Godot;
 using PolyType;
 
@@ -6,6 +9,7 @@ public partial record struct RecyclerSave
 {
     public int points;
     public double untilBase;
+    public int upgradeLevel;
 }
 
 /// <summary>
@@ -25,20 +29,57 @@ public partial class Recycler : IOMachine
 
     int points;
     double untilBase;
+    int upgradeLevel = 0;
+    List<float> upgradeSpeedUp = new();
+    List<Godot.Collections.Dictionary<Currency, int>> upgradeCosts = new();
+    
+    static string FormatCost(Godot.Collections.Dictionary<Currency, int> cost)
+    {
+        return string.Join(", ", cost.Select(c =>
+            $"{c.Value:N0} {Regex.Replace(c.Key.ToString(), "(?<=[a-z])(?=[A-Z])", " ")}"));
+    }
+
 
     public override void AfterInit()
     {
-        hoverText = "Feed it - get scrap";
+        upgradeCosts.Add(new Godot.Collections.Dictionary<Currency, int> { { Currency.MetalBar, 100 }}); //upgrade 1 cost
+        upgradeCosts.Add(new Godot.Collections.Dictionary<Currency, int> {{ Currency.MetalBar, 400 }}); //upgrade 2 cost
+        upgradeCosts.Add(new Godot.Collections.Dictionary<Currency, int> {{ Currency.MetalBar, 2000 }, {Currency.Circuits, 100}}); //upgrade 3 cost
+
+        upgradeSpeedUp.Add(1.0f); //no upgrades
+        upgradeSpeedUp.Add(4.0f); //upgrade 1
+        upgradeSpeedUp.Add(8.0f); //upgrade 2
+        upgradeSpeedUp.Add(16.0f); //upgrade 3
+
+        if (upgradeLevel < upgradeCosts.Count)
+            hoverText = "Feed it - get scrap\nPress F to Upgrade (Cost: " + FormatCost(upgradeCosts[upgradeLevel]) + ")";
+        else
+            hoverText = "Feed it - get scrap\n(Fully upgraded)";
         base.AfterInit();
     }
 
-    public override void onInteract(ulong playerID) { }
+    public override void onInteract(ulong playerID)
+    {
+        bool canUpgrade = true;
+        foreach(var cost in upgradeCosts[upgradeLevel])
+        {
+            if(Shop.Balance(cost.Key) < cost.Value)
+            {
+                canUpgrade = false;
+            }
+        }
+        if(canUpgrade)
+        {
+            Shop.Spend(upgradeCosts[upgradeLevel], 1);
+            upgradeLevel++;
+        }
+    }
 
     public override void _PhysicsProcess(double delta)
     {
         if (runsMachineLogic)
         {
-            untilBase -= delta * processingSpeed;
+            untilBase -= delta * processingSpeed * upgradeSpeedUp[upgradeLevel];
             if (untilBase <= 0)
             {
                 untilBase += baseInterval;
@@ -82,7 +123,7 @@ public partial class Recycler : IOMachine
 
     protected override byte[] SaveMachineState()
     {
-        return GMPObject.serializer.Serialize(new RecyclerSave { points = points, untilBase = untilBase });
+        return GMPObject.serializer.Serialize(new RecyclerSave { points = points, untilBase = untilBase, upgradeLevel = upgradeLevel });
     }
 
     protected override void LoadMachineState(byte[] state)
@@ -90,6 +131,7 @@ public partial class Recycler : IOMachine
         RecyclerSave s = GMPObject.serializer.Deserialize<RecyclerSave>(state);
         points = s.points;
         untilBase = s.untilBase;
+        upgradeLevel = s.upgradeLevel;
     }
 
     // Spawns one item at the output'th output (0: the regular stream, 1: the bonus items).

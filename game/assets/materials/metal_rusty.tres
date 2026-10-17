@@ -15,6 +15,7 @@ metallic_texture_channel = 4
 roughness_texture = ExtResource("5_0s0nb")
 roughness_texture_channel = 4
 normal_enabled = true
+normal_scale = 4.0
 normal_texture = ExtResource("4_2bx14")
 rim_enabled = true
 rim = 0.0

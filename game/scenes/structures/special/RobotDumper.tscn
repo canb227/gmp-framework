@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://bgms0ctvqpcrv"]
+
+[ext_resource type="Script" uid="uid://lpo30elli7dn" path="res://game/scripts/structures/special/RobotDumper.cs" id="1_ryy4k"]
+
+[sub_resource type="Animation" id="Animation_h435h"]
+length = 0.001
+
+[sub_resource type="Animation" id="Animation_4t0w2"]
+resource_name = "spin"
+loop_mode = 1
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_cc8ri"]
+_data = {
+&"RESET": SubResource("Animation_h435h"),
+&"process": SubResource("Animation_4t0w2")
+}
+
+[node name="RobotDumper" type="Box3DBody" unique_id=700023757 node_paths=PackedStringArray("outputLocations")]
+body_type = 0
+box_size = Vector3(0, 0, 0)
+script = ExtResource("1_ryy4k")
+outputLocations = [NodePath("Node3D/outputSpawn1"), NodePath("Node3D/outputSpawn2"), NodePath("Node3D/outputSpawn3")]
+
+[node name="Node3D" type="Node3D" parent="." unique_id=107390529]
+
+[node name="outputSpawn1" type="Marker3D" parent="Node3D" unique_id=702011426]
+transform = Transform3D(0.9210418, 0.038844116, 0.38752204, 0.07701453, 0.9572005, -0.2789911, -0.38177344, 0.28680724, 0.87863004, -0.53217983, 0, 0)
+
+[node name="outputSpawn2" type="Marker3D" parent="Node3D" unique_id=702027264]
+transform = Transform3D(0.9967116, -0.08089818, 0.0046279905, 0.07962337, 0.98840255, 0.12930782, -0.015035085, -0.1285141, 0.9915937, 0.56628835, 0, -0.25674593)
+
+[node name="outputSpawn3" type="Marker3D" parent="Node3D" unique_id=1471868]
+transform = Transform3D(-0.7546537, 0.17128232, 0.6333722, 0.6186056, -0.13600925, 0.7738402, 0.21868965, 0.97578883, -0.003316338, 0.1574378, 0, 0.5851507)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Node3D" unique_id=1807940705]
+libraries/ = SubResource("AnimationLibrary_cc8ri")

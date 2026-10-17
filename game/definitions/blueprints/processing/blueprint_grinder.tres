@@ -9,7 +9,8 @@
 script = ExtResource("1_jwswt")
 structureScene = ExtResource("3_k0i4c")
 cost = Dictionary[int, int]({
-0: 5
+1: 5,
+2: 5
 })
 itemID = "blueprint_grinder"
 displayName = "Grinder"

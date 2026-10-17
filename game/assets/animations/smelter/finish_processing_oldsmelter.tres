@@ -25,7 +25,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.23333332),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector3(0, 0, 0.7853982), Vector3(0, 0, -1.2217305)]
+"values": [Vector3(0, 0, 0.5235988), Vector3(0, 0, -1.2217305)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -34,10 +34,10 @@ tracks/1/path = NodePath("smelter_old/Mold_Plate:rotation")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.46666667, 0.8666667, 2),
+"times": PackedFloat32Array(0.29999998, 0.43333334, 0.8333333, 2),
 "transitions": PackedFloat32Array(1, 0.2332583, 2.5491211, 1),
 "update": 0,
-"values": [Vector3(0, 0, 0), Vector3(0, 0, 1.5707964), Vector3(0, 0, 1.5707964), Vector3(0, 0, 0)]
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 0.34906584), Vector3(0, 0, 0.34906584), Vector3(0, 0, 0)]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -82,8 +82,8 @@ tracks/5/path = NodePath("smelter_old/Mold_Plate/Mold_Plate_001:rotation")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/keys = {
-"times": PackedFloat32Array(0.23333333, 0.53333336, 0.92, 2),
+"times": PackedFloat32Array(0.23333333, 0.36666667, 0.6333333, 2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 0,
-"values": [Vector3(0, 0, 0), Vector3(0, 0, 1.727876), Vector3(0, 0, 1.727876), Vector3(0, 0, 0)]
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 1.0471976), Vector3(0, 0, 1.0471976), Vector3(0, 0, 0)]
 }

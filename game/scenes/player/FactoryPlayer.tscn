@@ -12,6 +12,7 @@ albedo_texture = ExtResource("2_6tv66")
 radius = 0.4
 
 [node name="FactoryPlayer" type="Box3DCharacterBody" unique_id=274687070 node_paths=PackedStringArray("camera", "head", "body", "itemHolder")]
+height = 2.0
 script = ExtResource("1_tuubh")
 camera = NodePath("Camera3D")
 head = NodePath("Camera3D")
