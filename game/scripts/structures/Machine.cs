@@ -67,10 +67,7 @@ public abstract partial class Machine : Structure
         OnOperatingChanged();
     }
 
-    protected virtual void PlayAnimation(string animationName)
-    {
-        animationPlayer.Play(animationName);
-    }
+
 
     /// <summary>Extra state a machine saves on top of its cycle (e.g. the item it's holding), or null.</summary>
     protected virtual byte[] SaveMachineState() { return null; }
