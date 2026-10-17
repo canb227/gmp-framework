@@ -62,7 +62,13 @@ public partial class GameWorld : Node3D
             Logging.Log($"Box3D solver workers: {b3droot.workerCount}", "GameWorld");
             // Box3D reports sleep per world, not per body; hand it to the body (it has no matching wake signal).
             b3droot.BodyFellAsleep += body => (body as GMPOBox3DBody)?.OnFellAsleep();
+            b3droot.ContactHit += B3D_ContactHitEvent;
         }
+    }
+
+    private void B3D_ContactHitEvent(Godot.Collections.Dictionary obj)
+    {
+        throw new System.NotImplementedException();
     }
 
     /// <summary>Seconds between the scheduled gen0 collections (see <see cref="_Process"/>).</summary>
@@ -77,6 +83,7 @@ public partial class GameWorld : Node3D
         // 30 s and pauses 10-20 ms; collecting every couple of seconds keeps each pause under a millisecond.
         if (started)
         {
+            
             gcTimer += delta;
             if (gcTimer >= GcInterval)
             {
