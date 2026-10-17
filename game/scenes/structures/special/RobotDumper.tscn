@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bgms0ctvqpcrv"]
 
-[ext_resource type="Script" uid="uid://lpo30elli7dn" path="res://game/scripts/structures/special/RobotDumper.cs" id="1_ryy4k"]
+[ext_resource type="Script" uid="uid://lpo30elli7dn" path="res://game/scripts/structures/special/ItemSpawner.cs" id="1_ryy4k"]
 
 [sub_resource type="Animation" id="Animation_h435h"]
 length = 0.001
@@ -19,6 +19,20 @@ _data = {
 body_type = 0
 box_size = Vector3(0, 0, 0)
 script = ExtResource("1_ryy4k")
+itemWeights = Dictionary[String, float]({
+"robot_parts": 1.0
+})
+streamOutputs = Array[int]([0, 1, 2])
+upgradeCosts = Array[Dictionary]([Dictionary[int, int]({
+3: 100
+}), Dictionary[int, int]({
+3: 400
+}), Dictionary[int, int]({
+3: 2000,
+1: 8000
+})])
+upgradeSpeedUps = Array[float]([4.0, 8.0, 16.0])
+maxNearby = 40
 outputLocations = [NodePath("Node3D/outputSpawn1"), NodePath("Node3D/outputSpawn2"), NodePath("Node3D/outputSpawn3")]
 
 [node name="Node3D" type="Node3D" parent="." unique_id=107390529]

@@ -27,6 +27,13 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
     [Export]
     public Godot.Collections.Dictionary<Currency, int> currencyValue = new();
 
+    /// <summary>
+    /// Whether this item's meshes cast shadows. Off by default: with thousands of items, their shadow passes cost more
+    /// render time than they're worth on small things.
+    /// </summary>
+    [Export]
+    public bool castsShadows = false;
+
     // ---- sync priority ----
     // An item's sync priority is worked out on every send (UpdateSyncPriority): its basePriority, +1 while awake,
     // times up to ProximityMultiplier the nearer a player is, and at least HeldPriority while a magnet rod holds it
@@ -79,12 +86,63 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
     /// <summary>Whether this item reports its touches for TagInteractions (it has a watcher tag; see TagInteractions).</summary>
     public bool reportsTouches { get; private set; }
 
+    // ---- counts ----
+    // Every item in the world on this peer, kept up as items enter and leave the tree (which also catches a whole
+    // world being cleared, where OnDespawned isn't called). Spawners read them for their limits (ItemSpawner).
+
+    /// <summary>How many items there are in the world, of any kind.</summary>
+    public static int totalCount { get; private set; }
+    static readonly Dictionary<string, int> countByItem = new();
+    /// <summary>The item id this item is counted under in <see cref="countByItem"/> (null: none).</summary>
+    string countedAs;
+
+    /// <summary>How many of <paramref name="itemID"/> there are in the world.</summary>
+    public static int CountOf(string itemID)
+    {
+        return countByItem.GetValueOrDefault(itemID, 0);
+    }
+
+    public override void _EnterTree()
+    {
+        base._EnterTree();
+        totalCount++;
+        CountAs(itemID);
+    }
+
+    public override void _ExitTree()
+    {
+        base._ExitTree();
+        totalCount--;
+        CountAs(null);
+    }
+
+    /// <summary>Moves this item's count to <paramref name="newItemID"/> (null: uncounted). Call when <see cref="itemID"/> changes while in the tree.</summary>
+    protected void CountAs(string newItemID)
+    {
+        if (countedAs != null)
+        {
+            countByItem[countedAs]--;
+        }
+        countedAs = newItemID;
+        if (newItemID != null)
+        {
+            countByItem[newItemID] = CountOf(newItemID) + 1;
+        }
+    }
+
     public override void _Ready()
     {
         base._Ready();
         // Items without a definition resource (e.g. test props) fall back to their id.
         if (string.IsNullOrEmpty(hoverName)) hoverName = ItemInfo.Fetch(itemID)?.displayName ?? itemID;
         if (canBePickedUp && string.IsNullOrEmpty(hoverText)) hoverText = "Press F to pick up!";
+        if (!castsShadows)
+        {
+            foreach (Node node in FindChildren("*", "GeometryInstance3D", true, false))
+            {
+                ((GeometryInstance3D)node).CastShadow = GeometryInstance3D.ShadowCastingSetting.Off;
+            }
+        }
         RefreshTouchReporting();
     }
 

@@ -50,6 +50,11 @@ public partial class DefaultDroppedBox : PhysicalFactoryItem
     void ApplyItem(string itemID)
     {
         this.itemID = itemID;
+        // Set after it entered the tree (by RPC, or from a save), so move its count over (see PhysicalFactoryItem.CountAs).
+        if (IsInsideTree())
+        {
+            CountAs(itemID);
+        }
         ItemInfo item = ItemInfo.Fetch(itemID);
         this.labelName = item.displayName;
         this.icon = item.icon;

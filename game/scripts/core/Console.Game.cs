@@ -18,6 +18,40 @@ public partial class Console
         }
     }
 
+    /// <summary>Host: repairs every broken structure in the level (BrokenStructure.Replace).</summary>
+    public void repair_all()
+    {
+        List<BrokenStructure> broken = new();
+        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
+        {
+            if (obj is BrokenStructure structure && structure.authority == Lobby.selfPeerID)
+                broken.Add(structure);
+        }
+        foreach (BrokenStructure structure in broken)
+        {
+            structure.Replace();
+        }
+        LimboConsole.Info($"repair_all: repaired={broken.Count}");
+    }
+
+    /// <summary>The item counts spawners read for their limits: the total, then each item id's count.</summary>
+    public void item_counts()
+    {
+        Dictionary<string, int> byItem = new();
+        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
+        {
+            if (obj is PhysicalFactoryItem item && item.itemID != null)
+                byItem[item.itemID] = byItem.GetValueOrDefault(item.itemID, 0) + 1;
+        }
+        string line = $"item_counts: total={PhysicalFactoryItem.totalCount}";
+        foreach (var (itemID, synced) in byItem)
+        {
+            // Running count, then a fresh count of the synced items to check it against.
+            line += $" {itemID}={PhysicalFactoryItem.CountOf(itemID)}/{synced}";
+        }
+        LimboConsole.Info(line);
+    }
+
     /// <summary>Moves the local player to x y z.</summary>
     public void tp(float x, float y, float z)
     {

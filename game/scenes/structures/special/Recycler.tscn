@@ -182,7 +182,18 @@ itemWeights = Dictionary[String, float]({
 "scrap_piece2": 0.0,
 "scrap_piece3": 1.0
 })
-baseInterval = 4.0
+spawnInterval = 4.0
+description = "Feed it - get scrap"
+upgradeCosts = Array[Dictionary]([Dictionary[int, int]({
+1: 100
+}), Dictionary[int, int]({
+1: 400
+}), Dictionary[int, int]({
+1: 2000,
+3: 100
+})])
+upgradeSpeedUps = Array[float]([4.0, 8.0, 16.0])
+maxNearby = 40
 inputVolumes = [NodePath("Node3D/Valley")]
 outputLocations = [NodePath("Node3D/outputSpawn1"), NodePath("Node3D/outputSpawn2")]
 animationPlayer = NodePath("Node3D/AnimationPlayer")
