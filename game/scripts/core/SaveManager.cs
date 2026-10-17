@@ -31,6 +31,8 @@ public partial record SaveGame
     public List<string> completedQuests = new();
     /// <summary>Quests in progress: quest id to items turned in so far.</summary>
     public Dictionary<string, Dictionary<string, int>> questProgress = new();
+    /// <summary>Quests in progress: quest id to currency earned so far, by currency name.</summary>
+    public Dictionary<string, Dictionary<string, int>> questCurrencyProgress = new();
     /// <summary>Avatars to spawn.</summary>
     public List<PlayerSave> players = new();
     /// <summary>Players from an earlier save who weren't here at the last load, kept so they can come back.</summary>
@@ -67,6 +69,8 @@ public static class SaveManager
             completedQuests = new(ProgressManager.completedQuests),
             questProgress = ProgressManager.currentQuests.ToDictionary(
                 q => q.Key, q => q.Value.itemSubmissionProgress.ToDictionary(p => p.Key, p => p.Value)),
+            questCurrencyProgress = ProgressManager.currentQuests.ToDictionary(
+                q => q.Key, q => q.Value.currencyProgress.ToDictionary(p => p.Key.ToString(), p => p.Value)),
         };
         foreach (FactoryPlayer p in GameWorld.syncedObjs.Values.OfType<FactoryPlayer>())
         {
@@ -179,7 +183,7 @@ public static class SaveManager
         }
         GameWorld.RestoreWorld(save.world);
         Shop.LoadSave(save.shopStock, save.shopBalances, save.shopDeposits);
-        ProgressManager.LoadSave(save.completedQuests, save.questProgress);
+        ProgressManager.LoadSave(save.completedQuests, save.questProgress, save.questCurrencyProgress);
         foreach (PlayerSave p in save.players)
         {
             SpawnPlayer(p);

@@ -116,10 +116,20 @@ public static class QuestsDebug
             float fraction = required > 0 ? Mathf.Clamp((float)turnedIn / required, 0f, 1f) : 0f;
             ImGui.ProgressBar(fraction, new Vec2(-1, 0), $"{name}  {turnedIn} / {required}");
         }
+        foreach (var (currency, required) in quest.currencyObjectives)
+        {
+            quest.currencyProgress.TryGetValue(currency, out int earned);
+            float fraction = required > 0 ? Mathf.Clamp((float)earned / required, 0f, 1f) : 0f;
+            ImGui.ProgressBar(fraction, new Vec2(-1, 0), $"Earn {Shop.Currencies[currency].name}  {earned} / {required}");
+        }
 
         if (quest.onCompleteFreeItems.Count > 0)
         {
             ImGui.TextDisabled("Rewards: " + string.Join(", ", quest.onCompleteFreeItems.Select(kv => $"{kv.Value}x {kv.Key}")));
+        }
+        if (quest.onCompleteCurrency.Count > 0)
+        {
+            ImGui.TextDisabled("Currency rewards: " + Shop.CostText(quest.onCompleteCurrency));
         }
         if (quest.onCompleteUnlockedItems.Count > 0)
         {

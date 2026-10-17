@@ -42,17 +42,25 @@ public partial class GoalScreen : Node3D
         ProgressManager.QuestStateUpdated -= Refresh;
     }
 
-    /// <summary>One displayed row: an item objective of a current quest.</summary>
-    private record struct Objective(string questName, string itemID, int turnedIn, int required);
+    /// <summary>One displayed row: an item or currency objective of a current quest.</summary>
+    private record struct Objective(string questName, Texture2D icon, string name, int progress, int required);
 
     private static IEnumerable<Objective> CurrentObjectives()
     {
         foreach (Quest quest in ProgressManager.currentQuests.Values)
         {
+            string questName = quest.questName ?? quest.questID;
             foreach (var (itemID, required) in quest.itemSubmissionObjectives)
             {
                 quest.itemSubmissionProgress.TryGetValue(itemID, out int turnedIn);
-                yield return new Objective(quest.questName ?? quest.questID, itemID, turnedIn, required);
+                ItemInfo item = ItemInfo.Fetch(itemID);
+                yield return new Objective(questName, item?.icon, item?.displayName ?? itemID, turnedIn, required);
+            }
+            foreach (var (currency, required) in quest.currencyObjectives)
+            {
+                quest.currencyProgress.TryGetValue(currency, out int earned);
+                CurrencyInfo info = Shop.Currencies[currency];
+                yield return new Objective(questName, info.icon, info.name, earned, required);
             }
         }
     }
@@ -77,12 +85,11 @@ public partial class GoalScreen : Node3D
 
     private static void FillRow(Control row, Objective objective)
     {
-        ItemInfo item = ItemInfo.Fetch(objective.itemID);
-        row.GetNode<TextureRect>("Line/IconWell/Icon").Texture = item?.icon;
+        row.GetNode<TextureRect>("Line/IconWell/Icon").Texture = objective.icon;
         row.GetNode<Label>("Line/Info/QuestLabel").Text = (objective.questName ?? "").ToUpperInvariant();
-        row.GetNode<Label>("Line/Info/NameRow/ItemLabel").Text = item?.displayName ?? objective.itemID;
-        row.GetNode<Label>("Line/Info/NameRow/CountLabel").Text = $"{objective.turnedIn} / {objective.required}";
+        row.GetNode<Label>("Line/Info/NameRow/ItemLabel").Text = objective.name;
+        row.GetNode<Label>("Line/Info/NameRow/CountLabel").Text = $"{objective.progress} / {objective.required}";
         row.GetNode<ProgressBar>("Line/Info/Bar").Value =
-            objective.required > 0 ? Math.Clamp((double)objective.turnedIn / objective.required, 0, 1) : 0;
+            objective.required > 0 ? Math.Clamp((double)objective.progress / objective.required, 0, 1) : 0;
     }
 }

@@ -60,6 +60,7 @@ public partial class ProgressManager : Node
         foreach (Quest quest in allQuests.Values)
         {
             quest.itemSubmissionProgress.Clear();
+            quest.currencyProgress.Clear();
         }
         currentQuests.Add(FirstQuest, allQuests[FirstQuest]);
         QuestStateUpdated?.Invoke();
@@ -87,6 +88,14 @@ public partial class ProgressManager : Node
                 return false;
             }
         }
+        foreach (var (currency, required) in quest.currencyObjectives)
+        {
+            quest.currencyProgress.TryGetValue(currency, out int earned);
+            if (earned < required)
+            {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -94,7 +103,7 @@ public partial class ProgressManager : Node
 
     /// <summary>
     /// Any peer: an item was turned in (e.g. eaten by a <see cref="Consumer"/>). Sends it to the host, which deposits
-    /// <paramref name="value"/> in the <see cref="Shop"/> and counts it toward quests.
+    /// <paramref name="value"/> in the <see cref="Shop"/> and counts the item and its value toward quests.
     /// </summary>
     public static void RequestDeposit(string itemID, Dictionary<Currency, int> value)
     {
@@ -106,22 +115,46 @@ public partial class ProgressManager : Node
     private void _Deposit(string itemID, Dictionary<Currency, int> value)
     {
         Shop.Deposit(itemID, value);
-        TurnInForQuest(itemID);
+        TurnInForQuest(itemID, value);
     }
 
-    /// <summary>Host only: counts one <paramref name="itemID"/> toward every quest in progress that wants it, for everyone.</summary>
-    internal static void TurnInForQuest(string itemID)
+    /// <summary>
+    /// Host only: counts one <paramref name="itemID"/> and what it's worth (<paramref name="value"/>, may be null)
+    /// toward every quest in progress that wants either, for everyone. Quests this completes unlock theirs after
+    /// the count, so the same deposit never counts toward them.
+    /// </summary>
+    internal static void TurnInForQuest(string itemID, Dictionary<Currency, int> value)
     {
         foreach (var (questID, quest) in currentQuests.ToList())
         {
-            if (!quest.itemSubmissionObjectives.TryGetValue(itemID, out int required)) continue;
+            bool counted = false;
 
-            quest.itemSubmissionProgress.TryGetValue(itemID, out int turnedIn);
-            if (turnedIn < required)
+            if (quest.itemSubmissionObjectives.TryGetValue(itemID, out int required))
             {
-                RPCManager.RPC(instance, nameof(_SetProgress), [questID, itemID, turnedIn + 1]);
+                counted = true;
+                quest.itemSubmissionProgress.TryGetValue(itemID, out int turnedIn);
+                if (turnedIn < required)
+                {
+                    RPCManager.RPC(instance, nameof(_SetProgress), [questID, itemID, turnedIn + 1]);
+                }
             }
-            if (AllObjectivesMet(quest))
+
+            if (value != null)
+            {
+                foreach (var (currency, amount) in value)
+                {
+                    if (amount <= 0 || !quest.currencyObjectives.TryGetValue(currency, out int needed)) continue;
+
+                    counted = true;
+                    quest.currencyProgress.TryGetValue(currency, out int earned);
+                    if (earned < needed)
+                    {
+                        RPCManager.RPC(instance, nameof(_SetCurrencyProgress), [questID, (int)currency, Math.Min(earned + amount, needed)]);
+                    }
+                }
+            }
+
+            if (counted && AllObjectivesMet(quest))
             {
                 CompleteQuest(questID);
             }
@@ -138,11 +171,22 @@ public partial class ProgressManager : Node
         }
     }
 
+    [RPC(requireAuthority = true)]
+    private void _SetCurrencyProgress(string questID, int currency, int earned)
+    {
+        if (currentQuests.TryGetValue(questID, out Quest quest))
+        {
+            quest.currencyProgress[(Currency)currency] = earned;
+            QuestStateUpdated?.Invoke();
+        }
+    }
+
     // ---- completion -------------------------------------------------------------
 
     /// <summary>
     /// Host only: completes <paramref name="questID"/> for everyone (if it's in progress), whatever its objectives
-    /// say, and puts its unlocked blueprints on sale.
+    /// say, puts its unlocked blueprints on sale and pays its currency reward into the banks. Every player gets
+    /// its free items (in <see cref="_Complete"/>).
     /// </summary>
     public static void CompleteQuest(string questID)
     {
@@ -152,6 +196,13 @@ public partial class ProgressManager : Node
         foreach (string unlockItemID in quest.onCompleteUnlockedItems)
         {
             Shop.AddAvailableItem(unlockItemID);
+        }
+        foreach (var (currency, amount) in quest.onCompleteCurrency)
+        {
+            if (amount > 0)
+            {
+                Shop.AddCurrency(currency, amount);
+            }
         }
     }
 
@@ -164,7 +215,12 @@ public partial class ProgressManager : Node
         {
             quest.itemSubmissionProgress[itemID] = required;
         }
+        foreach (var (currency, required) in quest.currencyObjectives)
+        {
+            quest.currencyProgress[currency] = required;
+        }
         completedQuests.Add(questID);
+        GiveFreeItems(quest);
         QuestCompleted?.Invoke(questID);
         foreach (string unlockQuestID in quest.onCompleteUnlockQuests)
         {
@@ -176,13 +232,34 @@ public partial class ProgressManager : Node
         QuestStateUpdated?.Invoke();
     }
 
+    // Every peer, for its own player: the quest's free items go into the local player's inventory, and what
+    // doesn't fit is dropped above them.
+    private static void GiveFreeItems(Quest quest)
+    {
+        if (quest.onCompleteFreeItems.Count == 0) return;
+
+        FactoryPlayer player = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
+        if (player == null) return;
+
+        foreach (var (itemID, count) in quest.onCompleteFreeItems)
+        {
+            int leftover = player.inventory.AddItem(itemID, count);
+            for (int i = 0; i < leftover; i++)
+            {
+                ItemInfo.SpawnInWorld(itemID, player.GlobalPosition + Vector3.Up * (2 + i * 0.5f));
+            }
+        }
+        player.UpdateEquippedItem();
+    }
+
     // ---- saves -----------------------------------------------------------------
 
     /// <summary>
     /// Replaces quest state with a restored save's (see <see cref="SaveManager"/>): the completed quests, and each quest in
-    /// progress with its turn-ins. Runs on each restoring peer, all with the host's data.
+    /// progress with its turn-ins and currency earned (by currency name; unknown names are dropped). Runs on each
+    /// restoring peer, all with the host's data.
     /// </summary>
-    public static void LoadSave(List<string> completed, Dictionary<string, Dictionary<string, int>> progress)
+    public static void LoadSave(List<string> completed, Dictionary<string, Dictionary<string, int>> progress, Dictionary<string, Dictionary<string, int>> currencyProgress)
     {
         completedQuests.Clear();
         completedQuests.AddRange(completed);
@@ -195,6 +272,17 @@ public partial class ProgressManager : Node
             foreach (var (itemID, count) in turnedIn)
             {
                 quest.itemSubmissionProgress[itemID] = count;
+            }
+            quest.currencyProgress.Clear();
+            if (currencyProgress != null && currencyProgress.TryGetValue(questID, out Dictionary<string, int> earned))
+            {
+                foreach (var (name, amount) in earned)
+                {
+                    if (Enum.TryParse(name, out Currency currency))
+                    {
+                        quest.currencyProgress[currency] = amount;
+                    }
+                }
             }
             currentQuests[questID] = quest;
         }
