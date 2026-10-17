@@ -46,8 +46,19 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
     /// <summary>Until which physics frame this item has <see cref="HeldPriority"/>; kept up by the magnet rods holding it.</summary>
     public ulong heldUntilFrame;
 
+    /// <summary>
+    /// Times the priority of an item inside any player's view cone (see <see cref="ViewConeCos"/>): with the budget
+    /// full, what someone is looking at is updated more often than what's behind them. Moderate, so items out of view
+    /// still update steadily and are fresh enough when someone turns round.
+    /// </summary>
+    const float ViewMultiplier = 2.5f;
+    /// <summary>Cosine of the view cone's half angle (about 57°, a little wider than the camera sees side to side).</summary>
+    const float ViewConeCos = 0.55f;
+
     /// <summary>Every player's position as of <see cref="playerPositionsFrame"/>: read once per send, for all the items.</summary>
     static readonly List<Vector3> playerPositions = new();
+    /// <summary>Every player's eye and look direction (from its camera, which carries the synced head pitch), read with the positions.</summary>
+    static readonly List<(Vector3 eye, Vector3 look)> playerViews = new();
     /// <summary>The send (<see cref="GameWorld.sendFrame"/>) <see cref="playerPositions"/> were read for.</summary>
     static ulong playerPositionsFrame = ulong.MaxValue;
 
@@ -171,9 +182,12 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
         {
             playerPositionsFrame = GameWorld.sendFrame;
             playerPositions.Clear();
+            playerViews.Clear();
             foreach (FactoryPlayer player in FactoryPlayer.all)
             {
                 playerPositions.Add(player.GlobalPosition);
+                Transform3D view = player.camera.GlobalTransform;
+                playerViews.Add((view.Origin, -view.Basis.Z.Normalized()));
             }
         }
         Vector3 position = GlobalPosition;
@@ -188,6 +202,16 @@ public partial class PhysicalFactoryItem : GMPOBox3DBody, Interactable
         }
         float nearest = Mathf.Sqrt(nearestSquared);
         float multiplier = 1f + (ProximityMultiplier - 1f) * (1f - nearest / ProximityRange);
+        foreach ((Vector3 eye, Vector3 look) in playerViews)
+        {
+            Vector3 toItem = position - eye;
+            float distance = toItem.Length();
+            if (distance > 0 && look.Dot(toItem) >= ViewConeCos * distance)
+            {
+                multiplier *= ViewMultiplier;
+                break;
+            }
+        }
         priority = Mathf.RoundToInt(unscaled * multiplier);
         if (GameWorld.sendFrame < heldUntilFrame && priority < HeldPriority)
         {

@@ -32,10 +32,10 @@ public static class PerfDebug
     private static double logTimer = 0;
     private static bool measuringRenderTime = false;
 
-    private static long lastApplyCost, lastBuildCost, lastSendCost, lastReceiveCost, lastFollowCost, lastServiceCost;
-    private static long lastApplied, lastBuilt, lastSent, lastReceived, lastFollowTicks, lastFollowPlaced, lastSentBytes, lastReceivedBytes;
-    private static double applyMs, buildMs, sendMs, receiveMs, followMs, serviceMs;
-    private static double appliedPerSecond, builtPerSecond, sentPerSecond, receivedPerSecond, followers, followersPlaced, sentKBps, receivedKBps;
+    private static long lastApplyCost, lastBuildCost, lastSendCost, lastReceiveCost, lastFollowCost, lastServiceCost, lastInterpolationCost;
+    private static long lastApplied, lastBuilt, lastSent, lastReceived, lastFollowTicks, lastSentBytes, lastReceivedBytes;
+    private static double applyMs, buildMs, sendMs, receiveMs, followMs, serviceMs, interpolationMs;
+    private static double appliedPerSecond, builtPerSecond, sentPerSecond, receivedPerSecond, followers, sentKBps, receivedKBps;
     private static double renderCpuMs, renderGpuMs, physicsTickMs, processMs, stepMs;
 
     // ---- average physics tick ----
@@ -128,6 +128,7 @@ public static class PerfDebug
         receiveMs = (GameWorld.receiveCost - lastReceiveCost) * msPerTick / seconds;
         followMs = (GMPOBox3DBody.followCost - lastFollowCost) * msPerTick / seconds;
         serviceMs = (Lobby.serviceCost - lastServiceCost) * msPerTick / seconds;
+        interpolationMs = (GMPOBox3DBody.interpolationCost - lastInterpolationCost) * msPerTick / seconds;
         sentKBps = (GameWorld.sentBytes - lastSentBytes) / 1024.0 / seconds;
         receivedKBps = (GameWorld.receivedBytes - lastReceivedBytes) / 1024.0 / seconds;
         appliedPerSecond = (GameWorld.appliedCount - lastApplied) / seconds;
@@ -137,7 +138,6 @@ public static class PerfDebug
         // Follower ticks per second over physics ticks per second: how many bodies follow at once, on average.
         followers = (GMPOBox3DBody.followTicks - lastFollowTicks) / seconds / Engine.PhysicsTicksPerSecond;
         // How many of them are placed each tick (far and unseen ones every other tick).
-        followersPlaced = (GMPOBox3DBody.followPlaced - lastFollowPlaced) / seconds / Engine.PhysicsTicksPerSecond;
 
         lastApplyCost = GameWorld.applyCost;
         lastBuildCost = GameWorld.buildCost;
@@ -145,6 +145,7 @@ public static class PerfDebug
         lastReceiveCost = GameWorld.receiveCost;
         lastFollowCost = GMPOBox3DBody.followCost;
         lastServiceCost = Lobby.serviceCost;
+        lastInterpolationCost = GMPOBox3DBody.interpolationCost;
         lastSentBytes = GameWorld.sentBytes;
         lastReceivedBytes = GameWorld.receivedBytes;
         lastApplied = GameWorld.appliedCount;
@@ -152,7 +153,6 @@ public static class PerfDebug
         lastSent = GameWorld.sentCount;
         lastReceived = GameWorld.receivedCount;
         lastFollowTicks = GMPOBox3DBody.followTicks;
-        lastFollowPlaced = GMPOBox3DBody.followPlaced;
 
         Rid viewport = ((SceneTree)Engine.GetMainLoop()).Root.GetViewportRid();
         renderCpuMs = RenderingServer.ViewportGetMeasuredRenderTimeCpu(viewport) + RenderingServer.GetFrameSetupTimeCpu();
@@ -179,7 +179,7 @@ public static class PerfDebug
         Logging.Log($"fps {Mon(Performance.Monitor.TimeFps):0} (frame avg {avgMs:0.0} max {maxMs:0.0} ms)"
             + $" | process {processMs:0.0} ms | physics tick avg {physicsTickAvgMs:0.0} worst {physicsTickMs:0.0} ms (Box3D step {stepMs:0.0} ms, awake {awakeBodies})"
             + $" | render cpu {renderCpuMs:0.0} gpu {renderGpuMs:0.0} ms, draw calls {Mon(Performance.Monitor.RenderTotalDrawCallsInFrame):0}, objects {Mon(Performance.Monitor.RenderTotalObjectsInFrame):0}"
-            + $" | synced {GameWorld.syncedObjs.Count}, followers {followers:0} ({followMs:0} ms/s), {followersPlaced:0} placed per tick"
+            + $" | synced {GameWorld.syncedObjs.Count}, followers {followers:0} ({followMs:0} ms/s), {GMPOBox3DBody.interpolatedCount} interpolated (checks {interpolationMs:0.0} ms/s)"
             + $" | sync ms/s: build {buildMs:0} ({builtPerSecond:0}/s), send {sendMs:0} ({sentPerSecond:0}/s), receive {receiveMs:0} ({receivedPerSecond:0}/s), apply {applyMs:0} ({appliedPerSecond:0}/s)"
             + $" | transport service {serviceMs:0} ms/s | state out {sentKBps:0} KB/s, in {receivedKBps:0} KB/s",
             "Perf");
@@ -233,7 +233,7 @@ public static class PerfDebug
             ImGui.Text($"Send (serialize + Steam): {sendMs:0.0} ms/s | {sentPerSecond:0} states/s");
             ImGui.Text($"Receive (deserialize): {receiveMs:0.0} ms/s | {receivedPerSecond:0} states/s");
             ImGui.Text($"Apply: {applyMs:0.0} ms/s | {appliedPerSecond:0} states/s");
-            ImGui.Text($"Followers: {followers:0}, {followersPlaced:0} placed per tick | {followMs:0.0} ms/s");
+            ImGui.Text($"Followers: {followers:0} | {followMs:0.0} ms/s | interpolated bodies: {GMPOBox3DBody.interpolatedCount}");
             ImGui.Text($"Transport service: {serviceMs:0.0} ms/s | state out {sentKBps:0} KB/s, in {receivedKBps:0} KB/s");
         }
 

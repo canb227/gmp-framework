@@ -279,6 +279,133 @@ public partial class Console
         LimboConsole.Info($"bench_state: {items.Count} bodies, us per call: is_awake {awake:0.00}, linear velocity {linear:0.00}, angular velocity {angular:0.00}, Position {position:0.00}, Rotation {rotation:0.00}, Transform {transform:0.00}, GlobalPosition {globalPosition:0.00} | rotation quaternion {quaternion:0.00}, Pack {pack:0.00}, linear_velocity property {hasProperty} {viaProperty:0.00} | GenerateStateUpdate {build:0.00} ({stillAsleep} flagged asleep), UpdateSyncPriority {priority:0.00}");
     }
 
+    /// <summary>Whether the spawned bodies' meshes cast shadows (1) or not (0), to measure what their shadows cost.</summary>
+    public void itemshadows(int on)
+    {
+        int count = 0;
+        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
+        {
+            if (obj is PhysicalFactoryItem item && item.itemID == BodyItem)
+            {
+                foreach (Node child in item.GetChildren())
+                {
+                    if (child is GeometryInstance3D mesh)
+                    {
+                        mesh.CastShadow = on != 0 ? GeometryInstance3D.ShadowCastingSetting.On : GeometryInstance3D.ShadowCastingSetting.Off;
+                        count++;
+                    }
+                }
+            }
+        }
+        LimboConsole.Info($"itemshadows: cast shadow {on != 0} on {count} meshes");
+    }
+
+    /// <summary>Spawned bodies' meshes stop being drawn beyond this many metres from the camera (0: always drawn).</summary>
+    public void visrange(float metres)
+    {
+        int count = 0;
+        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
+        {
+            if (obj is PhysicalFactoryItem item && item.itemID == BodyItem)
+            {
+                foreach (Node child in item.GetChildren())
+                {
+                    if (child is GeometryInstance3D mesh)
+                    {
+                        mesh.VisibilityRangeEnd = metres;
+                        count++;
+                    }
+                }
+            }
+        }
+        LimboConsole.Info($"visrange: {count} meshes drawn up to {metres} m (0 = no limit)");
+    }
+
+    // ---- followstats: how followers are updated and moved here (a client) ----
+    double followStatsLeft;
+    readonly Dictionary<GMPOBox3DBody, (Vector3 last, float delta, float before)> followMotion = new();
+    long frozenTicks, movingTicks;
+    int followStatsTicks;
+    double inViewStates, inViewBodyTicks, outViewStates, outViewBodyTicks;
+    readonly Dictionary<GMPOBox3DBody, int> statesAtStart = new();
+
+    /// <summary>
+    /// Over the next n seconds, for every body following here: states received per second, in the local camera's view
+    /// and out of it (the send priority's view bonus), and "frozen" ticks, where a moving body didn't move between two
+    /// ticks where it did (the stutter of a body placed only every other tick).
+    /// </summary>
+    public void followstats(float seconds)
+    {
+        followStatsLeft = seconds;
+        followMotion.Clear();
+        statesAtStart.Clear();
+        frozenTicks = 0;
+        movingTicks = 0;
+        followStatsTicks = 0;
+        inViewStates = 0;
+        inViewBodyTicks = 0;
+        outViewStates = 0;
+        outViewBodyTicks = 0;
+        LimboConsole.Info($"followstats: measuring for {seconds} s");
+    }
+
+    void FollowStatsTick(double delta)
+    {
+        if (followStatsLeft <= 0)
+            return;
+        Camera3D camera = GetViewport().GetCamera3D();
+        foreach (GMPOBox3DBody body in GMPOBox3DBody.Followers)
+        {
+            if (!IsInstanceValid(body))
+                continue;
+            if (!statesAtStart.ContainsKey(body))
+                statesAtStart[body] = body.statesReceived;
+            Vector3 now = body.Transform.Origin;
+            if (followMotion.TryGetValue(body, out var motion))
+            {
+                float moved = now.DistanceTo(motion.last);
+                // The tick before this one didn't move, but the ones either side did: it froze for a tick.
+                if (motion.delta < 1e-6f && motion.before > 1e-4f && moved > 1e-4f)
+                    frozenTicks++;
+                if (moved > 1e-4f)
+                    movingTicks++;
+                followMotion[body] = (now, moved, motion.delta);
+            }
+            else
+            {
+                followMotion[body] = (now, 1, 1);
+            }
+            bool inView = camera != null && camera.IsPositionInFrustum(now);
+            if (inView)
+                inViewBodyTicks++;
+            else
+                outViewBodyTicks++;
+        }
+        followStatsTicks++;
+        followStatsLeft -= delta;
+        if (followStatsLeft > 0)
+            return;
+        // States received over the window, split by where each body was at the end (most stay put either side).
+        foreach ((GMPOBox3DBody body, int start) in statesAtStart)
+        {
+            if (!IsInstanceValid(body))
+                continue;
+            int received = body.statesReceived - start;
+            if (camera != null && camera.IsPositionInFrustum(body.Transform.Origin))
+                inViewStates += received;
+            else
+                outViewStates += received;
+        }
+        double seconds = (double)followStatsTicks / Engine.PhysicsTicksPerSecond;
+        double inViewBodies = inViewBodyTicks / followStatsTicks;
+        double outViewBodies = outViewBodyTicks / followStatsTicks;
+        double inViewHz = inViewBodies > 0 ? inViewStates / seconds / inViewBodies : 0;
+        double outViewHz = outViewBodies > 0 ? outViewStates / seconds / outViewBodies : 0;
+        double frozenPercent = movingTicks > 0 ? 100.0 * frozenTicks / movingTicks : 0;
+        // Logged (not just the console) as it finishes after the command has replied.
+        Logging.Log($"followstats: {seconds:0.0} s | in view {inViewBodies:0} bodies at {inViewHz:0.0} states/s each | out of view {outViewBodies:0} at {outViewHz:0.0} states/s | frozen ticks {frozenTicks} of {movingTicks} moving ({frozenPercent:0.00}%)", "Test");
+    }
+
     /// <summary>Makes the first n spawned bodies MAGNETIC (instead of METAL, FERROUS), to test tag reactions.</summary>
     public void magnetize(int n)
     {
@@ -329,6 +456,7 @@ public partial class Console
         if (!GameWorld.started || GetTree().Paused)
             return;
         FloodTick();
+        FollowStatsTick(delta);
         SpawnPendingBodies();
         StirBodies(delta);
     }

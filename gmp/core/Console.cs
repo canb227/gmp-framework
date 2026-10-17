@@ -40,6 +40,10 @@ public partial class Console : Node
         LimboConsole.RegisterCommand(new Callable(this, "nodesync"));
         LimboConsole.RegisterCommand(new Callable(this, "bench_state"));
         LimboConsole.RegisterCommand(new Callable(this, "interp"));
+        LimboConsole.RegisterCommand(new Callable(this, "lightshadows"));
+        LimboConsole.RegisterCommand(new Callable(this, "itemshadows"));
+        LimboConsole.RegisterCommand(new Callable(this, "visrange"));
+        LimboConsole.RegisterCommand(new Callable(this, "followstats"));
         LimboConsole.RegisterCommand(new Callable(this, "stir"));
 
         // Keep debug windows (perf) drawing while the tree is paused, e.g. during world load.
@@ -164,6 +168,21 @@ public partial class Console : Node
         {
             Lobby.SendToAllExceptSelf(Channel.GAME_tba2, floodPacket, Network.k_nSteamNetworkingSend_Unreliable);
         }
+    }
+
+    /// <summary>Shadows on (1) or off (0) for every light in the scene, to measure what shadow passes cost.</summary>
+    public void lightshadows(int on)
+    {
+        int count = 0;
+        foreach (Node node in GetTree().Root.FindChildren("*", "Light3D", true, false))
+        {
+            if (node is Light3D light)
+            {
+                light.ShadowEnabled = on != 0;
+                count++;
+            }
+        }
+        LimboConsole.Info($"lightshadows: shadows {on != 0} on {count} lights");
     }
 
     /// <summary>Physics interpolation on (1) or off (0) for the whole game (project setting physics/common/physics_interpolation).</summary>

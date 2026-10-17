@@ -199,27 +199,118 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     static readonly double PlaybackLeadRate = GameWorld.InterpolationDelay * 2;
 
     /// <summary>
-    /// Running totals for the perf window (PerfDebug): physics ticks of following by all bodies, how many of those
-    /// placed a body (see <see cref="FullRateDistance"/>), and the Stopwatch ticks spent in <see cref="PlayFollowers"/>.
+    /// Running totals for the perf window (PerfDebug): physics ticks of following by all bodies, and the Stopwatch ticks
+    /// spent in <see cref="PlayFollowers"/>.
     /// </summary>
-    public static long followTicks, followPlaced, followCost;
+    public static long followTicks, followCost;
+    /// <summary>Stopwatch ticks spent in <see cref="UpdateInterpolation"/>, for the perf log.</summary>
+    public static long interpolationCost;
+    /// <summary>States received for this body as a follower (counted when added to playback), for followstats.</summary>
+    public int statesReceived;
+    /// <summary>The bodies following now (read only), for followstats.</summary>
+    public static IReadOnlyList<GMPOBox3DBody> Followers => followers;
 
-    // ---- far and unseen followers ----
-    // Placing a follower costs about 1 µs a tick, nearly half of it the one call into the engine that sets its transform
-    // (measured with 3000 moving). A body further than FullRateDistance from the camera, or out of its view, is placed
-    // every other tick only, half of them on each tick. Its states come at that rate anyway (SendRate); in between,
-    // physics interpolation holds it still for a tick, which shows up close but hardly at a distance.
+    // ---- physics interpolation only where it shows ----
+    // With physics interpolation on, every rendered frame Godot works out and draws an in-between transform for each
+    // body that moved this tick: about 1.3 µs a body a frame, so 3000 moving bodies took 3.8 ms of every frame at 144 fps
+    // (measured). Only bodies near the camera and in its view are interpolated; the rest are drawn where the physics puts
+    // them, in even 60 Hz steps, which hardly shows at a distance and not at all off screen. Every body is still moved
+    // every tick: one moved only every other tick would freeze for a tick and then jump, which shows as a stutter.
 
-    /// <summary>Followers within this many metres of the camera, and in its view, are placed every tick.</summary>
-    const float FullRateDistance = 30;
+    /// <summary>Bodies within this many metres of the camera, and in its view, are interpolated.</summary>
+    const float InterpolateDistance = 25;
     /// <summary>How far outside the camera's view (m) a body still counts as in it: about a body's size.</summary>
     const float ViewMargin = 2;
-    /// <summary>The camera's position and view planes this tick (Camera3D.GetFrustum: they face out), if there is a camera.</summary>
-    static bool haveView;
-    static Vector3 viewEye;
+    /// <summary>Bodies checked per tick: a pass over 5000 takes 10 ticks, so one coming into view is smooth within 0.2 s.</summary>
+    const int InterpolationChecksPerTick = 500;
+
+    /// <summary>Whether this body is interpolated now (it is when spawned, as everything is by default).</summary>
+    bool interpolated = true;
+
+    static readonly List<GMPOBox3DBody> interpolationChecks = new();
+    static int nextInterpolationCheck;
+    static int interpolatedThisPass;
+    /// <summary>Bodies interpolated as of the last full pass, for the perf log.</summary>
+    public static int interpolatedCount { get; private set; }
     static readonly Plane[] viewPlanes = new Plane[6];
-    /// <summary>The physics frame this follower was last placed on.</summary>
-    ulong lastPlacedFrame;
+
+    /// <summary>
+    /// Each physics tick (from <see cref="GameWorld"/>), on every peer: turns physics interpolation on for some bodies
+    /// near the camera and in view and off for the rest, a few hundred a tick. <paramref name="camera"/> is the camera the
+    /// world is drawn from; without one nothing changes.
+    /// </summary>
+    public static void UpdateInterpolation(Camera3D camera, ICollection<GMPObject> objects)
+    {
+        if (camera == null || !IsInstanceValid(camera))
+        {
+            return;
+        }
+        long costStart = System.Diagnostics.Stopwatch.GetTimestamp();
+        if (nextInterpolationCheck >= interpolationChecks.Count)
+        {
+            interpolatedCount = interpolatedThisPass;
+            interpolatedThisPass = 0;
+            nextInterpolationCheck = 0;
+            interpolationChecks.Clear();
+            foreach (GMPObject obj in objects)
+            {
+                if (obj is GMPOBox3DBody body)
+                {
+                    interpolationChecks.Add(body);
+                }
+            }
+            if (interpolationChecks.Count == 0)
+            {
+                interpolationCost += System.Diagnostics.Stopwatch.GetTimestamp() - costStart;
+                return;
+            }
+        }
+        Vector3 eye = camera.GlobalPosition;
+        Godot.Collections.Array<Plane> planes = camera.GetFrustum();
+        for (int i = 0; i < viewPlanes.Length && i < planes.Count; i++)
+        {
+            viewPlanes[i] = planes[i];
+        }
+        int end = Math.Min(nextInterpolationCheck + InterpolationChecksPerTick, interpolationChecks.Count);
+        for (; nextInterpolationCheck < end; nextInterpolationCheck++)
+        {
+            GMPOBox3DBody body = interpolationChecks[nextInterpolationCheck];
+            if (!IsInstanceValid(body) || body.IsQueuedForDeletion())
+            {
+                continue;
+            }
+            // Bodies sit under the world root at the origin, so their Transform is their world transform (one cheap read).
+            Vector3 at = body.Transform.Origin;
+            bool near = at.DistanceSquaredTo(eye) <= InterpolateDistance * InterpolateDistance;
+            for (int i = 0; i < viewPlanes.Length && near; i++)
+            {
+                if (viewPlanes[i].DistanceTo(at) > ViewMargin)
+                {
+                    near = false;
+                }
+            }
+            if (near)
+            {
+                interpolatedThisPass++;
+            }
+            if (near == body.interpolated)
+            {
+                continue;
+            }
+            body.interpolated = near;
+            if (near)
+            {
+                body.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Inherit;
+                // Start from where it is now, not from wherever it was when interpolation went off.
+                body.ResetPhysicsInterpolation();
+            }
+            else
+            {
+                body.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
+            }
+        }
+        interpolationCost += System.Diagnostics.Stopwatch.GetTimestamp() - costStart;
+    }
 
     /// <summary>
     /// Called (via <see cref="GameWorld"/>) when Box3D puts this body to sleep in this peer's simulation, on any
@@ -417,6 +508,7 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         }
         BodySyncState s = BodySyncState.Unpack(update);
         snapshots.Add(new Snapshot { tick = GameWorld.stateTick, pos = s.pos, rot = s.rot, vel = s.vel, angVel = s.angVel });
+        statesReceived++;
         if (snapshots.Count > MaxSnapshots)
         {
             snapshots.RemoveAt(0);
@@ -453,24 +545,10 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
     /// (far and unseen ones every other tick), and drops the ones that have stopped following or are gone.
     /// <paramref name="camera"/> is the camera the world is drawn from, if any.
     /// </summary>
-    public static void PlayFollowers(double delta, Camera3D camera)
+    public static void PlayFollowers(double delta)
     {
         long start = System.Diagnostics.Stopwatch.GetTimestamp();
         followTicks += followers.Count;
-        haveView = false;
-        if (followers.Count > 0 && camera != null && IsInstanceValid(camera))
-        {
-            viewEye = camera.GlobalPosition;
-            Godot.Collections.Array<Plane> planes = camera.GetFrustum();
-            if (planes.Count == viewPlanes.Length)
-            {
-                for (int i = 0; i < viewPlanes.Length; i++)
-                {
-                    viewPlanes[i] = planes[i];
-                }
-                haveView = true;
-            }
-        }
         ulong frame = Engine.GetPhysicsFrames();
         // Backwards, so a dropped body can be swapped for the last one, which has already been played.
         for (int i = followers.Count - 1; i >= 0; i--)
@@ -512,31 +590,7 @@ public partial class GMPOBox3DBody : Node3D, GMPObject
         // Asked for this tick or the last: bodies and whatever asks run in no fixed order within a tick.
         bool showingNewest = showNewestFrame + 1 >= frame;
 
-        // Far or unseen (judged by its newest state, which needs no call into the engine): every other tick only.
-        if (!blendIn && !showingNewest && haveView && (frame + id) % 2 != 0)
-        {
-            Vector3 at = snapshots[snapshots.Count - 1].pos;
-            bool fullRate = at.DistanceSquaredTo(viewEye) <= FullRateDistance * FullRateDistance;
-            for (int i = 0; i < viewPlanes.Length && fullRate; i++)
-            {
-                if (viewPlanes[i].DistanceTo(at) > ViewMargin)
-                {
-                    fullRate = false;
-                }
-            }
-            if (!fullRate)
-            {
-                return true;
-            }
-        }
-        followPlaced++;
-        // Time since it was last placed: one tick, or two for a far body.
         double elapsed = delta;
-        if (frame - lastPlacedFrame == 2)
-        {
-            elapsed = 2 * delta;
-        }
-        lastPlacedFrame = frame;
 
         double wantedLead = 0;
         if (showingNewest)

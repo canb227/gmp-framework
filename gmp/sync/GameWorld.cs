@@ -109,7 +109,7 @@ public partial class GameWorld : Node3D
     /// <summary>Bodies checked against <see cref="KillPlaneY"/> per tick; a pass over 5000 takes under half a second.</summary>
     const int KillChecksPerTick = 200;
     static readonly System.Collections.Generic.List<GMPOBox3DBody> killChecks = new();
-    static readonly System.Collections.Generic.List<ulong> killed = new();
+    static readonly System.Collections.Generic.List<(ulong id, Vector3 position)> killed = new();
     static int nextKillCheck;
 
     /// <summary>Despawns a few of this peer's dynamic bodies each tick if they've fallen out of the world.</summary>
@@ -133,12 +133,13 @@ public partial class GameWorld : Node3D
             GMPOBox3DBody body = killChecks[nextKillCheck];
             if (IsInstanceValid(body) && !body.IsQueuedForDeletion() && body.authority == Lobby.selfPeerID && body.GlobalPosition.Y < KillPlaneY)
             {
-                killed.Add(body.id);
+                killed.Add((body.id, body.GlobalPosition));
             }
         }
-        foreach (ulong id in killed)
+        foreach ((ulong id, Vector3 position) in killed)
         {
-            Logging.Warn($"Despawned {id}: it fell below the kill plane (y {KillPlaneY})", "GameWorld");
+            // Where it is now (x and z tell where it fell out): a body that leaves the level in play points at a hole.
+            Logging.Warn($"Despawned {(syncedObjs[id] as Node)?.Name}: it fell below the kill plane (y {KillPlaneY}), now at {position}", "GameWorld");
             DespawnObject(id);
         }
         killed.Clear();

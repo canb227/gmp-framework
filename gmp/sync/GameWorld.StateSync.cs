@@ -255,7 +255,8 @@ public partial class GameWorld
         pendingStates.Clear();
         applyCost += Stopwatch.GetTimestamp() - applyStart;
         AdvancePlaybackClocks();
-        GMPOBox3DBody.PlayFollowers(delta, GetViewport().GetCamera3D());
+        GMPOBox3DBody.PlayFollowers(delta);
+        GMPOBox3DBody.UpdateInterpolation(GetViewport().GetCamera3D(), syncedObjs.Values);
         CheckSleepers();
         CheckKillPlane();
 
