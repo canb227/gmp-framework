@@ -1,4 +1,5 @@
 using Godot;
+using FmodStudio = FMOD.Studio;
 
 /// <summary>
 /// Per-peer game-world singleton (each peer is authority for its own objects): owns the synced-object registry, the
@@ -68,6 +69,15 @@ public partial class GameWorld : Node3D
         // GameWorld itself runs while paused (it carries the network); it steps the world only while the tree runs.
         AddChild(physics);
         Logging.Log($"Physics world made, {PhysicsWorkers} solver workers", "GameWorld");
+    }
+    
+    private void B3D_ContactHitEvent(Godot.Collections.Dictionary obj)
+    {
+        GD.Print((float)obj["approach_speed"]/20.0f);
+        if((float)obj["approach_speed"]/20.0f > 0.1f)
+        {
+            AudioManager.Instance.PlayOneShot("event:/Solid_Metal", (float)obj["approach_speed"]/20.0f, (Vector3)obj["point"], "Force", (float)obj["approach_speed"]/20.0f);
+        }
     }
 
     /// <summary>Seconds between the scheduled gen0 collections (see <see cref="_Process"/>).</summary>
