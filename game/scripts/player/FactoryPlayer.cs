@@ -92,9 +92,6 @@ public partial class FactoryPlayer : GMPOBox3DCharacter
             cameraPosed = true;
             PoseCamera(false);
             // FMOD hears from the local player's camera (ears at the head, facing where they look).
-            Node3D fmodListener = ClassDB.Instantiate("FmodListener3D").As<Node3D>();
-            fmodListener.Name = "FmodListener3D";
-            camera.AddChild(fmodListener);
             UIManager.BindHud(this);
             playerNameLabel.Hide();
             body.GetNode<MeshInstance3D>("m").CastShadow = GeometryInstance3D.ShadowCastingSetting.ShadowsOnly;
