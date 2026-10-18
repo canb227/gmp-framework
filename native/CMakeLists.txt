@@ -16,8 +16,10 @@ set(GODOTCPP_USE_HOT_RELOAD ON CACHE BOOL "" FORCE)
 add_subdirectory(thirdparty/godot-cpp)
 
 # Box3D as a static library. Its samples, tests and docs only build when it is the top
-# level project, so add_subdirectory brings in just the library.
+# level project, so add_subdirectory brings in just the library. On Linux a static library
+# linked into our shared one must be built position independent (-fPIC).
 set(BUILD_SHARED_LIBS OFF)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 add_subdirectory(thirdparty/box3d)
 
 add_library(gmp_box3d SHARED

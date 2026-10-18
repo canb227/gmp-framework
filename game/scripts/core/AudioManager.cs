@@ -17,30 +17,49 @@ public partial class AudioManager : Node
     private static bool _resolverSet;
     private static string _libDir;
 
+    // False when the FMOD libraries for this platform couldn't be loaded: the game runs without sound.
+    private bool _audioOn;
+
     private static void SetupFmodResolver()
     {
         if (_resolverSet) return; // SetDllImportResolver throws if called twice (e.g. editor hot reload)
         _resolverSet = true;
 
-        _libDir = OS.HasFeature("editor")
-            ? ProjectSettings.GlobalizePath("res://addons/fmod-engine/lib/linux")
-            : OS.GetExecutablePath().GetBaseDir();
+        if (OS.HasFeature("editor"))
+        {
+            if (OS.GetName() == "Windows")
+                _libDir = ProjectSettings.GlobalizePath("res://addons/fmod-engine/lib/windows");
+            else
+                _libDir = ProjectSettings.GlobalizePath("res://addons/fmod-engine/lib/linux");
+        }
+        else
+        {
+            _libDir = OS.GetExecutablePath().GetBaseDir();
+        }
 
         NativeLibrary.SetDllImportResolver(typeof(AudioManager).Assembly, ResolveFmod);
+    }
+
+    // FMOD's file name for a library: "fmodstudio" is fmodstudio.dll on Windows, libfmodstudio.so on Linux.
+    private static string FmodFileName(string name)
+    {
+        if (OS.GetName() == "Windows")
+            return $"{name}.dll";
+        return $"lib{name}.so";
     }
 
     private static nint ResolveFmod(string name, Assembly asm, DllImportSearchPath? searchPath)
     {
         if (!name.StartsWith("fmod")) return IntPtr.Zero;
 
-        // Load core first so studio's dependency on libfmod.so.13 is already satisfied
+        // Load core first so studio's dependency on the core library is already satisfied
         if (name.StartsWith("fmodstudio"))
         {
-            string core = _libDir.PathJoin(name.EndsWith("L") ? "libfmodL.so" : "libfmod.so");
+            string core = _libDir.PathJoin(FmodFileName(name.EndsWith("L") ? "fmodL" : "fmod"));
             NativeLibrary.TryLoad(core, out _);
         }
 
-        return NativeLibrary.TryLoad(_libDir.PathJoin($"lib{name}.so"), out IntPtr handle)
+        return NativeLibrary.TryLoad(_libDir.PathJoin(FmodFileName(name)), out IntPtr handle)
             ? handle
             : IntPtr.Zero; // falls back to default probing
     }
@@ -50,7 +69,16 @@ public partial class AudioManager : Node
         SetupFmodResolver();
         Instance = this;
 
-        Check(FmodStudio.System.create(out _studio));
+        try
+        {
+            Check(FmodStudio.System.create(out _studio));
+        }
+        catch (DllNotFoundException)
+        {
+            GD.PushError($"FMOD libraries not found in {_libDir}: running without sound.");
+            return;
+        }
+        _audioOn = true;
         Check(_studio.getCoreSystem(out _core));
 
         // Godot is right-handed; this saves you from flipping axes manually
@@ -72,6 +100,7 @@ public partial class AudioManager : Node
 
     public override void _Process(double delta)
     {
+        if (!_audioOn) return;
         _studio.update(); // must be called every frame
         var cam = GetViewport().GetCamera3D();
         if (cam != null)
@@ -90,6 +119,7 @@ public partial class AudioManager : Node
 
     public override void _ExitTree()
     {
+        if (!_audioOn) return;
         _strings.unload();
         _master.unload();
         _studio.release();
@@ -100,6 +130,7 @@ public partial class AudioManager : Node
     /// Fire-and-forget (footsteps, gunshots, UI clicks)
     public void PlayOneShot(string eventPath, float volume = 1.0f, Vector3? position = null, string param_name = "", float? param_val = 0.0f)
     {
+        if (!_audioOn) return;
         if (_studio.getEvent(eventPath, out FmodStudio.EventDescription desc) != Fmod.RESULT.OK)
         {
             GD.PushWarning($"FMOD event not found: {eventPath}");
@@ -124,6 +155,7 @@ public partial class AudioManager : Node
     /// For events you need to control later (music, loops, parameters)
     public FmodStudio.EventInstance? CreateInstance(string eventPath)
     {
+        if (!_audioOn) return null;
         if (_studio.getEvent(eventPath, out FmodStudio.EventDescription desc) != Fmod.RESULT.OK)
             return null;
         desc.createInstance(out FmodStudio.EventInstance inst);

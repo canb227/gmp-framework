@@ -23,6 +23,16 @@ cmake --build native/build --config RelWithDebInfo --target gmp_box3d
 The first build takes about a minute (godot-cpp); after that only what changed. RelWithDebInfo is optimized with
 Box3D's asserts on and symbols; use `--config Debug` to step through. The dll and pdb land in `addons/gmp_box3d/bin`.
 
+On Linux (CMake 3.22+, GCC or Clang, Python 3 for godot-cpp's binding generator):
+
+```bash
+cmake -S native -B native/build -DCMAKE_BUILD_TYPE=RelWithDebInfo
+cmake --build native/build --target gmp_box3d -j
+```
+
+That gives `addons/gmp_box3d/bin/libgmp_box3d.linux.template_debug.x86_64.so`. The built libraries are not in git,
+so each machine builds its own after pulling C++ changes.
+
 New source files go in `add_library` in `CMakeLists.txt`.
 
 ## Reloading
