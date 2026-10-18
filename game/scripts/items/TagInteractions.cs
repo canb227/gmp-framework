@@ -4,16 +4,15 @@ using System.Collections.Generic;
 
 /// <summary>
 /// Rules for what happens when items with particular <see cref="ItemTags"/> touch. A rule is keyed by
-/// (this item's tag, the other item's tag) and runs from this item's point of view, on this item's authority
-/// (see <c>PhysicalFactoryItem.OnTouched</c>). Both items of a contact are checked, so a HOT/COLD touch
-/// runs the (HOT, COLD) rule for the hot item and the (COLD, HOT) rule for the cold one, each on its own
-/// authority. Anything a rule changes must therefore be replicated (an RPC or state update), since the
-/// other peers don't run it. Box3D reports every bounce as a new touch, so each pair is debounced.
+/// (this item's tag, the other item's tag) and runs from this item's point of view, on the host, which simulates
+/// every loose item (see <c>ItemWorld.OnPhysicsStepped</c>). Both items of a contact are checked, so a HOT/COLD touch
+/// runs the (HOT, COLD) rule for the hot item and the (COLD, HOT) rule for the cold one. Anything a rule changes
+/// must therefore be replicated (an RPC or state update), since the other peers don't run it. Box3D reports every
+/// bounce as a new touch, so each pair is debounced.
 /// <para>
-/// Only items with a <see cref="watchers"/> tag report their touches: each report is a call into C# per new contact,
-/// and common materials (METAL, FERROUS...) reporting every bounce in a pile cost milliseconds a physics tick. A
-/// watcher runs both items' sides of the rules when the other item doesn't report its own, so every rule needs a
-/// watcher tag on at least one side; a rule without one is reported at startup.
+/// Only items with a <see cref="watchers"/> tag report their touches (<see cref="ItemWorld.TagsChanged"/>): common
+/// materials (METAL, FERROUS...) would report every bounce in a pile. Both items' sides of the rules run for every
+/// reported touch, so every rule needs a watcher tag on at least one side; a rule without one is reported at startup.
 /// </para>
 /// </summary>
 public static class TagInteractions
@@ -21,7 +20,7 @@ public static class TagInteractions
     /// <summary>Minimum time between reactions for the same pair of items.</summary>
     const ulong CooldownMs = 1000;
 
-    static readonly Dictionary<(ItemTags self, ItemTags other), Action<PhysicalFactoryItem, PhysicalFactoryItem>> rules = new()
+    static readonly Dictionary<(ItemTags self, ItemTags other), Action<ItemRecord, ItemRecord>> rules = new()
     {
         // Resource behaviours (design stubs: they log the intended effect). Each reaction runs on the item it changes.
         { (ItemTags.FUEL, ItemTags.HOT), (self, other) => ReportReaction(self, other, "ignites: starts burning and becomes HOT") },
@@ -79,10 +78,10 @@ public static class TagInteractions
         return false;
     }
 
-    /// <summary>Called when <paramref name="self"/> touches <paramref name="other"/>, on <paramref name="self"/>'s authority.</summary>
-    public static void OnTouch(PhysicalFactoryItem self, PhysicalFactoryItem other)
+    /// <summary>Called on the host when <paramref name="self"/> touches <paramref name="other"/>.</summary>
+    public static void OnTouch(ItemRecord self, ItemRecord other)
     {
-        if (self.tags == null || other.tags == null || other.tags.Count == 0) return;
+        if (other.tags.Count == 0) return;
 
         ulong now = Time.GetTicksMsec();
         if (lastReaction.TryGetValue((self.id, other.id), out ulong last) && now - last < CooldownMs) return;
@@ -109,7 +108,7 @@ public static class TagInteractions
     public static int reactions { get; private set; }
 
     // A stub: only counts the reaction. <paramref name="effect"/> documents what the rule is meant to do.
-    static void ReportReaction(PhysicalFactoryItem self, PhysicalFactoryItem other, string effect)
+    static void ReportReaction(ItemRecord self, ItemRecord other, string effect)
     {
         reactions++;
     }

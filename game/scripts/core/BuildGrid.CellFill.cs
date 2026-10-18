@@ -11,7 +11,7 @@ using System.Collections.Generic;
 /// around the ghost read as shaded blocks. See BuildGridFill.gdshader.
 /// <para>
 /// The fill is built in chunks of <see cref="FillChunkCells"/>³ cells around the ghost, fixed in the world. Which cells
-/// level geometry blocks is found with one Box3D overlap query per cell, a little each physics tick, and kept for the
+/// level geometry blocks is found with one physics overlap query per cell, a little each physics tick, and kept for the
 /// session (the level doesn't move). Structures and no-build volumes are read from the grid whenever a chunk's mesh is
 /// rebuilt, which placing or removing a structure triggers (<see cref="Occupy"/>, <see cref="Vacate"/>).
 /// </para>
@@ -72,7 +72,7 @@ public partial class BuildGrid
     }
 
     /// <summary>
-    /// Runs every physics tick (Box3D queries belong there): keeps the chunks around the ghost shown and scanned and
+    /// Runs every physics tick (physics queries belong there): keeps the chunks around the ghost shown and scanned and
     /// their meshes current, within <see cref="FillWorkBudgetMs"/>, and hides chunks no reveal is near any more.
     /// </summary>
     private void UpdateFill()
@@ -178,7 +178,7 @@ public partial class BuildGrid
         if (chunk.scanned < 0)
         {
             var box = new Aabb(chunkMin, Vector3.One * (FillChunkCells * CellSize));
-            Godot.Collections.Array<Node3D> near = GameWorld.b3droot.OverlapAabb(box, ~GameWorld.QueryHiddenLayer);
+            Godot.Collections.Array<Node3D> near = PhysicsWorld.OverlapBox(new Transform3D(Basis.Identity, box.GetCenter()), box.Size, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer).bodies;
             bool anyLevel = false;
             foreach (Node3D body in near)
             {
@@ -291,7 +291,7 @@ public partial class BuildGrid
     /// <summary>
     /// True if the level's static geometry reaches more than <see cref="LevelOverlapDepth"/> into
     /// <paramref name="cell"/>, so nothing can be built in it. Read from the fill's scan where it has reached the
-    /// cell, otherwise asked of Box3D (call from <c>_PhysicsProcess</c>).
+    /// cell, otherwise asked of the physics world (call from <c>_PhysicsProcess</c>).
     /// </summary>
     public static bool IsLevelBlocked(Vector3I cell)
     {
@@ -305,7 +305,7 @@ public partial class BuildGrid
     static bool QueryLevelBlocked(Vector3I cell)
     {
         Vector3 size = Vector3.One * (CellSize - 2f * LevelOverlapDepth);
-        foreach (Node3D body in GameWorld.b3droot.OverlapBox(CellToWorld(cell), size, ~GameWorld.QueryHiddenLayer))
+        foreach (Node3D body in PhysicsWorld.OverlapBox(new Transform3D(Basis.Identity, CellToWorld(cell)), size, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer).bodies)
         {
             if (PlacementProbe.IsStaticLevelCollider(body))
             {

@@ -154,6 +154,7 @@ public partial class GameWorld
     {
         pendingOutgoingTick = new();
         pendingStates.Clear();
+        pendingItemPackets.Clear();
         lastStateTime.Clear();
         playbackClocks.Clear();
     }
@@ -188,9 +189,23 @@ public partial class GameWorld
         }
     }
 
+    /// <summary>Moves <paramref name="from"/>'s playback clock on for a packet sent on its physics tick <paramref name="tick"/>.</summary>
+    private static void HeardTick(ulong from, ulong tick)
+    {
+        if (!playbackClocks.TryGetValue(from, out PlaybackClock clock))
+        {
+            clock = new PlaybackClock { newestTick = tick, playbackTick = tick - InterpolationDelay };
+            playbackClocks[from] = clock;
+        }
+        if (tick > clock.newestTick)
+        {
+            clock.newestTick = tick;
+        }
+    }
+
     private static void OnMessageReceived(ulong from, Channel ch, byte[] msg)
     {
-        if (ch != Channel.GAME_State)
+        if (ch != Channel.GAME_State && ch != Channel.GAME_Items)
         {
             return;
         }
@@ -200,18 +215,15 @@ public partial class GameWorld
         {
             return;
         }
+        if (ch == Channel.GAME_Items)
+        {
+            ReceiveItemPacket(from, msg);
+            return;
+        }
         long receiveStart = Stopwatch.GetTimestamp();
         receivedBytes += msg.Length;
         WorldTickMessage tickmsg = pack.Deserialize<WorldTickMessage>(msg);
-        if (!playbackClocks.TryGetValue(from, out PlaybackClock clock))
-        {
-            clock = new PlaybackClock { newestTick = tickmsg.tick, playbackTick = tickmsg.tick - InterpolationDelay };
-            playbackClocks[from] = clock;
-        }
-        if (tickmsg.tick > clock.newestTick)
-        {
-            clock.newestTick = tickmsg.tick;
-        }
+        HeardTick(from, tickmsg.tick);
         // Merge per object: a tick only carries the objects that won the sender's priority budget, so
         // keeping just the newest tick per sender would lose updates carried only by an older one.
         foreach ((ulong id, byte[] state) in tickmsg.updates)
@@ -255,10 +267,11 @@ public partial class GameWorld
         pendingStates.Clear();
         applyCost += Stopwatch.GetTimestamp() - applyStart;
         AdvancePlaybackClocks();
-        GMPOBox3DBody.PlayFollowers(delta);
-        GMPOBox3DBody.UpdateInterpolation(GetViewport().GetCamera3D(), syncedObjs.Values);
-        CheckSleepers();
+        GMPOBody.PlayFollowers(delta);
+        GMPOBody.UpdateInterpolation(GetViewport().GetCamera3D(), syncedObjs.Values);
         CheckKillPlane();
+        StepNativeWorld(delta);
+        PhysicsStepped?.Invoke(delta);
 
         // Nobody to send to (solo, or the last peer left): skip building updates, which costs per object per tick.
         if (Lobby.MemberCount <= 1)
@@ -330,6 +343,8 @@ public partial class GameWorld
         {
             SendPendingTick();
         }
+        // The native world's items get what is left of this send.
+        SendItemStates(maxSendSize - sendSize, turn, frame);
         buildCost += Stopwatch.GetTimestamp() - buildStart - (sendCost - sendCostBefore);
     }
 

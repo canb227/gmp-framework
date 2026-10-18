@@ -34,10 +34,8 @@ _surfaces = [{
 "vertex_data": PackedByteArray("yeWvPgAAAACcp2q/NUZrO3E9yj466f2/by+pPQAAAAD2XQfAAg5hPnE9yj7H9IC/NUZrO3E9yj466f2/yeWvPgAAAACcp2q/q5UJPXE9yj5r8f2/by+pPQAAAAD2XQfANUZrO3E9yj466f2/24XmPQAAAAB5QAfAq5UJPXE9yj5r8f2/bFtUPnE9yj5sBKK/24XmPQAAAAB5QAfAby+pPQAAAAD2XQfAq5UJPXE9yj5r8f2/LuJ7PnE9yj4x04K/sb+8PgAAAAC2226/bFtUPnE9yj5sBKK/LuJ7PnE9yj4x04K/yeWvPgAAAACcp2q/sb+8PgAAAAC2226/LuJ7PnE9yj4x04K/Ag5hPnE9yj7H9IC/yeWvPgAAAACcp2q/tcOfPgAAAABd+aS/bFtUPnE9yj5sBKK/sb+8PgAAAAC2226/tcOfPgAAAABd+aS/24XmPQAAAAB5QAfAbFtUPnE9yj5sBKK/LuJ7PnE9yj4x04K/q5UJPXE9yj5r8f2/NUZrO3E9yj466f2/LuJ7PnE9yj4x04K/NUZrO3E9yj466f2/Ag5hPnE9yj7H9IC/LuJ7PnE9yj4x04K/bFtUPnE9yj5sBKK/q5UJPXE9yj5r8f2/tcOfPgAAAABd+aS/yeWvPgAAAACcp2q/by+pPQAAAAD2XQfAtcOfPgAAAABd+aS/sb+8PgAAAAC2226/yeWvPgAAAACcp2q/tcOfPgAAAABd+aS/by+pPQAAAAD2XQfA24XmPQAAAAB5QAfA")
 }]
 
-[node name="ConveyorTurnRight" type="Box3DBody" unique_id=1232208056 node_paths=PackedStringArray("beltSurfaces")]
+[node name="ConveyorTurnRight" type="GMPBody" unique_id=1232208056 node_paths=PackedStringArray("beltSurfaces")]
 body_type = 0
-box_size = Vector3(0, 0, 0)
-baked_compound = true
 script = ExtResource("1_r")
 beltSurfaces = []
 shape = 2
@@ -51,50 +49,44 @@ blueprintItemID = "blueprint_conveyor"
 
 [node name="Model" parent="." unique_id=1442939280 instance=ExtResource("2_r")]
 
-[node name="WallOuter0" type="Box3DBody" parent="." unique_id=272251356]
-body_type = 0
-shape_type = 5
-collision_mesh = SubResource("ArrayMesh_WallOuter0")
+[node name="WallOuter0" type="GMPShape" parent="." unique_id=272251356]
+shape = 4
+mesh = SubResource("ArrayMesh_WallOuter0")
 friction = 0.0
-user_material_id = 3
+surface_type = 3
 
-[node name="WallOuter1" type="Box3DBody" parent="." unique_id=1086159749]
-body_type = 0
-shape_type = 5
-collision_mesh = SubResource("ArrayMesh_WallOuter1")
+[node name="WallOuter1" type="GMPShape" parent="." unique_id=1086159749]
+shape = 4
+mesh = SubResource("ArrayMesh_WallOuter1")
 friction = 0.0
-user_material_id = 3
+surface_type = 3
 
-[node name="WallOuter2" type="Box3DBody" parent="." unique_id=305098591]
-body_type = 0
-shape_type = 5
-collision_mesh = SubResource("ArrayMesh_WallOuter2")
+[node name="WallOuter2" type="GMPShape" parent="." unique_id=305098591]
+shape = 4
+mesh = SubResource("ArrayMesh_WallOuter2")
 friction = 0.0
-user_material_id = 3
+surface_type = 3
 
-[node name="Floor0" type="Box3DBody" parent="." unique_id=723475997]
-body_type = 0
-box_size = Vector3(2, 0.1, 1.06401)
-friction = 0.8
-tangent_velocity = Vector3(0, 0, -2)
-user_material_id = 5
+[node name="Floor0" type="GMPShape" parent="." unique_id=723475997]
 transform = Transform3D(0, 0.005, 0.99999, -0.00047, 0.99999, -0.005, -1, -0.00047, 0, 1.46975, 0.08622, -0.99998)
-
-[node name="Floor1" type="Box3DBody" parent="." unique_id=260296978]
-body_type = 0
-box_size = Vector3(1.43, 0.1, 1.06532)
+size = Vector3(2, 0.1, 1.06401)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
-user_material_id = 5
+surface_type = 5
+
+[node name="Floor1" type="GMPShape" parent="." unique_id=260296978]
 transform = Transform3D(0.70711, 0.03531, 0.70622, 0, 0.99875, -0.04994, -0.70711, 0.03531, 0.70622, 1.11789, 0.08469, -1.12142)
-
-[node name="Floor2" type="Box3DBody" parent="." unique_id=368166759]
-body_type = 0
-box_size = Vector3(2, 0.1, 1.06504)
+size = Vector3(1.43, 0.1, 1.06532)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
-user_material_id = 5
+surface_type = 5
+
+[node name="Floor2" type="GMPShape" parent="." unique_id=368166759]
 transform = Transform3D(0.9998, 0.01991, 0, -0.01989, 0.99882, -0.04429, -0.00088, 0.04428, 0.99902, 0.999, 0.08751, -1.47221)
+size = Vector3(2, 0.1, 1.06504)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+surface_type = 5
 
 [node name="StructureArrow" type="Node3D" parent="." unique_id=589559048]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.7333997, 0.8026422, -0.993477)
@@ -102,12 +94,11 @@ script = ExtResource("3_1v8e7")
 shape = 1
 metadata/_custom_type_script = "uid://bv13olg4g30nl"
 
-[node name="CornerDeflector2" type="Box3DBody" parent="." unique_id=1607805545]
-body_type = 0
-shape_type = 4
-capsule_radius = 0.1
-capsule_height = 0.30000000000000004
+[node name="CornerDeflector2" type="GMPShape" parent="." unique_id=1607805545]
+transform = Transform3D(0.9999992, 0, 0, 0, 1, 0, 0, 0, 0.9999992, 1.949959, 0.29963547, -1.9580303)
+shape = 2
+radius = 0.1
+height = 0.3
 friction = 0.5
 tangent_velocity = Vector3(1.414, 0, -1.414)
-user_material_id = 3
-transform = Transform3D(0.9999992, 0, 0, 0, 1, 0, 0, 0, 0.9999992, 1.949959, 0.29963547, -1.9580303)
+surface_type = 3

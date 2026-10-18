@@ -1,23 +1,16 @@
 [gd_scene format=3 uid="uid://bkhap70rv8wga"]
 
-[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/PhysicalFactoryItem.cs" id="1_item"]
 [ext_resource type="PackedScene" uid="uid://bgy7sre10s0nd" path="res://game/assets/models/items/scrap_ball.glb" id="2_model"]
 
-[node name="scrap_ball" type="Box3DBody" unique_id=1636194786]
-shape_type = 1
-sphere_radius = 0.22
+[node name="scrap_ball" type="GMPBody" unique_id=1636194786]
+
+[node name="Shape" type="GMPShape" parent="." unique_id=1752093318]
+shape = 1
+radius = 0.22
 density = 2000.0
 friction = 0.5
 restitution = 0.1
 rolling_resistance = 0.2
-script = ExtResource("1_item")
-itemID = "scrap_ball"
-canBePickTarget = true
-canBeGrabbed = true
-tags = Array[int]([3, 22])
-currencyValue = Dictionary[int, int]({
-0: 1
-})
 
 [node name="Model" parent="." unique_id=124815417 instance=ExtResource("2_model")]
 transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, 0, 0)

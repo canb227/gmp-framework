@@ -38,16 +38,15 @@ public partial class Console
     public void item_counts()
     {
         Dictionary<string, int> byItem = new();
-        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
+        foreach (ItemRecord item in ItemWorld.items.Values)
         {
-            if (obj is PhysicalFactoryItem item && item.itemID != null)
-                byItem[item.itemID] = byItem.GetValueOrDefault(item.itemID, 0) + 1;
+            byItem[item.itemID] = byItem.GetValueOrDefault(item.itemID, 0) + 1;
         }
-        string line = $"item_counts: total={PhysicalFactoryItem.totalCount}";
-        foreach (var (itemID, synced) in byItem)
+        string line = $"item_counts: total={ItemWorld.totalCount} physics={PhysicsWorld.ItemCount()}";
+        foreach (var (itemID, counted) in byItem)
         {
-            // Running count, then a fresh count of the synced items to check it against.
-            line += $" {itemID}={PhysicalFactoryItem.CountOf(itemID)}/{synced}";
+            // Running count, then a fresh count of the records to check it against.
+            line += $" {itemID}={ItemWorld.CountOf(itemID)}/{counted}";
         }
         LimboConsole.Info(line);
     }
@@ -78,6 +77,100 @@ public partial class Console
         LimboConsole.Info($"look_at: {player.playerName} faces ({x},{y},{z})");
     }
 
+    /// <summary>
+    /// Testing: the local player steers by (x, y) — x right, y back, so 0 -1 is forward — for seconds, sprinting if
+    /// sprint is 1. The reply comes when it's done: where it got to and its speed.
+    /// </summary>
+    public async void walk(float x, float y, float seconds, int sprint)
+    {
+        FactoryPlayer player = LocalPlayer();
+        if (player == null)
+        {
+            LimboConsole.Error("walk: no local player.");
+            return;
+        }
+        Vector3 start = player.GlobalPosition;
+        player.testWalk = new Vector2(x, y);
+        player.testWalkLeft = seconds;
+        player.testSprint = sprint != 0;
+        await ToSignal(GetTree().CreateTimer(seconds + 0.5f), SceneTreeTimer.SignalName.Timeout);
+        Vector3 end = player.GlobalPosition;
+        Logging.Log($"walk: moved {start.DistanceTo(end):0.00} m from {start} to {end}, speed now {player.cachedVel.Length():0.00} m/s, on floor {player.IsOnFloor()}", "Test");
+    }
+
+    /// <summary>Testing: the local player jumps; the log reports how high its feet got.</summary>
+    public async void jump()
+    {
+        FactoryPlayer player = LocalPlayer();
+        if (player == null)
+        {
+            LimboConsole.Error("jump: no local player.");
+            return;
+        }
+        float startY = player.GlobalPosition.Y;
+        player.testJump = true;
+        await ToSignal(GetTree().CreateTimer(1.5f), SceneTreeTimer.SignalName.Timeout);
+        Logging.Log($"jump: feet rose {player.testPeakY - startY:0.00} m, back on floor {player.IsOnFloor()} at y {player.GlobalPosition.Y:0.00}", "Test");
+    }
+
+    /// <summary>Testing the build grid: whether the level blocks cell (x, y, z), and what an overlap of that cell's box finds.</summary>
+    public void build_cell(int x, int y, int z)
+    {
+        Vector3I cell = new Vector3I(x, y, z);
+        Vector3 size = Vector3.One * (BuildGrid.CellSize - 2f * BuildGrid.LevelOverlapDepth);
+        Overlap overlap = PhysicsWorld.OverlapBox(new Transform3D(Basis.Identity, BuildGrid.CellToWorld(cell)), size, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer);
+        string bodies = "";
+        foreach (Node3D body in overlap.bodies)
+        {
+            bodies += $" {body.Name}(static level {PlacementProbe.IsStaticLevelCollider(body)})";
+        }
+        LimboConsole.Info($"build_cell: {cell} centre {BuildGrid.CellToWorld(cell)} blocked={BuildGrid.IsLevelBlocked(cell)} overlaps:{bodies}");
+    }
+
+    /// <summary>Testing the build grid: whether blueprint can be placed anchored at cell (x, y, z), and what the level check overlaps.</summary>
+    public void build_probe(string blueprintItemID, int x, int y, int z)
+    {
+        if (ItemInfo.Fetch(blueprintItemID) is not BlueprintItem blueprint)
+        {
+            LimboConsole.Error($"build_probe: {blueprintItemID} isn't a blueprint.");
+            return;
+        }
+        PlacementProbe probe = PlacementProbe.Create(blueprint.StructureScene(false), false);
+        probe.MoveTo(new Vector3I(x, y, z), 0);
+        bool allowed = BuildGrid.IsPlacementAllowed(probe, false, out List<Node> overlaps);
+        string hits = "";
+        foreach (Node hit in overlaps)
+        {
+            hits += " " + hit.GetPath();
+        }
+        // Which of its shapes do it (the probe sits at the pose, so each shape's GlobalTransform is where it's tested).
+        string blamed = "";
+        foreach (Node node in probe.structure.FindChildren("*", "GMPShape", true, false))
+        {
+            Node3D shape = (Node3D)node;
+            if (shape.Get("is_sensor").AsBool() || shape.Get("shape").AsInt32() == 5)
+                continue;
+            foreach (Node3D other in PhysicsWorld.OverlapShape(shape, shape.GlobalTransform, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer, 0.1f).bodies)
+            {
+                if (PlacementProbe.IsStaticLevelCollider(other))
+                    blamed += $" {probe.structure.GetPathTo(shape)}(shape {shape.Get("shape")} at {shape.GlobalPosition} scale {shape.GlobalBasis.Scale} size {shape.Get("size")})";
+            }
+        }
+        // And which of its cells the grid refuses, and why.
+        string refused = "";
+        foreach (Vector3I cell in BuildGrid.FootprintCells(probe.anchor, probe.structure.cells.Keys, 0))
+        {
+            if (BuildGrid.GetStructureAt(cell) != null)
+                refused += $" {cell}:taken";
+            else if (BuildGrid.IsNoBuild(cell))
+                refused += $" {cell}:nobuild";
+            else if (BuildGrid.IsLevelBlocked(cell))
+                refused += $" {cell}:level";
+        }
+        LimboConsole.Info($"build_probe: {blueprintItemID} at ({x},{y},{z}) allowed={allowed} level overlaps:{hits} | by:{blamed} | cells refused:{refused}");
+        probe.Free();
+    }
+
     static FactoryPlayer LocalPlayer()
     {
         foreach (FactoryPlayer player in FactoryPlayer.all)
@@ -88,9 +181,9 @@ public partial class Console
         return null;
     }
 
-    // ---- bodies for performance tests (host only) ----
-    // spawn_bodies drops scrap pieces in a stack of layers in front of the host's player; more calls add layers on
-    // top. stir keeps them awake with random kicks. Both run from _PhysicsProcess (Box3D calls belong there).
+    // ---- loose items for performance tests (host only) ----
+    // spawn_bodies drops scrap pieces in a stack of layers in front of the host's player (or in the test arena); more
+    // calls add layers on top. stir keeps them awake with random kicks. Both run from _PhysicsProcess.
 
     const string BodyItem = "scrap_piece1";
     /// <summary>Bodies per layer side: a layer is BodiesPerSide x BodiesPerSide, BodySpacing apart.</summary>
@@ -112,13 +205,11 @@ public partial class Console
     int bodiesPlaced;
     Vector3 bodiesCorner;
 
-    /// <summary>Each body is kicked this many times a second while stirring; 0 is off.</summary>
+    /// <summary>Each item is kicked this many times a second on average (at random) while stirring; 0 is off.</summary>
     float stirRate;
-    readonly List<PhysicalFactoryItem> stirBodies = new();
-    int stirCursor;
     double stirKicksOwed;
 
-    /// <summary>Host: spawns count scrap pieces in front of the local player (in layers of 15x15, more calls stack on top).</summary>
+    /// <summary>Host: spawns count scrap pieces in front of the local player (in layers of 20x20, more calls stack on top).</summary>
     public void spawn_bodies(int count)
     {
         FactoryPlayer player = LocalPlayer();
@@ -146,27 +237,21 @@ public partial class Console
     }
 
     /// <summary>
-    /// The spawned bodies in this instance: how many, how many awake (authority only), the lowest and highest, and a
-    /// count per 2 m of height, to see where a pile ended up.
+    /// The scrap pieces in this instance: how many, how many bodies are awake in the physics world (on the host: the
+    /// simulated ones), the lowest and highest, a position sum to compare peers with, and a count per 2 m of height.
     /// </summary>
     public void bodies()
     {
         int count = 0;
-        int awake = 0;
-        double positionSum = 0;
         float lowest = float.MaxValue;
         float highest = float.MinValue;
         SortedDictionary<int, int> perBand = new();
-        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
+        foreach (ItemRecord item in ItemWorld.items.Values)
         {
-            if (obj is not PhysicalFactoryItem item || item.itemID != BodyItem)
+            if (item.itemID != BodyItem)
                 continue;
             count++;
-            if (item.authority == Lobby.selfPeerID && !item.asleep)
-                awake++;
-            Vector3 position = item.GlobalPosition;
-            positionSum += position.X + position.Y + position.Z;
-            float y = position.Y;
+            float y = item.position.Y;
             lowest = Math.Min(lowest, y);
             highest = Math.Max(highest, y);
             int band = Mathf.FloorToInt(y / 2) * 2;
@@ -178,8 +263,10 @@ public partial class Console
         {
             bands += $" {band}m:{inBand}";
         }
-        // The position sum compares two peers' copies: equal (to a few mm) once followers have placed every body.
-        LimboConsole.Info($"bodies: count={count} awake={awake} y={lowest:0.0}..{highest:0.0} sum={positionSum:0.00} reactions={TagInteractions.reactions} |{bands}");
+        Godot.Collections.Dictionary stats = PhysicsWorld.Stats();
+        // The position sum (every item) compares two peers' copies: equal to a few mm once followers have caught up.
+        LimboConsole.Info($"bodies: count={count} awake={stats["awake"]} followers={stats["followers"]} y={lowest:0.0}..{highest:0.0} " +
+            $"sum={stats["position_sum"].AsDouble():0.00} reactions={TagInteractions.reactions} |{bands}");
     }
 
     /// <summary>
@@ -197,8 +284,8 @@ public partial class Console
         {
             ulong id = GameWorld.SpawnScene(ArenaScene, ArenaPosition);
             arenaSpawned = true;
-            if (GameWorld.syncedObjs.TryGetValue(id, out GMPObject obj) && obj is GMPOBox3DBody arena)
-                LimboConsole.Info($"test_arena: body at {arena.GlobalPosition}, type {arena.GetBodyType()}, bounds {arena.GetAabb()}");
+            if (GameWorld.syncedObjs.TryGetValue(id, out GMPObject obj) && obj is GMPOBody arena)
+                LimboConsole.Info($"test_arena: body at {arena.GlobalPosition}, type {arena.bodyType}");
             else
                 LimboConsole.Error("test_arena: the arena didn't spawn");
         }
@@ -206,162 +293,13 @@ public partial class Console
         LimboConsole.Info($"test_arena: at {ArenaPosition}; stand at tp {spot.X} {spot.Y} {spot.Z}");
     }
 
-    /// <summary>
-    /// Turns Box3D's contact reporting (contact_monitor, which raises body_entered for TagInteractions) on (1) or off (0)
-    /// for every spawned body in this instance, to measure what it costs.
-    /// </summary>
-    public void contacts(int on)
-    {
-        int count = 0;
-        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
-        {
-            if (obj is PhysicalFactoryItem item && item.itemID == BodyItem)
-            {
-                item.contactMonitor = on != 0;
-                count++;
-            }
-        }
-        LimboConsole.Info($"contacts: contact_monitor {on != 0} on {count} bodies");
-    }
-
-    /// <summary>
-    /// Whether Box3D writes each spawned body's transform to its node every tick (sync_node_transform), on (1) or off
-    /// (0), to measure what that costs. Off, the bodies still simulate but are drawn where they were.
-    /// </summary>
-    public void nodesync(int on)
-    {
-        int count = 0;
-        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
-        {
-            if (obj is PhysicalFactoryItem item && item.itemID == BodyItem)
-            {
-                item.syncNodeTransform = on != 0;
-                count++;
-            }
-        }
-        LimboConsole.Info($"nodesync: sync_node_transform {on != 0} on {count} bodies");
-    }
-
-    /// <summary>
-    /// Times, per body, each engine call that building a body's state makes (and the whole build), over every spawned
-    /// body this instance simulates: microseconds per call.
-    /// </summary>
-    public void bench_state()
-    {
-        List<PhysicalFactoryItem> items = new();
-        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
-        {
-            if (obj is PhysicalFactoryItem item && item.itemID == BodyItem && item.authority == Lobby.selfPeerID)
-                items.Add(item);
-        }
-        if (items.Count == 0)
-        {
-            LimboConsole.Error("No spawned bodies simulated here.");
-            return;
-        }
-        double usPerTick = 1000000.0 / System.Diagnostics.Stopwatch.Frequency / items.Count;
-        long start = System.Diagnostics.Stopwatch.GetTimestamp();
-        foreach (PhysicalFactoryItem item in items) item.IsAwake();
-        double awake = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * usPerTick;
-        start = System.Diagnostics.Stopwatch.GetTimestamp();
-        foreach (PhysicalFactoryItem item in items) item.GetLinearVelocity();
-        double linear = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * usPerTick;
-        start = System.Diagnostics.Stopwatch.GetTimestamp();
-        foreach (PhysicalFactoryItem item in items) item.GetAngularVelocity();
-        double angular = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * usPerTick;
-        start = System.Diagnostics.Stopwatch.GetTimestamp();
-        foreach (PhysicalFactoryItem item in items) _ = item.Position;
-        double position = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * usPerTick;
-        start = System.Diagnostics.Stopwatch.GetTimestamp();
-        foreach (PhysicalFactoryItem item in items) _ = item.Rotation;
-        double rotation = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * usPerTick;
-        start = System.Diagnostics.Stopwatch.GetTimestamp();
-        foreach (PhysicalFactoryItem item in items) _ = item.Transform;
-        double transform = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * usPerTick;
-        start = System.Diagnostics.Stopwatch.GetTimestamp();
-        foreach (PhysicalFactoryItem item in items) _ = item.GlobalPosition;
-        double globalPosition = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * usPerTick;
-        Transform3D[] transforms = new Transform3D[items.Count];
-        for (int i = 0; i < items.Count; i++) transforms[i] = items[i].Transform;
-        start = System.Diagnostics.Stopwatch.GetTimestamp();
-        foreach (Transform3D t in transforms) _ = t.Basis.GetRotationQuaternion();
-        double quaternion = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * usPerTick;
-        start = System.Diagnostics.Stopwatch.GetTimestamp();
-        foreach (Transform3D t in transforms) _ = new BodySyncState { pos = t.Origin, rot = t.Basis.GetRotationQuaternion(), vel = Vector3.One, angVel = Vector3.One }.Pack();
-        double pack = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * usPerTick;
-        bool hasProperty = false;
-        foreach (Godot.Collections.Dictionary property in ClassDB.ClassGetPropertyList("Box3DBody"))
-        {
-            if ((string)property["name"] == "linear_velocity") hasProperty = true;
-        }
-        StringName linearVelocityName = "linear_velocity";
-        double viaProperty = -1;
-        if (hasProperty)
-        {
-            start = System.Diagnostics.Stopwatch.GetTimestamp();
-            foreach (PhysicalFactoryItem item in items) ClassDB.ClassGetProperty(item, linearVelocityName);
-            viaProperty = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * usPerTick;
-        }
-        int stillAsleep = 0;
-        foreach (PhysicalFactoryItem item in items) if (item.asleep) stillAsleep++;
-        start = System.Diagnostics.Stopwatch.GetTimestamp();
-        foreach (PhysicalFactoryItem item in items) item.GenerateStateUpdate();
-        double build = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * usPerTick;
-        start = System.Diagnostics.Stopwatch.GetTimestamp();
-        foreach (PhysicalFactoryItem item in items) item.UpdateSyncPriority();
-        double priority = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * usPerTick;
-        LimboConsole.Info($"bench_state: {items.Count} bodies, us per call: is_awake {awake:0.00}, linear velocity {linear:0.00}, angular velocity {angular:0.00}, Position {position:0.00}, Rotation {rotation:0.00}, Transform {transform:0.00}, GlobalPosition {globalPosition:0.00} | rotation quaternion {quaternion:0.00}, Pack {pack:0.00}, linear_velocity property {hasProperty} {viaProperty:0.00} | GenerateStateUpdate {build:0.00} ({stillAsleep} flagged asleep), UpdateSyncPriority {priority:0.00}");
-    }
-
-    /// <summary>Whether the spawned bodies' meshes cast shadows (1) or not (0), to measure what their shadows cost.</summary>
-    public void itemshadows(int on)
-    {
-        int count = 0;
-        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
-        {
-            if (obj is PhysicalFactoryItem item && item.itemID == BodyItem)
-            {
-                foreach (Node child in item.GetChildren())
-                {
-                    if (child is GeometryInstance3D mesh)
-                    {
-                        mesh.CastShadow = on != 0 ? GeometryInstance3D.ShadowCastingSetting.On : GeometryInstance3D.ShadowCastingSetting.Off;
-                        count++;
-                    }
-                }
-            }
-        }
-        LimboConsole.Info($"itemshadows: cast shadow {on != 0} on {count} meshes");
-    }
-
-    /// <summary>Spawned bodies' meshes stop being drawn beyond this many metres from the camera (0: always drawn).</summary>
-    public void visrange(float metres)
-    {
-        int count = 0;
-        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
-        {
-            if (obj is PhysicalFactoryItem item && item.itemID == BodyItem)
-            {
-                foreach (Node child in item.GetChildren())
-                {
-                    if (child is GeometryInstance3D mesh)
-                    {
-                        mesh.VisibilityRangeEnd = metres;
-                        count++;
-                    }
-                }
-            }
-        }
-        LimboConsole.Info($"visrange: {count} meshes drawn up to {metres} m (0 = no limit)");
-    }
-
     // ---- followstats: how followers are updated and moved here (a client) ----
     double followStatsLeft;
-    readonly Dictionary<GMPOBox3DBody, (Vector3 last, float delta, float before)> followMotion = new();
+    readonly Dictionary<GMPOBody, (Vector3 last, float delta, float before)> followMotion = new();
     long frozenTicks, movingTicks;
     int followStatsTicks;
     double inViewStates, inViewBodyTicks, outViewStates, outViewBodyTicks;
-    readonly Dictionary<GMPOBox3DBody, int> statesAtStart = new();
+    readonly Dictionary<GMPOBody, int> statesAtStart = new();
 
     /// <summary>
     /// Over the next n seconds, for every body following here: states received per second, in the local camera's view
@@ -388,7 +326,7 @@ public partial class Console
         if (followStatsLeft <= 0)
             return;
         Camera3D camera = GetViewport().GetCamera3D();
-        foreach (GMPOBox3DBody body in GMPOBox3DBody.Followers)
+        foreach (GMPOBody body in GMPOBody.Followers)
         {
             if (!IsInstanceValid(body))
                 continue;
@@ -420,7 +358,7 @@ public partial class Console
         if (followStatsLeft > 0)
             return;
         // States received over the window, split by where each body was at the end (most stay put either side).
-        foreach ((GMPOBox3DBody body, int start) in statesAtStart)
+        foreach ((GMPOBody body, int start) in statesAtStart)
         {
             if (!IsInstanceValid(body))
                 continue;
@@ -440,18 +378,24 @@ public partial class Console
         Logging.Log($"followstats: {seconds:0.0} s | in view {inViewBodies:0} bodies at {inViewHz:0.0} states/s each | out of view {outViewBodies:0} at {outViewHz:0.0} states/s | frozen ticks {frozenTicks} of {movingTicks} moving ({frozenPercent:0.00}%)", "Test");
     }
 
-    /// <summary>Makes the first n spawned bodies MAGNETIC (instead of METAL, FERROUS), to test tag reactions.</summary>
+    /// <summary>Host: makes the first n scrap pieces MAGNETIC (instead of METAL, FERROUS), to test tag reactions.</summary>
     public void magnetize(int n)
     {
+        if (!Lobby.isHost)
+        {
+            LimboConsole.Error("magnetize: only the host (it runs the reactions).");
+            return;
+        }
         int done = 0;
-        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
+        foreach (ItemRecord item in ItemWorld.items.Values)
         {
             if (done >= n)
                 break;
-            if (obj is PhysicalFactoryItem item && item.itemID == BodyItem)
+            if (item.itemID == BodyItem)
             {
-                item.tags = new Godot.Collections.Array<ItemTags> { ItemTags.MAGNETIC };
-                item.RefreshTouchReporting();
+                item.tags.Clear();
+                item.tags.Add(ItemTags.MAGNETIC);
+                ItemWorld.TagsChanged(item);
                 done++;
             }
         }
@@ -461,27 +405,30 @@ public partial class Console
     /// <summary>Host: despawns every scrap piece of the kind spawn_bodies makes.</summary>
     public void clear_bodies()
     {
-        List<ulong> ids = new();
-        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
+        if (!Lobby.isHost)
         {
-            if (obj is PhysicalFactoryItem item && item.itemID == BodyItem && item.authority == Lobby.selfPeerID)
+            LimboConsole.Error("clear_bodies: only the host.");
+            return;
+        }
+        List<ulong> ids = new();
+        foreach (ItemRecord item in ItemWorld.items.Values)
+        {
+            if (item.itemID == BodyItem)
                 ids.Add(item.id);
         }
         foreach (ulong id in ids)
         {
-            GameWorld.DespawnObject(id);
+            ItemWorld.Despawn(id);
         }
-        bodiesToSpawn = 0;
         bodiesPlaced = 0;
-        stirBodies.Clear();
-        LimboConsole.Info($"clear_bodies: despawned {ids.Count}");
+        bodiesToSpawn = 0;
+        LimboConsole.Info($"clear_bodies: {ids.Count} despawned");
     }
 
-    /// <summary>Host: kicks every spawned body this many times a second, keeping them awake and moving; 0 stops.</summary>
+    /// <summary>Host: kicks the items this many times a second each (on average), keeping them awake and moving; 0 stops.</summary>
     public void stir(float kicksPerSecond)
     {
         stirRate = kicksPerSecond;
-        stirBodies.Clear();
         LimboConsole.Info($"stir: {kicksPerSecond} kicks per body per second");
     }
 
@@ -514,32 +461,12 @@ public partial class Console
 
     void StirBodies(double delta)
     {
-        if (stirRate <= 0)
+        if (stirRate <= 0 || !Lobby.isHost)
             return;
-        // The list is rebuilt whenever it has gone round once, so it picks up new bodies and drops despawned ones.
-        if (stirCursor >= stirBodies.Count)
-        {
-            stirCursor = 0;
-            stirBodies.Clear();
-            foreach (GMPObject obj in GameWorld.syncedObjs.Values)
-            {
-                if (obj is PhysicalFactoryItem item && item.itemID == BodyItem && item.authority == Lobby.selfPeerID)
-                    stirBodies.Add(item);
-            }
-        }
-        // Each tick kicks its share of the bodies, so every one is kicked stirRate times a second.
-        stirKicksOwed += stirBodies.Count * stirRate * delta;
-        while (stirKicksOwed >= 1 && stirCursor < stirBodies.Count)
-        {
-            PhysicalFactoryItem body = stirBodies[stirCursor];
-            stirCursor++;
-            stirKicksOwed -= 1;
-            if (!IsInstanceValid(body) || body.IsQueuedForDeletion())
-                continue;
-            Vector3 velocityChange = new Vector3(Random.Shared.NextSingle() * 3 - 1.5f, 2 + Random.Shared.NextSingle() * 1.5f, Random.Shared.NextSingle() * 3 - 1.5f);
-            body.ApplyCentralImpulse(velocityChange * body.GetMass());
-        }
-        if (stirCursor >= stirBodies.Count)
-            stirKicksOwed = 0;
+        // Each tick kicks its share, picked at random, so every item is kicked stirRate times a second on average.
+        stirKicksOwed += ItemWorld.totalCount * stirRate * delta;
+        int kicks = (int)stirKicksOwed;
+        stirKicksOwed -= kicks;
+        PhysicsWorld.KickRandomItems(kicks);
     }
 }

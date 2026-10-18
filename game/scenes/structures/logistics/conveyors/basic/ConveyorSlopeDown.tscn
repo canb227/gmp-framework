@@ -44,10 +44,8 @@ _surfaces = [{
 "vertex_data": PackedByteArray("xRvpPwAAAAAzUGvALUP0Pylczz5BDoDA9DLmPwrXozuVZYPAxRvpPwAAAAAzUGvA83HpPwAAAAByxGjALUP0Pylczz5BDoDA83H1PzMzsz7E62jALUP0Pylczz5BDoDA83HpPwAAAAByxGjA/wnqPwrXozuVZYPANxr4Pylczz5BDoDA/kj5PzMzsz7E62jArFbmPwAAAADyB4LAxRvpPwAAAAAzUGvA9DLmPwrXozuVZYPAti3qPwAAAADyB4LA/kj5PzMzsz7E62jA/kjtPwAAAAByxGjAti3qPwAAAADyB4LA/wnqPwrXozuVZYPA/kj5PzMzsz7E62jA83H1PzMzsz7E62jANxr4Pylczz5BDoDALUP0Pylczz5BDoDA83H1PzMzsz7E62jA/kj5PzMzsz7E62jANxr4Pylczz5BDoDA83H1PzMzsz7E62jA/kjtPwAAAAByxGjA/kj5PzMzsz7E62jA83H1PzMzsz7E62jA83HpPwAAAAByxGjA/kjtPwAAAAByxGjA/wnqPwrXozuVZYPALUP0Pylczz5BDoDANxr4Pylczz5BDoDA/wnqPwrXozuVZYPA9DLmPwrXozuVZYPALUP0Pylczz5BDoDAti3qPwAAAADyB4LA/kjtPwAAAAByxGjA83HpPwAAAAByxGjAti3qPwAAAADyB4LA83HpPwAAAAByxGjAxRvpPwAAAAAzUGvAti3qPwAAAADyB4LAxRvpPwAAAAAzUGvArFbmPwAAAADyB4LAti3qPwAAAADyB4LA9DLmPwrXozuVZYPA/wnqPwrXozuVZYPAti3qPwAAAADyB4LArFbmPwAAAADyB4LA9DLmPwrXozuVZYPA")
 }]
 
-[node name="ConveyorSlopeDown" type="Box3DBody" unique_id=1434477856 node_paths=PackedStringArray("beltSurfaces")]
+[node name="ConveyorSlopeDown" type="GMPBody" unique_id=1434477856 node_paths=PackedStringArray("beltSurfaces")]
 body_type = 0
-box_size = Vector3(0, 0, 0)
-baked_compound = true
 script = ExtResource("2_r")
 beltSurfaces = []
 cells = Dictionary[Vector3i, int]({
@@ -68,57 +66,50 @@ blueprintItemID = "blueprint_conveyor_slope"
 
 [node name="Model" parent="." unique_id=1336257386 instance=ExtResource("1_r")]
 
-[node name="WallL" type="Box3DBody" parent="." unique_id=1175274396]
-body_type = 0
-shape_type = 5
-collision_mesh = SubResource("ArrayMesh_WallL")
+[node name="WallL" type="GMPShape" parent="." unique_id=1175274396]
+shape = 4
+mesh = SubResource("ArrayMesh_WallL")
 friction = 0.0
-user_material_id = 3
+surface_type = 3
 
-[node name="WallLExit" type="Box3DBody" parent="." unique_id=31760328]
-body_type = 0
-shape_type = 5
-collision_mesh = SubResource("ArrayMesh_WallLExit")
+[node name="WallLExit" type="GMPShape" parent="." unique_id=31760328]
+shape = 4
+mesh = SubResource("ArrayMesh_WallLExit")
 friction = 0.0
-user_material_id = 3
+surface_type = 3
 
-[node name="WallR" type="Box3DBody" parent="." unique_id=836641505]
-body_type = 0
-shape_type = 5
-collision_mesh = SubResource("ArrayMesh_WallR")
+[node name="WallR" type="GMPShape" parent="." unique_id=836641505]
+shape = 4
+mesh = SubResource("ArrayMesh_WallR")
 friction = 0.0
-user_material_id = 3
+surface_type = 3
 
-[node name="WallRExit" type="Box3DBody" parent="." unique_id=2071561781]
-body_type = 0
-shape_type = 5
-collision_mesh = SubResource("ArrayMesh_WallRExit")
+[node name="WallRExit" type="GMPShape" parent="." unique_id=2071561781]
+shape = 4
+mesh = SubResource("ArrayMesh_WallRExit")
 friction = 0.0
-user_material_id = 3
+surface_type = 3
 
-[node name="BeltIn" type="Box3DBody" parent="." unique_id=1291695972]
-body_type = 0
-box_size = Vector3(1.885, 0.1, 0.26776)
-friction = 1.2
-tangent_velocity = Vector3(0, 0, -2)
-user_material_id = 5
+[node name="BeltIn" type="GMPShape" parent="." unique_id=1291695972]
 transform = Transform3D(1, 0, 0, 0, 0.99721, -0.07469, 0, 0.07469, 0.99721, 1, 2.09014, -0.13724)
-
-[node name="BeltIncline" type="Box3DBody" parent="." unique_id=620550686]
-body_type = 0
-box_size = Vector3(1.885, 0.1, 4.00465)
+size = Vector3(1.885, 0.1, 0.26776)
 friction = 1.2
 tangent_velocity = Vector3(0, 0, -2)
-user_material_id = 5
+surface_type = 5
+
+[node name="BeltIncline" type="GMPShape" parent="." unique_id=620550686]
 transform = Transform3D(1, 0, 0, 0, 0.86636, 0.49942, 0, -0.49942, 0.86636, 1, 1.08668, -1.97677)
-
-[node name="BeltOut" type="Box3DBody" parent="." unique_id=1882711116]
-body_type = 0
-box_size = Vector3(1.885, 0.1, 0.26654)
+size = Vector3(1.885, 0.1, 4.00465)
 friction = 1.2
 tangent_velocity = Vector3(0, 0, -2)
-user_material_id = 5
+surface_type = 5
+
+[node name="BeltOut" type="GMPShape" parent="." unique_id=1882711116]
 transform = Transform3D(1, 0, 0, 0, 0.98868, -0.15007, 0, 0.15007, 0.98868, 1, 0.08057, -3.87574)
+size = Vector3(1.885, 0.1, 0.26654)
+friction = 1.2
+tangent_velocity = Vector3(0, 0, -2)
+surface_type = 5
 
 [node name="StructureArrow" type="Node3D" parent="." unique_id=883549638]
 transform = Transform3D(1, 0, 0, 0, 0.8354547, 0.5495593, 0, -0.5495593, 0.8354547, 1.046238, 2.1961846, -1.9521006)

@@ -1,6 +1,5 @@
 [gd_scene format=3 uid="uid://bcnpecgtr5xfk"]
 
-[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/PhysicalFactoryItem.cs" id="1_vv0wc"]
 [ext_resource type="Texture2D" uid="uid://bu6ymutpn4yyb" path="res://game/assets/textures/memes/sam.jpg" id="2_kiq66"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_pet1e"]
@@ -8,19 +7,12 @@
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c5vbb"]
 albedo_texture = ExtResource("2_kiq66")
 
-[node name="robot_parts" type="Box3DBody" unique_id=232515007]
-shape_type = 1
-box_size = Vector3(0.8, 0.3, 0.4)
+[node name="robot_parts" type="GMPBody" unique_id=232515007]
+
+[node name="Shape" type="GMPShape" parent="." unique_id=1268035417]
+shape = 1
 density = 6.0
 friction = 0.55
-script = ExtResource("1_vv0wc")
-itemID = "robot_parts"
-canBePickTarget = true
-canBeGrabbed = true
-tags = Array[int]([3, 22, 20, 12, 0])
-currencyValue = Dictionary[int, int]({
-2: 1
-})
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1580855378]
 mesh = SubResource("SphereMesh_pet1e")

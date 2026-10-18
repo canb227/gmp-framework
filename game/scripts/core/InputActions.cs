@@ -13,6 +13,7 @@ public static class InputActions
     public static readonly StringName right = "right";
     public static readonly StringName jump = "jump";
     public static readonly StringName sprint = "sprint";
+    public static readonly StringName crouch = "crouch";
     public static readonly StringName interact = "interact";
     public static readonly StringName primary = "primary";
     public static readonly StringName secondary = "secondary";

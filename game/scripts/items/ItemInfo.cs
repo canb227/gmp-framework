@@ -28,30 +28,72 @@ public partial class ItemInfo : Resource
     [Export]
     public int maxStackSize = 1;
 
-    const string DefaultDroppedScene = "res://game/scenes/items/DefaultDroppedBox.tscn";
+    // ---- as a loose item in the world (see ItemWorld) ----
+
+    [ExportGroup("In the world")]
+    /// <summary>What it is made of and does when touching other items (see TagInteractions).</summary>
+    [Export]
+    public Godot.Collections.Array<ItemTags> tags = new();
+
+    /// <summary>What it is worth when turned in to the void, by currency (empty: nothing, though the deposit still counts).</summary>
+    [Export]
+    public Godot.Collections.Dictionary<Currency, int> currencyValue = new();
+
+    /// <summary>Shows its name under the crosshair.</summary>
+    [Export]
+    public bool canBePickTarget;
+
+    /// <summary>A magnet rod can hold it.</summary>
+    [Export]
+    public bool canBeGrabbed;
+
+    /// <summary>Interact (F) puts it in the inventory.</summary>
+    [Export]
+    public bool canBePickedUp;
+
+    /// <summary>Sync priority before the awake, nearness and held bonuses; -1 never sends.</summary>
+    [Export]
+    public int basePriority = 1;
 
     /// <summary>
-    /// Spawns <paramref name="itemID"/> in the world for every peer: its <see cref="droppedScene"/>, or a labelled
-    /// <c>DefaultDroppedBox</c> if it has none. Returns the new object's id.
+    /// Whether its meshes cast shadows. Off by default: with thousands of items, their shadow passes cost more render
+    /// time than they're worth on small things.
+    /// </summary>
+    [Export]
+    public bool castsShadows;
+
+    /// <summary>
+    /// Spawns <paramref name="itemID"/> in the world for every peer. A tool (whose droppedScene has a
+    /// <see cref="DroppedTool"/> root) spawns as that node; anything else is a loose item (<see cref="ItemWorld"/>), drawn
+    /// from its droppedScene, or as a box with its icon if it has none. Returns the new item's (or node's) id.
     /// <para>
-    /// The host simulates all loose items, so it is the authority of every one, whoever spawns it.
+    /// The host simulates all loose items and dropped tools, so it is the authority of every one, whoever spawns it.
     /// </para>
     /// </summary>
-    public static ulong SpawnInWorld(string itemID, Vector3 position, Vector3 rotation = default, NodePath parentPath = default)
+    public static ulong SpawnInWorld(string itemID, Vector3 position, Vector3 rotation = default, Vector3 velocity = default)
     {
         ItemInfo item = Fetch(itemID);
-        GMPOInitData init = new() { authority = Lobby.hostID };
-        ulong id;
-        if (item?.droppedScene != null)
+        if (item?.droppedScene != null && IsTool(item.droppedScene))
         {
-            id = GameWorld.SpawnScene(item.droppedScene, position, rotation, init, parent: parentPath);
+            GMPOInitData init = new() { authority = Lobby.hostID };
+            return GameWorld.SpawnScene(item.droppedScene, position, rotation, init);
         }
-        else
+        return ItemWorld.Spawn(itemID, position, rotation, velocity);
+    }
+
+    /// <summary>Whether each dropped scene looked at so far has a <see cref="DroppedTool"/> root (a node), or is a loose item's.</summary>
+    static readonly Dictionary<string, bool> toolScenes = new();
+
+    static bool IsTool(PackedScene scene)
+    {
+        if (!toolScenes.TryGetValue(scene.ResourcePath, out bool tool))
         {
-            id = GameWorld.SpawnScene(DefaultDroppedScene, position, rotation, init, parent: parentPath);
-            (GameWorld.syncedObjs[id] as DefaultDroppedBox).boxInit(itemID);
+            Node root = scene.Instantiate();
+            tool = root is DroppedTool;
+            root.Free();
+            toolScenes[scene.ResourcePath] = tool;
         }
-        return id;
+        return tool;
     }
 
     // Every definition ever fetched, held strongly (null for ids without one). Definitions are script-backed

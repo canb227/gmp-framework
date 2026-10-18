@@ -1,0 +1,4 @@
+# Build output of native/: the dll and pdb, the "~" copy the editor loads so it can hot reload,
+# and ".old" copies a running game still had open when the dll was rebuilt.
+*
+!.gitignore

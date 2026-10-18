@@ -27,22 +27,22 @@ public partial class Console : Node
         LimboConsole.RegisterCommand(new Callable(this, "net_sim"));
         LimboConsole.RegisterCommand(new Callable(this, "net_blackout"));
         LimboConsole.RegisterCommand(new Callable(this, "net_flood"));
+        LimboConsole.RegisterCommand(new Callable(this, "raycast"));
         // Game-specific commands, in game/scripts/core/Console.Game.cs.
         LimboConsole.RegisterCommand(new Callable(this, "players"));
         LimboConsole.RegisterCommand(new Callable(this, "tp"));
         LimboConsole.RegisterCommand(new Callable(this, "look_at"));
+        LimboConsole.RegisterCommand(new Callable(this, "walk"));
+        LimboConsole.RegisterCommand(new Callable(this, "jump"));
+        LimboConsole.RegisterCommand(new Callable(this, "build_cell"));
+        LimboConsole.RegisterCommand(new Callable(this, "build_probe"));
         LimboConsole.RegisterCommand(new Callable(this, "spawn_bodies"));
         LimboConsole.RegisterCommand(new Callable(this, "clear_bodies"));
         LimboConsole.RegisterCommand(new Callable(this, "bodies"));
         LimboConsole.RegisterCommand(new Callable(this, "test_arena"));
-        LimboConsole.RegisterCommand(new Callable(this, "contacts"));
         LimboConsole.RegisterCommand(new Callable(this, "magnetize"));
-        LimboConsole.RegisterCommand(new Callable(this, "nodesync"));
-        LimboConsole.RegisterCommand(new Callable(this, "bench_state"));
         LimboConsole.RegisterCommand(new Callable(this, "interp"));
         LimboConsole.RegisterCommand(new Callable(this, "lightshadows"));
-        LimboConsole.RegisterCommand(new Callable(this, "itemshadows"));
-        LimboConsole.RegisterCommand(new Callable(this, "visrange"));
         LimboConsole.RegisterCommand(new Callable(this, "followstats"));
         LimboConsole.RegisterCommand(new Callable(this, "stir"));
         LimboConsole.RegisterCommand(new Callable(this, "repair_all"));
@@ -196,26 +196,32 @@ public partial class Console : Node
 
     // ---- testing ----
 
-    /// <summary>Box3D's own step profile (ms, last step) and counters, as the perf window shows them.</summary>
+    /// <summary>A physics ray from one point to another: what it hits first (an item id or a body node) and where.</summary>
+    public void raycast(float fromX, float fromY, float fromZ, float toX, float toY, float toZ)
+    {
+        RayHit hit = PhysicsWorld.Raycast(new Vector3(fromX, fromY, fromZ), new Vector3(toX, toY, toZ));
+        string body = "none";
+        if (hit.body != null)
+        {
+            body = hit.body.GetPath();
+        }
+        LimboConsole.Info($"raycast: hit={hit.hit} at={hit.position} normal={hit.normal} item={hit.itemId} body={body} surface={hit.surfaceType}");
+    }
+
+    /// <summary>Box3D's own step profile (ms, last step) and counters.</summary>
     public void physprof()
     {
-        if (!GodotObject.IsInstanceValid(GameWorld.b3droot))
+        if (GameWorld.physics == null)
         {
-            LimboConsole.Error("No Box3D world.");
+            LimboConsole.Error("No physics world.");
             return;
         }
         string profile = "";
-        foreach (var (key, value) in GameWorld.b3droot.GetProfile())
+        foreach (var (key, value) in PhysicsWorld.Profile())
         {
-            profile += $" {key}={value.AsDouble():0.000}";
+            profile += $" {key}={value}";
         }
-        string counters = "";
-        foreach (var (key, value) in GameWorld.b3droot.GetCounters())
-        {
-            counters += $" {key}={value}";
-        }
-        LimboConsole.Info($"physprof: step ms{profile}");
-        LimboConsole.Info($"physprof: counters{counters}");
+        LimboConsole.Info($"physprof:{profile}");
     }
 
     /// <summary>Logs the latest second's performance sample (the same line the log gets every 5 s in a game).</summary>

@@ -1,0 +1,11 @@
+; Our own Box3D binding. Sources in native/ (see native/README.md).
+[configuration]
+
+entry_symbol = "gmp_box3d_library_init"
+compatibility_minimum = "4.7"
+; The editor reloads the library when the dll changes (on refocusing the editor window).
+reloadable = true
+
+[libraries]
+
+windows.debug.x86_64 = "res://addons/gmp_box3d/bin/libgmp_box3d.windows.template_debug.x86_64.dll"

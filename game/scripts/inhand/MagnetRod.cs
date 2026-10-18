@@ -32,7 +32,7 @@ public partial record struct MagnetSync
 /// <para>
 /// Authority: the host simulates every item, held or not, so only its copy of each rod does any pulling; a client's own
 /// held items trail its rod by about a round trip. To keep that small, a client shows what its rod holds at the host's
-/// newest state rather than the usual interpolation delay behind (<see cref="GMPOBox3DBody.ShowNewest"/>), and the hold
+/// newest state rather than the usual interpolation delay behind (<see cref="PhysicsWorld.ShowItemNewest"/>), and the hold
 /// point marker moves with the camera every frame.
 /// </para>
 /// <para>
@@ -96,8 +96,8 @@ public partial class MagnetRod : HeldItem
     MagnetMode mode;
     Vector3 target;
     Vector3 targetVelocity;
-    /// <summary>The items held; once caught, an item stays until the rod lets go.</summary>
-    readonly List<PhysicalFactoryItem> caught = new();
+    /// <summary>The items held (ids); once caught, an item stays until the rod lets go.</summary>
+    readonly List<ulong> caught = new();
     /// <summary>Area mode: seconds until the next search for items to catch (each copy searches for itself).</summary>
     double untilRescan;
 
@@ -124,13 +124,14 @@ public partial class MagnetRod : HeldItem
     {
         if (@event.IsActionPressed(InputActions.primary))
         {
-            if (mode == MagnetMode.Off && player.pickTarget is PhysicalFactoryItem item && item.canBeGrabbed)
+            ItemRecord item = player.pickItem;
+            if (mode == MagnetMode.Off && item != null && item.canBeGrabbed)
             {
                 // Hold it where it is (distance-wise) rather than yanking it to a fixed point.
                 Camera3D camera = player.camera;
-                holdDistance = Mathf.Clamp((item.GlobalPosition - camera.GlobalPosition).Dot(-camera.GlobalTransform.Basis.Z), minHoldDistance, maxHoldDistance);
+                holdDistance = Mathf.Clamp((item.position - camera.GlobalPosition).Dot(-camera.GlobalTransform.Basis.Z), minHoldDistance, maxHoldDistance);
                 StartHolding(MagnetMode.Single);
-                caught.Add(item);
+                caught.Add(item.id);
             }
             return true;
         }
@@ -176,7 +177,7 @@ public partial class MagnetRod : HeldItem
         MagnetSync sync = new() { mode = mode, target = target, targetVelocity = targetVelocity };
         if (mode == MagnetMode.Single && caught.Count > 0)
         {
-            sync.itemId = caught[0].id;
+            sync.itemId = caught[0];
         }
         return GMPObject.serializer.Serialize(sync);
     }
@@ -196,15 +197,10 @@ public partial class MagnetRod : HeldItem
         targetVelocity = sync.targetVelocity;
         if (mode == MagnetMode.Single)
         {
-            PhysicalFactoryItem item = null;
-            if (GameWorld.syncedObjs.TryGetValue(sync.itemId, out GMPObject gmpo))
-            {
-                item = gmpo as PhysicalFactoryItem;
-            }
-            if (caught.Count != 1 || caught[0] != item)
+            if (caught.Count != 1 || caught[0] != sync.itemId)
             {
                 caught.Clear();
-                if (item != null) caught.Add(item);
+                if (ItemWorld.items.ContainsKey(sync.itemId)) caught.Add(sync.itemId);
             }
         }
     }
@@ -233,15 +229,14 @@ public partial class MagnetRod : HeldItem
                 CatchNearbyItems();
             }
         }
-        // Held items sync ahead of everything but the players (counts on the item's authority, the host).
-        ulong heldUntil = Engine.GetPhysicsFrames() + PhysicalFactoryItem.HeldLingerFrames;
-        foreach (PhysicalFactoryItem item in caught)
+        foreach (ulong item in caught)
         {
-            item.heldUntilFrame = heldUntil;
+            // Held items sync ahead of everything but the players (counts on the item's authority, the host).
+            PhysicsWorld.HoldItem(item);
             if (isLocal)
             {
                 // Show what this player holds as close to now as the host's states allow (nothing on the host).
-                item.ShowNewest();
+                PhysicsWorld.ShowItemNewest(item);
             }
             Pull(item, (float)delta);
         }
@@ -283,9 +278,16 @@ public partial class MagnetRod : HeldItem
 
         if (mode == MagnetMode.Single)
         {
-            strainedFor = caught[0].GlobalPosition.DistanceTo(target) > breakDistance ? strainedFor + dt : 0;
+            if (PhysicsWorld.ItemPosition(caught[0]).DistanceTo(target) > breakDistance)
+            {
+                strainedFor += dt;
+            }
+            else
+            {
+                strainedFor = 0;
+            }
             // Heavy items trail far behind a quick turn: give them longer to catch up before letting go.
-            if (strainedFor > breakTime / Lightness(caught[0].GetMass()))
+            if (strainedFor > breakTime / Lightness(PhysicsWorld.ItemMass(caught[0])))
             {
                 mode = MagnetMode.Off;
             }
@@ -296,58 +298,53 @@ public partial class MagnetRod : HeldItem
     void CatchNearbyItems()
     {
         if (caught.Count >= maxItems) return;
-        List<PhysicalFactoryItem> inReach = new();
-        foreach (Node n in GameWorld.OverlapSphere(target, captureRadius, (int)~GameWorld.QueryHiddenLayer))
+        List<(ulong id, float distanceSquared)> inReach = new();
+        foreach (long found in PhysicsWorld.OverlapSphere(target, captureRadius, PhysicsWorld.ItemLayer).items)
         {
-            if (n is PhysicalFactoryItem item && item.id != 0 && item.canBeGrabbed && item.authoredBodyType == BodyTypeEnum.Dynamic && !caught.Contains(item))
+            ulong id = (ulong)found;
+            ItemRecord item = ItemWorld.Get(id);
+            if (item != null && item.canBeGrabbed && !caught.Contains(id))
             {
-                inReach.Add(item);
+                inReach.Add((id, PhysicsWorld.ItemPosition(id).DistanceSquaredTo(target)));
             }
         }
-        inReach.Sort((a, b) => a.GlobalPosition.DistanceSquaredTo(target).CompareTo(b.GlobalPosition.DistanceSquaredTo(target)));
-        foreach (PhysicalFactoryItem item in inReach)
+        inReach.Sort((a, b) => a.distanceSquared.CompareTo(b.distanceSquared));
+        foreach ((ulong id, float _) in inReach)
         {
             if (caught.Count >= maxItems) return;
-            caught.Add(item);
+            caught.Add(id);
         }
     }
 
-    static bool IsGone(PhysicalFactoryItem item)
+    static bool IsGone(ulong item)
     {
-        return !IsInstanceValid(item) || item.IsQueuedForDeletion();
+        return !ItemWorld.items.ContainsKey(item);
     }
 
-    /// <summary>Drives <paramref name="item"/> toward the hold point, if this peer simulates it (otherwise the host's copy of this rod does).</summary>
-    void Pull(PhysicalFactoryItem item, float dt)
+    /// <summary>Drives <paramref name="item"/> toward the hold point, if this peer simulates it (the host; otherwise the host's copy of this rod does).</summary>
+    void Pull(ulong item, float dt)
     {
-        if (item.authority != Lobby.selfPeerID) return;
-        // A resting item sends about once a second, and the sleep poll can take a while to notice it woke: send it at
-        // full rate from the first pull, or the other peers see the grab only after a long delay.
-        if (item.asleep) item.OnWoke();
+        if (!Lobby.isHost) return;
 
-        float mass = item.GetMass();
+        float mass = PhysicsWorld.ItemMass(item);
         float lightness = Lightness(mass);
 
         float pullSpeed = maxPullSpeed * lightness;
-        Vector3 pull = (target - item.GlobalPosition) * positionGain;
+        Vector3 pull = (target - PhysicsWorld.ItemPosition(item)) * positionGain;
         if (pull.Length() > pullSpeed) pull = pull.Normalized() * pullSpeed;
         Vector3 wantedVelocity = targetVelocity + pull;
 
         // Correct at most 90% of the velocity difference per tick, whatever the gain: this keeps the loop stable.
         float response = Mathf.Min(velocityGain, 0.9f / dt);
-        Vector3 accel = (wantedVelocity - item.GetLinearVelocity()) * response;
+        Vector3 accel = (wantedVelocity - PhysicsWorld.ItemLinearVelocity(item)) * response;
         float accelLimit = maxAcceleration * lightness;
         if (accel.Length() > accelLimit) accel = accel.Normalized() * accelLimit;
         // Gravity is always cancelled in full, so nothing is too heavy to lift. With several rods on one item each
         // cancels all of it; the velocity loop takes up the extra lift.
-        item.ApplyCentralForce((accel - gravity) * mass);
+        PhysicsWorld.ApplyItemForce(item, (accel - gravity) * mass);
 
-        // Remove a fraction of its spin (an angular impulse of I * delta-omega).
-        Vector3 spin = item.GetAngularVelocity();
-        if (spin.LengthSquared() > 1e-6f)
-        {
-            item.ApplyAngularImpulse(item.GetInertiaTensor() * (-spin * Mathf.Min(1f, spinDamping * dt)));
-        }
+        // Take a fraction of its spin away.
+        PhysicsWorld.DampItemSpin(item, Mathf.Min(1f, spinDamping * dt));
     }
 
     /// <summary>1 for a light item, falling toward <see cref="minLightness"/> as it gets heavier (0.5 at <see cref="heavyMass"/>).</summary>

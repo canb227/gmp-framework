@@ -69,9 +69,8 @@ _data = {
 &"process": ExtResource("6_2mw6v")
 }
 
-[node name="Smelter" type="Box3DBody" unique_id=1461321437 node_paths=PackedStringArray("inputVolumes", "outputLocations")]
+[node name="Smelter" type="GMPBody" unique_id=1461321437 node_paths=PackedStringArray("inputVolumes", "outputLocations")]
 body_type = 0
-shape_type = 6
 script = ExtResource("1_qb6y1")
 inputVolumes = [NodePath("spatial/inputVolume")]
 outputLocations = [NodePath("spatial/outputLocation")]
@@ -313,10 +312,10 @@ hoverName = "Smelter"
 
 [node name="spatial" type="Node3D" parent="." unique_id=660388029]
 
-[node name="inputVolume" type="Box3DBody" parent="spatial" unique_id=245078656]
-box_size = Vector3(4, 2.5, 3)
-is_sensor = true
+[node name="inputVolume" type="GMPShape" parent="spatial" unique_id=245078656]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.867846, 2.8820345, -3.0937324)
+size = Vector3(4, 2.5, 3)
+is_sensor = true
 
 [node name="outputLocation" type="Marker3D" parent="spatial" unique_id=1285099349]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.46613884, 2.478106, -3.041022)

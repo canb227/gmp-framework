@@ -39,7 +39,7 @@ public partial class Recycler : ItemSpawner
     {
         // Stops eating while a bonus is still owed, so the valley backs up too.
         if (bonusOwed || inputItems.Count == 0) return false;
-        PhysicalFactoryItem ready = inputItems[0];
+        ItemRecord ready = inputItems[0];
         int p = 1;
         if (itemPoints.TryGetValue(ready.itemID ?? "", out int listed))
         {

@@ -15,9 +15,8 @@ _data = {
 &"process": SubResource("Animation_4t0w2")
 }
 
-[node name="RobotDumper" type="Box3DBody" unique_id=700023757 node_paths=PackedStringArray("outputLocations")]
+[node name="RobotDumper" type="GMPBody" unique_id=700023757 node_paths=PackedStringArray("outputLocations")]
 body_type = 0
-box_size = Vector3(0, 0, 0)
 script = ExtResource("1_ryy4k")
 itemWeights = Dictionary[String, float]({
 "robot_parts": 1.0

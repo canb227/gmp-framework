@@ -225,9 +225,8 @@ _data = {
 &"process": ExtResource("6_stjsf")
 }
 
-[node name="Smelter" type="Box3DBody" unique_id=1461321437 node_paths=PackedStringArray("inputVolumes", "outputLocations", "animationPlayer")]
+[node name="Smelter" type="GMPBody" unique_id=1461321437 node_paths=PackedStringArray("inputVolumes", "outputLocations", "animationPlayer")]
 body_type = 0
-shape_type = 6
 script = ExtResource("1_j57kp")
 recipes = Array[ExtResource("2_kj0j5")]([SubResource("Resource_h435h")])
 inputVolumes = [NodePath("spatial/inputVolume")]
@@ -570,11 +569,10 @@ hoverName = "Smelter"
 
 [node name="spatial" type="Node3D" parent="." unique_id=660388029]
 
-[node name="inputVolume" type="Box3DBody" parent="spatial" unique_id=245078656]
-body_type = 0
-box_size = Vector3(8.775, 3.81, 4.925)
-is_sensor = true
+[node name="inputVolume" type="GMPShape" parent="spatial" unique_id=245078656]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.401159, 2.8820345, -2.8264654)
+size = Vector3(8.775, 3.81, 4.925)
+is_sensor = true
 
 [node name="outputLocation" type="Marker3D" parent="spatial" unique_id=1285099349]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5174713, 2.5811498, -3.3271747)
@@ -602,10 +600,7 @@ metadata/_custom_type_script = "uid://bv13olg4g30nl"
 [node name="Bars" parent="model/smelter_old" index="0" unique_id=806450395]
 surface_material_override/0 = ExtResource("3_kj0j5")
 
-[node name="Box3DBody" type="Box3DBody" parent="model/smelter_old/Bars" index="0" unique_id=454715349]
-body_type = 0
-shape_type = 6
-box_size = Vector3(0.08, 1.745, 2.48)
+[node name="Box3DBody" type="Node3D" parent="model/smelter_old/Bars" index="0" unique_id=454715349]
 transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="Body" parent="model/smelter_old" index="1" unique_id=617960644]
@@ -614,104 +609,88 @@ surface_material_override/0 = ExtResource("7_jnp0f")
 surface_material_override/1 = SubResource("StandardMaterial3D_4vaoy")
 surface_material_override/2 = SubResource("StandardMaterial3D_y6o07")
 
-[node name="FrontBottom" type="Box3DBody" parent="model/smelter_old/Body" index="0" unique_id=429870284]
-body_type = 0
-box_size = Vector3(0.13, 0.93, 6.14)
+[node name="FrontBottom" type="GMPShape" parent="model/smelter_old/Body" index="0" unique_id=429870284]
 transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, 6.001461, -0.57906014, 0)
+size = Vector3(0.13, 0.93, 6.14)
 
-[node name="Back" type="Box3DBody" parent="model/smelter_old/Body" index="1" unique_id=366641533]
-body_type = 0
-box_size = Vector3(0.13, 4.935, 5.945)
+[node name="Back" type="GMPShape" parent="model/smelter_old/Body" index="1" unique_id=366641533]
 transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, -3.1109784, 1.5305345, 0)
+size = Vector3(0.13, 4.935, 5.945)
 
-[node name="BackBottom" type="Box3DBody" parent="model/smelter_old/Body" index="2" unique_id=533604544]
-body_type = 0
-box_size = Vector3(0.92, 2, 2.015)
+[node name="BackBottom" type="GMPShape" parent="model/smelter_old/Body" index="2" unique_id=533604544]
 transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, -3.5263326, -0.021317005, 0)
+size = Vector3(0.92, 2, 2.015)
 
-[node name="BackRight" type="Box3DBody" parent="model/smelter_old/Body" index="3" unique_id=266842845]
-body_type = 0
-box_size = Vector3(0.92, 1.2, 1.51)
+[node name="BackRight" type="GMPShape" parent="model/smelter_old/Body" index="3" unique_id=266842845]
 transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, -3.5263326, -0.40994143, 1.7393932)
+size = Vector3(0.92, 1.2, 1.51)
 
-[node name="BackLeft" type="Box3DBody" parent="model/smelter_old/Body" index="4" unique_id=1044129001]
-body_type = 0
-box_size = Vector3(0.92, 1.2, 1.51)
+[node name="BackLeft" type="GMPShape" parent="model/smelter_old/Body" index="4" unique_id=1044129001]
 transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, -3.5263326, -0.40994143, -1.7261097)
+size = Vector3(0.92, 1.2, 1.51)
 
-[node name="RightWall" type="Box3DBody" parent="model/smelter_old/Body" index="5" unique_id=1056081165]
-body_type = 0
-box_size = Vector3(0.13, 5.1, 8.355)
+[node name="RightWall" type="GMPShape" parent="model/smelter_old/Body" index="5" unique_id=1056081165]
 transform = Transform3D(-4.3711392e-08, 0, 1, 0, 1.0000001, 0, -1.0000001, 0, -4.371139e-08, 1.8708682, 1.4931233, -2.9994657)
+size = Vector3(0.13, 5.1, 8.355)
 
-[node name="LeftWall" type="Box3DBody" parent="model/smelter_old/Body" index="6" unique_id=1147920062]
-body_type = 0
-box_size = Vector3(0.13, 4.99, 8.305)
+[node name="LeftWall" type="GMPShape" parent="model/smelter_old/Body" index="6" unique_id=1147920062]
 transform = Transform3D(-4.3711392e-08, 0, 1, 0, 1.0000001, 0, -1.0000001, 0, -4.371139e-08, 1.8708682, 1.5305345, 3.00523)
+size = Vector3(0.13, 4.99, 8.305)
 
-[node name="TopWall" type="Box3DBody" parent="model/smelter_old/Body" index="7" unique_id=537408286]
-body_type = 0
-box_size = Vector3(0.13, 5.975, 9.235)
+[node name="TopWall" type="GMPShape" parent="model/smelter_old/Body" index="7" unique_id=537408286]
 transform = Transform3D(1.9106857e-15, 4.3711392e-08, 1, 1.0000001, -4.3711392e-08, 0, 4.3711392e-08, 1.0000001, -4.371139e-08, 1.4240241, 3.9837413, 0.0011560917)
+size = Vector3(0.13, 5.975, 9.235)
 
-[node name="FrontBottomAngle" type="Box3DBody" parent="model/smelter_old/Body" index="8" unique_id=894065993]
-body_type = 0
-box_size = Vector3(0.1, 1.06, 5.945)
+[node name="FrontBottomAngle" type="GMPShape" parent="model/smelter_old/Body" index="8" unique_id=894065993]
 transform = Transform3D(0.53619146, 0.8440964, 0, -0.8440964, 0.53619146, 0, 0, 0, 1, 6.5139647, 0.1258831, 0)
+size = Vector3(0.1, 1.06, 5.945)
 
-[node name="FrontTop" type="Box3DBody" parent="model/smelter_old/Body" index="9" unique_id=1609529274]
-body_type = 0
-box_size = Vector3(0.1, 2.12, 6.095)
+[node name="FrontTop" type="GMPShape" parent="model/smelter_old/Body" index="9" unique_id=1609529274]
 transform = Transform3D(0.997564, -0.06975646, 0, 0.06975646, 0.997564, 0, 0, 0, 1, 6.051036, 2.8575354, 0)
+size = Vector3(0.1, 2.12, 6.095)
 
-[node name="AngleRight" type="Box3DBody" parent="model/smelter_old/Body" index="10" unique_id=1038462811]
-body_type = 0
-box_size = Vector3(0.1, 1.855, 1.83)
+[node name="AngleRight" type="GMPShape" parent="model/smelter_old/Body" index="10" unique_id=1038462811]
 transform = Transform3D(0.8660254, -0.5, 0, 0.5, 0.8660254, 0, 0, 0, 1, 6.4786196, 1.1815424, -2.1592104)
+size = Vector3(0.1, 1.855, 1.83)
 
-[node name="AngleRightOutside" type="Box3DBody" parent="model/smelter_old/Body" index="11" unique_id=1994122920]
-body_type = 0
-box_size = Vector3(0.1, 1.65, 0.89)
+[node name="AngleRightOutside" type="GMPShape" parent="model/smelter_old/Body" index="11" unique_id=1994122920]
 transform = Transform3D(-3.6841662e-08, -0.5381658, 0.842839, -2.3523974e-08, 0.842839, 0.5381658, -1, 0, -4.371139e-08, 6.136821, 0.86008835, -3.0208266)
+size = Vector3(0.1, 1.65, 0.89)
 
-[node name="AngleLeft" type="Box3DBody" parent="model/smelter_old/Body" index="12" unique_id=1344553955]
-body_type = 0
-box_size = Vector3(0.1, 1.855, 1.83)
+[node name="AngleLeft" type="GMPShape" parent="model/smelter_old/Body" index="12" unique_id=1344553955]
 transform = Transform3D(0.8660254, -0.5, 0, 0.5, 0.8660254, 0, 0, 0, 1, 6.484151, 1.1613145, 2.1338227)
+size = Vector3(0.1, 1.855, 1.83)
 
-[node name="AngleLeftOutside" type="Box3DBody" parent="model/smelter_old/Body" index="13" unique_id=572250800]
-body_type = 0
-box_size = Vector3(0.1, 1.65, 0.89)
+[node name="AngleLeftOutside" type="GMPShape" parent="model/smelter_old/Body" index="13" unique_id=572250800]
 transform = Transform3D(-3.6841662e-08, -0.5381658, 0.842839, -2.3523974e-08, 0.842839, 0.5381658, -1, 0, -4.371139e-08, 6.136821, 0.86008835, 3.0182295)
+size = Vector3(0.1, 1.65, 0.89)
 
 [node name="Chimney" parent="model/smelter_old" index="2" unique_id=10185428]
 surface_material_override/0 = ExtResource("6_keb0p")
 
-[node name="Box3DBody" type="Box3DBody" parent="model/smelter_old/Chimney" index="0" unique_id=980699722]
-body_type = 0
-shape_type = 6
-box_size = Vector3(0.08, 1.745, 2.48)
-collision_mesh = SubResource("ArrayMesh_bsvsb")
+[node name="Box3DBody" type="GMPShape" parent="model/smelter_old/Chimney" index="0" unique_id=980699722]
 transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, 0, 0, 0)
+shape = 5
+mesh = SubResource("ArrayMesh_bsvsb")
 
 [node name="Chimney_001" parent="model/smelter_old" index="3" unique_id=905256957]
 surface_material_override/0 = ExtResource("6_keb0p")
 
-[node name="Box3DBody" type="Box3DBody" parent="model/smelter_old/Chimney_001" index="0" unique_id=1927765648]
-body_type = 0
-shape_type = 6
-box_size = Vector3(0.08, 1.745, 2.48)
-collision_mesh = SubResource("ArrayMesh_keb0p")
+[node name="Box3DBody" type="GMPShape" parent="model/smelter_old/Chimney_001" index="0" unique_id=1927765648]
 transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, 0, 0, 0)
+shape = 5
+mesh = SubResource("ArrayMesh_keb0p")
 
 [node name="Door" parent="model/smelter_old" index="4" unique_id=1899195724]
 transform = Transform3D(0.34202006, 0.9396924, 0, -0.9396924, 0.34202006, 0, 0, 0, 1, 10.933127, 1.5001078, -3.021326)
 surface_material_override/0 = SubResource("StandardMaterial3D_lqu6n")
 
-[node name="Box3DBody" type="Box3DBody" parent="model/smelter_old/Door" index="0" unique_id=1179865656]
+[node name="Box3DBody" type="GMPBody" parent="model/smelter_old/Door" index="0" unique_id=1179865656]
 body_type = 1
-box_size = Vector3(0.08, 1.475, 2.48)
 transform = Transform3D(1.0000001, -5.9604645e-08, 0, 5.9604645e-08, 1.0000001, 0, 0, 0, 1, -0.05089712, 0.6766901, 0)
+
+[node name="Shape" type="GMPShape" parent="model/smelter_old/Door/Box3DBody" unique_id=1068751110]
+size = Vector3(0.08, 1.475, 2.48)
 
 [node name="Mold_Plate" parent="model/smelter_old" index="5" unique_id=1558915445]
 surface_material_override/0 = ExtResource("3_kj0j5")
@@ -719,19 +698,21 @@ surface_material_override/0 = ExtResource("3_kj0j5")
 [node name="Mold_Plate_001" parent="model/smelter_old/Mold_Plate" index="0" unique_id=1874479237]
 surface_material_override/0 = ExtResource("3_kj0j5")
 
-[node name="Box3DBody" type="Box3DBody" parent="model/smelter_old/Mold_Plate/Mold_Plate_001" index="0" unique_id=453685156]
+[node name="Box3DBody" type="GMPBody" parent="model/smelter_old/Mold_Plate/Mold_Plate_001" index="0" unique_id=453685156]
 body_type = 1
-shape_type = 6
-box_size = Vector3(1.145, 0.215, 2.48)
-collision_mesh = SubResource("ArrayMesh_kd3jk")
 transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, 0, 0, 0)
 
-[node name="Box3DBody" type="Box3DBody" parent="model/smelter_old/Mold_Plate" index="1" unique_id=436970234]
+[node name="Shape" type="GMPShape" parent="model/smelter_old/Mold_Plate/Mold_Plate_001/Box3DBody" unique_id=584316371]
+shape = 4
+mesh = SubResource("ArrayMesh_kd3jk")
+
+[node name="Box3DBody" type="GMPBody" parent="model/smelter_old/Mold_Plate" index="1" unique_id=436970234]
 body_type = 1
-shape_type = 6
-box_size = Vector3(0.08, 1.745, 2.48)
-collision_mesh = SubResource("ArrayMesh_a7yjs")
 transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Shape" type="GMPShape" parent="model/smelter_old/Mold_Plate/Box3DBody" unique_id=884567474]
+shape = 4
+mesh = SubResource("ArrayMesh_a7yjs")
 
 [node name="MoltenMetal" parent="model/smelter_old" index="6" unique_id=1592241081]
 surface_material_override/0 = SubResource("StandardMaterial3D_gh3qe")
@@ -745,19 +726,15 @@ surface_material_override/0 = ExtResource("3_kj0j5")
 [node name="SmelterCage" parent="model/smelter_old" index="9" unique_id=1236295630]
 surface_material_override/0 = ExtResource("3_kj0j5")
 
-[node name="Box3DBody" type="Box3DBody" parent="model/smelter_old/SmelterCage" index="0" unique_id=1086012170]
-body_type = 0
-shape_type = 6
-box_size = Vector3(0.08, 1.745, 2.48)
-collision_mesh = SubResource("ArrayMesh_jnp0f")
+[node name="Box3DBody" type="GMPShape" parent="model/smelter_old/SmelterCage" index="0" unique_id=1086012170]
 transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, 0, 0, 0)
+shape = 5
+mesh = SubResource("ArrayMesh_jnp0f")
 
-[node name="Box3DBody2" type="Box3DBody" parent="model/smelter_old/SmelterCage" index="1" unique_id=1109726054]
-body_type = 0
-box_size = Vector3(5.29, 0.175, 2.29)
-collision_mesh = SubResource("ArrayMesh_jnp0f")
-tangent_velocity = Vector3(-1, 0, 0)
+[node name="Box3DBody2" type="GMPShape" parent="model/smelter_old/SmelterCage" index="1" unique_id=1109726054]
 transform = Transform3D(0.9992327, -0.039170694, 0, 0.039170694, 0.9992327, 0, 0, 0, 1, 3.4118853, 0.20335126, -0.04271984)
+size = Vector3(5.29, 0.175, 2.29)
+tangent_velocity = Vector3(-1, 0, 0)
 
 [node name="Spout" parent="model/smelter_old" index="10" unique_id=948331352]
 surface_material_override/0 = ExtResource("3_kj0j5")

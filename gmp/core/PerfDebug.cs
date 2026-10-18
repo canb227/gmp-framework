@@ -23,7 +23,7 @@ public static class PerfDebug
     private static float minMs, avgMs, maxMs, lowFps1;
 
     // ---- where the frame goes, sampled once a second ----
-    // Network sync and follower costs come from running totals (GameWorld.StateSync, GMPOBox3DBody) as ms of
+    // Network sync and follower costs come from running totals (GameWorld.StateSync, GMPOBody) as ms of
     // main-thread time per second of play: 1000 ms/s is one whole core. Written to the log every few seconds during a
     // game, so a test's logs from every peer show it afterwards.
     private const double sampleInterval = 1.0;
@@ -35,6 +35,9 @@ public static class PerfDebug
     private static long lastApplyCost, lastBuildCost, lastSendCost, lastReceiveCost, lastFollowCost, lastServiceCost, lastInterpolationCost;
     private static long lastApplied, lastBuilt, lastSent, lastReceived, lastFollowTicks, lastSentBytes, lastReceivedBytes;
     private static double applyMs, buildMs, sendMs, receiveMs, followMs, serviceMs, interpolationMs;
+    /// <summary>The physics world's own running totals for its loose items (states built and applied, ms of playback), as last read.</summary>
+    private static double lastItemFollowMs;
+    private static long lastItemsBuilt, lastItemsApplied;
     private static double appliedPerSecond, builtPerSecond, sentPerSecond, receivedPerSecond, followers, sentKBps, receivedKBps;
     private static double renderCpuMs, renderGpuMs, physicsTickMs, processMs, stepMs;
 
@@ -126,9 +129,9 @@ public static class PerfDebug
         buildMs = (GameWorld.buildCost - lastBuildCost) * msPerTick / seconds;
         sendMs = (GameWorld.sendCost - lastSendCost) * msPerTick / seconds;
         receiveMs = (GameWorld.receiveCost - lastReceiveCost) * msPerTick / seconds;
-        followMs = (GMPOBox3DBody.followCost - lastFollowCost) * msPerTick / seconds;
+        followMs = (GMPOBody.followCost - lastFollowCost) * msPerTick / seconds;
         serviceMs = (Lobby.serviceCost - lastServiceCost) * msPerTick / seconds;
-        interpolationMs = (GMPOBox3DBody.interpolationCost - lastInterpolationCost) * msPerTick / seconds;
+        interpolationMs = (GMPOBody.interpolationCost - lastInterpolationCost) * msPerTick / seconds;
         sentKBps = (GameWorld.sentBytes - lastSentBytes) / 1024.0 / seconds;
         receivedKBps = (GameWorld.receivedBytes - lastReceivedBytes) / 1024.0 / seconds;
         appliedPerSecond = (GameWorld.appliedCount - lastApplied) / seconds;
@@ -136,23 +139,38 @@ public static class PerfDebug
         sentPerSecond = (GameWorld.sentCount - lastSent) / seconds;
         receivedPerSecond = (GameWorld.receivedCount - lastReceived) / seconds;
         // Follower ticks per second over physics ticks per second: how many bodies follow at once, on average.
-        followers = (GMPOBox3DBody.followTicks - lastFollowTicks) / seconds / Engine.PhysicsTicksPerSecond;
-        // How many of them are placed each tick (far and unseen ones every other tick).
+        followers = (GMPOBody.followTicks - lastFollowTicks) / seconds / Engine.PhysicsTicksPerSecond;
+        // Loose items are built, applied and played back in C++ (its build and apply time is in GameWorld's totals
+        // already, as GameWorld makes those calls): add their counts and their playback.
+        if (GodotObject.IsInstanceValid(GameWorld.physics))
+        {
+            using Godot.Collections.Dictionary stats = PhysicsWorld.Stats();
+            double itemFollowMs = stats["follow_ms_total"].AsDouble();
+            long itemsBuilt = stats["states_built"].AsInt64();
+            long itemsApplied = stats["states_applied"].AsInt64();
+            followMs += (itemFollowMs - lastItemFollowMs) / seconds;
+            builtPerSecond += (itemsBuilt - lastItemsBuilt) / seconds;
+            appliedPerSecond += (itemsApplied - lastItemsApplied) / seconds;
+            followers += stats["followers"].AsInt32();
+            lastItemFollowMs = itemFollowMs;
+            lastItemsBuilt = itemsBuilt;
+            lastItemsApplied = itemsApplied;
+        }
 
         lastApplyCost = GameWorld.applyCost;
         lastBuildCost = GameWorld.buildCost;
         lastSendCost = GameWorld.sendCost;
         lastReceiveCost = GameWorld.receiveCost;
-        lastFollowCost = GMPOBox3DBody.followCost;
+        lastFollowCost = GMPOBody.followCost;
         lastServiceCost = Lobby.serviceCost;
-        lastInterpolationCost = GMPOBox3DBody.interpolationCost;
+        lastInterpolationCost = GMPOBody.interpolationCost;
         lastSentBytes = GameWorld.sentBytes;
         lastReceivedBytes = GameWorld.receivedBytes;
         lastApplied = GameWorld.appliedCount;
         lastBuilt = GameWorld.builtCount;
         lastSent = GameWorld.sentCount;
         lastReceived = GameWorld.receivedCount;
-        lastFollowTicks = GMPOBox3DBody.followTicks;
+        lastFollowTicks = GMPOBody.followTicks;
 
         Rid viewport = ((SceneTree)Engine.GetMainLoop()).Root.GetViewportRid();
         renderCpuMs = RenderingServer.ViewportGetMeasuredRenderTimeCpu(viewport) + RenderingServer.GetFrameSetupTimeCpu();
@@ -167,10 +185,11 @@ public static class PerfDebug
         lastPhysicsTicks = physicsTicks;
         stepMs = 0;
         awakeBodies = 0;
-        if (GodotObject.IsInstanceValid(GameWorld.b3droot))
+        if (GodotObject.IsInstanceValid(GameWorld.physics))
         {
-            stepMs = GameWorld.b3droot.GetStepTimeMs();
-            awakeBodies = GameWorld.b3droot.GetAwakeBodyCount();
+            using Godot.Collections.Dictionary stats = PhysicsWorld.Stats();
+            stepMs = stats["step_ms"].AsSingle();
+            awakeBodies = stats["awake"].AsInt32();
         }
     }
 
@@ -179,7 +198,7 @@ public static class PerfDebug
         Logging.Log($"fps {Mon(Performance.Monitor.TimeFps):0} (frame avg {avgMs:0.0} max {maxMs:0.0} ms)"
             + $" | process {processMs:0.0} ms | physics tick avg {physicsTickAvgMs:0.0} worst {physicsTickMs:0.0} ms (Box3D step {stepMs:0.0} ms, awake {awakeBodies})"
             + $" | render cpu {renderCpuMs:0.0} gpu {renderGpuMs:0.0} ms, draw calls {Mon(Performance.Monitor.RenderTotalDrawCallsInFrame):0}, objects {Mon(Performance.Monitor.RenderTotalObjectsInFrame):0}"
-            + $" | synced {GameWorld.syncedObjs.Count}, followers {followers:0} ({followMs:0} ms/s), {GMPOBox3DBody.interpolatedCount} interpolated (checks {interpolationMs:0.0} ms/s)"
+            + $" | synced {GameWorld.syncedObjs.Count}, followers {followers:0} ({followMs:0} ms/s), {GMPOBody.interpolatedCount} interpolated (checks {interpolationMs:0.0} ms/s)"
             + $" | sync ms/s: build {buildMs:0} ({builtPerSecond:0}/s), send {sendMs:0} ({sentPerSecond:0}/s), receive {receiveMs:0} ({receivedPerSecond:0}/s), apply {applyMs:0} ({appliedPerSecond:0}/s)"
             + $" | transport service {serviceMs:0} ms/s | state out {sentKBps:0} KB/s, in {receivedKBps:0} KB/s",
             "Perf");
@@ -233,7 +252,7 @@ public static class PerfDebug
             ImGui.Text($"Send (serialize + Steam): {sendMs:0.0} ms/s | {sentPerSecond:0} states/s");
             ImGui.Text($"Receive (deserialize): {receiveMs:0.0} ms/s | {receivedPerSecond:0} states/s");
             ImGui.Text($"Apply: {applyMs:0.0} ms/s | {appliedPerSecond:0} states/s");
-            ImGui.Text($"Followers: {followers:0} | {followMs:0.0} ms/s | interpolated bodies: {GMPOBox3DBody.interpolatedCount}");
+            ImGui.Text($"Followers: {followers:0} | {followMs:0.0} ms/s | interpolated bodies: {GMPOBody.interpolatedCount}");
             ImGui.Text($"Transport service: {serviceMs:0.0} ms/s | state out {sentKBps:0} KB/s, in {receivedKBps:0} KB/s");
         }
 
@@ -248,30 +267,24 @@ public static class PerfDebug
         // Godot's Physics3D monitors read 0: the engine runs the Dummy physics server and Box3D owns the simulation.
         if (ImGui.CollapsingHeader("Physics (Box3D)", ImGuiTreeNodeFlags.DefaultOpen))
         {
-            GMPOBox3DWorld world = GameWorld.b3droot;
-            if (!GodotObject.IsInstanceValid(world))
+            if (!GodotObject.IsInstanceValid(GameWorld.physics))
             {
-                ImGui.Text("No Box3D world");
+                ImGui.Text("No physics world");
             }
             else
             {
-                ImGui.Text($"Step: {world.GetStepTimeMs():0.00} ms | Awake bodies: {world.GetAwakeBodyCount()} | Workers: {world.workerCount}");
-                if (ImGui.TreeNodeEx("Counters", ImGuiTreeNodeFlags.DefaultOpen))
+                Godot.Collections.Dictionary stats = PhysicsWorld.Stats();
+                ImGui.Text($"Step: {stats["step_ms"].AsDouble():0.00} ms | events {stats["events_ms"].AsDouble():0.00} ms | item drawing {stats["render_ms"].AsDouble():0.00} ms");
+                ImGui.Text($"Items: {stats["items"]} | awake bodies: {stats["awake"]} | following: {stats["followers"]}");
+                if (ImGui.TreeNodeEx("Step profile (ms) and counters", ImGuiTreeNodeFlags.DefaultOpen))
                 {
-                    foreach (var (key, value) in world.GetCounters())
+                    foreach (var (key, value) in PhysicsWorld.Profile())
                     {
                         ImGui.Text($"{key}: {value}");
                     }
                     ImGui.TreePop();
                 }
-                if (ImGui.TreeNode("Step profile (ms)"))
-                {
-                    foreach (var (key, value) in world.GetProfile())
-                    {
-                        ImGui.Text($"{key}: {value.AsDouble():0.000}");
-                    }
-                    ImGui.TreePop();
-                }
+
             }
         }
 

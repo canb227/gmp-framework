@@ -106,22 +106,22 @@ public partial class GameWorld
             return false;
         }
         node.Name = node.GetType().ToString() + initData.id.ToString();
-        if (b3droot == null)
+        if (physics == null)
         {
-            Logging.Error("attempted to spawn with no b3droot!", "GameWorld");
+            Logging.Error("attempted to spawn with no physics world!", "GameWorld");
         }
         else
         {
             spawnedRoots.Add(node);
-            // Place before entering the tree: Box3D bodies take their transform when they enter it
-            // (moving the node afterwards doesn't move the body), including static child bodies.
+            // Place before entering the tree: a GMPBody makes its body where its node is when it's ready
+            // (moving the node afterwards doesn't move a static or dynamic body).
             if (node is Node3D placed)
             {
                 placed.Position = position;
                 placed.Rotation = rotation;
             }
-            (parent ?? b3droot).AddChild(node);
-            if (node is GMPOBox3DBody box)
+            (parent ?? physics).AddChild(node);
+            if (node is GMPOBody box)
             {
                 box.Teleport(new Transform3D(Basis.FromEuler(rotation), position));
             }

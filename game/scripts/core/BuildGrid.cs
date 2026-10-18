@@ -123,7 +123,7 @@ public partial class BuildGrid : Node3D
     {
         Vector3 from = camera.GlobalPosition;
         Vector3 to = from + -camera.GlobalTransform.Basis.Z * range;
-        var ray = GameWorld.Raycast(from, to);
+        var ray = PhysicsWorld.Raycast(from, to);
         if (!ray.hit)
         {
             cell = default;
@@ -371,17 +371,8 @@ public partial class BuildGrid : Node3D
     /// <summary>The nearest hit along the ray that isn't a loose item: items aren't surfaces to build on or aim at.</summary>
     public static RayHit RaycastPastItems(Vector3 from, Vector3 to)
     {
-        var hits = GameWorld.b3droot.RaycastAll(from, to, ~GameWorld.QueryHiddenLayer);
-        foreach (var hitInfo in hits)
-        {
-            RayHit candidate = RayHit.From(hitInfo);
-            hitInfo.Dispose();
-            if (candidate.hit && candidate.collider is not PhysicalFactoryItem)
-            {
-                return candidate;
-            }
-        }
-        return default;
+        // Loose items are all on their own layer.
+        return PhysicsWorld.Raycast(from, to, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer);
     }
 
     /// <summary>The unit grid axis closest to <paramref name="v"/>.</summary>
@@ -402,7 +393,7 @@ public partial class BuildGrid : Node3D
         {
             return null;
         }
-        return FindStructure(hit.collider);
+        return FindStructure(hit.body);
     }
 
     /// <summary>The Structure a collider belongs to (it may be a child body), or null.</summary>

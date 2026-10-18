@@ -33,3 +33,5 @@ __pycache__/
 docs/*
 CLAUDE.md
 .claude/
+# Native (C++) build tree of native/
+native/build/

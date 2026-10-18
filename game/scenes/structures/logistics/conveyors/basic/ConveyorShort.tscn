@@ -41,9 +41,8 @@ shader = SubResource("Shader_DevWhite")
 [sub_resource type="BoxMesh" id="BoxMesh_Belt"]
 size = Vector3(1.885, 0.1, 1.0001)
 
-[node name="ConveyorShort" type="Box3DBody" unique_id=1416023118 node_paths=PackedStringArray("beltSurfaces")]
+[node name="ConveyorShort" type="GMPBody" unique_id=1416023118 node_paths=PackedStringArray("beltSurfaces")]
 body_type = 0
-box_size = Vector3(0, 0, 0)
 script = ExtResource("1_r")
 beltSurfaces = []
 cells = Dictionary[Vector3i, int]({
@@ -52,26 +51,22 @@ Vector3i(1, 0, 0): 66
 })
 blueprintItemID = "blueprint_conveyor_short"
 
-[node name="WallL" type="Box3DBody" parent="." unique_id=1093368241]
-body_type = 0
-shape_type = 5
-collision_mesh = SubResource("ArrayMesh_WallL")
-user_material_id = 3
+[node name="WallL" type="GMPShape" parent="." unique_id=1093368241]
+shape = 4
+mesh = SubResource("ArrayMesh_WallL")
+surface_type = 3
 
-[node name="WallR" type="Box3DBody" parent="." unique_id=1938412650]
-body_type = 0
-shape_type = 5
-collision_mesh = SubResource("ArrayMesh_WallR")
-user_material_id = 3
-baked_compound = true
+[node name="WallR" type="GMPShape" parent="." unique_id=1938412650]
+shape = 4
+mesh = SubResource("ArrayMesh_WallR")
+surface_type = 3
 
-[node name="Belt" type="Box3DBody" parent="." unique_id=742913560]
-body_type = 0
-box_size = Vector3(1.885, 0.1, 1.0001)
+[node name="Belt" type="GMPShape" parent="." unique_id=742913560]
+transform = Transform3D(1, 0, 0, 0, 0.9998, -0.02, 0, 0.02, 0.9998, 1, 0.09, -0.5005)
+size = Vector3(1.885, 0.1, 1.0001)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
-user_material_id = 5
-transform = Transform3D(1, 0, 0, 0, 0.9998, -0.02, 0, 0.02, 0.9998, 1, 0.09, -0.5005)
+surface_type = 5
 
 [node name="WallLMesh" type="MeshInstance3D" parent="." unique_id=1675140937]
 mesh = SubResource("ArrayMesh_WallL")

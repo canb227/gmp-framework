@@ -23,6 +23,8 @@ public partial record SaveGame
     public int version;
     public GameInfo gameInfo;
     public WorldSave world;
+    /// <summary>The loose items (not part of the world snapshot: they aren't nodes, see ItemWorld).</summary>
+    public List<ItemSave> items = new();
     public List<string> shopStock = new();
     /// <summary>Currency banks by currency name.</summary>
     public Dictionary<string, int> shopBalances = new();
@@ -46,7 +48,8 @@ public partial record SaveGame
 /// </summary>
 public static class SaveManager
 {
-    public const int Version = 2;
+    /// <summary>3: loose items saved on their own (ItemWorld), no longer as world roots.</summary>
+    public const int Version = 3;
 
     /// <summary>Players the last restore couldn't match to anyone here; written back into the next save.</summary>
     static List<PlayerSave> absentPlayers = new();
@@ -63,6 +66,7 @@ public static class SaveManager
             version = Version,
             gameInfo = Lobby.gameInfo,
             world = GameWorld.SnapshotWorld(keepClaims),
+            items = ItemWorld.Capture(),
             shopStock = Shop.Stock.ToList(),
             shopBalances = Shop.SaveBalances(),
             shopDeposits = new(Shop.Deposited),
@@ -182,6 +186,7 @@ public static class SaveManager
             Lobby.gameInfo = save.gameInfo;
         }
         GameWorld.RestoreWorld(save.world);
+        ItemWorld.Restore(save.items);
         Shop.LoadSave(save.shopStock, save.shopBalances, save.shopDeposits);
         ProgressManager.LoadSave(save.completedQuests, save.questProgress, save.questCurrencyProgress);
         foreach (PlayerSave p in save.players)

@@ -43,7 +43,7 @@ public enum CellTags
 /// left (-X), bottom (-Y), back (+Z) corner of its anchor cell, and the structure grows toward +X, +Y and -Z
 /// (its front faces -Z). A 2x2x2 structure fits in x 0..2, y 0..2, z -2..0, with cells in 0..1, 0..1, -1..0.
 /// </summary>
-public partial class Structure : GMPOBox3DBody, Interactable
+public partial class Structure : GMPOBody, Interactable
 {
     /// <summary>
     /// The cells this structure is made of, relative to its anchor cell before rotation, each with the faces items

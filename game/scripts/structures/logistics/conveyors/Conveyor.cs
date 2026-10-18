@@ -22,7 +22,7 @@ public enum ConveyorShape
 public partial class Conveyor : Structure
 {
     [Export]
-    public Godot.Collections.Array<GMPOBox3DBody> beltSurfaces;
+    public Godot.Collections.Array<GMPOBody> beltSurfaces;
 
     [Export]
     public ConveyorShape shape = ConveyorShape.Straight;
