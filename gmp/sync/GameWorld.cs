@@ -1,4 +1,5 @@
 using Godot;
+using FmodStudio = FMOD.Studio;
 
 /// <summary>
 /// Per-peer game-world singleton (each peer is authority for its own objects): owns the synced-object registry, Box3D physics root, and
@@ -65,10 +66,11 @@ public partial class GameWorld : Node3D
             b3droot.ContactHit += B3D_ContactHitEvent;
         }
     }
-
+    
     private void B3D_ContactHitEvent(Godot.Collections.Dictionary obj)
     {
-        throw new System.NotImplementedException();
+        GD.Print((float)obj["approach_speed"]/20.0f);
+        AudioManager.Instance.PlayOneShot("event:/Solid_Metal", (float)obj["approach_speed"]/20.0f, (Vector3)obj["point"], "Force", (float)obj["approach_speed"]/20.0f);
     }
 
     /// <summary>Seconds between the scheduled gen0 collections (see <see cref="_Process"/>).</summary>

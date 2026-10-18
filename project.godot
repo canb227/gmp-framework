@@ -30,7 +30,7 @@ BuildGrid="*res://game/scripts/core/BuildGrid.cs"
 ProgressManager="*uid://yyd2313sfhhb"
 UIManager="*res://game/scripts/ui/UIManager.cs"
 Shop="*res://game/scripts/core/Shop.cs"
-FmodManager="*uid://cds10pm7hwn3p"
+AudioManager="*uid://ccquous70473g"
 
 [display]
 
@@ -43,7 +43,7 @@ project/assembly_name="GMPFramework"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/Imposter/plugin.cfg", "res://addons/fmod/plugin.cfg", "res://addons/imgui-godot/plugin.cfg", "res://addons/limbo_console/plugin.cfg", "res://addons/sky_3d/plugin.cfg", "res://addons/structure_tools/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
+enabled=PackedStringArray("res://addons/Imposter/plugin.cfg", "res://addons/imgui-godot/plugin.cfg", "res://addons/limbo_console/plugin.cfg", "res://addons/sky_3d/plugin.cfg", "res://addons/structure_tools/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
 
 [file_customization]
 
