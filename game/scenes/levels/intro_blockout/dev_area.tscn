@@ -2,7 +2,6 @@
 
 [ext_resource type="LightmapGIData" uid="uid://cov8odyc26qav" path="res://game/scenes/levels/intro_blockout/dev_area.lmbake" id="1_qiak6"]
 [ext_resource type="Material" uid="uid://bxp2j5qppx4lp" path="res://game/assets/materials/tile_floor.tres" id="2_jhkrf"]
-[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/PhysicalFactoryItem.cs" id="2_s0g2q"]
 [ext_resource type="Material" uid="uid://kv3owg0reo0h" path="res://game/assets/materials/brickwall_interior.tres" id="3_5cgpr"]
 [ext_resource type="Texture2D" uid="uid://c06b1j8wdtii5" path="res://game/assets/textures/misc/circuit_board.jpeg" id="3_d2mjd"]
 [ext_resource type="PackedScene" uid="uid://1xxnu441im5p" path="res://game/scenes/entities/GoalScreen.tscn" id="3_yv5q0"]
@@ -44,10 +43,6 @@ volumetric_fog_density = 0.0
 [sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_m0rhe"]
 
 [sub_resource type="Compositor" id="Compositor_7n7at"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_pet1e"]
-material = ExtResource("8_kuy7m")
-size = Vector3(2, 4, 2)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fgl2k"]
 resource_name = "M_PanelWhite"
@@ -478,21 +473,6 @@ gizmo_extents = 10.0
 
 [node name="StartingScrap" type="Node3D" parent="WorldStuff" unique_id=491458326]
 
-[node name="Box3DBody" type="Box3DBody" parent="WorldStuff/StartingScrap" unique_id=399322515]
-box_size = Vector3(2, 4, 2)
-density = 20.0
-friction = 0.5
-restitution = 0.2
-transform = Transform3D(1, 0, 0, 0, 0.37616295, -0.92655355, 0, 0.92655355, 0.37616295, 52.09257, 1.6898992, 0.37166092)
-script = ExtResource("2_s0g2q")
-canBePickTarget = true
-canBeGrabbed = true
-canBeInteractedWith = true
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff/StartingScrap/Box3DBody" unique_id=1857490159]
-transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, -0.045993805, 0, 0)
-mesh = SubResource("BoxMesh_pet1e")
-
 [node name="GroundScrap" type="Node3D" parent="WorldStuff" unique_id=185693050]
 
 [node name="GroundElectronic" type="Node3D" parent="WorldStuff" unique_id=815242465]
@@ -756,8 +736,10 @@ mesh = SubResource("CylinderMesh_pet1e")
 surface_material_override/0 = ExtResource("8_kuy7m")
 
 [node name="GoalScreen" parent="WorldStuff" unique_id=923969412 instance=ExtResource("3_yv5q0")]
-box_size = Vector3(3, 2.6, 0.14)
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -8.277921, 2.0336442, 0.035230517)
+
+[node name="Shape" parent="WorldStuff/GoalScreen"]
+size = Vector3(3, 2.6, 0.14)
 
 [node name="NoBuildVolume" type="CSGBox3D" parent="WorldStuff" unique_id=303080488]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.516238, 9.446808, -1.0191422)
@@ -770,10 +752,8 @@ metadata/_custom_type_script = "uid://cltf2fbu2l28o"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.91199, 46.83092, -13.572759)
 visible = false
 
-[node name="Button" type="Box3DBody" parent="WorldStuff/RepairSmelterButton" unique_id=1401352437 node_paths=PackedStringArray("animator", "targets")]
+[node name="Button" type="GMPBody" parent="WorldStuff/RepairSmelterButton" unique_id=1401352437 node_paths=PackedStringArray("animator", "targets")]
 body_type = 0
-shape_type = 1
-sphere_radius = 0.1
 script = ExtResource("30_priced")
 cost = Dictionary[int, int]({
 0: 50
@@ -783,50 +763,65 @@ targets = [NodePath("../../BrokenSmelter")]
 hoverName = "Repair broken smelter"
 hoverText = "Cost is 50 scrap"
 
+[node name="Shape" type="GMPShape" parent="WorldStuff/RepairSmelterButton/Button" unique_id=1700000101]
+shape = 1
+radius = 0.1
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="WorldStuff/RepairSmelterButton/Button" unique_id=127676560]
 libraries/ = SubResource("AnimationLibrary_is778")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff/RepairSmelterButton/Button" unique_id=212504266]
 mesh = SubResource("SphereMesh_2k66h")
 
-[node name="ButtonBody" type="Box3DBody" parent="WorldStuff/RepairSmelterButton" unique_id=1980672406]
+[node name="ButtonBody" type="GMPBody" parent="WorldStuff/RepairSmelterButton" unique_id=1980672406]
 body_type = 0
-box_size = Vector3(0.5, 1.5, 0.5)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8737242, 0)
+
+[node name="Shape" type="GMPShape" parent="WorldStuff/RepairSmelterButton/ButtonBody" unique_id=1700000102]
+size = Vector3(0.5, 1.5, 0.5)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff/RepairSmelterButton/ButtonBody" unique_id=25745241]
 mesh = SubResource("BoxMesh_r1731")
 
-[node name="Box3DBody19" type="Box3DBody" parent="WorldStuff" unique_id=2017929695]
+[node name="Box3DBody19" type="GMPBody" parent="WorldStuff" unique_id=2017929695]
 body_type = 0
-shape_type = 6
-box_size = Vector3(3.31, 1.495, 1.59)
 transform = Transform3D(1.0000002, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 30.58564, 47.25219, -6.5600157)
 visible = false
+
+[node name="Shape" type="GMPShape" parent="WorldStuff/Box3DBody19" unique_id=1700000107]
+transform = Transform3D(0.99999976, -1.7763564e-15, 0, 7.1054265e-15, 0.9999999, -9.6485854e-17, 0, -9.648592e-17, 0.9999999, 0.34381104, 0, 0.36529535)
+shape = 5
+mesh = SubResource("BoxMesh_qiak6")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff/Box3DBody19" unique_id=1443852957]
 transform = Transform3D(0.99999976, -1.7763564e-15, 0, 7.1054265e-15, 0.9999999, -9.6485854e-17, 0, -9.648592e-17, 0.9999999, 0.34381104, 0, 0.36529535)
 mesh = SubResource("BoxMesh_qiak6")
 surface_material_override/0 = ExtResource("8_kuy7m")
 
-[node name="Box3DBody22" type="Box3DBody" parent="WorldStuff" unique_id=764305765]
+[node name="Box3DBody22" type="GMPBody" parent="WorldStuff" unique_id=764305765]
 body_type = 0
-shape_type = 6
-box_size = Vector3(3.31, 1.495, 1.59)
 transform = Transform3D(1.0000002, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 32.625404, 47.25219, -6.776924)
 visible = false
+
+[node name="Shape" type="GMPShape" parent="WorldStuff/Box3DBody22" unique_id=1700000108]
+transform = Transform3D(0.99999976, -1.7763564e-15, 0, 7.1054265e-15, 0.9999999, -9.6485854e-17, 0, -9.648592e-17, 0.9999999, 0, 0, 0)
+shape = 5
+mesh = SubResource("BoxMesh_kcgea")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="WorldStuff/Box3DBody22" unique_id=1517717123]
 transform = Transform3D(0.99999976, -1.7763564e-15, 0, 7.1054265e-15, 0.9999999, -9.6485854e-17, 0, -9.648592e-17, 0.9999999, 0, 0, 0)
 mesh = SubResource("BoxMesh_kcgea")
 surface_material_override/0 = ExtResource("8_kuy7m")
 
-[node name="Box3DBody20" type="Box3DBody" parent="WorldStuff" unique_id=242956524]
+[node name="Box3DBody20" type="GMPBody" parent="WorldStuff" unique_id=242956524]
 body_type = 0
-shape_type = 6
-box_size = Vector3(0, 0, 0)
 transform = Transform3D(1.0000002, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 29.577599, 46.21869, -6.544813)
 visible = false
+
+[node name="Shape" type="GMPShape" parent="WorldStuff/Box3DBody20" unique_id=1700000109]
+transform = Transform3D(0.99999976, -8.881782e-16, 0, 3.5527133e-15, 0.9999999, -9.6485854e-17, 0, -9.648596e-17, 0.9999999, -0.31469727, 0, 0.33978266)
+shape = 5
+mesh = SubResource("BoxMesh_ubgps")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="WorldStuff/Box3DBody20" unique_id=1659943909]
 transform = Transform3D(0.99999976, -8.881782e-16, 0, 3.5527133e-15, 0.9999999, -9.6485854e-17, 0, -9.648596e-17, 0.9999999, -0.31469727, 0, 0.33978266)
@@ -842,15 +837,17 @@ hoverText = "Repair this at the nearby button "
 [node name="RepairRDButton" type="Node3D" parent="WorldStuff" unique_id=1748555689]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47.554832, 5.6287026, 33.487843)
 
-[node name="Button" type="Box3DBody" parent="WorldStuff/RepairRDButton" unique_id=34000237 node_paths=PackedStringArray("animator", "targets")]
+[node name="Button" type="GMPBody" parent="WorldStuff/RepairRDButton" unique_id=34000237 node_paths=PackedStringArray("animator", "targets")]
 body_type = 0
-shape_type = 1
-sphere_radius = 0.1
 script = ExtResource("30_priced")
 animator = NodePath("AnimationPlayer")
 targets = [NodePath("../../BROKERobotDumper")]
 hoverName = "Repair broken smelter"
 hoverText = "Cost is 50 scrap"
+
+[node name="Shape" type="GMPShape" parent="WorldStuff/RepairRDButton/Button" unique_id=1700000103]
+shape = 1
+radius = 0.1
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="WorldStuff/RepairRDButton/Button" unique_id=905353729]
 libraries/ = SubResource("AnimationLibrary_is778")
@@ -858,17 +855,18 @@ libraries/ = SubResource("AnimationLibrary_is778")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff/RepairRDButton/Button" unique_id=1520886247]
 mesh = SubResource("SphereMesh_2k66h")
 
-[node name="ButtonBody" type="Box3DBody" parent="WorldStuff/RepairRDButton" unique_id=1966426229]
+[node name="ButtonBody" type="GMPBody" parent="WorldStuff/RepairRDButton" unique_id=1966426229]
 body_type = 0
-box_size = Vector3(0.5, 1.5, 0.5)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8737242, 0)
+
+[node name="Shape" type="GMPShape" parent="WorldStuff/RepairRDButton/ButtonBody" unique_id=1700000104]
+size = Vector3(0.5, 1.5, 0.5)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff/RepairRDButton/ButtonBody" unique_id=1835411069]
 mesh = SubResource("BoxMesh_r1731")
 
-[node name="BROKERobotDumper" type="Box3DBody" parent="WorldStuff" unique_id=703975338]
+[node name="BROKERobotDumper" type="GMPBody" parent="WorldStuff" unique_id=703975338]
 body_type = 0
-box_size = Vector3(0, 0, 0)
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 49, 11, 43)
 script = ExtResource("12_is778")
 repairedScene = ExtResource("11_ubgps")
@@ -880,10 +878,8 @@ transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 45, 
 [node name="Repair Source Button" type="Node3D" parent="WorldStuff" unique_id=846980836]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36.388847, 1.6260744, -37.41516)
 
-[node name="Button" type="Box3DBody" parent="WorldStuff/Repair Source Button" unique_id=502930267 node_paths=PackedStringArray("animator", "targets")]
+[node name="Button" type="GMPBody" parent="WorldStuff/Repair Source Button" unique_id=502930267 node_paths=PackedStringArray("animator", "targets")]
 body_type = 0
-shape_type = 1
-sphere_radius = 0.1
 script = ExtResource("30_priced")
 cost = Dictionary[int, int]({
 0: 5
@@ -891,16 +887,22 @@ cost = Dictionary[int, int]({
 animator = NodePath("AnimationPlayer")
 targets = [NodePath("../../RecyclerBroken")]
 
+[node name="Shape" type="GMPShape" parent="WorldStuff/Repair Source Button/Button" unique_id=1700000105]
+shape = 1
+radius = 0.1
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="WorldStuff/Repair Source Button/Button" unique_id=1829506108]
 libraries/ = SubResource("AnimationLibrary_is778")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff/Repair Source Button/Button" unique_id=386839181]
 mesh = SubResource("SphereMesh_2k66h")
 
-[node name="ButtonBody" type="Box3DBody" parent="WorldStuff/Repair Source Button" unique_id=2064060396]
+[node name="ButtonBody" type="GMPBody" parent="WorldStuff/Repair Source Button" unique_id=2064060396]
 body_type = 0
-box_size = Vector3(0.5, 1.5, 0.5)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.026720047, -0.87636566, 0.028715134)
+
+[node name="Shape" type="GMPShape" parent="WorldStuff/Repair Source Button/ButtonBody" unique_id=1700000106]
+size = Vector3(0.5, 1.5, 0.5)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff/Repair Source Button/ButtonBody" unique_id=1180870346]
 mesh = SubResource("BoxMesh_r1731")
@@ -908,10 +910,14 @@ mesh = SubResource("BoxMesh_r1731")
 [node name="store" parent="." unique_id=1931553037 instance=ExtResource("7_ihq8k")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4, 0, -4)
 
-[node name="WorldBody" type="Box3DBody" parent="." unique_id=1597530614]
+[node name="WorldBody" type="GMPBody" parent="." unique_id=1597530614]
 body_type = 0
-shape_type = 6
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="Shape" type="GMPShape" parent="WorldBody" unique_id=1700000110]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = 5
+mesh = SubResource("ArrayMesh_qiak6")
 
 [node name="CSGBakedMeshInstance3D" type="MeshInstance3D" parent="WorldBody" unique_id=2108664510]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)

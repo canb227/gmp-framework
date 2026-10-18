@@ -21,7 +21,8 @@ public enum Channel : byte
     GAME_Voice = 12,
     GAME_Effects = 13,
     GAME_tba2 = 14,
-    GAME_tba3 = 15,
+    /// <summary>Item states of the native world (GameWorld.NativeSync.cs).</summary>
+    GAME_Items = 15,
 
     RPC_Main = 16,
 

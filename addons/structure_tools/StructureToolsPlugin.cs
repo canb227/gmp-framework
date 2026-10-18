@@ -15,7 +15,7 @@ using System.Reflection;
 /// bottom (an even height) and orange when it's partway up one (odd), for lining a level up with the grid.</item>
 /// <item>Blocked Cells fills the faces of the build grid cells the open scene's level geometry blocks, around the
 /// selection, faint blue, the cells the game's build grid fill shows (BuildGrid.CellFill.cs): those a static, solid
-/// Box3DBody outside any GMPObject reaches more than <see cref="BuildGrid.LevelOverlapDepth"/> into. Cells a
+/// GMPShape of a static GMPBody outside any GMPObject reaches more than <see cref="BuildGrid.LevelOverlapDepth"/> into. Cells a
 /// <see cref="NoBuildVolume"/> touches are filled red. Worked out from the colliders' shapes when it's turned on and
 /// after every edit, as the editor has no Box3D world to ask.</item>
 /// <item>Grid Snap moves every selected Structure to the grid pose nearest to where a move or rotation ends
@@ -645,14 +645,13 @@ public partial class StructureToolsPlugin : EditorPlugin
         {
             inObject = true;
         }
-        // A body's own shape counts only when it has no Box3DCollisionShape children (those replace it).
-        bool isShape = node.IsClass("Box3DCollisionShape") && node.GetParent() != null && IsStaticSolidBody(node.GetParent());
-        bool isBodyShape = node.IsClass("Box3DBody") && IsStaticSolidBody(node) && !HasShapeChildren(node);
-        if (!inObject && (isShape || isBodyShape) && node is Node3D n)
+        // Every solid GMPShape of a static body counts.
+        bool isShape = IsSolidShape(node) && IsStaticSolidBody(BodyOf(node));
+        if (!inObject && isShape && node is Node3D n)
         {
             // A mesh collider is a surface: Box3D tests a query box against its triangles, so it blocks the cells its
             // triangles pass through, not everything inside its bounds.
-            bool isMesh = (ShapeTypeEnum)n.Get(Box3DNames.shapeType).AsInt32() == ShapeTypeEnum.Mesh;
+            bool isMesh = n.Get(shapeName).AsInt32() == MeshShape;
             if (isMesh && TryGetMeshTriangles(n, out Transform3D meshTransform, out Vector3[] triangles))
             {
                 AddTriangleCells(toFrame * meshTransform, triangles, levelBlocked);
@@ -670,14 +669,14 @@ public partial class StructureToolsPlugin : EditorPlugin
 
     static bool IsStaticSolidBody(Node body)
     {
-        return IsSolidBody(body) && body.Get(Box3DNames.bodyType).AsInt32() == (int)BodyTypeEnum.Static;
+        return IsSolidBody(body) && body.Get(bodyTypeName).AsInt32() == (int)BodyTypeEnum.Static;
     }
 
-    // A mesh collider's triangles (a vertex list, three to a triangle) and the frame they're in: its collision_mesh,
-    // else its first MeshInstance3D child's mesh, as TryGetMeshBounds finds them.
+    // A mesh collider's triangles (a vertex list, three to a triangle) and the frame they're in: its mesh, else its
+    // first MeshInstance3D child's mesh, as TryGetMeshBounds finds them.
     static bool TryGetMeshTriangles(Node3D node, out Transform3D transform, out Vector3[] triangles)
     {
-        Mesh mesh = node.Get(Box3DNames.collisionMesh).As<Mesh>();
+        Mesh mesh = node.Get(meshName).As<Mesh>();
         if (mesh != null)
         {
             transform = node.GlobalTransform;
@@ -1200,13 +1199,12 @@ public partial class StructureToolsPlugin : EditorPlugin
         return a.X.CompareTo(b.X);
     }
 
-    // Adds the cells touched by every solid collider at or under node. A Box3DBody's own shape counts only when it
-    // has no Box3DCollisionShape children (those replace it); sensors and disabled bodies don't count.
+    // Adds the cells touched by every solid collider (GMPShape) at or under node; sensors and the shapes of disabled
+    // bodies don't count.
     static void CollectColliderCells(Node node, Transform3D toRoot, float tolerance, HashSet<Vector3I> cells)
     {
-        bool isShape = node.IsClass("Box3DCollisionShape") && node.GetParent() != null && IsSolidBody(node.GetParent());
-        bool isBodyShape = node.IsClass("Box3DBody") && IsSolidBody(node) && !HasShapeChildren(node);
-        if ((isShape || isBodyShape) && node is Node3D n && TryGetShapeBounds(n, out Aabb local))
+        bool isShape = IsSolidShape(node) && IsSolidBody(BodyOf(node));
+        if (isShape && node is Node3D n && TryGetShapeBounds(n, out Aabb local))
         {
             AddCells(toRoot * n.GlobalTransform, local, tolerance, cells);
         }
@@ -1233,76 +1231,85 @@ public partial class StructureToolsPlugin : EditorPlugin
         }
     }
 
-    static bool IsSolidBody(Node body)
+    static readonly StringName shapeName = "shape";
+    static readonly StringName sizeName = "size";
+    static readonly StringName radiusName = "radius";
+    static readonly StringName heightName = "height";
+    static readonly StringName meshName = "mesh";
+    static readonly StringName isSensorName = "is_sensor";
+    static readonly StringName enabledName = "enabled";
+    static readonly StringName bodyTypeName = "body_type";
+
+    // GMPShape.shape values (native/src/physics_shape.h).
+    const int BoxShape = 0, SphereShape = 1, CapsuleShape = 2, CylinderShape = 3, HullShape = 4, MeshShape = 5;
+
+    /// <summary>A GMPShape that isn't a sensor.</summary>
+    static bool IsSolidShape(Node node)
     {
-        return body.IsClass("Box3DBody") && body.Get(Box3DNames.enabled).AsBool() && !body.Get(Box3DNames.isSensor).AsBool();
+        return node.IsClass("GMPShape") && !node.Get(isSensorName).AsBool();
     }
 
-    static bool HasShapeChildren(Node body)
+    /// <summary>The GMPBody a shape belongs to: the nearest one above it, or null.</summary>
+    static Node BodyOf(Node shape)
     {
-        foreach (Node child in body.GetChildren())
+        for (Node n = shape.GetParent(); n != null; n = n.GetParent())
         {
-            if (child.IsClass("Box3DCollisionShape"))
+            if (n.IsClass("GMPBody"))
             {
-                return true;
+                return n;
             }
         }
-        return false;
+        return null;
     }
 
-    /// <summary>The bounding box of a body's or collision shape's own shape, in that node's frame.</summary>
+    static bool IsSolidBody(Node body)
+    {
+        return body != null && body.IsClass("GMPBody") && body.Get(enabledName).AsBool();
+    }
+
+    /// <summary>The bounding box of a GMPShape, in the shape's frame.</summary>
     static bool TryGetShapeBounds(Node3D node, out Aabb bounds)
     {
         bounds = new Aabb();
-        switch ((ShapeTypeEnum)node.Get(Box3DNames.shapeType).AsInt32())
+        int shape = node.Get(shapeName).AsInt32();
+        if (shape == BoxShape)
         {
-            case ShapeTypeEnum.Box:
-                Vector3 size = node.Get(Box3DNames.boxSize).AsVector3();
-                bounds = new Aabb(-size / 2, size);
-                break;
-            case ShapeTypeEnum.Sphere:
-                float r = node.Get(Box3DNames.sphereRadius).AsSingle();
-                bounds = new Aabb(new Vector3(-r, -r, -r), new Vector3(2 * r, 2 * r, 2 * r));
-                break;
-            case ShapeTypeEnum.Capsule:
-            case ShapeTypeEnum.Cylinder:
-            case ShapeTypeEnum.Cone:
-                float radius = node.Get(Box3DNames.capsuleRadius).AsSingle();
-                float height = node.Get(Box3DNames.capsuleHeight).AsSingle();
-                bounds = new Aabb(new Vector3(-radius, -height / 2, -radius), new Vector3(2 * radius, height, 2 * radius));
-                break;
-            case ShapeTypeEnum.Hull:
-            case ShapeTypeEnum.Mesh:
-            case ShapeTypeEnum.FitMesh:
-                if (!TryGetMeshBounds(node, out bounds))
-                {
-                    return false;
-                }
-                break;
-            default:
+            Vector3 size = node.Get(sizeName).AsVector3();
+            bounds = new Aabb(-size / 2, size);
+        }
+        else if (shape == SphereShape)
+        {
+            float r = node.Get(radiusName).AsSingle();
+            bounds = new Aabb(new Vector3(-r, -r, -r), new Vector3(2 * r, 2 * r, 2 * r));
+        }
+        else if (shape == CapsuleShape || shape == CylinderShape)
+        {
+            float radius = node.Get(radiusName).AsSingle();
+            float height = node.Get(heightName).AsSingle();
+            bounds = new Aabb(new Vector3(-radius, -height / 2, -radius), new Vector3(2 * radius, height, 2 * radius));
+        }
+        else if (shape == HullShape || shape == MeshShape)
+        {
+            if (!TryGetMeshBounds(node, out bounds))
+            {
                 return false;
+            }
+        }
+        else
+        {
+            return false;
         }
         return bounds.Size.LengthSquared() > 0.000001f;
     }
 
-    // A mesh collider's source: its collision_mesh, else raw mesh_vertices, else its first MeshInstance3D child.
+    // A mesh collider's source: its mesh, else its first MeshInstance3D child.
     static bool TryGetMeshBounds(Node3D node, out Aabb bounds)
     {
         bounds = new Aabb();
-        Mesh mesh = node.Get(Box3DNames.collisionMesh).As<Mesh>();
+        Mesh mesh = node.Get(meshName).As<Mesh>();
         if (mesh != null)
         {
             bounds = mesh.GetAabb();
-            return true;
-        }
-        Vector3[] vertices = node.Get(Box3DNames.meshVertices).AsVector3Array();
-        if (vertices.Length > 0)
-        {
-            bounds = new Aabb(vertices[0], Vector3.Zero);
-            foreach (Vector3 v in vertices)
-            {
-                bounds = bounds.Expand(v);
-            }
             return true;
         }
         foreach (Node child in node.GetChildren())

@@ -50,10 +50,12 @@ shader_parameter/vignette_strength = 0.5
 shader_parameter/band_strength = 0.03
 shader_parameter/band_speed = 0.08
 
-[node name="GoalScreen" type="Box3DBody"]
+[node name="GoalScreen" type="GMPBody"]
 body_type = 0
-box_size = Vector3(3.4, 2.8, 0.14)
 script = ExtResource("1_goal")
+
+[node name="Shape" type="GMPShape" parent="." unique_id=1436159620]
+size = Vector3(3.4, 2.8, 0.14)
 
 [node name="FrameTop" type="MeshInstance3D" parent="."]
 mesh = SubResource("frame_h_mesh")

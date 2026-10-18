@@ -10,10 +10,10 @@ public partial record struct ActivatorSave
 
 /// <summary>
 /// Base for node <see cref="Activator"/>s (buttons, levers): declares the activator's exported settings and state,
-/// and makes the hooks virtual so subclasses can override them. Attach it to the static Box3DBody the player aims at.
+/// and makes the hooks virtual so subclasses can override them. Attach it to the static GMPBody the player aims at.
 /// Activators never stream state; everything goes through the Activator RPCs.
 /// </summary>
-public partial class GMPOActivator : GMPOBox3DBody, Activator
+public partial class GMPOActivator : GMPOBody, Activator
 {
     /// <summary>Stays on or off between activations (a lever) rather than pulsing (a push button).</summary>
     [Export] public bool toggle { get; set; }
@@ -22,7 +22,7 @@ public partial class GMPOActivator : GMPOBox3DBody, Activator
     /// <summary>Nodes switched by this activator; each must implement <see cref="Triggerable"/>.</summary>
     [Export] public Godot.Collections.Array<Node> targets { get; set; } = new();
 
-    /// <summary>Setting it refreshes <see cref="GMPOBox3DBody.hoverText"/>.</summary>
+    /// <summary>Setting it refreshes <see cref="GMPOBody.hoverText"/>.</summary>
     public bool active
     {
         get => _active;
@@ -72,7 +72,7 @@ public partial class GMPOActivator : GMPOBox3DBody, Activator
         active = GMPObject.serializer.Deserialize<ActivatorSave>(state).active;
     }
 
-    /// <summary>Sets <see cref="GMPOBox3DBody.hoverText"/> for the current state.</summary>
+    /// <summary>Sets <see cref="GMPOBody.hoverText"/> for the current state.</summary>
     protected virtual void UpdateHoverText()
     {
         hoverText = toggle ? (active ? "Press F to turn off." : "Press F to turn on.") : "Press F to activate.";

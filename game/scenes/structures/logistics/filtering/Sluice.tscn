@@ -1,3 +1,6 @@
 [gd_scene format=3 uid="uid://dgigpl74ykttk"]
 
-[node name="Sluice" type="Box3DBody" unique_id=1712912752]
+[node name="Sluice" type="GMPBody" unique_id=1712912752]
+
+[node name="Shape" type="GMPShape" parent="." unique_id=702240871]
+density = 1.0

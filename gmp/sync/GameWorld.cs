@@ -2,16 +2,30 @@ using Godot;
 using FmodStudio = FMOD.Studio;
 
 /// <summary>
-/// Per-peer game-world singleton (each peer is authority for its own objects): owns the synced-object registry, Box3D physics root, and
-/// per-tick network replication for GMPObjects during a running game session. This file holds
-/// core lifecycle (autoload singleton, Box3D init), Lobby transition event wiring, spatial queries
-/// (Raycast/OverlapSphere), and the framework-level Preload/Init/ResetSession entry points called during
-/// the lobby → game transition (game-specific bootstrap logic lives in <see cref="GameBootstrap"/>).
+/// Per-peer game-world singleton (each peer is authority for its own objects): owns the synced-object registry, the
+/// physics world and per-tick network replication for GMPObjects during a running game session. This file holds core
+/// lifecycle (autoload singleton, physics world init), Lobby transition event wiring, the kill plane, and the
+/// framework-level Preload/Init/ResetSession entry points called during the lobby → game transition (game-specific
+/// bootstrap logic lives in <see cref="GameBootstrap"/>).
 /// </summary>
 public partial class GameWorld : Node3D
 {
     public static GameWorld instance;
-    public static GMPOBox3DWorld b3droot;
+
+    /// <summary>
+    /// Our Box3D world (the GMPPhysicsWorld node, native/src/physics_world.h): every spawned scene goes under it, and
+    /// <see cref="PhysicsWorld"/> calls into it. Stepped and synced from <see cref="_PhysicsProcess"/>.
+    /// </summary>
+    public static Node3D physics;
+
+    /// <summary>
+    /// After the physics world has stepped, each physics tick of a running game (paused: not at all). For game code that
+    /// handles what happened in the step, e.g. item touches.
+    /// </summary>
+    public static event System.Action<double> PhysicsStepped;
+
+    /// <summary>After <see cref="ClearWorld"/> has emptied the world (session end, or a restore about to rebuild it).</summary>
+    public static event System.Action WorldCleared;
 
     /// <summary>True once every peer has loaded and the game is running; false in the lobby and menus.</summary>
     public static bool started { get; private set; }
@@ -22,6 +36,9 @@ public partial class GameWorld : Node3D
     /// needs. Every peer compares the same stamps, so they always agree on the winner even if a clock is off.
     /// </summary>
     public static ulong netTime => (ulong)System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+    /// <summary>Solver threads for the physics world (Box3D starts and owns them).</summary>
+    const int PhysicsWorkers = 4;
 
     public override void _Ready()
     {
@@ -34,37 +51,24 @@ public partial class GameWorld : Node3D
         Lobby.PeerDisconnectedEvent += OnPeerUnlinked;
         Lobby.PeerRepairedEvent += OnPeerRepaired;
 
-
-        //GetTree().Paused = true;
         // Full (gen2) collections then run in the background instead of stopping the game; gen0/gen1 collections
         // still pause it, so per-frame allocations should stay low. Needs background GC, which is on by default.
         System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.SustainedLowLatency;
         Logging.Log($"GC latency mode: {System.Runtime.GCSettings.LatencyMode}", "GameWorld");
-        Logging.Log($"Atempting b3d init: {ClassDB.ClassExists("Box3DWorld")}", "GameWorld");
-        if (ClassDB.ClassExists("Box3DWorld"))
+        if (!ClassDB.ClassExists("GMPPhysicsWorld"))
         {
-            // Attach the typed wrapper script, then re-fetch the object: the C# instance changes with the script.
-            Node3D world = ClassDB.Instantiate("Box3DWorld").As<Node3D>();
-            ulong worldId = world.GetInstanceId();
-            world.SetScript(GD.Load<Script>("res://gmp/objects/GMPOBox3DWorld.cs"));
-            b3droot = (GMPOBox3DWorld)InstanceFromId(worldId);
-            b3droot.debugDraw = false;
-            // GameWorld itself runs while paused (it carries the network); physics stops with the tree.
-            b3droot.ProcessMode = ProcessModeEnum.Pausable;
-            // Solve each step on Box3D's step thread while the engine renders; results land at the next tick.
-            // Any Box3D call (body API, raycasts, queries) waits for an in-flight step, so make them from
-            // _PhysicsProcess, where the step has had a whole frame to finish, not from _Process.
-            b3droot.asyncStep = false;
-            // Solver threads (Box3D starts and owns them). Box3D does best on performance cores only, so stay well
-            // under the logical core count. At 2000 resting bodies one was enough (~2 ms), but with ~2700 awake on
-            // belts the host's step took 7 ms on one (2026-10-15).
-            b3droot.workerCount = 4;
-            AddChild(b3droot);
-            Logging.Log($"Box3D solver workers: {b3droot.workerCount}", "GameWorld");
-            // Box3D reports sleep per world, not per body; hand it to the body (it has no matching wake signal).
-            b3droot.BodyFellAsleep += body => (body as GMPOBox3DBody)?.OnFellAsleep();
-            b3droot.ContactHit += B3D_ContactHitEvent;
+            Logging.Error("GMPPhysicsWorld isn't registered: the addons/gmp_box3d extension didn't load (build native/).", "GameWorld");
+            return;
         }
+        physics = ClassDB.Instantiate("GMPPhysicsWorld").As<Node3D>();
+        physics.Name = "Physics";
+        // Read when it enters the tree, which makes the Box3D world. Box3D does best on performance cores only, so
+        // stay well under the logical core count: with ~2700 awake on belts the host's step took 7 ms on one (2026-10-15).
+        physics.Set("worker_count", PhysicsWorkers);
+        physics.Set("item_layer", PhysicsWorld.ItemLayer);
+        // GameWorld itself runs while paused (it carries the network); it steps the world only while the tree runs.
+        AddChild(physics);
+        Logging.Log($"Physics world made, {PhysicsWorkers} solver workers", "GameWorld");
     }
     
     private void B3D_ContactHitEvent(Godot.Collections.Dictionary obj)
@@ -100,17 +104,6 @@ public partial class GameWorld : Node3D
         DrawDebugUI();
     }
 
-    /// <summary>Bodies waiting to hear that they woke (see <see cref="WatchForWake"/>).</summary>
-    static readonly System.Collections.Generic.List<GMPOBox3DBody> sleepers = new();
-    static int nextSleeperCheck;
-    /// <summary>Sleepers polled per physics tick, round robin: a few thousand resting bodies are all checked within a second or so.</summary>
-    const int SleeperChecksPerTick = 200;
-
-    /// <summary>
-    /// Box3D signals a body falling asleep but not waking. A body that needs to know (e.g. to sync faster again) calls
-    /// this from <see cref="GMPOBox3DBody.OnFellAsleep"/>; <see cref="GMPOBox3DBody.OnWoke"/> is then called once it
-    /// is awake again, or once this peer stops simulating it.
-    /// </summary>
     /// <summary>
     /// Bodies this peer simulates that fall below this height are despawned: anything that leaves the level (pushed
     /// through a floor, off an edge) would otherwise fall forever, awake, simulated and synced. Below any level's lowest
@@ -120,11 +113,14 @@ public partial class GameWorld : Node3D
 
     /// <summary>Bodies checked against <see cref="KillPlaneY"/> per tick; a pass over 5000 takes under half a second.</summary>
     const int KillChecksPerTick = 200;
-    static readonly System.Collections.Generic.List<GMPOBox3DBody> killChecks = new();
+    static readonly System.Collections.Generic.List<GMPOBody> killChecks = new();
     static readonly System.Collections.Generic.List<(ulong id, Vector3 position)> killed = new();
     static int nextKillCheck;
 
-    /// <summary>Despawns a few of this peer's dynamic bodies each tick if they've fallen out of the world.</summary>
+    /// <summary>
+    /// Despawns a few of this peer's dynamic node bodies each tick if they've fallen out of the world. (Loose items,
+    /// which aren't GMPObjects, are the game's to despawn: see PhysicsWorld.ItemsBelow.)
+    /// </summary>
     static void CheckKillPlane()
     {
         if (nextKillCheck >= killChecks.Count)
@@ -133,7 +129,7 @@ public partial class GameWorld : Node3D
             killChecks.Clear();
             foreach (GMPObject obj in syncedObjs.Values)
             {
-                if (obj is GMPOBox3DBody body && body.authority == Lobby.selfPeerID && body.authoredBodyType == BodyTypeEnum.Dynamic)
+                if (obj is GMPOBody body && body.authority == Lobby.selfPeerID && body.authoredBodyType == BodyTypeEnum.Dynamic)
                 {
                     killChecks.Add(body);
                 }
@@ -142,7 +138,7 @@ public partial class GameWorld : Node3D
         int end = Mathf.Min(nextKillCheck + KillChecksPerTick, killChecks.Count);
         for (; nextKillCheck < end; nextKillCheck++)
         {
-            GMPOBox3DBody body = killChecks[nextKillCheck];
+            GMPOBody body = killChecks[nextKillCheck];
             if (IsInstanceValid(body) && !body.IsQueuedForDeletion() && body.authority == Lobby.selfPeerID && body.GlobalPosition.Y < KillPlaneY)
             {
                 killed.Add((body.id, body.GlobalPosition));
@@ -157,56 +153,12 @@ public partial class GameWorld : Node3D
         killed.Clear();
     }
 
-    public static void WatchForWake(GMPOBox3DBody body)
-    {
-        sleepers.Add(body);
-    }
-
-    static void CheckSleepers()
-    {
-        int checks = Mathf.Min(SleeperChecksPerTick, sleepers.Count);
-        for (int i = 0; i < checks; i++)
-        {
-            if (nextSleeperCheck >= sleepers.Count)
-            {
-                nextSleeperCheck = 0;
-            }
-            GMPOBox3DBody body = sleepers[nextSleeperCheck];
-            bool gone = !IsInstanceValid(body) || body.IsQueuedForDeletion();
-            if (gone || body.authority != Lobby.selfPeerID || body.IsAwake())
-            {
-                // Swap-remove; the body moved into this slot is checked next.
-                sleepers[nextSleeperCheck] = sleepers[sleepers.Count - 1];
-                sleepers.RemoveAt(sleepers.Count - 1);
-                if (!gone)
-                {
-                    body.OnWoke();
-                }
-            }
-            else
-            {
-                nextSleeperCheck++;
-            }
-        }
-    }
-
     /// <summary>
-    /// Collision layer for bodies that world queries should never hit (e.g. placement-preview sensors).
-    /// Excluded from <see cref="Raycast"/> by default.
+    /// Collision layer for bodies that world queries should never hit. Excluded from <see cref="PhysicsWorld.Raycast"/>
+    /// and the overlap tests by default.
     /// </summary>
     public const long QueryHiddenLayer = 1L << 30;
 
-    /// <summary>Raycasts against the Box3D physics world. By default ignores <see cref="QueryHiddenLayer"/>.</summary>
-    public static RayHit Raycast(Vector3 from, Vector3 to, long collisionMask = ~QueryHiddenLayer)
-    {
-        return b3droot.Raycast(from, to, collisionMask);
-    }
-
-    /// <summary>Queries the Box3D physics world for nodes overlapping a sphere.</summary>
-    public static Godot.Collections.Array<Node3D> OverlapSphere(Vector3 center, float radius, int collisionMask = -1, int collisionLayer = -1)
-    {
-        return b3droot.OverlapSphere(center, radius, collisionMask, collisionLayer);
-    }
     private static void Instance_LobbyDonePreloadingEvent()
     {
         Init();
@@ -235,6 +187,9 @@ public partial class GameWorld : Node3D
     internal static void Preload(GameInfo gameInfo)
     {
         //This runs on all players. Use it to preload the shit from the gameinfo you know you'll need.
+        // The physics world needs to know whose items are whose before the level (and anything in it) spawns.
+        physics.Call(setSelfPeerName, Lobby.selfPeerID);
+        physics.Call(setSendIntervalName, SendInterval);
         GameBootstrap.Preload(gameInfo);
     }
 
@@ -282,11 +237,15 @@ public partial class GameWorld : Node3D
         }
         spawnedRoots.Clear();
         syncedObjs.Clear();
-        sleepers.Clear();
-        GMPOBox3DBody.ClearFollowers();
+        if (physics != null)
+        {
+            PhysicsWorld.ClearItems();
+        }
+        GMPOBody.ClearFollowers();
         claims.Clear();
         leaseEnds.Clear();
         BuildGrid.ResetSession();
         ResetStateSync();
+        WorldCleared?.Invoke();
     }
 }

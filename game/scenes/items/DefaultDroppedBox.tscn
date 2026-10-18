@@ -1,18 +1,15 @@
 [gd_scene format=3 uid="uid://bc80frwd8i8um"]
 
-[ext_resource type="Script" uid="uid://dq0b7o1n3rwlv" path="res://game/scripts/items/DefaultDroppedBox.cs" id="1_b7xlw"]
 [ext_resource type="PackedScene" uid="uid://c71hpn107i28i" path="res://game/assets/models/props/item_crate.glb" id="model"]
 
 
 [sub_resource type="PlaneMesh" id="icon_plane"]
 size = Vector2(0.5, 0.5)
 
-[node name="DefaultDroppedBox" type="Box3DBody" unique_id=294901450]
-script = ExtResource("1_b7xlw")
-tags = Array[int]([7])
-canBePickTarget = true
-canBeGrabbed = true
-canBePickedUp = true
+[node name="DefaultDroppedBox" type="GMPBody" unique_id=294901450]
+
+[node name="Shape" type="GMPShape" parent="." unique_id=1716253049]
+density = 1.0
 
 [node name="Model" parent="." instance=ExtResource("model")]
 

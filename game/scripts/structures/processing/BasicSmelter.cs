@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 
 
@@ -9,7 +10,7 @@ public partial class BasicSmelter : RecipeMachine
     protected override bool TryStartProcess()
     {
         int found = 0;
-        foreach (PhysicalFactoryItem input in inputItems)
+        foreach (ItemRecord input in inputItems)
         {
             if (input.currencyValue.ContainsKey(Currency.Scrap)) 
             {
@@ -19,11 +20,13 @@ public partial class BasicSmelter : RecipeMachine
 
         if(found >= scrapNeeded)
         {
-            foreach (PhysicalFactoryItem input in inputItems)
-            {
-                GameWorld.DespawnObject(input.id, DespawnReason.Consumed);
-            }
+            // Taken out of the list first: despawning an item takes it out of inputItems (IOMachine.OnItemRemoved).
+            List<ItemRecord> consumed = new(inputItems);
             inputItems.Clear();
+            foreach (ItemRecord input in consumed)
+            {
+                ItemWorld.Despawn(input.id, DespawnReason.Consumed);
+            }
             processTimeRemaining = cookTime;
             RPCManager.RPC(this, "PlayAnimation", ["process"]);
             return true;

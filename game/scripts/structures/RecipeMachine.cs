@@ -30,7 +30,7 @@ public abstract partial class RecipeMachine : IOMachine
             foreach (var (item, count) in recipe.inputs)
             {
                 int found = 0;
-                foreach (PhysicalFactoryItem input in inputItems)
+                foreach (ItemRecord input in inputItems)
                 {
                     if (input.itemID == item.itemID) found++;
                 }

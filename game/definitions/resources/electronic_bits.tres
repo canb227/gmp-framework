@@ -12,3 +12,6 @@ displayName = "Electronic Bits"
 description = "Random assortment of resistors and doo-dads"
 icon = ExtResource("2_d2xa2")
 maxStackSize = 999
+tags = Array[int]([3, 22, 20, 12])
+canBePickTarget = true
+canBeGrabbed = true

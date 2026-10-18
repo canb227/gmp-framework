@@ -35,12 +35,14 @@ material = SubResource("mat_knob")
 radius = 0.09
 height = 0.18
 
-[node name="Lever" type="Box3DBody" unique_id=1290426448 node_paths=PackedStringArray("handle")]
+[node name="Lever" type="GMPBody" unique_id=1290426448 node_paths=PackedStringArray("handle")]
 body_type = 0
-box_size = Vector3(0.6, 1.6, 0.9)
 script = ExtResource("1_lever")
 handle = NodePath("Pivot")
 toggle = true
+
+[node name="Shape" type="GMPShape" parent="." unique_id=160445045]
+size = Vector3(0.6, 1.6, 0.9)
 
 [node name="Base" type="MeshInstance3D" parent="." unique_id=1235124874]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4, 0)

@@ -59,9 +59,8 @@ albedo_color = Color(0.5729883, 0.5729883, 0.5729883, 1)
 metallic = 0.75
 roughness_texture = SubResource("NoiseTexture2D_6sxjr")
 
-[node name="Assembler" type="Box3DBody" unique_id=395325896 node_paths=PackedStringArray("inputVolumes", "outputLocations")]
+[node name="Assembler" type="GMPBody" unique_id=395325896 node_paths=PackedStringArray("inputVolumes", "outputLocations")]
 body_type = 0
-shape_type = 6
 script = ExtResource("1_pdesc")
 recipes = Array[ExtResource("2_7ve3q")]([SubResource("Resource_qs3ah")])
 inputVolumes = [NodePath("spatial/input1Volume"), NodePath("spatial/input2Volume")]
@@ -135,6 +134,11 @@ Vector3i(7, 1, 0): 0
 blueprintItemID = "blueprint_assembler"
 hoverName = "Assembler"
 
+[node name="Shape" type="GMPShape" parent="." unique_id=1383300236]
+shape = 5
+mesh = SubResource("ArrayMesh_kwply")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1, -2)
+
 [node name="bakedMesh" type="MeshInstance3D" parent="." unique_id=1526807296]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1, -2)
 mesh = SubResource("ArrayMesh_kwply")
@@ -198,7 +202,7 @@ material = SubResource("StandardMaterial3D_7qi08")
 [node name="scrap_grabber" parent="decor" unique_id=582232449 instance=ExtResource("1_gmdp6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.7041893, 1.0586977, -2.1708968)
 
-[node name="CCDIK3D" type="CCDIK3D" parent="decor/scrap_grabber/Skeleton/Skeleton3D" parent_id_path=PackedInt32Array(582232449, 136500066) index="1" unique_id=472936444]
+[node name="CCDIK3D" type="CCDIK3D" parent="decor/scrap_grabber/Skeleton/Skeleton3D" parent_id_path=PackedInt32Array(582232449, 813942281) index="1" unique_id=472936444]
 setting_count = 1
 settings/0/target_node = NodePath("../../../iktarget")
 settings/0/root_bone_name = "Turret"
@@ -226,7 +230,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5719304, 1.2237682, 0)
 [node name="scrap_grabber2" parent="decor" unique_id=1432334222 instance=ExtResource("1_gmdp6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4541516, 1.0657701, -1.9688182)
 
-[node name="CCDIK3D" type="CCDIK3D" parent="decor/scrap_grabber2/Skeleton/Skeleton3D" parent_id_path=PackedInt32Array(1432334222, 136500066) index="1" unique_id=484097119]
+[node name="CCDIK3D" type="CCDIK3D" parent="decor/scrap_grabber2/Skeleton/Skeleton3D" parent_id_path=PackedInt32Array(1432334222, 813942281) index="1" unique_id=484097119]
 setting_count = 1
 settings/0/target_node = NodePath("../../../iktarget")
 settings/0/root_bone_name = "Turret"
@@ -256,15 +260,13 @@ transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 3.8508592, 0.10652399, 
 
 [node name="spatial" type="Node3D" parent="." unique_id=1803810552]
 
-[node name="input2Volume" type="Box3DBody" parent="spatial" unique_id=1546703583]
-body_type = 0
-box_size = Vector3(1.3, 1, 2)
+[node name="input2Volume" type="GMPShape" parent="spatial" unique_id=1546703583]
+size = Vector3(1.3, 1, 2)
 is_sensor = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.244631, 0.5381, -1.9985116)
 
-[node name="input1Volume" type="Box3DBody" parent="spatial" unique_id=444069163]
-body_type = 0
-box_size = Vector3(1.3, 1, 2)
+[node name="input1Volume" type="GMPShape" parent="spatial" unique_id=444069163]
+size = Vector3(1.3, 1, 2)
 is_sensor = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8908378, 0.5381, -1.9985116)
 

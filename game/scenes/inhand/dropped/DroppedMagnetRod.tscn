@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://1flmop0inqn0"]
 
-[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/PhysicalFactoryItem.cs" id="1_b4w0e"]
+[ext_resource type="Script" path="res://game/scripts/items/DroppedTool.cs" id="1_b4w0e"]
 
-[node name="DroppedMagnetRod" type="Box3DBody" unique_id=682506339]
+[node name="DroppedMagnetRod" type="GMPBody" unique_id=682506339]
 script = ExtResource("1_b4w0e")
+
+[node name="Shape" type="GMPShape" parent="." unique_id=1045829371]
+density = 1.0

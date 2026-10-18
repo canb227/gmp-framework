@@ -556,9 +556,8 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_bpyw3")
 
-[node name="BrokenSmelter" type="Box3DBody" unique_id=560119559]
+[node name="BrokenSmelter" type="GMPBody" unique_id=560119559]
 body_type = 0
-shape_type = 6
 script = ExtResource("2_broken")
 repairedScene = ExtResource("2_3ad6h")
 cells = Dictionary[Vector3i, int]({
@@ -896,20 +895,20 @@ Vector3i(10, 5, -1): 0
 blueprintItemID = "blueprint_smelter"
 hoverName = "Smelter"
 
-[node name="Box3DBody2" type="Box3DBody" parent="." unique_id=177873273]
-body_type = 0
-shape_type = 6
+[node name="Box3DBody2" type="GMPShape" parent="." unique_id=177873273]
 transform = Transform3D(-0.778182, -0.62534386, 0.058120478, -0.6277149, 0.77741534, -0.039995074, -0.020173088, -0.06760658, -0.99750805, 10.870345, 4.536014, -2.882429)
+shape = 5
+mesh = SubResource("ArrayMesh_lk5eu")
 
 [node name="Door" type="MeshInstance3D" parent="Box3DBody2" unique_id=674669746]
 transform = Transform3D(1, -4.0745363e-08, 3.7252903e-09, 1.8626451e-08, 1, 0, 1.8626451e-09, 0, 1, 0, 0, 0)
 mesh = SubResource("ArrayMesh_lk5eu")
 surface_material_override/0 = ExtResource("6_re8ot")
 
-[node name="Box3DBody" type="Box3DBody" parent="." unique_id=1914479814]
-body_type = 0
-shape_type = 6
+[node name="Box3DBody" type="GMPShape" parent="." unique_id=1914479814]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.002286, 1.0223321, -3.022911)
+shape = 5
+mesh = SubResource("ArrayMesh_51h3q")
 
 [node name="Body" type="MeshInstance3D" parent="Box3DBody" unique_id=931550475]
 mesh = SubResource("ArrayMesh_51h3q")

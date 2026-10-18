@@ -8,26 +8,37 @@ using System.Collections.Generic;
 /// </summary>
 public abstract partial class IOMachine : Machine
 {
-    /// <summary>Sensor bodies items are taken in from. Assumed not to overlap.</summary>
+    /// <summary>Sensor shapes (GMPShape with is_sensor) items are taken in from. Assumed not to overlap.</summary>
     [Export] public Godot.Collections.Array<Node3D> inputVolumes = new();
     [Export] public Godot.Collections.Array<Node3D> outputLocations = new();
 
-    /// <summary>Authority only: a body entered or left an input volume (<see cref="inputItems"/> is already updated).</summary>
-    protected virtual void OnInputEntered(Node3D body) { }
-    protected virtual void OnInputExited(Node3D body) { }
+    /// <summary>Authority only: an item entered or left an input volume (<see cref="inputItems"/> is already updated).</summary>
+    protected virtual void OnInputEntered(ItemRecord item) { }
+    protected virtual void OnInputExited(ItemRecord item) { }
 
     /// <summary>Authority only: the items in the input volumes, oldest first.</summary>
-    public List<PhysicalFactoryItem> inputItems = new();
+    public List<ItemRecord> inputItems = new();
 
+    static readonly StringName itemEnteredName = "item_entered";
+    static readonly StringName itemExitedName = "item_exited";
+    static readonly StringName getOverlappingItemsName = "get_overlapping_items";
 
     public override void _Ready()
     {
         base._Ready();
         foreach (Node3D volume in inputVolumes)
         {
-            volume.Connect(Box3DNames.areaEntered, Callable.From<Node3D>(InputVolumeEntered));
-            volume.Connect(Box3DNames.areaExited, Callable.From<Node3D>(InputVolumeExited));
+            volume.Connect(itemEnteredName, Callable.From<long>(InputVolumeEntered));
+            volume.Connect(itemExitedName, Callable.From<long>(InputVolumeExited));
         }
+        // An item despawned while inside (picked up, eaten elsewhere) might never send an exit.
+        ItemWorld.ItemRemoved += OnItemRemoved;
+    }
+
+    public override void _ExitTree()
+    {
+        base._ExitTree();
+        ItemWorld.ItemRemoved -= OnItemRemoved;
     }
 
     public override void AfterInit()
@@ -42,34 +53,29 @@ public abstract partial class IOMachine : Machine
         CheckInputs();
     }
 
-    public override void _PhysicsProcess(double delta)
-    {
-        if (runsMachineLogic)
-        {
-            // An item despawned while inside (picked up, eaten elsewhere) might never send an exit.
-            inputItems.RemoveAll(item => !GameWorld.syncedObjs.ContainsKey(item.id));
-
-        }
-        base._PhysicsProcess(delta);
-    }
-
     // ---- inputs ----
 
-    void InputVolumeEntered(Node3D body)
+    void InputVolumeEntered(long id)
     {
         if (!runsMachineLogic) return;
-        if (body is PhysicalFactoryItem item && GameWorld.syncedObjs.ContainsKey(item.id) && !inputItems.Contains(item))
-        {
-            inputItems.Add(item);
-        }
-        OnInputEntered(body);
+        ItemRecord item = ItemWorld.Get((ulong)id);
+        if (item == null || inputItems.Contains(item)) return;
+        inputItems.Add(item);
+        OnInputEntered(item);
     }
 
-    void InputVolumeExited(Node3D body)
+    void InputVolumeExited(long id)
     {
         if (!runsMachineLogic) return;
-        if (body is PhysicalFactoryItem item) inputItems.Remove(item);
-        OnInputExited(body);
+        ItemRecord item = ItemWorld.Get((ulong)id);
+        if (item == null) return;
+        inputItems.Remove(item);
+        OnInputExited(item);
+    }
+
+    void OnItemRemoved(ItemRecord item, DespawnReason reason)
+    {
+        inputItems.Remove(item);
     }
 
     // Starts over from what's in the volumes now, as items already inside never send an enter.
@@ -80,12 +86,10 @@ public abstract partial class IOMachine : Machine
 
         foreach (Node3D volume in inputVolumes)
         {
-            // Dispose the Godot wrappers here rather than leave them to the garbage collector.
-            using Variant result = volume.Call(Box3DNames.getOverlappingBodies);
-            using Godot.Collections.Array bodies = result.AsGodotArray();
-            for (int i = 0; i < bodies.Count; i++)
+            foreach (long id in volume.Call(getOverlappingItemsName).AsInt64Array())
             {
-                if (bodies[i].AsGodotObject() is PhysicalFactoryItem item && GameWorld.syncedObjs.ContainsKey(item.id) && !inputItems.Contains(item))
+                ItemRecord item = ItemWorld.Get((ulong)id);
+                if (item != null && !inputItems.Contains(item))
                 {
                     inputItems.Add(item);
                 }
@@ -94,10 +98,10 @@ public abstract partial class IOMachine : Machine
     }
 
     /// <summary>Authority only: takes <paramref name="item"/> out of the inputs and despawns it.</summary>
-    protected void ConsumeInputItem(PhysicalFactoryItem item)
+    protected void ConsumeInputItem(ItemRecord item)
     {
         inputItems.Remove(item);
-        GameWorld.DespawnObject(item.id, DespawnReason.Consumed);
+        ItemWorld.Despawn(item.id, DespawnReason.Consumed);
     }
 
     // ---- outputs ----

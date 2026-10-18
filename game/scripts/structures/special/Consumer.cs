@@ -7,7 +7,7 @@ public partial class Consumer : IOMachine
     {
         if (inputItems.Count == 0) return false;
 
-        PhysicalFactoryItem item = inputItems[0];
+        ItemRecord item = inputItems[0];
         // Read what's needed before despawning, which may free the item.
         string itemID = item.itemID;
         Dictionary<Currency, int> value = new(item.currencyValue);

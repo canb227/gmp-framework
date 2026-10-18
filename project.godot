@@ -30,6 +30,8 @@ BuildGrid="*res://game/scripts/core/BuildGrid.cs"
 ProgressManager="*uid://yyd2313sfhhb"
 UIManager="*res://game/scripts/ui/UIManager.cs"
 Shop="*res://game/scripts/core/Shop.cs"
+ItemWorld="*res://game/scripts/items/ItemWorld.cs"
+FmodManager="*uid://cds10pm7hwn3p"
 AudioManager="*uid://ccquous70473g"
 
 [display]

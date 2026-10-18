@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3]
 
-[ext_resource type="Script" path="res://gmp/objects/GMPOBox3DBody.cs" id="1_body"]
+[ext_resource type="Script" path="res://gmp/objects/GMPOBody.cs" id="1_body"]
 
 [sub_resource type="BoxMesh" id="floor_mesh"]
 size = Vector3(31, 1, 31)
@@ -11,45 +11,44 @@ size = Vector3(1, 3, 31)
 [sub_resource type="BoxMesh" id="wall_z_mesh"]
 size = Vector3(31, 3, 1)
 
-[node name="TestArena" type="Box3DBody"]
+[node name="TestArena" type="GMPBody"]
 body_type = 0
-box_size = Vector3(31, 1, 31)
 script = ExtResource("1_body")
 priority = -1
 
-[node name="FloorShape" type="Box3DCollisionShape" parent="."]
-box_size = Vector3(31, 1, 31)
+[node name="FloorShape" type="GMPShape" parent="."]
+size = Vector3(31, 1, 31)
 
 [node name="Floor" type="MeshInstance3D" parent="."]
 mesh = SubResource("floor_mesh")
 
-[node name="WallEastShape" type="Box3DCollisionShape" parent="."]
+[node name="WallEastShape" type="GMPShape" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5, 2, 0)
-box_size = Vector3(1, 3, 31)
+size = Vector3(1, 3, 31)
 
 [node name="WallEast" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5, 2, 0)
 mesh = SubResource("wall_x_mesh")
 
-[node name="WallWestShape" type="Box3DCollisionShape" parent="."]
+[node name="WallWestShape" type="GMPShape" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.5, 2, 0)
-box_size = Vector3(1, 3, 31)
+size = Vector3(1, 3, 31)
 
 [node name="WallWest" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.5, 2, 0)
 mesh = SubResource("wall_x_mesh")
 
-[node name="WallNorthShape" type="Box3DCollisionShape" parent="."]
+[node name="WallNorthShape" type="GMPShape" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -15.5)
-box_size = Vector3(31, 3, 1)
+size = Vector3(31, 3, 1)
 
 [node name="WallNorth" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -15.5)
 mesh = SubResource("wall_z_mesh")
 
-[node name="WallSouthShape" type="Box3DCollisionShape" parent="."]
+[node name="WallSouthShape" type="GMPShape" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 15.5)
-box_size = Vector3(31, 3, 1)
+size = Vector3(31, 3, 1)
 
 [node name="WallSouth" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 15.5)

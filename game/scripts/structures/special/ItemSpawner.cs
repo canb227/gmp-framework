@@ -57,8 +57,6 @@ public partial class ItemSpawner : IOMachine
     int upgradeLevel;
     int nextStreamOutput;
 
-    /// <summary>Reused by <see cref="CountNearby"/>, which may see a body once per shape.</summary>
-    static readonly HashSet<PhysicalFactoryItem> nearbyScratch = new();
 
     public override void AfterInit()
     {
@@ -111,12 +109,12 @@ public partial class ItemSpawner : IOMachine
         {
             return false;
         }
-        if (maxOfItem > 0 && PhysicalFactoryItem.CountOf(itemID) >= maxOfItem)
+        if (maxOfItem > 0 && ItemWorld.CountOf(itemID) >= maxOfItem)
         {
             Hold($"{maxOfItem} {itemID} in the world");
             return false;
         }
-        if (maxTotalItems > 0 && PhysicalFactoryItem.totalCount >= maxTotalItems)
+        if (maxTotalItems > 0 && ItemWorld.totalCount >= maxTotalItems)
         {
             Hold($"{maxTotalItems} items in the world");
             return false;
@@ -153,15 +151,7 @@ public partial class ItemSpawner : IOMachine
     /// <summary>How many items are within <see cref="nearbyRadius"/> of <paramref name="position"/>.</summary>
     int CountNearby(Vector3 position)
     {
-        nearbyScratch.Clear();
-        foreach (Node3D node in GameWorld.OverlapSphere(position, nearbyRadius, (int)~GameWorld.QueryHiddenLayer))
-        {
-            if (node is PhysicalFactoryItem item)
-            {
-                nearbyScratch.Add(item);
-            }
-        }
-        return nearbyScratch.Count;
+        return PhysicsWorld.OverlapSphere(position, nearbyRadius, PhysicsWorld.ItemLayer).items.Length;
     }
 
     /// <summary>Picks a key at random in proportion to its weight; null if no key has a positive weight.</summary>

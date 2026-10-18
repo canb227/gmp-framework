@@ -9,13 +9,21 @@ public partial class FactoryPlayer
 {
     [Export] public float pickRange = 5f;
 
-    /// <summary>The body (item, activator, structure...) currently under the crosshair, or null.</summary>
-    public GMPOBox3DBody pickTarget { get; private set; }
+    /// <summary>The body (activator, structure, dropped tool...) currently under the crosshair, or null.</summary>
+    public GMPOBody pickTarget { get; private set; }
+
+    /// <summary>The loose item currently under the crosshair, or null (then <see cref="pickTarget"/> may be set).</summary>
+    public ItemRecord pickItem { get; private set; }
 
     void HandleInteractionInput(InputEvent @event)
     {
         if (!@event.IsActionPressed(InputActions.interact)) return;
 
+        if (pickItem != null)
+        {
+            ItemWorld.Interact(pickItem, this);
+            return;
+        }
         if (pickTarget is Interactable i)
         {
             Logging.Log($"You just pressed interact on {pickTarget.Name}!", "Player");
@@ -37,9 +45,21 @@ public partial class FactoryPlayer
     /// <summary>Refreshes <see cref="pickTarget"/> and the hover labels. Runs each physics tick on the local player.</summary>
     void UpdatePickTarget()
     {
-        RayHit ray = GameWorld.Raycast(camera.GlobalPosition, camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * pickRange);
+        RayHit ray = PhysicsWorld.Raycast(camera.GlobalPosition, camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * pickRange);
+        pickItem = null;
+        if (ray.itemId != 0)
+        {
+            ItemRecord item = ItemWorld.Get(ray.itemId);
+            if (item != null && item.canBePickTarget)
+            {
+                pickItem = item;
+                pickTarget = null;
+                UIManager.SetHoverInfo(item.hoverName, item.hoverText);
+                return;
+            }
+        }
         // A hit on a structure's belt line or plain child body resolves to the structure.
-        GMPOBox3DBody target = ray.collider as GMPOBox3DBody;
+        GMPOBody target = ray.body as GMPOBody;
         if (target is not Interactable && string.IsNullOrEmpty(target?.hoverName) && string.IsNullOrEmpty(target?.hoverText))
         {
             target = BuildGrid.FindStructure(ray);

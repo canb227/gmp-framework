@@ -208,10 +208,12 @@ public partial class BuildGrid
             {
                 height = Mathf.Max(height, cell.Y + 1);
             }
-            foreach (PhysicalFactoryItem item in probe.ItemOverlaps())
+            foreach (ulong item in probe.ItemOverlaps())
             {
-                item.Teleport(item.GlobalPosition + Vector3.Up * (height * CellSize + 0.5f));
-                item.SetAwake(true); // a resting item may be asleep and would hang in the air
+                // Teleporting wakes it, so it doesn't hang in the air.
+                Transform3D transform = PhysicsWorld.ItemTransform(item);
+                transform.Origin += Vector3.Up * (height * CellSize + 0.5f);
+                PhysicsWorld.TeleportItem(item, transform);
             }
         }
 

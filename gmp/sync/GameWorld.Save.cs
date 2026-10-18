@@ -73,7 +73,7 @@ public partial class GameWorld
             RootSave r = new()
             {
                 scenePath = root.SceneFilePath,
-                parent = parent == b3droot ? null : parent.GetPath().ToString(),
+                parent = parent == physics ? null : parent.GetPath().ToString(),
                 name = root.Name,
             };
             if (root is Node3D n3d)

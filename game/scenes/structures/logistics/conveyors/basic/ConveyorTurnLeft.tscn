@@ -34,10 +34,8 @@ _surfaces = [{
 "vertex_data": PackedByteArray("jgbUPwAAAACcp2q/CW31PwAAAAD2XQfAXYr/P3E9yj466f2/QN7jP3E9yj7H9IC/jgbUPwAAAACcp2q/XYr/P3E9yj466f2/Ew/YPwAAAABd+aS/FNDQPwAAAAC2226/knTlP3E9yj5sBKK/U7P7P3E9yj5r8f2/XYr/P3E9yj466f2/CW31PwAAAAD2XQfAuoPgP3E9yj4x04K/knTlP3E9yj5sBKK/FNDQPwAAAAC2226/uoPgP3E9yj4x04K/FNDQPwAAAAC2226/jgbUPwAAAACcp2q/uoPgP3E9yj4x04K/jgbUPwAAAACcp2q/QN7jP3E9yj7H9IC/opfxPwAAAAB5QAfAU7P7P3E9yj5r8f2/CW31PwAAAAD2XQfAopfxPwAAAAB5QAfAknTlP3E9yj5sBKK/U7P7P3E9yj5r8f2/opfxPwAAAAB5QAfAEw/YPwAAAABd+aS/knTlP3E9yj5sBKK/uoPgP3E9yj4x04K/XYr/P3E9yj466f2/U7P7P3E9yj5r8f2/uoPgP3E9yj4x04K/QN7jP3E9yj7H9IC/XYr/P3E9yj466f2/uoPgP3E9yj4x04K/U7P7P3E9yj5r8f2/knTlP3E9yj5sBKK/opfxPwAAAAB5QAfACW31PwAAAAD2XQfAjgbUPwAAAACcp2q/opfxPwAAAAB5QAfAjgbUPwAAAACcp2q/FNDQPwAAAAC2226/opfxPwAAAAB5QAfAFNDQPwAAAAC2226/Ew/YPwAAAABd+aS/")
 }]
 
-[node name="ConveyorTurnLeft" type="Box3DBody" unique_id=1324107816 node_paths=PackedStringArray("beltSurfaces")]
+[node name="ConveyorTurnLeft" type="GMPBody" unique_id=1324107816 node_paths=PackedStringArray("beltSurfaces")]
 body_type = 0
-box_size = Vector3(0, 0, 0)
-baked_compound = true
 transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 0, 0)
 script = ExtResource("1_r")
 beltSurfaces = []
@@ -52,60 +50,53 @@ blueprintItemID = "blueprint_conveyor"
 
 [node name="Model" parent="." unique_id=813788857 instance=ExtResource("2_r")]
 
-[node name="Floor0" type="Box3DBody" parent="." unique_id=1007537442]
-body_type = 0
-box_size = Vector3(2, 0.1, 1.06401)
-friction = 0.8
-tangent_velocity = Vector3(0, 0, -2)
-user_material_id = 5
+[node name="Floor0" type="GMPShape" parent="." unique_id=1007537442]
 transform = Transform3D(0, -0.005, -0.99999, 0.00047, 0.99999, -0.005, 1, -0.00047, 0, 0.53025, 0.08622, -0.99998)
-
-[node name="Floor1" type="Box3DBody" parent="." unique_id=337974952]
-body_type = 0
-box_size = Vector3(1.43, 0.1, 1.06532)
+size = Vector3(2, 0.1, 1.06401)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
-user_material_id = 5
+surface_type = 5
+
+[node name="Floor1" type="GMPShape" parent="." unique_id=337974952]
 transform = Transform3D(0.70711, -0.03531, -0.70622, 0, 0.99875, -0.04994, 0.70711, 0.03531, 0.70622, 0.88211, 0.08469, -1.12142)
-
-[node name="Floor2" type="Box3DBody" parent="." unique_id=334643199]
-body_type = 0
-box_size = Vector3(2, 0.1, 1.06504)
+size = Vector3(1.43, 0.1, 1.06532)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
-user_material_id = 5
+surface_type = 5
+
+[node name="Floor2" type="GMPShape" parent="." unique_id=334643199]
 transform = Transform3D(0.9998, -0.01991, 0, 0.01989, 0.99882, -0.04429, 0.00088, 0.04428, 0.99902, 1.001, 0.08751, -1.47221)
+size = Vector3(2, 0.1, 1.06504)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+surface_type = 5
 
-[node name="WallOuter0" type="Box3DBody" parent="." unique_id=1107121708]
-body_type = 0
-shape_type = 5
-collision_mesh = SubResource("ArrayMesh_WallOuter0")
+[node name="WallOuter0" type="GMPShape" parent="." unique_id=1107121708]
+shape = 4
+mesh = SubResource("ArrayMesh_WallOuter0")
 friction = 0.0
-user_material_id = 3
+surface_type = 3
 
-[node name="WallOuter1" type="Box3DBody" parent="." unique_id=1060106689]
-body_type = 0
-shape_type = 5
-collision_mesh = SubResource("ArrayMesh_WallOuter1")
+[node name="WallOuter1" type="GMPShape" parent="." unique_id=1060106689]
+shape = 4
+mesh = SubResource("ArrayMesh_WallOuter1")
 friction = 0.0
-user_material_id = 3
+surface_type = 3
 
-[node name="WallOuter2" type="Box3DBody" parent="." unique_id=51411012]
-body_type = 0
-shape_type = 5
-collision_mesh = SubResource("ArrayMesh_WallOuter2")
+[node name="WallOuter2" type="GMPShape" parent="." unique_id=51411012]
+shape = 4
+mesh = SubResource("ArrayMesh_WallOuter2")
 friction = 0.0
-user_material_id = 3
+surface_type = 3
 
-[node name="CornerDeflector" type="Box3DBody" parent="." unique_id=1747350150]
-body_type = 0
-shape_type = 4
-capsule_radius = 0.1
-capsule_height = 0.30000000000000004
+[node name="CornerDeflector" type="GMPShape" parent="." unique_id=1747350150]
+transform = Transform3D(0.9999992, 0, 0, 0, 1, 0, 0, 0, 0.9999992, 0.040430095, 0.29963547, -1.9580303)
+shape = 2
+radius = 0.1
+height = 0.3
 friction = 0.5
 tangent_velocity = Vector3(1.414, 0, -1.414)
-user_material_id = 3
-transform = Transform3D(0.9999992, 0, 0, 0, 1, 0, 0, 0, 0.9999992, 0.040430095, 0.29963547, -1.9580303)
+surface_type = 3
 
 [node name="StructureArrow" type="Node3D" parent="." unique_id=362824754]
 transform = Transform3D(4.371139e-08, 3.821371e-15, -1, 8.742278e-08, -1, 0, -1, -8.742278e-08, -4.371139e-08, 0.16272354, 0.8026422, -0.78694737)

@@ -1,19 +1,12 @@
 [gd_scene format=3 uid="uid://bjruedm5vci13"]
 
-[ext_resource type="Script" uid="uid://cy4yp2ddtysj1" path="res://game/scripts/items/PhysicalFactoryItem.cs" id="1_item"]
 [ext_resource type="PackedScene" uid="uid://51l1ndre1sch" path="res://game/assets/models/items/scrap_ingot.glb" id="2_model"]
 
-[node name="scrap_ingot" type="Box3DBody" unique_id=232515007]
-box_size = Vector3(0.8, 0.3, 0.4)
+[node name="scrap_ingot" type="GMPBody" unique_id=232515007]
+
+[node name="Shape" type="GMPShape" parent="." unique_id=1129384756]
+size = Vector3(0.8, 0.3, 0.4)
 density = 6.0
 friction = 0.55
-script = ExtResource("1_item")
-itemID = "scrap_ingot"
-canBePickTarget = true
-canBeGrabbed = true
-tags = Array[int]([3, 22])
-currencyValue = Dictionary[int, int]({
-1: 1
-})
 
 [node name="Model" parent="." unique_id=1882200890 instance=ExtResource("2_model")]
