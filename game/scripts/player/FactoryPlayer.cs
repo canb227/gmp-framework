@@ -98,6 +98,18 @@ public partial class FactoryPlayer : GMPOCharacter
     float remoteAge;
     bool heardRemote;
 
+    // ---- impacts (landing, running into walls) for the other peers ----
+    // The local player's impacts go out in every state for ImpactResendSeconds, so a lost packet doesn't lose one;
+    // each has a number, so a remote copy reports each once. Remote players are shown at their newest state, so they
+    // are reported as they come in.
+    const double ImpactResendSeconds = 0.3;
+    readonly List<(double time, SyncedImpact impact)> recentImpacts = new();
+    /// <summary>The number of the newest impact (the first is 1).</summary>
+    ushort impactSeq;
+    /// <summary>Remote copies: the newest impact reported here, once the first state has said where the numbers are.</summary>
+    ushort heardImpactSeq;
+    bool heardImpactSeqSet;
+
     [Export] public Camera3D camera;
     [Export] Node3D head;
     [Export] Node3D body;
@@ -369,6 +381,67 @@ public partial class FactoryPlayer : GMPOCharacter
         }
 
         velocity = Move(relative + ground, delta);
+        QueueImpactsToSend();
+    }
+
+    /// <summary>Keeps the last move's impacts (<see cref="GMPOCharacter.lastImpacts"/>) to send to the other peers.</summary>
+    void QueueImpactsToSend()
+    {
+        double now = Time.GetTicksMsec() / 1000.0;
+        while (recentImpacts.Count > 0 && now - recentImpacts[0].time > ImpactResendSeconds)
+        {
+            recentImpacts.RemoveAt(0);
+        }
+        foreach (CharacterImpact impact in lastImpacts)
+        {
+            impactSeq++;
+            SyncedImpact synced = new SyncedImpact
+            {
+                seq = impactSeq,
+                kind = (byte)impact.kind,
+                speed = impact.speed,
+                surfaceType = impact.surfaceType,
+                itemId = impact.itemId,
+                position = impact.position,
+                normal = impact.normal,
+            };
+            recentImpacts.Add((now, synced));
+        }
+    }
+
+    /// <summary>Remote copy: reports the impacts in a state that haven't been reported yet.</summary>
+    void ReportSyncedImpacts(PlayerSync msg)
+    {
+        if (!heardImpactSeqSet)
+        {
+            // Whatever this first state carries happened before this peer heard of the player.
+            heardImpactSeq = msg.impactSeq;
+            heardImpactSeqSet = true;
+            return;
+        }
+        if (msg.impacts == null)
+        {
+            return;
+        }
+        foreach (SyncedImpact synced in msg.impacts)
+        {
+            // Newer than the last one reported (the numbers wrap around).
+            if ((short)(synced.seq - heardImpactSeq) <= 0)
+            {
+                continue;
+            }
+            heardImpactSeq = synced.seq;
+            CharacterImpact impact = new CharacterImpact
+            {
+                kind = synced.kind,
+                position = synced.position,
+                normal = synced.normal,
+                speed = synced.speed,
+                surfaceType = synced.surfaceType,
+                itemId = synced.itemId,
+            };
+            ReportImpact(impact);
+        }
     }
 
     /// <summary>
@@ -491,7 +564,16 @@ public partial class FactoryPlayer : GMPOCharacter
             height = capsuleHeight,
             equippedSlot = inventory.ActiveHotbarSlot,
             heldItemState = heldItem?.GenerateSyncState(),
+            impactSeq = impactSeq,
         };
+        if (recentImpacts.Count > 0)
+        {
+            msg.impacts = new SyncedImpact[recentImpacts.Count];
+            for (int i = 0; i < recentImpacts.Count; i++)
+            {
+                msg.impacts[i] = recentImpacts[i].impact;
+            }
+        }
         return GMPObject.serializer.Serialize(msg);
     }
 
@@ -514,6 +596,7 @@ public partial class FactoryPlayer : GMPOCharacter
             remoteVelocity = msg.vel;
             remoteAge = 0;
             heardRemote = true;
+            ReportSyncedImpacts(msg);
             // Crouched copies are short for everyone, so items and players meet the right capsule.
             if (msg.height > 0 && !Mathf.IsEqualApprox(msg.height, capsuleHeight))
             {
@@ -576,4 +659,21 @@ public partial record struct PlayerSync
     [Key(7)] public byte[] heldItemState;
     /// <summary>The capsule's height (crouched or standing).</summary>
     [Key(8)] public float height;
+    /// <summary>The impacts of the last 0.3 s (FactoryPlayer.ImpactResendSeconds), oldest first, or null.</summary>
+    [Key(9)] public SyncedImpact[] impacts;
+    /// <summary>The number of the newest impact so far (0: none yet).</summary>
+    [Key(10)] public ushort impactSeq;
+}
+
+/// <summary>One of a player's impacts (<see cref="CharacterImpact"/>) for the other peers. Node ids aren't sent: they are each peer's own.</summary>
+[GenerateShape]
+public partial record struct SyncedImpact
+{
+    [Key(0)] public ushort seq;
+    [Key(1)] public byte kind;
+    [Key(2)] public float speed;
+    [Key(3)] public long surfaceType;
+    [Key(4)] public ulong itemId;
+    [Key(5)] public Vector3 position;
+    [Key(6)] public Vector3 normal;
 }

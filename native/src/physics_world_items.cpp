@@ -57,10 +57,10 @@ void GMPPhysicsWorld::spawn_item(int64_t id, int kindIndex, int64_t authority, T
 	shapeDef.baseMaterial.restitution = kind.restitution;
 	shapeDef.baseMaterial.rollingResistance = kind.rollingResistance;
 	shapeDef.baseMaterial.userMaterialId = kind.userMaterialId;
-	// Machines' sensors see items. Items' impacts make sounds: a hit is a new contact (begin touch event) that
-	// was approaching fast enough, and Box3D only works out a contact's approach speed with hit events on.
+	// Contact begin/end events cost per contact; items will turn them on only where a reaction needs them.
+	shapeDef.enableContactEvents = false;
+	// Machines' sensors see items, and items' impacts make sounds.
 	shapeDef.enableSensorEvents = true;
-	shapeDef.enableContactEvents = true;
 	shapeDef.enableHitEvents = true;
 	shapeDef.filter.categoryBits = itemLayer;
 	b3ShapeId shape;
@@ -236,7 +236,7 @@ void GMPPhysicsWorld::teleport_item(int64_t id, Transform3D transform) {
 void GMPPhysicsWorld::set_item_reports_touches(int64_t id, bool reports) {
 	auto found = slotById.find((uint64_t)id);
 	if (found != slotById.end()) {
-		items[found->second].reportsTouches = reports;
+		b3Shape_EnableContactEvents(items[found->second].shape, reports);
 	}
 }
 

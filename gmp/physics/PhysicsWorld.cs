@@ -19,7 +19,7 @@ public struct RayHit
 }
 
 /// <summary>
-/// An impact in the last step (<see cref="PhysicsWorld.Hits"/>): a new contact approaching at 1 m/s or more. Read
+/// An impact this tick (<see cref="PhysicsWorld.Hits"/>): a contact approaching at 1 m/s or more. Read
 /// straight from the bytes the C++ world packs, so it must keep the fields and order of HitRecord
 /// (native/src/physics_world.h): 64 bytes.
 /// </summary>
@@ -267,10 +267,13 @@ public static class PhysicsWorld
     }
 
     /// <summary>
-    /// Fills <paramref name="hits"/> with the last step's impacts, for impact sounds. Followers collide too while they
-    /// move, so every peer gets the hits of what it shows. Pass the same list every tick so it isn't reallocated.
+    /// Fills <paramref name="hits"/> with this tick's impacts at least <paramref name="minSpeed"/> (m/s) and within
+    /// <paramref name="maxDistance"/> of <paramref name="listener"/>, for impact sounds. The same on every peer: the
+    /// hits of what this peer simulates, and those its followers' authority sent, as playback reaches them (so they
+    /// come with what this peer shows; received ones have no node ids). Call once a physics tick, after the step
+    /// (<see cref="GameWorld.PhysicsStepped"/>), with the same list every time so it isn't reallocated.
     /// </summary>
-    public static void Hits(List<ContactHit> hits)
+    public static void Hits(List<ContactHit> hits, Vector3 listener, float maxDistance, float minSpeed)
     {
         hits.Clear();
         if (System.Runtime.CompilerServices.Unsafe.SizeOf<ContactHit>() != 64)
@@ -278,7 +281,7 @@ public static class PhysicsWorld
             GD.PushError("ContactHit no longer matches HitRecord (64 bytes) in native/src/physics_world.h");
             return;
         }
-        byte[] bytes = world.Call(getHitsName).AsByteArray();
+        byte[] bytes = world.Call(getHitsName, listener, maxDistance, minSpeed).AsByteArray();
         // The bytes are ContactHits back to back: viewed as such, no copying field by field.
         hits.AddRange(MemoryMarshal.Cast<byte, ContactHit>(bytes));
     }

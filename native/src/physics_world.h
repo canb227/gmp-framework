@@ -111,6 +111,19 @@ struct HitRecord {
 };
 static_assert(sizeof(HitRecord) == 64, "HitRecord must match ContactHit in C#");
 
+// Hits wait at most this many ticks for an item packet to take them, so a sound is never sent late.
+const uint64_t MaxHitSendAge = 10;
+// At most this many wait at once (a huge spill sends the first ones only).
+const int MaxHitsToSend = 512;
+
+// A hit on its way to the other peers, or come from one and waiting for playback to reach it.
+struct NetworkHit {
+	HitRecord hit;
+	// When it happened: the world's tick (to send), or the sender's physics tick (received).
+	double tick = 0;
+	uint64_t sender = 0;
+};
+
 // One loose item in the world. Items are plain data: no node per item.
 struct Item {
 	// The item's GMPObject id, which C# knows it by. 0 marks a free slot.
@@ -130,8 +143,6 @@ struct Item {
 	int indexInKind = -1;
 	// Asleep in this peer's simulation (only means something on the authority).
 	bool asleep = false;
-	// Its new touches with other items are listed (get_item_touches), for tag reactions.
-	bool reportsTouches = false;
 
 	// ---- networking (physics_world_sync.cpp) ----
 	// The peer that simulates it and sends its state. Everyone else follows it.
@@ -160,9 +171,6 @@ struct Item {
 	// The velocities at the last playback, to carry on with should this peer become the authority.
 	godot::Vector3 followVelocity;
 	godot::Vector3 followAngularVelocity;
-	// The velocity of the last state playback moved past: as a follower lands, the state being played may
-	// already be the one from after the impact (see side_speed).
-	godot::Vector3 passedVelocity;
 	// Where it is shown relative to the played-back pose: taken when following starts, then faded out, so
 	// it slides onto the authority's pose instead of jumping.
 	godot::Vector3 errorPosition;
@@ -224,9 +232,10 @@ public:
 	void remove_node_body(GMPBody *body);
 
 	// ---- events (physics_world_events.cpp) ----
-	// The impacts of the last step (new contacts approaching at 1 m/s or more, on followers too), as
-	// HitRecords back to back.
-	godot::PackedByteArray get_hits() const;
+	// This tick's impacts, as HitRecords back to back: the ones of what this peer simulates (Box3D's hit
+	// events), and the ones its followers' authorities sent, as playback reaches them (so they come with
+	// what this peer shows). Only those at least minSpeed (m/s) and within maxDistance of listener.
+	godot::PackedByteArray get_hits(godot::Vector3 listener, float maxDistance, float minSpeed) const;
 	// The last step's new touches between items where one reports its touches (set_item_reports_touches):
 	// item ids in pairs, A then B.
 	godot::PackedInt64Array get_item_touches() const;
@@ -329,8 +338,13 @@ private:
 	double applyMsTotal = 0;
 	double followMsTotal = 0;
 
-	// The last step's hits (see get_hits).
+	// This tick's hits (see get_hits).
 	std::vector<HitRecord> hits;
+	// Hits of items this peer simulates, for the next item packet; and hits received, until playback gets there.
+	std::vector<NetworkHit> hitsToSend;
+	std::vector<NetworkHit> hitsReceived;
+	int64_t hitsSent = 0;
+	int64_t hitsHeard = 0;
 	godot::PackedInt64Array itemTouches;
 
 	// Timings of the last step, for get_stats.
@@ -347,8 +361,10 @@ private:
 	void read_move_events();
 	void read_sensor_events();
 	void read_contact_events();
-	void read_hit(const b3ContactBeginTouchEvent &begin, uint64_t itemA, uint64_t itemB, uint64_t nodeA, uint64_t nodeB);
-	float side_speed(b3ShapeId shapeId, uint64_t itemId, godot::Vector3 direction) const;
+	void read_hits(const b3ContactEvents &contactEvents);
+	void play_received_hits();
+	int write_hits(std::vector<uint8_t> &packet, int maxPacketBytes);
+	int read_hits_from_packet(const uint8_t *packet, int size, uint64_t senderTick, int64_t sender);
 
 	int item_priority(Item &item, uint64_t sendTick);
 	bool at_rest_and_sent(const Item &item, uint64_t sendTick) const;

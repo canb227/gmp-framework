@@ -139,6 +139,8 @@ Dictionary GMPPhysicsWorld::get_stats() const {
 	stats["build_ms_total"] = buildMsTotal;
 	stats["apply_ms_total"] = applyMsTotal;
 	stats["follow_ms_total"] = followMsTotal;
+	stats["hits_sent"] = hitsSent;
+	stats["hits_heard"] = hitsHeard;
 	return stats;
 }
 
@@ -243,7 +245,7 @@ void GMPPhysicsWorld::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("step", "delta"), &GMPPhysicsWorld::step);
 	ClassDB::bind_method(D_METHOD("get_stats"), &GMPPhysicsWorld::get_stats);
-	ClassDB::bind_method(D_METHOD("get_hits"), &GMPPhysicsWorld::get_hits);
+	ClassDB::bind_method(D_METHOD("get_hits", "listener", "max_distance", "min_speed"), &GMPPhysicsWorld::get_hits);
 	ClassDB::bind_method(D_METHOD("raycast", "from", "to", "mask"), &GMPPhysicsWorld::raycast, DEFVAL(0xFFFFFFFF));
 	ClassDB::bind_method(D_METHOD("overlap_sphere", "center", "radius", "mask"), &GMPPhysicsWorld::overlap_sphere, DEFVAL(0xFFFFFFFF));
 	ClassDB::bind_method(D_METHOD("overlap_box", "transform", "size", "mask"), &GMPPhysicsWorld::overlap_box, DEFVAL(0xFFFFFFFF));

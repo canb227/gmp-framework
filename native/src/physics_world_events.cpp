@@ -148,16 +148,10 @@ void GMPPhysicsWorld::read_sensor_events() {
 
 void GMPPhysicsWorld::read_contact_events() {
 	b3ContactEvents contactEvents = b3World_GetContactEvents(world);
+	read_hits(contactEvents);
 
-	// Hits go in the list C# reads after the step (get_hits). A hit is a new contact that was approaching at
-	// HitSpeed or more. Box3D's own hit events need the solver to have pushed back, which never happens for a
-	// follower: it is aimed at a pose the authority already found touching, not overlapping. A new contact's
-	// approach speed (before the solver) is there either way, so the authority and its followers hear the
-	// same impacts.
-	hits.clear();
-
-	// Touches: only bodies with contact_monitor on have their shapes report them. Each side that is a
-	// body node hears about the other side.
+	// Touches: only shapes with contact events on report them (items that report touches, bodies with
+	// contact_monitor on). Each side that is a body node hears about the other side.
 	struct Touch {
 		ObjectID body;
 		EventSide other;
@@ -168,13 +162,10 @@ void GMPPhysicsWorld::read_contact_events() {
 		const b3ContactBeginTouchEvent &begin = contactEvents.beginEvents[i];
 		EventSide a = event_side(this, begin.shapeIdA);
 		EventSide b = event_side(this, begin.shapeIdB);
-		read_hit(begin, a.itemId, b.itemId, (uint64_t)a.node, (uint64_t)b.node);
-		// Item on item: listed for C#'s tag reactions (get_item_touches), if either asked for it.
+		// Item on item: listed for C#'s tag reactions (get_item_touches).
 		if (a.itemId != 0 && b.itemId != 0) {
-			if (items[slotById[a.itemId]].reportsTouches || items[slotById[b.itemId]].reportsTouches) {
-				itemTouches.push_back((int64_t)a.itemId);
-				itemTouches.push_back((int64_t)b.itemId);
-			}
+			itemTouches.push_back((int64_t)a.itemId);
+			itemTouches.push_back((int64_t)b.itemId);
 			continue;
 		}
 		if (a.node.is_valid()) {
@@ -201,99 +192,93 @@ void GMPPhysicsWorld::read_contact_events() {
 	}
 }
 
-// A new contact approaching at least this fast (m/s) is a hit.
-const float HitSpeed = 1.0f;
+// Hits of items this peer simulates are sent to the other peers if they are this close to any player (m).
+const float HitSendRange = 60.0f;
 
-// How fast one side of a contact is moving along direction (m/s). A follower item: its authority's velocity
-// in the state being played or the one just passed, whichever is faster that way. Playback may have reached
-// the state from after the impact by the time the contact begins. Anything else: its body's velocity.
-float GMPPhysicsWorld::side_speed(b3ShapeId shapeId, uint64_t itemId, Vector3 direction) const {
-	if (itemId != 0) {
-		const Item &item = items[slotById.at(itemId)];
-		if (item.following && item.snapshotCount > 0) {
-			return std::max(item.snapshots[0].velocity.dot(direction), item.passedVelocity.dot(direction));
+// This tick's hits (get_hits) from Box3D's hit events: impacts at 1 m/s or more (the world's hit event
+// threshold) on shapes with hit events on (every item, and bodies with hit_events on). Box3D only sees
+// impacts of what this peer simulates: followers are kinematic and don't collide with each other or the
+// level, so their hits come from their authority instead (play_received_hits).
+void GMPPhysicsWorld::read_hits(const b3ContactEvents &contactEvents) {
+	hits.clear();
+	for (int i = 0; i < contactEvents.hitCount; i++) {
+		const b3ContactHitEvent &event = contactEvents.hitEvents[i];
+		EventSide a = event_side(this, event.shapeIdA);
+		EventSide b = event_side(this, event.shapeIdB);
+		// With an item in it, the hit is its authority's to report: a body this peer simulates bumping into
+		// an item someone else simulates is heard from them.
+		bool hasItem = a.itemId != 0 || b.itemId != 0;
+		bool ours = (a.itemId != 0 && items[slotById[a.itemId]].authority == selfPeer) ||
+				(b.itemId != 0 && items[slotById[b.itemId]].authority == selfPeer);
+		if (hasItem && !ours) {
+			continue;
+		}
+		HitRecord hit;
+		hit.position[0] = (float)event.point.x;
+		hit.position[1] = (float)event.point.y;
+		hit.position[2] = (float)event.point.z;
+		hit.speed = event.approachSpeed;
+		hit.surfaceTypeA = (int64_t)event.userMaterialIdA;
+		hit.surfaceTypeB = (int64_t)event.userMaterialIdB;
+		hit.itemIdA = a.itemId;
+		hit.itemIdB = b.itemId;
+		hit.nodeIdA = (uint64_t)a.node;
+		hit.nodeIdB = (uint64_t)b.node;
+		hits.push_back(hit);
+
+		if (!hasItem || (int)hitsToSend.size() >= MaxHitsToSend) {
+			continue;
+		}
+		Vector3 point = Vector3(hit.position[0], hit.position[1], hit.position[2]);
+		bool nearAPlayer = false;
+		for (const Vector3 &viewer : viewerPositions) {
+			if (point.distance_squared_to(viewer) <= HitSendRange * HitSendRange) {
+				nearAPlayer = true;
+				break;
+			}
+		}
+		if (nearAPlayer) {
+			NetworkHit toSend;
+			toSend.hit = hit;
+			toSend.tick = (double)tick;
+			toSend.sender = selfPeer;
+			hitsToSend.push_back(toSend);
 		}
 	}
-	return to_godot(b3Body_GetLinearVelocity(b3Shape_GetBody(shapeId))).dot(direction);
+	play_received_hits();
 }
 
-// Adds a new contact to the hit list if it is an impact: an item on either side, or a body node with
-// hit_events on, approaching at HitSpeed or more.
-void GMPPhysicsWorld::read_hit(const b3ContactBeginTouchEvent &begin, uint64_t itemA, uint64_t itemB, uint64_t nodeA, uint64_t nodeB) {
-	if (itemA == 0 && itemB == 0) {
-		uint64_t unused = 0;
-		GMPBody *ownerA = nullptr;
-		GMPBody *ownerB = nullptr;
-		owner_of_shape(begin.shapeIdA, unused, ownerA);
-		owner_of_shape(begin.shapeIdB, unused, ownerB);
-		bool wanted = (ownerA != nullptr && ownerA->hitEvents) || (ownerB != nullptr && ownerB->hitEvents);
-		if (!wanted) {
-			return;
+// Hits other peers sent join this tick's once their sender's playback clock gets to them, so they come with
+// the followers' motion. A hit whose sender has no clock here yet plays at once.
+void GMPPhysicsWorld::play_received_hits() {
+	for (int i = (int)hitsReceived.size() - 1; i >= 0; i--) {
+		const NetworkHit &received = hitsReceived[i];
+		auto clock = playbackTicks.find(received.sender);
+		if (clock != playbackTicks.end() && clock->second < received.tick) {
+			continue;
 		}
+		hits.push_back(received.hit);
+		hitsReceived[i] = hitsReceived.back();
+		hitsReceived.pop_back();
 	}
-	if (!b3Contact_IsValid(begin.contactId)) {
-		return;
-	}
-	// The fastest approaching point. Box3D works out each point's normal velocity before solving, while
-	// either shape has hit events on.
-	b3ContactData data = b3Contact_GetData(begin.contactId);
-	float speed = 0.0f;
-	b3Vec3 anchorA = { 0, 0, 0 };
-	for (int m = 0; m < data.manifoldCount; m++) {
-		const b3Manifold &manifold = data.manifolds[m];
-		for (int p = 0; p < manifold.pointCount; p++) {
-			float approach = -manifold.points[p].normalVelocity;
-			if (approach > speed) {
-				speed = approach;
-				anchorA = manifold.points[p].anchorA;
-			}
-		}
-	}
-	// A follower's body only goes as far as its next played-back pose, so as it lands it slows to cover the
-	// last bit of the gap. How fast it really came in is the authority's velocity in the state being played
-	// (from before the impact).
-	bool followerA = itemA != 0 && items[slotById[itemA]].following;
-	bool followerB = itemB != 0 && items[slotById[itemB]].following;
-	if ((followerA || followerB) && data.manifoldCount > 0) {
-		// The normal points from A to B: A moving along it and B against it close the gap.
-		Vector3 normal = to_godot(data.manifolds[0].normal);
-		float approach = side_speed(begin.shapeIdA, itemA, normal) + side_speed(begin.shapeIdB, itemB, -normal);
-		if (approach > speed) {
-			speed = approach;
-			if (data.manifolds[0].pointCount > 0) {
-				anchorA = data.manifolds[0].points[0].anchorA;
-			}
-		}
-	}
-	if (speed < HitSpeed) {
-		return;
-	}
-	// The anchor is from body A's centre of mass.
-	b3BodyId b3BodyA = b3Shape_GetBody(begin.shapeIdA);
-	b3Pos centerA = b3Body_GetWorldPoint(b3BodyA, b3Body_GetLocalCenter(b3BodyA));
-	HitRecord hit;
-	hit.position[0] = (float)(centerA.x + anchorA.x);
-	hit.position[1] = (float)(centerA.y + anchorA.y);
-	hit.position[2] = (float)(centerA.z + anchorA.z);
-	hit.speed = speed;
-	hit.surfaceTypeA = (int64_t)b3Shape_GetSurfaceMaterial(begin.shapeIdA).userMaterialId;
-	hit.surfaceTypeB = (int64_t)b3Shape_GetSurfaceMaterial(begin.shapeIdB).userMaterialId;
-	hit.itemIdA = itemA;
-	hit.itemIdB = itemB;
-	hit.nodeIdA = nodeA;
-	hit.nodeIdB = nodeB;
-	hits.push_back(hit);
 }
 
 PackedInt64Array GMPPhysicsWorld::get_item_touches() const {
 	return itemTouches;
 }
 
-PackedByteArray GMPPhysicsWorld::get_hits() const {
+PackedByteArray GMPPhysicsWorld::get_hits(Vector3 listener, float maxDistance, float minSpeed) const {
+	std::vector<HitRecord> wanted;
+	for (const HitRecord &hit : hits) {
+		Vector3 point = Vector3(hit.position[0], hit.position[1], hit.position[2]);
+		if (hit.speed >= minSpeed && point.distance_squared_to(listener) <= maxDistance * maxDistance) {
+			wanted.push_back(hit);
+		}
+	}
 	PackedByteArray bytes;
-	bytes.resize((int64_t)(hits.size() * sizeof(HitRecord)));
-	if (!hits.empty()) {
-		std::memcpy(bytes.ptrw(), hits.data(), hits.size() * sizeof(HitRecord));
+	bytes.resize((int64_t)(wanted.size() * sizeof(HitRecord)));
+	if (!wanted.empty()) {
+		std::memcpy(bytes.ptrw(), wanted.data(), wanted.size() * sizeof(HitRecord));
 	}
 	return bytes;
 }

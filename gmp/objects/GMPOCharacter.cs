@@ -1,4 +1,32 @@
 using Godot;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+
+/// <summary>
+/// Something a character ran into (<see cref="GMPOCharacter.Impacted"/>): landing on the floor, or running into a wall or
+/// ceiling. Read straight from the bytes the C++ character packs, so it must keep the fields and order of
+/// CharacterImpactRecord (native/src/physics_character.h): 56 bytes.
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct CharacterImpact
+{
+    public const int Landed = 0;
+    public const int Bumped = 1;
+
+    /// <summary><see cref="Landed"/> or <see cref="Bumped"/>.</summary>
+    public int kind;
+    public Vector3 position;
+    /// <summary>Out of what it hit, toward the character.</summary>
+    public Vector3 normal;
+    /// <summary>How fast the character was going into it (m/s).</summary>
+    public float speed;
+    /// <summary>The surface type of what it hit (GMPShape.surface_type, or the item's).</summary>
+    public long surfaceType;
+    /// <summary>The item it hit, or 0.</summary>
+    public ulong itemId;
+    /// <summary>The GMPBody node it hit as an instance id (<see cref="GodotObject.InstanceFromId"/>), or 0. Always 0 on remote copies.</summary>
+    public ulong nodeId;
+}
 
 /// <summary>
 /// GMPObject base for walking characters (the player). Attach a script deriving from this to a <c>GMPCharacter</c> node
@@ -28,6 +56,21 @@ public partial class GMPOCharacter : Node3D, GMPObject
     [Export]
     public int priorityAccumulator { get; set; }
     public byte[] desiredState { get; set; }
+
+    /// <summary>
+    /// A character ran into something, on every peer: the local one's from its own moves (<see cref="Move"/>), remote
+    /// copies' as their controller reports them (game code passes them on in the character's state and calls
+    /// <see cref="ReportImpact"/>). For sounds.
+    /// </summary>
+    public static event System.Action<GMPOCharacter, CharacterImpact> Impacted;
+
+    /// <summary>What the last <see cref="Move"/> ran into (the local character only).</summary>
+    public readonly List<CharacterImpact> lastImpacts = new();
+
+    public void ReportImpact(CharacterImpact impact)
+    {
+        Impacted?.Invoke(this, impact);
+    }
 
     public virtual void AfterInit()
     {
@@ -73,16 +116,34 @@ public partial class GMPOCharacter : Node3D, GMPObject
     static readonly StringName getFloorNormalName = "get_floor_normal";
     static readonly StringName getFloorVelocityName = "get_floor_velocity";
     static readonly StringName canFitHeightName = "can_fit_height";
+    static readonly StringName getImpactsName = "get_impacts";
     static readonly StringName heightName = "height";
 
     /// <summary>
     /// Moves the character by <paramref name="velocity"/> over <paramref name="delta"/> seconds, sliding along what it
     /// meets, and returns its velocity afterwards. The legs hold it at standing height while it is on the floor, so
     /// give it no vertical velocity there (but a jump's).
+    /// <para>What it ran into is in <see cref="lastImpacts"/> afterwards, and each is reported (<see cref="Impacted"/>).</para>
     /// </summary>
     public Vector3 Move(Vector3 velocity, double delta)
     {
-        return Call(moveName, velocity, (float)delta).AsVector3();
+        Vector3 after = Call(moveName, velocity, (float)delta).AsVector3();
+        lastImpacts.Clear();
+        if (System.Runtime.CompilerServices.Unsafe.SizeOf<CharacterImpact>() != 56)
+        {
+            GD.PushError("CharacterImpact no longer matches CharacterImpactRecord (56 bytes) in native/src/physics_character.h");
+            return after;
+        }
+        byte[] bytes = Call(getImpactsName).AsByteArray();
+        if (bytes.Length > 0)
+        {
+            lastImpacts.AddRange(MemoryMarshal.Cast<byte, CharacterImpact>(bytes));
+            foreach (CharacterImpact impact in lastImpacts)
+            {
+                ReportImpact(impact);
+            }
+        }
+        return after;
     }
 
     /// <summary>Puts the character there at once, without sweeping its body across (which would bowl things over).</summary>

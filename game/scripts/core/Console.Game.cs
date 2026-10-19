@@ -439,6 +439,8 @@ public partial class Console
     double hitStatsLeft;
     int hitStatsTicks;
     long hitCount, hardHitCount, itemOnItemHits, nodeHits, unknownNodes;
+    long localLandings, localBumps, remoteLandings, remoteBumps;
+    float maxLandingSpeed;
     double hitSpeedTotal, hitSpeedMax;
     readonly List<ContactHit> hits = new();
     const float HardHitSpeed = 3;
@@ -457,6 +459,13 @@ public partial class Console
         itemOnItemHits = 0;
         nodeHits = 0;
         unknownNodes = 0;
+        localLandings = 0;
+        localBumps = 0;
+        remoteLandings = 0;
+        remoteBumps = 0;
+        maxLandingSpeed = 0;
+        GMPOCharacter.Impacted -= CountImpact;
+        GMPOCharacter.Impacted += CountImpact;
         hitSpeedTotal = 0;
         hitSpeedMax = 0;
         LimboConsole.Info($"hitstats: measuring for {seconds} s");
@@ -466,7 +475,8 @@ public partial class Console
     {
         if (hitStatsLeft <= 0)
             return;
-        PhysicsWorld.Hits(hits);
+        // Every hit, anywhere, at any speed.
+        PhysicsWorld.Hits(hits, Vector3.Zero, float.MaxValue, 0);
         foreach (ContactHit hit in hits)
         {
             hitCount++;
@@ -501,6 +511,31 @@ public partial class Console
         Logging.Log($"hitstats: role={role} seconds={measured:0.0} hits_per_s={hitCount / measured:0.0} hard_per_s={hardHitCount / measured:0.0} " +
             $"item_on_item_per_s={itemOnItemHits / measured:0.0} other_per_s={(hitCount - itemOnItemHits) / measured:0.0} " +
             $"node_sides={nodeHits} unknown_nodes={unknownNodes} avg_speed={averageSpeed:0.00} max_speed={hitSpeedMax:0.00}", "Test");
+        Godot.Collections.Dictionary stats = PhysicsWorld.Stats();
+        Logging.Log($"hitstats: role={role} hits_sent_total={stats["hits_sent"]} hits_heard_total={stats["hits_heard"]} " +
+            $"local_landings={localLandings} local_bumps={localBumps} remote_landings={remoteLandings} remote_bumps={remoteBumps} " +
+            $"max_landing_speed={maxLandingSpeed:0.00}", "Test");
+        GMPOCharacter.Impacted -= CountImpact;
+    }
+
+    void CountImpact(GMPOCharacter character, CharacterImpact impact)
+    {
+        bool local = character.authority == Lobby.selfPeerID;
+        if (impact.kind == CharacterImpact.Landed)
+        {
+            maxLandingSpeed = Math.Max(maxLandingSpeed, impact.speed);
+            if (local)
+                localLandings++;
+            else
+                remoteLandings++;
+        }
+        else
+        {
+            if (local)
+                localBumps++;
+            else
+                remoteBumps++;
+        }
     }
 
     /// <summary>Host: makes the first n scrap pieces MAGNETIC (instead of METAL, FERROUS), to test tag reactions.</summary>

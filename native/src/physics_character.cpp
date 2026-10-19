@@ -2,10 +2,12 @@
 
 #include "body_user_data.h"
 #include "math_convert.h"
+#include "physics_world.h"
 
 #include <godot_cpp/core/class_db.hpp>
 
 #include <cmath>
+#include <cstring>
 
 using namespace godot;
 
@@ -65,6 +67,8 @@ void GMPCharacter::make_capsule_shape() {
 struct MoverContext {
 	b3BodyId self = b3_nullBodyId;
 	b3CollisionPlane planes[MaxMoverPlanes];
+	// The shape each plane is on.
+	b3ShapeId planeShapes[MaxMoverPlanes];
 	int planeCount = 0;
 	// The legs' cast: the closest hit.
 	bool hit = false;
@@ -97,6 +101,7 @@ static bool collect_planes(b3ShapeId shapeId, const b3PlaneResult *results, int 
 	bool soft = is_soft(shapeId);
 	for (int i = 0; i < count && mover->planeCount < MaxMoverPlanes; i++) {
 		b3CollisionPlane &plane = mover->planes[mover->planeCount];
+		mover->planeShapes[mover->planeCount] = shapeId;
 		plane.plane = results[i].plane;
 		plane.push = 0;
 		if (soft) {
@@ -171,6 +176,8 @@ void GMPCharacter::probe_floor(b3WorldId world, b3Pos feet, bool rising, float &
 	}
 	onFloor = true;
 	floorNormal = to_godot(context.hitNormal);
+	floorPoint = Vector3(context.hitPoint.x, context.hitPoint.y, context.hitPoint.z);
+	floorShape = context.hitShape;
 	distance = context.hitFraction * length - restTravel;
 
 	// Standing still on something moving means moving with it: a body's own motion at that point, plus a
@@ -193,6 +200,10 @@ Vector3 GMPCharacter::move(Vector3 velocity, float delta) {
 	}
 	b3WorldId world = b3Body_GetWorld(get_body_id());
 	b3Pos feet = to_b3(transform.origin);
+	impacts.clear();
+	// As the last move left it.
+	bool wasOnFloor = onFloor;
+	Vector3 velocityIn = velocity;
 
 	// Jumping: the legs let go.
 	bool rising = velocity.y > 0.5f;
@@ -230,17 +241,91 @@ Vector3 GMPCharacter::move(Vector3 velocity, float delta) {
 	// What the solid planes it ended against leave of the velocity (soft ones don't take any).
 	velocity = to_godot(b3ClipVector(to_b3(velocity), context.planes, context.planeCount));
 
-	transform.origin = Vector3(feet.x, feet.y, feet.z);
+	// Running into a wall or ceiling: the solid plane too steep to stand on that it went into fastest, if it
+	// wasn't against one already.
+	float minNormalY = std::cos(maxSlopeDegrees * B3_PI / 180.0f);
+	bool wall = false;
+	float bumpSpeed = 0;
+	int bumpPlane = -1;
+	for (int i = 0; i < context.planeCount; i++) {
+		const b3CollisionPlane &plane = context.planes[i];
+		if (!plane.clipVelocity || plane.plane.normal.y >= minNormalY) {
+			continue;
+		}
+		wall = true;
+		float speed = -velocityIn.dot(to_godot(plane.plane.normal));
+		if (speed > bumpSpeed) {
+			bumpSpeed = speed;
+			bumpPlane = i;
+		}
+	}
+	Vector3 feetAfter = Vector3(feet.x, feet.y, feet.z);
+	if (wall && !againstWall && bumpPlane >= 0) {
+		Vector3 normal = to_godot(context.planes[bumpPlane].plane.normal);
+		// Where the capsule's middle meets it.
+		Vector3 middle = feetAfter + Vector3(0, (stepHeight + height) * 0.5f, 0);
+		add_impact(1, middle - normal * radius, normal, bumpSpeed, context.planeShapes[bumpPlane]);
+	}
+	againstWall = wall;
+
+	transform.origin = feetAfter;
 	set_global_transform(transform);
 	// Ready for the next move, and for C# to read in between.
 	probe_floor(world, feet, rising, distance);
+	if (onFloor && !wasOnFloor) {
+		float speed = -velocityIn.dot(floorNormal);
+		if (speed > 0) {
+			add_impact(0, floorPoint, floorNormal, speed, floorShape);
+		}
+	}
 	return velocity;
+}
+
+void GMPCharacter::add_impact(int kind, Vector3 position, Vector3 normal, float speed, b3ShapeId shape) {
+	CharacterImpactRecord impact;
+	impact.kind = kind;
+	impact.position[0] = position.x;
+	impact.position[1] = position.y;
+	impact.position[2] = position.z;
+	impact.normal[0] = normal.x;
+	impact.normal[1] = normal.y;
+	impact.normal[2] = normal.z;
+	impact.speed = speed;
+	impact.surfaceType = 0;
+	impact.itemId = 0;
+	impact.nodeId = 0;
+	if (b3Shape_IsValid(shape)) {
+		impact.surfaceType = (int64_t)b3Shape_GetSurfaceMaterial(shape).userMaterialId;
+		void *userData = b3Body_GetUserData(b3Shape_GetBody(shape));
+		GMPPhysicsWorld *physics = GMPPhysicsWorld::get_current();
+		if (user_data_is_item(userData)) {
+			if (physics != nullptr) {
+				impact.itemId = physics->item_id_at_slot(item_slot_from_user_data(userData));
+			}
+		} else {
+			GMPBody *node = node_from_user_data(userData);
+			if (node != nullptr) {
+				impact.nodeId = node->get_instance_id();
+			}
+		}
+	}
+	impacts.push_back(impact);
+}
+
+PackedByteArray GMPCharacter::get_impacts() const {
+	PackedByteArray bytes;
+	bytes.resize((int64_t)(impacts.size() * sizeof(CharacterImpactRecord)));
+	if (!impacts.empty()) {
+		std::memcpy(bytes.ptrw(), impacts.data(), impacts.size() * sizeof(CharacterImpactRecord));
+	}
+	return bytes;
 }
 
 void GMPCharacter::teleport_character(Transform3D transform) {
 	teleport(transform);
 	legVelocity = 0;
 	onFloor = false;
+	againstWall = false;
 }
 
 bool GMPCharacter::can_fit_height(float newHeight) const {
@@ -332,6 +417,7 @@ void GMPCharacter::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_floor_normal"), &GMPCharacter::get_floor_normal);
 	ClassDB::bind_method(D_METHOD("get_floor_velocity"), &GMPCharacter::get_floor_velocity);
 	ClassDB::bind_method(D_METHOD("can_fit_height", "height"), &GMPCharacter::can_fit_height);
+	ClassDB::bind_method(D_METHOD("get_impacts"), &GMPCharacter::get_impacts);
 
 	ClassDB::bind_method(D_METHOD("set_radius", "value"), &GMPCharacter::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &GMPCharacter::get_radius);

@@ -1,8 +1,8 @@
 // GMPPhysicsWorld: networking the items. See physics_world.h.
 //
 // Each item has one authority, the peer that simulates it (the host, for every loose item). The authority
-// sends its state; every other peer follows: the item's body is driven along the authority's states (a
-// dynamic body without gravity while it moves, so it collides and makes hits; kinematic at rest), played back about two sends behind the newest so packets arriving unevenly don't
+// sends its state; every other peer follows: the item's body is kinematic there, and is driven along the
+// authority's states, played back about two sends behind the newest so packets arriving unevenly don't
 // show. C# moves the packets (GameWorld) and keeps the playback clock per sending peer (set_playback_tick).
 //
 // Sending: on each send, every item whose turn it is (id % send interval) adds its priority to its
@@ -11,7 +11,11 @@
 // An item at rest stops sending once its resting pose has gone out a few times, until it moves.
 //
 // A packet:   send time (8 bytes, GameWorld.netTime)   sender's physics tick (8 bytes)
+//             hit count (2 bytes), then the hits (HitWireSize each, see write_hits)
 //             then per item: id (8 bytes), state size (1 byte), state (item_state.h)
+//
+// Hits: the impacts of items the sender simulates since its last packet, so every peer hears what its
+// followers do (they don't collide here). Each is played back with the item states it came with.
 
 #include "physics_world.h"
 
@@ -113,7 +117,6 @@ void GMPPhysicsWorld::set_item_authority(int64_t id, int64_t peer) {
 	if (item.authority == selfPeer) {
 		// A follower is only ever driven along, so it carries on at the velocity it was followed at.
 		b3Body_SetType(item.body, b3_dynamicBody);
-		b3Body_SetGravityScale(item.body, 1.0f);
 		b3Body_SetLinearVelocity(item.body, to_b3(item.followVelocity));
 		b3Body_SetAngularVelocity(item.body, to_b3(item.followAngularVelocity));
 		b3Body_SetAwake(item.body, true);
@@ -222,11 +225,13 @@ Array GMPPhysicsWorld::build_item_states(int maxBytes, int maxPacketBytes, int t
 		return items[a].priorityAccumulator > items[b].priorityAccumulator;
 	});
 
-	const int headerSize = 16;
-	std::vector<uint8_t> packet(headerSize);
+	// Every packet has the header and a hit count; only the first carries hits.
+	const int headerSize = 18;
+	std::vector<uint8_t> packet(headerSize, 0);
 	write_u64(packet.data(), (uint64_t)sendTime);
 	write_u64(packet.data() + 8, (uint64_t)sendTick);
-	int sentBytes = 0;
+	int hitsWritten = write_hits(packet, maxPacketBytes);
+	int sentBytes = (int)packet.size() - headerSize;
 	for (int slot : candidates) {
 		Item &item = items[slot];
 		ItemState state = build_item_state(item, (uint64_t)sendTick);
@@ -241,6 +246,8 @@ Array GMPPhysicsWorld::build_item_states(int maxBytes, int maxPacketBytes, int t
 		if ((int)packet.size() > headerSize && (int)packet.size() + entrySize > maxPacketBytes) {
 			packets.push_back(to_packet(packet));
 			packet.resize(headerSize);
+			packet[16] = 0;
+			packet[17] = 0;
 		}
 		size_t at = packet.size();
 		packet.resize(at + entrySize);
@@ -250,11 +257,83 @@ Array GMPPhysicsWorld::build_item_states(int maxBytes, int maxPacketBytes, int t
 		sentBytes += entrySize;
 		item.priorityAccumulator = 0;
 	}
-	if ((int)packet.size() > headerSize) {
+	if ((int)packet.size() > headerSize || (packets.size() == 0 && hitsWritten > 0)) {
 		packets.push_back(to_packet(packet));
 	}
 	buildMsTotal += now_ms() - start;
 	return packets;
+}
+
+// ---- hits on the wire ----
+
+// position (3 floats), ticks since it happened (1 byte), speed (half float), the two surface types
+// (2 bytes each), the two item ids (8 bytes each). Node ids are this peer's own, so they don't go.
+const int HitWireSize = 35;
+
+// Writes the hit count and as many waiting hits as fit after the header; returns how many went.
+int GMPPhysicsWorld::write_hits(std::vector<uint8_t> &packet, int maxPacketBytes) {
+	// Too old to be worth hearing now.
+	for (int i = (int)hitsToSend.size() - 1; i >= 0; i--) {
+		if ((uint64_t)hitsToSend[i].tick + MaxHitSendAge < tick) {
+			hitsToSend.erase(hitsToSend.begin() + i);
+		}
+	}
+	int room = (maxPacketBytes - (int)packet.size()) / HitWireSize;
+	int count = std::min({ (int)hitsToSend.size(), room, 65535 });
+	if (count < 0) {
+		count = 0;
+	}
+	packet[16] = (uint8_t)(count & 0xFF);
+	packet[17] = (uint8_t)(count >> 8);
+	for (int i = 0; i < count; i++) {
+		const NetworkHit &toSend = hitsToSend[i];
+		size_t at = packet.size();
+		packet.resize(at + HitWireSize);
+		uint8_t *to = packet.data() + at;
+		write_float(to, toSend.hit.position[0]);
+		write_float(to + 4, toSend.hit.position[1]);
+		write_float(to + 8, toSend.hit.position[2]);
+		to[12] = (uint8_t)std::min<uint64_t>(tick - (uint64_t)toSend.tick, 255);
+		write_half(to + 13, toSend.hit.speed);
+		write_short(to + 15, (int16_t)toSend.hit.surfaceTypeA);
+		write_short(to + 17, (int16_t)toSend.hit.surfaceTypeB);
+		write_u64(to + 19, toSend.hit.itemIdA);
+		write_u64(to + 27, toSend.hit.itemIdB);
+	}
+	hitsToSend.erase(hitsToSend.begin(), hitsToSend.begin() + count);
+	hitsSent += count;
+	return count;
+}
+
+// Reads a packet's hits (after its 16 byte header) into hitsReceived; returns the bytes they took, or -1 if
+// the packet is too short for them.
+int GMPPhysicsWorld::read_hits_from_packet(const uint8_t *packet, int size, uint64_t senderTick, int64_t sender) {
+	if (size < 18) {
+		return -1;
+	}
+	int count = packet[16] | (packet[17] << 8);
+	if (18 + count * HitWireSize > size) {
+		return -1;
+	}
+	for (int i = 0; i < count; i++) {
+		const uint8_t *from = packet + 18 + i * HitWireSize;
+		NetworkHit received;
+		received.hit.position[0] = read_float(from);
+		received.hit.position[1] = read_float(from + 4);
+		received.hit.position[2] = read_float(from + 8);
+		received.tick = (double)senderTick - from[12];
+		received.hit.speed = read_half(from + 13);
+		received.hit.surfaceTypeA = read_short(from + 15);
+		received.hit.surfaceTypeB = read_short(from + 17);
+		received.hit.itemIdA = read_u64(from + 19);
+		received.hit.itemIdB = read_u64(from + 27);
+		received.hit.nodeIdA = 0;
+		received.hit.nodeIdB = 0;
+		received.sender = (uint64_t)sender;
+		hitsReceived.push_back(received);
+	}
+	hitsHeard += count;
+	return 2 + count * HitWireSize;
 }
 
 // ---- receiving ----
@@ -268,7 +347,11 @@ void GMPPhysicsWorld::apply_item_states(PackedByteArray packetArray, int64_t sen
 	}
 	uint64_t sendTime = read_u64(packet);
 	uint64_t senderTick = read_u64(packet + 8);
-	int offset = 16;
+	int hitBytes = read_hits_from_packet(packet, size, senderTick, sender);
+	if (hitBytes < 0) {
+		return;
+	}
+	int offset = 16 + hitBytes;
 	while (offset + 9 <= size) {
 		uint64_t id = read_u64(packet + offset);
 		int stateSize = packet[offset + 8];
@@ -334,15 +417,6 @@ void GMPPhysicsWorld::start_following(int slot) {
 	Item &item = items[slot];
 	item.following = true;
 	item.blendIn = true;
-	item.passedVelocity = Vector3();
-	// While it moves, a follower is a dynamic body without gravity whose velocity is aimed at the played-back
-	// pose every tick (follow): it collides with the world the way the authority's copy does, so this peer gets
-	// its own hit events (impact sounds) at the time it shows them. Kinematic bodies don't collide with each
-	// other or with static ones. At rest it goes back to kinematic, so a settled pile can't be shoved about here.
-	if (b3Body_GetType(item.body) != b3_dynamicBody) {
-		b3Body_SetType(item.body, b3_dynamicBody);
-		b3Body_SetGravityScale(item.body, 0.0f);
-	}
 	if (!item.inFollowers) {
 		item.inFollowers = true;
 		followers.push_back(slot);
@@ -370,12 +444,6 @@ void GMPPhysicsWorld::play_followers(float delta) {
 bool GMPPhysicsWorld::follow(Item &item, float delta) {
 	if (!item.following || item.snapshotCount == 0) {
 		item.following = false;
-		// A follower must not carry on moving by itself without gravity.
-		if (item.authority != selfPeer && b3Body_GetType(item.body) == b3_dynamicBody) {
-			b3Body_SetType(item.body, b3_kinematicBody);
-			b3Body_SetLinearVelocity(item.body, b3Vec3{ 0, 0, 0 });
-			b3Body_SetAngularVelocity(item.body, b3Vec3{ 0, 0, 0 });
-		}
 		return false;
 	}
 	double interpolationDelay = 2.0 * sendInterval;
@@ -423,7 +491,6 @@ bool GMPPhysicsWorld::follow(Item &item, float delta) {
 
 	if (done && item.blended) {
 		// At rest where the authority left it: put it there exactly and stop.
-		b3Body_SetType(item.body, b3_kinematicBody);
 		b3Body_SetTransform(item.body, to_b3(targetPosition), to_b3(targetRotation));
 		b3Body_SetLinearVelocity(item.body, b3Vec3{ 0, 0, 0 });
 		b3Body_SetAngularVelocity(item.body, b3Vec3{ 0, 0, 0 });
@@ -437,8 +504,7 @@ bool GMPPhysicsWorld::follow(Item &item, float delta) {
 		item.following = false;
 		return false;
 	}
-	// Driven there over this step, with the velocity that takes it there. Contacts may hold it back a little;
-	// the next tick's velocity makes that up.
+	// Driven there over this step, with the velocity that takes it there, so it pushes what it meets.
 	b3WorldTransform target = { to_b3(targetPosition), to_b3(targetRotation) };
 	b3Body_SetTargetTransform(item.body, target, delta, true);
 	return true;
@@ -449,7 +515,6 @@ bool GMPPhysicsWorld::follow(Item &item, float delta) {
 bool GMPPhysicsWorld::play_back(Item &item, double playbackTick, Vector3 &position, Quaternion &rotation) {
 	// Drop the states playback has moved past, keeping the newest one at or before it.
 	while (item.snapshotCount >= 2 && item.snapshots[1].tick <= playbackTick) {
-		item.passedVelocity = item.snapshots[0].velocity;
 		for (int i = 1; i < item.snapshotCount; i++) {
 			item.snapshots[i - 1] = item.snapshots[i];
 		}
