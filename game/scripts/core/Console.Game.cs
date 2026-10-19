@@ -435,6 +435,64 @@ public partial class Console
         Logging.Log($"followstats: {seconds:0.0} s | in view {inViewBodies:0} bodies at {inViewHz:0.0} states/s each | out of view {outViewBodies:0} at {outViewHz:0.0} states/s | frozen ticks {frozenTicks} of {movingTicks} moving ({frozenPercent:0.00}%)", "Test");
     }
 
+    // ---- hitstats: the physics world's impacts here, to compare host and client ----
+    double hitStatsLeft;
+    int hitStatsTicks;
+    long hitCount, hardHitCount, itemOnItemHits;
+    double hitSpeedTotal, hitSpeedMax;
+    const float HardHitSpeed = 3;
+
+    /// <summary>
+    /// Over the next n seconds, the impacts the physics world reports here (PhysicsWorld.Hits): per second, how many of
+    /// them were at least 3 m/s, item on item vs item on anything else, average and top speed. Run it on the host and a
+    /// client at once: followers collide too, so the numbers should be close.
+    /// </summary>
+    public void hitstats(float seconds)
+    {
+        hitStatsLeft = seconds;
+        hitStatsTicks = 0;
+        hitCount = 0;
+        hardHitCount = 0;
+        itemOnItemHits = 0;
+        hitSpeedTotal = 0;
+        hitSpeedMax = 0;
+        LimboConsole.Info($"hitstats: measuring for {seconds} s");
+    }
+
+    void HitStatsTick(double delta)
+    {
+        if (hitStatsLeft <= 0)
+            return;
+        Godot.Collections.Dictionary hits = PhysicsWorld.Hits();
+        float[] speeds = hits["speeds"].AsFloat32Array();
+        long[] items = hits["items"].AsInt64Array();
+        for (int i = 0; i < speeds.Length; i++)
+        {
+            hitCount++;
+            hitSpeedTotal += speeds[i];
+            hitSpeedMax = Math.Max(hitSpeedMax, speeds[i]);
+            if (speeds[i] >= HardHitSpeed)
+                hardHitCount++;
+            if (items[2 * i] != 0 && items[2 * i + 1] != 0)
+                itemOnItemHits++;
+        }
+        hitStatsTicks++;
+        hitStatsLeft -= delta;
+        if (hitStatsLeft > 0)
+            return;
+        double measured = (double)hitStatsTicks / Engine.PhysicsTicksPerSecond;
+        double averageSpeed = 0;
+        if (hitCount > 0)
+            averageSpeed = hitSpeedTotal / hitCount;
+        string role = "client";
+        if (Lobby.isHost)
+            role = "host";
+        // Logged (not just the console) as it finishes after the command has replied.
+        Logging.Log($"hitstats: role={role} seconds={measured:0.0} hits_per_s={hitCount / measured:0.0} hard_per_s={hardHitCount / measured:0.0} " +
+            $"item_on_item_per_s={itemOnItemHits / measured:0.0} other_per_s={(hitCount - itemOnItemHits) / measured:0.0} " +
+            $"avg_speed={averageSpeed:0.00} max_speed={hitSpeedMax:0.00}", "Test");
+    }
+
     /// <summary>Host: makes the first n scrap pieces MAGNETIC (instead of METAL, FERROUS), to test tag reactions.</summary>
     public void magnetize(int n)
     {
@@ -495,6 +553,7 @@ public partial class Console
             return;
         FloodTick();
         FollowStatsTick(delta);
+        HitStatsTick(delta);
         SpawnPendingBodies();
         StirBodies(delta);
     }

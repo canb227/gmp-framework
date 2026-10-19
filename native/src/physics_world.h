@@ -113,6 +113,8 @@ struct Item {
 	int indexInKind = -1;
 	// Asleep in this peer's simulation (only means something on the authority).
 	bool asleep = false;
+	// Its new touches with other items are listed (get_item_touches), for tag reactions.
+	bool reportsTouches = false;
 
 	// ---- networking (physics_world_sync.cpp) ----
 	// The peer that simulates it and sends its state. Everyone else follows it.
@@ -141,6 +143,9 @@ struct Item {
 	// The velocities at the last playback, to carry on with should this peer become the authority.
 	godot::Vector3 followVelocity;
 	godot::Vector3 followAngularVelocity;
+	// The velocity of the last state playback moved past: as a follower lands, the state being played may
+	// already be the one from after the impact (see side_speed).
+	godot::Vector3 passedVelocity;
 	// Where it is shown relative to the played-back pose: taken when following starts, then faded out, so
 	// it slides onto the authority's pose instead of jumping.
 	godot::Vector3 errorPosition;
@@ -202,7 +207,8 @@ public:
 	void remove_node_body(GMPBody *body);
 
 	// ---- events (physics_world_events.cpp) ----
-	// The impacts of the last step: { points, speeds, surfaces, items } as packed arrays, one entry per
+	// The impacts of the last step (new contacts approaching at 1 m/s or more, on followers too):
+	// { points, speeds, surfaces, items } as packed arrays, one entry per
 	// hit (surfaces and items: two per hit, the A and B side; an item id is 0 for a body that isn't one).
 	godot::Dictionary get_hits() const;
 	// The last step's new touches between items where one reports its touches (set_item_reports_touches):
@@ -328,6 +334,8 @@ private:
 	void read_move_events();
 	void read_sensor_events();
 	void read_contact_events();
+	void read_hit(const b3ContactBeginTouchEvent &begin, uint64_t itemA, uint64_t itemB);
+	float side_speed(b3ShapeId shapeId, uint64_t itemId, godot::Vector3 direction) const;
 
 	int item_priority(Item &item, uint64_t sendTick);
 	bool at_rest_and_sent(const Item &item, uint64_t sendTick) const;

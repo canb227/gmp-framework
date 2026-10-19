@@ -61,6 +61,7 @@ public static class PhysicsWorld
     static readonly StringName showItemNewestName = "show_item_newest";
     static readonly StringName getItemsBelowName = "get_items_below";
     static readonly StringName getItemTouchesName = "get_item_touches";
+    static readonly StringName getHitsName = "get_hits";
     static readonly StringName setViewersName = "set_viewers";
     static readonly StringName getStatsName = "get_stats";
     static readonly StringName getProfileName = "get_profile";
@@ -239,6 +240,16 @@ public static class PhysicsWorld
     public static long[] ItemTouches()
     {
         return world.Call(getItemTouchesName).AsInt64Array();
+    }
+
+    /// <summary>
+    /// The last step's impacts (at least 1 m/s), for impact sounds: "points" (Vector3[]) and "speeds" (float[]), one
+    /// per hit, and "surfaces" and "items" (long[]), two per hit (the A and B side; an item id is 0 for a body node).
+    /// Followers collide too while they move, so every peer gets the hits of what it shows.
+    /// </summary>
+    public static Godot.Collections.Dictionary Hits()
+    {
+        return world.Call(getHitsName).AsGodotDictionary();
     }
 
     /// <summary>Every player's position and view, for the items' sync priorities.</summary>

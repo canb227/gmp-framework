@@ -44,6 +44,7 @@ public partial class Console : Node
         LimboConsole.RegisterCommand(new Callable(this, "interp"));
         LimboConsole.RegisterCommand(new Callable(this, "lightshadows"));
         LimboConsole.RegisterCommand(new Callable(this, "followstats"));
+        LimboConsole.RegisterCommand(new Callable(this, "hitstats"));
         LimboConsole.RegisterCommand(new Callable(this, "stir"));
         LimboConsole.RegisterCommand(new Callable(this, "repair_all"));
         LimboConsole.RegisterCommand(new Callable(this, "item_counts"));

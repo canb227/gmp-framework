@@ -1,8 +1,8 @@
 // GMPPhysicsWorld: networking the items. See physics_world.h.
 //
 // Each item has one authority, the peer that simulates it (the host, for every loose item). The authority
-// sends its state; every other peer follows: the item's body is kinematic there, and is driven along the
-// authority's states, played back about two sends behind the newest so packets arriving unevenly don't
+// sends its state; every other peer follows: the item's body is driven along the authority's states (a
+// dynamic body without gravity while it moves, so it collides and makes hits; kinematic at rest), played back about two sends behind the newest so packets arriving unevenly don't
 // show. C# moves the packets (GameWorld) and keeps the playback clock per sending peer (set_playback_tick).
 //
 // Sending: on each send, every item whose turn it is (id % send interval) adds its priority to its
@@ -113,6 +113,7 @@ void GMPPhysicsWorld::set_item_authority(int64_t id, int64_t peer) {
 	if (item.authority == selfPeer) {
 		// A follower is only ever driven along, so it carries on at the velocity it was followed at.
 		b3Body_SetType(item.body, b3_dynamicBody);
+		b3Body_SetGravityScale(item.body, 1.0f);
 		b3Body_SetLinearVelocity(item.body, to_b3(item.followVelocity));
 		b3Body_SetAngularVelocity(item.body, to_b3(item.followAngularVelocity));
 		b3Body_SetAwake(item.body, true);
@@ -333,6 +334,15 @@ void GMPPhysicsWorld::start_following(int slot) {
 	Item &item = items[slot];
 	item.following = true;
 	item.blendIn = true;
+	item.passedVelocity = Vector3();
+	// While it moves, a follower is a dynamic body without gravity whose velocity is aimed at the played-back
+	// pose every tick (follow): it collides with the world the way the authority's copy does, so this peer gets
+	// its own hit events (impact sounds) at the time it shows them. Kinematic bodies don't collide with each
+	// other or with static ones. At rest it goes back to kinematic, so a settled pile can't be shoved about here.
+	if (b3Body_GetType(item.body) != b3_dynamicBody) {
+		b3Body_SetType(item.body, b3_dynamicBody);
+		b3Body_SetGravityScale(item.body, 0.0f);
+	}
 	if (!item.inFollowers) {
 		item.inFollowers = true;
 		followers.push_back(slot);
@@ -360,6 +370,12 @@ void GMPPhysicsWorld::play_followers(float delta) {
 bool GMPPhysicsWorld::follow(Item &item, float delta) {
 	if (!item.following || item.snapshotCount == 0) {
 		item.following = false;
+		// A follower must not carry on moving by itself without gravity.
+		if (item.authority != selfPeer && b3Body_GetType(item.body) == b3_dynamicBody) {
+			b3Body_SetType(item.body, b3_kinematicBody);
+			b3Body_SetLinearVelocity(item.body, b3Vec3{ 0, 0, 0 });
+			b3Body_SetAngularVelocity(item.body, b3Vec3{ 0, 0, 0 });
+		}
 		return false;
 	}
 	double interpolationDelay = 2.0 * sendInterval;
@@ -407,6 +423,7 @@ bool GMPPhysicsWorld::follow(Item &item, float delta) {
 
 	if (done && item.blended) {
 		// At rest where the authority left it: put it there exactly and stop.
+		b3Body_SetType(item.body, b3_kinematicBody);
 		b3Body_SetTransform(item.body, to_b3(targetPosition), to_b3(targetRotation));
 		b3Body_SetLinearVelocity(item.body, b3Vec3{ 0, 0, 0 });
 		b3Body_SetAngularVelocity(item.body, b3Vec3{ 0, 0, 0 });
@@ -420,7 +437,8 @@ bool GMPPhysicsWorld::follow(Item &item, float delta) {
 		item.following = false;
 		return false;
 	}
-	// Driven there over this step, with the velocity that takes it there, so it pushes what it meets.
+	// Driven there over this step, with the velocity that takes it there. Contacts may hold it back a little;
+	// the next tick's velocity makes that up.
 	b3WorldTransform target = { to_b3(targetPosition), to_b3(targetRotation) };
 	b3Body_SetTargetTransform(item.body, target, delta, true);
 	return true;
@@ -431,6 +449,7 @@ bool GMPPhysicsWorld::follow(Item &item, float delta) {
 bool GMPPhysicsWorld::play_back(Item &item, double playbackTick, Vector3 &position, Quaternion &rotation) {
 	// Drop the states playback has moved past, keeping the newest one at or before it.
 	while (item.snapshotCount >= 2 && item.snapshots[1].tick <= playbackTick) {
+		item.passedVelocity = item.snapshots[0].velocity;
 		for (int i = 1; i < item.snapshotCount; i++) {
 			item.snapshots[i - 1] = item.snapshots[i];
 		}

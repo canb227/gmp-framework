@@ -70,7 +70,8 @@ void GMPShape::attach(GMPBody *body) {
 	def.isSensor = isSensor;
 	// Sensors only see shapes that have this on, so every shape has it, and a sensor needs it to report.
 	def.enableSensorEvents = true;
-	def.enableContactEvents = body->contactMonitor;
+	// Hits are read from begin touch events too (see read_contact_events).
+	def.enableContactEvents = body->contactMonitor || body->hitEvents;
 	def.enableHitEvents = body->hitEvents;
 	def.filter.categoryBits = body->collisionLayer;
 	def.filter.maskBits = body->collisionMask;
