@@ -51,6 +51,63 @@ public partial class Console
         LimboConsole.Info(line);
     }
 
+    /// <summary>
+    /// Builds a blueprint's structure with its anchor at cell x y z, turned quarterTurns, in its T form if alternate is 1,
+    /// through the host's normal placement check. Free: takes no blueprint from the inventory.
+    /// </summary>
+    public void build(string blueprintItemID, int x, int y, int z, int quarterTurns, int alternate)
+    {
+        FactoryPlayer player = LocalPlayer();
+        if (player == null || ItemInfo.Fetch(blueprintItemID) is not BlueprintItem)
+        {
+            LimboConsole.Error($"build: needs a running game and a blueprint id ({blueprintItemID}).");
+            return;
+        }
+        RPCManager.RPCTo(Lobby.hostID, BuildGrid.instance, "_RequestPlace", [blueprintItemID, new Vector3I(x, y, z), quarterTurns, alternate == 1, false, player.id]);
+        LimboConsole.Info($"build: requested {blueprintItemID} at ({x},{y},{z}) turns={quarterTurns} alternate={alternate}");
+    }
+
+    /// <summary>
+    /// Host: spawns count loose items in a column above x y z, 0.5 m apart so they land one after another, each up to
+    /// spread metres off to the side (else a column of balls stacks into a tower).
+    /// </summary>
+    public void drop_items(string itemID, int count, float x, float y, float z, float spread)
+    {
+        if (!Lobby.isHost)
+        {
+            LimboConsole.Error("drop_items: host only.");
+            return;
+        }
+        for (int i = 0; i < count; i++)
+        {
+            float dx = (float)GD.RandRange(-spread, spread);
+            float dz = (float)GD.RandRange(-spread, spread);
+            ItemWorld.Spawn(itemID, new Vector3(x + dx, y + i * 0.5f, z + dz), Vector3.Zero);
+        }
+        LimboConsole.Info($"drop_items: spawned={count}");
+    }
+
+    /// <summary>How many loose items are inside the world box from x1 y1 z1 to x2 y2 z2.</summary>
+    public void count_items(float x1, float y1, float z1, float x2, float y2, float z2)
+    {
+        Aabb box = new Aabb(new Vector3(x1, y1, z1), new Vector3(x2 - x1, y2 - y1, z2 - z1)).Abs();
+        int inside = 0;
+        string first = "";
+        foreach (ulong id in ItemWorld.items.Keys)
+        {
+            Vector3 p = PhysicsWorld.ItemPosition(id);
+            if (box.HasPoint(p))
+            {
+                inside++;
+                if (inside <= 5)
+                {
+                    first += $" ({p.X:0.00},{p.Y:0.00},{p.Z:0.00})";
+                }
+            }
+        }
+        LimboConsole.Info($"count_items: inside={inside} total={ItemWorld.totalCount} first:{first}");
+    }
+
     /// <summary>Moves the local player to x y z.</summary>
     public void tp(float x, float y, float z)
     {

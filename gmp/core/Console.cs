@@ -47,6 +47,9 @@ public partial class Console : Node
         LimboConsole.RegisterCommand(new Callable(this, "stir"));
         LimboConsole.RegisterCommand(new Callable(this, "repair_all"));
         LimboConsole.RegisterCommand(new Callable(this, "item_counts"));
+        LimboConsole.RegisterCommand(new Callable(this, "build"));
+        LimboConsole.RegisterCommand(new Callable(this, "drop_items"));
+        LimboConsole.RegisterCommand(new Callable(this, "count_items"));
 
         // Keep debug windows (perf) drawing while the tree is paused, e.g. during world load.
         ProcessMode = ProcessModeEnum.Always;

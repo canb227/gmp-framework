@@ -101,17 +101,21 @@ public partial class Structure
             }
             while (tagged.Count > 0)
             {
-                // Grow a group from one tagged cell through its touching tagged neighbours.
+                // Grow a group from one tagged cell through its touching tagged neighbours (on the same side of SeparateEnd).
                 var group = new List<Vector3I> { tagged[0] };
                 tagged.RemoveAt(0);
+                bool separate = (cells[group[0]] & CellTags.SeparateEnd) != 0;
                 for (int i = 0; i < group.Count; i++)
                 {
                     foreach (Vector3I step in FaceDirections)
                     {
-                        if (tagged.Remove(group[i] + step))
+                        Vector3I next = group[i] + step;
+                        if (!tagged.Contains(next) || ((cells[next] & CellTags.SeparateEnd) != 0) != separate)
                         {
-                            group.Add(group[i] + step);
+                            continue;
                         }
+                        tagged.Remove(next);
+                        group.Add(next);
                     }
                 }
                 var end = new CellEnd { direction = travel };

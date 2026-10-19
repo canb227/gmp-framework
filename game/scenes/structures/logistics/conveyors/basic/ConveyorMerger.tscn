@@ -1,0 +1,202 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" uid="uid://c8jn3gvcakhgp" path="res://game/scripts/structures/logistics/conveyors/Conveyor.cs" id="1_r"]
+[ext_resource type="Script" uid="uid://bv13olg4g30nl" path="res://game/scripts/structures/StructureArrow.cs" id="3_e26cu"]
+
+[sub_resource type="Shader" id="Shader_DevWhite"]
+code = "shader_type spatial;
+
+// Dev placeholder: plain white, flat shaded.
+void fragment() {
+	ALBEDO = vec3(1.0);
+	ROUGHNESS = 0.8;
+	NORMAL = normalize(cross(dFdy(VERTEX), dFdx(VERTEX)));
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_DevWhite"]
+render_priority = 0
+shader = SubResource("Shader_DevWhite")
+
+[sub_resource type="BoxMesh" id="BoxMesh_Belt"]
+size = Vector3(1.885, 0.1, 1.0001)
+
+[sub_resource type="BoxMesh" id="BoxMesh_FanBelt"]
+size = Vector3(1.94, 0.1, 1.0001)
+
+[sub_resource type="BoxMesh" id="BoxMesh_Wall"]
+size = Vector3(0.12, 0.4, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_FlareWall"]
+size = Vector3(0.12, 0.4, 1.53)
+
+[sub_resource type="BoxMesh" id="BoxMesh_Divider"]
+size = Vector3(0.12, 0.4, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_Wedge"]
+size = Vector3(0.35, 0.4, 0.35)
+
+[node name="ConveyorMerger" type="GMPBody" unique_id=1739204562 node_paths=PackedStringArray("beltSurfaces")]
+body_type = 0
+script = ExtResource("1_r")
+beltSurfaces = []
+cells = Dictionary[Vector3i, int]({
+Vector3i(0, 0, 0): 2,
+Vector3i(1, 0, 0): 2,
+Vector3i(2, 0, 0): 4098,
+Vector3i(3, 0, 0): 4098,
+Vector3i(0, 0, -1): 0,
+Vector3i(1, 0, -1): 0,
+Vector3i(2, 0, -1): 0,
+Vector3i(3, 0, -1): 0,
+Vector3i(1, 0, -2): 64,
+Vector3i(2, 0, -2): 64
+})
+blueprintItemID = "blueprint_conveyor_splitter"
+
+[node name="OutBelt" type="GMPShape" parent="." unique_id=118230011]
+transform = Transform3D(1, 0, 0, 0, 0.99998, -0.00667, 0, 0.00667, 0.99998, 2, 0.0967, -2.5)
+size = Vector3(1.885, 0.1, 1.0001)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+surface_type = 5
+
+[node name="FanBeltL" type="GMPShape" parent="." unique_id=118230012]
+transform = Transform3D(1, 0, 0, 0, 0.99998, -0.00667, 0, 0.00667, 0.99998, 1.03, 0.09, -1.5)
+size = Vector3(1.94, 0.1, 1.0001)
+friction = 0.8
+tangent_velocity = Vector3(2, 0, -2)
+surface_type = 5
+
+[node name="FanBeltR" type="GMPShape" parent="." unique_id=118230013]
+transform = Transform3D(1, 0, 0, 0, 0.99998, -0.00667, 0, 0.00667, 0.99998, 2.97, 0.09, -1.5)
+size = Vector3(1.94, 0.1, 1.0001)
+friction = 0.8
+tangent_velocity = Vector3(-2, 0, -2)
+surface_type = 5
+
+[node name="InBeltL" type="GMPShape" parent="." unique_id=118230014]
+transform = Transform3D(1, 0, 0, 0, 0.99998, -0.00667, 0, 0.00667, 0.99998, 1, 0.0833, -0.5)
+size = Vector3(1.885, 0.1, 1.0001)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+surface_type = 5
+
+[node name="InBeltR" type="GMPShape" parent="." unique_id=118230015]
+transform = Transform3D(1, 0, 0, 0, 0.99998, -0.00667, 0, 0.00667, 0.99998, 3, 0.0833, -0.5)
+size = Vector3(1.885, 0.1, 1.0001)
+friction = 0.8
+tangent_velocity = Vector3(0, 0, -2)
+surface_type = 5
+
+[node name="OutWallL" type="GMPShape" parent="." unique_id=118230021]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.2, -2.5)
+size = Vector3(0.12, 0.4, 1)
+surface_type = 3
+
+[node name="OutWallR" type="GMPShape" parent="." unique_id=118230022]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.2, -2.5)
+size = Vector3(0.12, 0.4, 1)
+surface_type = 3
+
+[node name="FlareWallL" type="GMPShape" parent="." unique_id=118230023]
+transform = Transform3D(0.70711, 0, -0.70711, 0, 1, 0, 0.70711, 0, 0.70711, 0.5, 0.2, -1.5)
+size = Vector3(0.12, 0.4, 1.53)
+surface_type = 3
+
+[node name="FlareWallR" type="GMPShape" parent="." unique_id=118230024]
+transform = Transform3D(0.70711, 0, 0.70711, 0, 1, 0, -0.70711, 0, 0.70711, 3.5, 0.2, -1.5)
+size = Vector3(0.12, 0.4, 1.53)
+surface_type = 3
+
+[node name="InWallL" type="GMPShape" parent="." unique_id=118230025]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -0.5)
+size = Vector3(0.12, 0.4, 1)
+surface_type = 3
+
+[node name="InWallR" type="GMPShape" parent="." unique_id=118230026]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.2, -0.5)
+size = Vector3(0.12, 0.4, 1)
+surface_type = 3
+
+[node name="Divider" type="GMPShape" parent="." unique_id=118230027]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.2, -0.5)
+size = Vector3(0.12, 0.4, 1)
+friction = 0.05
+surface_type = 3
+
+[node name="Wedge" type="GMPShape" parent="." unique_id=118230028]
+transform = Transform3D(0.70711, 0, 0.70711, 0, 1, 0, -0.70711, 0, 0.70711, 2, 0.2, -1)
+size = Vector3(0.35, 0.4, 0.35)
+friction = 0.05
+surface_type = 3
+
+[node name="OutBeltMesh" type="MeshInstance3D" parent="." unique_id=118230031]
+transform = Transform3D(1, 0, 0, 0, 0.99998, -0.00667, 0, 0.00667, 0.99998, 2, 0.0967, -2.5)
+mesh = SubResource("BoxMesh_Belt")
+surface_material_override/0 = SubResource("ShaderMaterial_DevWhite")
+
+[node name="FanBeltLMesh" type="MeshInstance3D" parent="." unique_id=118230032]
+transform = Transform3D(1, 0, 0, 0, 0.99998, -0.00667, 0, 0.00667, 0.99998, 1.03, 0.09, -1.5)
+mesh = SubResource("BoxMesh_FanBelt")
+surface_material_override/0 = SubResource("ShaderMaterial_DevWhite")
+
+[node name="FanBeltRMesh" type="MeshInstance3D" parent="." unique_id=118230033]
+transform = Transform3D(1, 0, 0, 0, 0.99998, -0.00667, 0, 0.00667, 0.99998, 2.97, 0.09, -1.5)
+mesh = SubResource("BoxMesh_FanBelt")
+surface_material_override/0 = SubResource("ShaderMaterial_DevWhite")
+
+[node name="InBeltLMesh" type="MeshInstance3D" parent="." unique_id=118230034]
+transform = Transform3D(1, 0, 0, 0, 0.99998, -0.00667, 0, 0.00667, 0.99998, 1, 0.0833, -0.5)
+mesh = SubResource("BoxMesh_Belt")
+surface_material_override/0 = SubResource("ShaderMaterial_DevWhite")
+
+[node name="InBeltRMesh" type="MeshInstance3D" parent="." unique_id=118230035]
+transform = Transform3D(1, 0, 0, 0, 0.99998, -0.00667, 0, 0.00667, 0.99998, 3, 0.0833, -0.5)
+mesh = SubResource("BoxMesh_Belt")
+surface_material_override/0 = SubResource("ShaderMaterial_DevWhite")
+
+[node name="OutWallLMesh" type="MeshInstance3D" parent="." unique_id=118230041]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.2, -2.5)
+mesh = SubResource("BoxMesh_Wall")
+surface_material_override/0 = SubResource("ShaderMaterial_DevWhite")
+
+[node name="OutWallRMesh" type="MeshInstance3D" parent="." unique_id=118230042]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.2, -2.5)
+mesh = SubResource("BoxMesh_Wall")
+surface_material_override/0 = SubResource("ShaderMaterial_DevWhite")
+
+[node name="FlareWallLMesh" type="MeshInstance3D" parent="." unique_id=118230043]
+transform = Transform3D(0.70711, 0, -0.70711, 0, 1, 0, 0.70711, 0, 0.70711, 0.5, 0.2, -1.5)
+mesh = SubResource("BoxMesh_FlareWall")
+surface_material_override/0 = SubResource("ShaderMaterial_DevWhite")
+
+[node name="FlareWallRMesh" type="MeshInstance3D" parent="." unique_id=118230044]
+transform = Transform3D(0.70711, 0, 0.70711, 0, 1, 0, -0.70711, 0, 0.70711, 3.5, 0.2, -1.5)
+mesh = SubResource("BoxMesh_FlareWall")
+surface_material_override/0 = SubResource("ShaderMaterial_DevWhite")
+
+[node name="InWallLMesh" type="MeshInstance3D" parent="." unique_id=118230045]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -0.5)
+mesh = SubResource("BoxMesh_Wall")
+surface_material_override/0 = SubResource("ShaderMaterial_DevWhite")
+
+[node name="InWallRMesh" type="MeshInstance3D" parent="." unique_id=118230046]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.2, -0.5)
+mesh = SubResource("BoxMesh_Wall")
+surface_material_override/0 = SubResource("ShaderMaterial_DevWhite")
+
+[node name="DividerMesh" type="MeshInstance3D" parent="." unique_id=118230047]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.2, -0.5)
+mesh = SubResource("BoxMesh_Divider")
+surface_material_override/0 = SubResource("ShaderMaterial_DevWhite")
+
+[node name="WedgeMesh" type="MeshInstance3D" parent="." unique_id=118230048]
+transform = Transform3D(0.70711, 0, 0.70711, 0, 1, 0, -0.70711, 0, 0.70711, 2, 0.2, -1)
+mesh = SubResource("BoxMesh_Wedge")
+surface_material_override/0 = SubResource("ShaderMaterial_DevWhite")
+
+[node name="StructureArrow" type="Node3D" parent="." unique_id=118230051]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.71025324, -1.5)
+script = ExtResource("3_e26cu")
+metadata/_custom_type_script = "uid://bv13olg4g30nl"

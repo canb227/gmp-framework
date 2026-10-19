@@ -36,6 +36,11 @@ public enum CellTags
     OutputRight = 1 << 9,
     OutputUp = 1 << 10,
     OutputDown = 1 << 11,
+    /// <summary>
+    /// Keeps touching ends apart: cells only join an end with neighbours that have this bit too, or lack it too. A
+    /// splitter's two outputs side by side are two belt ends, not one 4-wide end, because one side has it.
+    /// </summary>
+    SeparateEnd = 1 << 12,
 }
 
 /// <summary>

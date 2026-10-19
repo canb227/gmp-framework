@@ -13,7 +13,7 @@ public static class GameBootstrap
     public static readonly string[] StartingBlueprints =
     [
         "blueprint_conveyor", "blueprint_conveyor_slope", "blueprint_conveyor_loader", "scrap_ball", "blueprint_assembler", "blueprint_smelter", "blueprint_grinder",
-        "blueprint_conveyor_short",
+        "blueprint_conveyor_short", "blueprint_conveyor_splitter",
     ];
     public const int StartingBlueprintCount = 99;
 
