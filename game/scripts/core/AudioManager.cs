@@ -64,10 +64,20 @@ public partial class AudioManager : Node
             : IntPtr.Zero; // falls back to default probing
     }
 
+    private static void OnPhysicsStepped(double delta)
+    {
+        foreach(var hit in PhysicsWorld.Hits())
+        {
+            GD.Print((float)hit["speed"]);
+            AudioManager.Instance.PlayOneShot("event:/Solid_Metal", (float)hit["speed"], (Vector3)hit["point"], "Force", (float)hit["speed"]);
+        }
+    }
+
     public override void _Ready()
     {
         SetupFmodResolver();
         Instance = this;
+        GameWorld.PhysicsStepped += OnPhysicsStepped;
 
         try
         {

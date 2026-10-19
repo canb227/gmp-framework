@@ -70,15 +70,6 @@ public partial class GameWorld : Node3D
         AddChild(physics);
         Logging.Log($"Physics world made, {PhysicsWorkers} solver workers", "GameWorld");
     }
-    
-    private void B3D_ContactHitEvent(Godot.Collections.Dictionary obj)
-    {
-        GD.Print((float)obj["approach_speed"]/20.0f);
-        if((float)obj["approach_speed"]/20.0f > 0.1f)
-        {
-            AudioManager.Instance.PlayOneShot("event:/Solid_Metal", (float)obj["approach_speed"]/20.0f, (Vector3)obj["point"], "Force", (float)obj["approach_speed"]/20.0f);
-        }
-    }
 
     /// <summary>Seconds between the scheduled gen0 collections (see <see cref="_Process"/>).</summary>
     public const double GcInterval = 2.0;
