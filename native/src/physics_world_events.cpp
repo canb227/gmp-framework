@@ -14,6 +14,8 @@
 
 #include <godot_cpp/core/object.hpp>
 
+#include <cstring>
+
 using namespace godot;
 
 // Who is on one side of an event: an item (itemId) or a body node (node), or neither.
@@ -152,10 +154,7 @@ void GMPPhysicsWorld::read_contact_events() {
 	// follower: it is aimed at a pose the authority already found touching, not overlapping. A new contact's
 	// approach speed (before the solver) is there either way, so the authority and its followers hear the
 	// same impacts.
-	hitPoints.clear();
-	hitSpeeds.clear();
-	hitSurfaces.clear();
-	hitItems.clear();
+	hits.clear();
 
 	// Touches: only bodies with contact_monitor on have their shapes report them. Each side that is a
 	// body node hears about the other side.
@@ -169,7 +168,7 @@ void GMPPhysicsWorld::read_contact_events() {
 		const b3ContactBeginTouchEvent &begin = contactEvents.beginEvents[i];
 		EventSide a = event_side(this, begin.shapeIdA);
 		EventSide b = event_side(this, begin.shapeIdB);
-		read_hit(begin, a.itemId, b.itemId);
+		read_hit(begin, a.itemId, b.itemId, (uint64_t)a.node, (uint64_t)b.node);
 		// Item on item: listed for C#'s tag reactions (get_item_touches), if either asked for it.
 		if (a.itemId != 0 && b.itemId != 0) {
 			if (items[slotById[a.itemId]].reportsTouches || items[slotById[b.itemId]].reportsTouches) {
@@ -220,14 +219,14 @@ float GMPPhysicsWorld::side_speed(b3ShapeId shapeId, uint64_t itemId, Vector3 di
 
 // Adds a new contact to the hit list if it is an impact: an item on either side, or a body node with
 // hit_events on, approaching at HitSpeed or more.
-void GMPPhysicsWorld::read_hit(const b3ContactBeginTouchEvent &begin, uint64_t itemA, uint64_t itemB) {
+void GMPPhysicsWorld::read_hit(const b3ContactBeginTouchEvent &begin, uint64_t itemA, uint64_t itemB, uint64_t nodeA, uint64_t nodeB) {
 	if (itemA == 0 && itemB == 0) {
 		uint64_t unused = 0;
-		GMPBody *nodeA = nullptr;
-		GMPBody *nodeB = nullptr;
-		owner_of_shape(begin.shapeIdA, unused, nodeA);
-		owner_of_shape(begin.shapeIdB, unused, nodeB);
-		bool wanted = (nodeA != nullptr && nodeA->hitEvents) || (nodeB != nullptr && nodeB->hitEvents);
+		GMPBody *ownerA = nullptr;
+		GMPBody *ownerB = nullptr;
+		owner_of_shape(begin.shapeIdA, unused, ownerA);
+		owner_of_shape(begin.shapeIdB, unused, ownerB);
+		bool wanted = (ownerA != nullptr && ownerA->hitEvents) || (ownerB != nullptr && ownerB->hitEvents);
 		if (!wanted) {
 			return;
 		}
@@ -270,25 +269,31 @@ void GMPPhysicsWorld::read_hit(const b3ContactBeginTouchEvent &begin, uint64_t i
 		return;
 	}
 	// The anchor is from body A's centre of mass.
-	b3BodyId bodyA = b3Shape_GetBody(begin.shapeIdA);
-	b3Pos centerA = b3Body_GetWorldPoint(bodyA, b3Body_GetLocalCenter(bodyA));
-	hitPoints.push_back(Vector3(centerA.x + anchorA.x, centerA.y + anchorA.y, centerA.z + anchorA.z));
-	hitSpeeds.push_back(speed);
-	hitSurfaces.push_back((int64_t)b3Shape_GetSurfaceMaterial(begin.shapeIdA).userMaterialId);
-	hitSurfaces.push_back((int64_t)b3Shape_GetSurfaceMaterial(begin.shapeIdB).userMaterialId);
-	hitItems.push_back((int64_t)itemA);
-	hitItems.push_back((int64_t)itemB);
+	b3BodyId b3BodyA = b3Shape_GetBody(begin.shapeIdA);
+	b3Pos centerA = b3Body_GetWorldPoint(b3BodyA, b3Body_GetLocalCenter(b3BodyA));
+	HitRecord hit;
+	hit.position[0] = (float)(centerA.x + anchorA.x);
+	hit.position[1] = (float)(centerA.y + anchorA.y);
+	hit.position[2] = (float)(centerA.z + anchorA.z);
+	hit.speed = speed;
+	hit.surfaceTypeA = (int64_t)b3Shape_GetSurfaceMaterial(begin.shapeIdA).userMaterialId;
+	hit.surfaceTypeB = (int64_t)b3Shape_GetSurfaceMaterial(begin.shapeIdB).userMaterialId;
+	hit.itemIdA = itemA;
+	hit.itemIdB = itemB;
+	hit.nodeIdA = nodeA;
+	hit.nodeIdB = nodeB;
+	hits.push_back(hit);
 }
 
 PackedInt64Array GMPPhysicsWorld::get_item_touches() const {
 	return itemTouches;
 }
 
-Dictionary GMPPhysicsWorld::get_hits() const {
-	Dictionary hits;
-	hits["points"] = hitPoints;
-	hits["speeds"] = hitSpeeds;
-	hits["surfaces"] = hitSurfaces;
-	hits["items"] = hitItems;
-	return hits;
+PackedByteArray GMPPhysicsWorld::get_hits() const {
+	PackedByteArray bytes;
+	bytes.resize((int64_t)(hits.size() * sizeof(HitRecord)));
+	if (!hits.empty()) {
+		std::memcpy(bytes.ptrw(), hits.data(), hits.size() * sizeof(HitRecord));
+	}
+	return bytes;
 }

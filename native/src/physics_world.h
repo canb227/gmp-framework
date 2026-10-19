@@ -94,6 +94,23 @@ const int MaxItemSnapshots = 16;
 // Added to an item's sync accumulator as it falls asleep, so its resting pose goes out soon.
 const int RestingPoseBump = 100;
 
+// One impact of the last step, as get_hits hands it over: C# reads the bytes straight into its ContactHit
+// struct (gmp/physics/PhysicsWorld.cs), so the two must keep the same fields in the same order.
+struct HitRecord {
+	float position[3];
+	// How fast the two sides were approaching (m/s).
+	float speed;
+	int64_t surfaceTypeA;
+	int64_t surfaceTypeB;
+	// The item on each side, or 0.
+	uint64_t itemIdA;
+	uint64_t itemIdB;
+	// The GMPBody node on each side (its instance id), or 0.
+	uint64_t nodeIdA;
+	uint64_t nodeIdB;
+};
+static_assert(sizeof(HitRecord) == 64, "HitRecord must match ContactHit in C#");
+
 // One loose item in the world. Items are plain data: no node per item.
 struct Item {
 	// The item's GMPObject id, which C# knows it by. 0 marks a free slot.
@@ -207,10 +224,9 @@ public:
 	void remove_node_body(GMPBody *body);
 
 	// ---- events (physics_world_events.cpp) ----
-	// The impacts of the last step (new contacts approaching at 1 m/s or more, on followers too):
-	// { points, speeds, surfaces, items } as packed arrays, one entry per
-	// hit (surfaces and items: two per hit, the A and B side; an item id is 0 for a body that isn't one).
-	godot::Dictionary get_hits() const;
+	// The impacts of the last step (new contacts approaching at 1 m/s or more, on followers too), as
+	// HitRecords back to back.
+	godot::PackedByteArray get_hits() const;
 	// The last step's new touches between items where one reports its touches (set_item_reports_touches):
 	// item ids in pairs, A then B.
 	godot::PackedInt64Array get_item_touches() const;
@@ -314,10 +330,7 @@ private:
 	double followMsTotal = 0;
 
 	// The last step's hits (see get_hits).
-	godot::PackedVector3Array hitPoints;
-	godot::PackedFloat32Array hitSpeeds;
-	godot::PackedInt64Array hitSurfaces;
-	godot::PackedInt64Array hitItems;
+	std::vector<HitRecord> hits;
 	godot::PackedInt64Array itemTouches;
 
 	// Timings of the last step, for get_stats.
@@ -334,7 +347,7 @@ private:
 	void read_move_events();
 	void read_sensor_events();
 	void read_contact_events();
-	void read_hit(const b3ContactBeginTouchEvent &begin, uint64_t itemA, uint64_t itemB);
+	void read_hit(const b3ContactBeginTouchEvent &begin, uint64_t itemA, uint64_t itemB, uint64_t nodeA, uint64_t nodeB);
 	float side_speed(b3ShapeId shapeId, uint64_t itemId, godot::Vector3 direction) const;
 
 	int item_priority(Item &item, uint64_t sendTick);

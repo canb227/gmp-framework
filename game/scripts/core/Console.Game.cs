@@ -438,8 +438,9 @@ public partial class Console
     // ---- hitstats: the physics world's impacts here, to compare host and client ----
     double hitStatsLeft;
     int hitStatsTicks;
-    long hitCount, hardHitCount, itemOnItemHits;
+    long hitCount, hardHitCount, itemOnItemHits, nodeHits, unknownNodes;
     double hitSpeedTotal, hitSpeedMax;
+    readonly List<ContactHit> hits = new();
     const float HardHitSpeed = 3;
 
     /// <summary>
@@ -454,6 +455,8 @@ public partial class Console
         hitCount = 0;
         hardHitCount = 0;
         itemOnItemHits = 0;
+        nodeHits = 0;
+        unknownNodes = 0;
         hitSpeedTotal = 0;
         hitSpeedMax = 0;
         LimboConsole.Info($"hitstats: measuring for {seconds} s");
@@ -463,18 +466,25 @@ public partial class Console
     {
         if (hitStatsLeft <= 0)
             return;
-        Godot.Collections.Dictionary hits = PhysicsWorld.Hits();
-        float[] speeds = hits["speeds"].AsFloat32Array();
-        long[] items = hits["items"].AsInt64Array();
-        for (int i = 0; i < speeds.Length; i++)
+        PhysicsWorld.Hits(hits);
+        foreach (ContactHit hit in hits)
         {
             hitCount++;
-            hitSpeedTotal += speeds[i];
-            hitSpeedMax = Math.Max(hitSpeedMax, speeds[i]);
-            if (speeds[i] >= HardHitSpeed)
+            hitSpeedTotal += hit.speed;
+            hitSpeedMax = Math.Max(hitSpeedMax, hit.speed);
+            if (hit.speed >= HardHitSpeed)
                 hardHitCount++;
-            if (items[2 * i] != 0 && items[2 * i + 1] != 0)
+            if (hit.itemIdA != 0 && hit.itemIdB != 0)
                 itemOnItemHits++;
+            // A node side must be a GMPBody that still exists.
+            foreach (ulong nodeId in new[] { hit.nodeIdA, hit.nodeIdB })
+            {
+                if (nodeId == 0)
+                    continue;
+                nodeHits++;
+                if (GodotObject.InstanceFromId(nodeId) is not Node3D node || node.GetClass() != "GMPBody")
+                    unknownNodes++;
+            }
         }
         hitStatsTicks++;
         hitStatsLeft -= delta;
@@ -490,7 +500,7 @@ public partial class Console
         // Logged (not just the console) as it finishes after the command has replied.
         Logging.Log($"hitstats: role={role} seconds={measured:0.0} hits_per_s={hitCount / measured:0.0} hard_per_s={hardHitCount / measured:0.0} " +
             $"item_on_item_per_s={itemOnItemHits / measured:0.0} other_per_s={(hitCount - itemOnItemHits) / measured:0.0} " +
-            $"avg_speed={averageSpeed:0.00} max_speed={hitSpeedMax:0.00}", "Test");
+            $"node_sides={nodeHits} unknown_nodes={unknownNodes} avg_speed={averageSpeed:0.00} max_speed={hitSpeedMax:0.00}", "Test");
     }
 
     /// <summary>Host: makes the first n scrap pieces MAGNETIC (instead of METAL, FERROUS), to test tag reactions.</summary>

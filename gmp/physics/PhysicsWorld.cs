@@ -1,4 +1,6 @@
 using Godot;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 /// <summary>What a ray hit: an item (<see cref="itemId"/>) or a body node (<see cref="body"/>), or nothing.</summary>
 public struct RayHit
@@ -14,6 +16,28 @@ public struct RayHit
     public ulong itemId;
     /// <summary>The GMPBody node hit, or null.</summary>
     public Node3D body;
+}
+
+/// <summary>
+/// An impact in the last step (<see cref="PhysicsWorld.Hits"/>): a new contact approaching at 1 m/s or more. Read
+/// straight from the bytes the C++ world packs, so it must keep the fields and order of HitRecord
+/// (native/src/physics_world.h): 64 bytes.
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct ContactHit
+{
+    public Vector3 position;
+    /// <summary>How fast the two sides were approaching (m/s).</summary>
+    public float speed;
+    /// <summary>The surface type of each side (GMPShape.surface_type, or the item's).</summary>
+    public long surfaceTypeA;
+    public long surfaceTypeB;
+    /// <summary>The item on each side, or 0.</summary>
+    public ulong itemIdA;
+    public ulong itemIdB;
+    /// <summary>The GMPBody node on each side as an instance id (<see cref="GodotObject.InstanceFromId"/>), or 0.</summary>
+    public ulong nodeIdA;
+    public ulong nodeIdB;
 }
 
 /// <summary>What an overlap test found: item ids and GMPBody nodes.</summary>
@@ -243,13 +267,20 @@ public static class PhysicsWorld
     }
 
     /// <summary>
-    /// The last step's impacts (at least 1 m/s), for impact sounds: "points" (Vector3[]) and "speeds" (float[]), one
-    /// per hit, and "surfaces" and "items" (long[]), two per hit (the A and B side; an item id is 0 for a body node).
-    /// Followers collide too while they move, so every peer gets the hits of what it shows.
+    /// Fills <paramref name="hits"/> with the last step's impacts, for impact sounds. Followers collide too while they
+    /// move, so every peer gets the hits of what it shows. Pass the same list every tick so it isn't reallocated.
     /// </summary>
-    public static Godot.Collections.Dictionary Hits()
+    public static void Hits(List<ContactHit> hits)
     {
-        return world.Call(getHitsName).AsGodotDictionary();
+        hits.Clear();
+        if (System.Runtime.CompilerServices.Unsafe.SizeOf<ContactHit>() != 64)
+        {
+            GD.PushError("ContactHit no longer matches HitRecord (64 bytes) in native/src/physics_world.h");
+            return;
+        }
+        byte[] bytes = world.Call(getHitsName).AsByteArray();
+        // The bytes are ContactHits back to back: viewed as such, no copying field by field.
+        hits.AddRange(MemoryMarshal.Cast<byte, ContactHit>(bytes));
     }
 
     /// <summary>Every player's position and view, for the items' sync priorities.</summary>
