@@ -44,6 +44,8 @@ public partial class ItemWorld : Node
 
     /// <summary>The physics world's item kind for each item id, registered the first time one is spawned on this peer.</summary>
     static readonly Dictionary<string, int> kindByItem = new();
+    /// <summary>What each item id's colliders have between them (<see cref="ItemRecord.colliderTags"/>).</summary>
+    static readonly Dictionary<string, ItemTags> colliderTagsByItem = new();
 
     /// <summary>How often (physics ticks) the host looks for items that fell out of the world.</summary>
     const int KillPlaneInterval = 30;
@@ -54,6 +56,10 @@ public partial class ItemWorld : Node
         instance = this;
         GameWorld.PhysicsStepped += OnPhysicsStepped;
         GameWorld.WorldCleared += OnWorldCleared;
+        if (GameWorld.physics != null)
+        {
+            PhysicsWorld.SetWatcherTags((ulong)TagInteractions.Watchers);
+        }
     }
 
     /// <summary>How many of <paramref name="itemID"/> there are in the world.</summary>
@@ -87,7 +93,7 @@ public partial class ItemWorld : Node
         // A small nudge for a fresh spawn (not for a restore, which leaves everything where it was saved).
         if (Lobby.isHost)
         {
-            PhysicsWorld.ApplyItemForce(id, new Vector3(Random.Shared.Next(-5, 5), Random.Shared.Next(-5, 5), Random.Shared.Next(-5, 5)));
+            PhysicsWorld.ApplyBodyForce(id, new Vector3(Random.Shared.Next(-5, 5), Random.Shared.Next(-5, 5), Random.Shared.Next(-5, 5)));
         }
     }
 
@@ -103,11 +109,11 @@ public partial class ItemWorld : Node
         {
             return false;
         }
+        // The physics world gives it its definition's tags itself (its kind's), the same as the record starts with.
         PhysicsWorld.SpawnItem(id, kind, Lobby.hostID, transform, linearVelocity, angularVelocity);
-        ItemRecord record = new ItemRecord(id, itemID, ItemInfo.Fetch(itemID));
+        ItemRecord record = new ItemRecord(id, itemID, ItemInfo.Fetch(itemID), colliderTagsByItem[itemID]);
         items[id] = record;
         countByItem[itemID] = CountOf(itemID) + 1;
-        TagsChanged(record);
         return true;
     }
 
@@ -156,7 +162,7 @@ public partial class ItemWorld : Node
         {
             scene = GD.Load<PackedScene>(DefaultScene);
         }
-        Godot.Collections.Dictionary description = ItemKinds.Describe(scene, info);
+        Godot.Collections.Dictionary description = DescribeKind(scene, info);
         if (defaultBox && info?.icon != null)
         {
             // Its icon on the box's four sides (the M1-M4 planes).
@@ -176,16 +182,18 @@ public partial class ItemWorld : Node
             Logging.Error($"Can't make a physics kind for {itemID} ({scene.ResourcePath})", "ItemWorld");
         }
         kindByItem[itemID] = kind;
+        colliderTagsByItem[itemID] = (ItemTags)description["collider_tags"].AsInt64();
         return kind;
     }
 
     /// <summary>
-    /// Only items with a watcher tag report their touches (TagInteractions): each report is work per new contact, and
-    /// common materials touching in a pile would report every bounce. Call after changing an item's tags.
+    /// Puts the item's <see cref="ItemRecord.ownTags"/> on its colliders in the physics world. Call after changing them.
+    /// Only colliders with a watcher tag report their touches (TagInteractions): each report is work per new contact,
+    /// and common materials touching in a pile would report every bounce.
     /// </summary>
     public static void TagsChanged(ItemRecord record)
     {
-        PhysicsWorld.SetItemReportsTouches(record.id, TagInteractions.IsWatcher(record.tags));
+        PhysicsWorld.SetBodyTags(record.id, (ulong)record.ownTags);
     }
 
     // ---- pickups: the host decides, so two players can't both get one ----
@@ -236,14 +244,13 @@ public partial class ItemWorld : Node
     void OnPhysicsStepped(double delta)
     {
         ticks++;
-        SendViewers();
         if (!Lobby.isHost)
         {
             return;
         }
         // Reactions run on the host, which simulates every item; anything they change must be replicated.
-        long[] touches = PhysicsWorld.ItemTouches();
-        for (int i = 0; i + 1 < touches.Length; i += 2)
+        long[] touches = PhysicsWorld.Touches();
+        for (int i = 0; i + 3 < touches.Length; i += 4)
         {
             ItemRecord a = Get((ulong)touches[i]);
             ItemRecord b = Get((ulong)touches[i + 1]);
@@ -251,8 +258,11 @@ public partial class ItemWorld : Node
             {
                 continue;
             }
-            TagInteractions.OnTouch(a, b);
-            TagInteractions.OnTouch(b, a);
+            // The tags of the two colliders that touched, so a reaction can come from one part of an item.
+            ItemTags tagsA = (ItemTags)touches[i + 2];
+            ItemTags tagsB = (ItemTags)touches[i + 3];
+            TagInteractions.OnTouch(a, tagsA, b, tagsB);
+            TagInteractions.OnTouch(b, tagsB, a, tagsA);
         }
         if (ticks % KillPlaneInterval == 0)
         {
@@ -260,28 +270,119 @@ public partial class ItemWorld : Node
             {
                 ItemRecord record = Get((ulong)id);
                 // Where it is now (x and z tell where it fell out): an item that leaves the level in play points at a hole.
-                Logging.Warn($"Despawned {record?.itemID} {id}: it fell below the kill plane (y {GameWorld.KillPlaneY}), now at {PhysicsWorld.ItemPosition((ulong)id)}", "ItemWorld");
+                Logging.Warn($"Despawned {record?.itemID} {id}: it fell below the kill plane (y {GameWorld.KillPlaneY}), now at {PhysicsWorld.BodyPosition((ulong)id)}", "ItemWorld");
                 Despawn((ulong)id);
             }
         }
     }
 
-    /// <summary>Every player's position and view, for the items' sync priorities (what someone is near or looking at is sent more often).</summary>
-    static void SendViewers()
+    // ---- kinds: what the physics world needs to know about an item's scene ----
+
+    /// <summary>GMPShape properties copied as they are.</summary>
+    static readonly string[] ShapeProperties =
     {
-        int count = FactoryPlayer.all.Count;
-        Vector3[] positions = new Vector3[count];
-        Vector3[] eyes = new Vector3[count];
-        Vector3[] looks = new Vector3[count];
-        for (int i = 0; i < count; i++)
+        "shape", "size", "radius", "height", "sides", "max_hull_vertices", "density", "friction", "restitution", "rolling_resistance", "tags",
+    };
+
+    // GMPShape.shape values whose collider comes from its mesh. Items are dynamic, so a mesh shape becomes a hull too.
+    const int HullShape = 4;
+    const int MeshShape = 5;
+
+    /// <summary>
+    /// The description the physics world registers an item kind from (<c>GMPPhysicsWorld.register_item_kind</c>, see
+    /// native/src/physics_world_bodies.cpp for the keys): a collider for every GMPShape in the item's scene, where it sits
+    /// in the item, its tags, sync and shadow settings from <paramref name="info"/> (null for an item without one), and a
+    /// part for every visible MeshInstance3D. Also sets "collider_tags" (not used by the physics world): what the item's
+    /// colliders have between them, which are the item's tags when its definition gives it none.
+    /// </summary>
+    static Godot.Collections.Dictionary DescribeKind(PackedScene scene, ItemInfo info)
+    {
+        // Instanced outside the tree only to read it: no body is made.
+        Node root = scene.Instantiate();
+        Godot.Collections.Dictionary description = new();
+
+        Godot.Collections.Array shapes = new();
+        long colliderTags = 0;
+        foreach (Node shape in root.FindChildren("*", "GMPShape", true, false))
         {
-            FactoryPlayer player = FactoryPlayer.all[i];
-            Transform3D view = player.camera.GlobalTransform;
-            positions[i] = player.GlobalPosition;
-            eyes[i] = view.Origin;
-            looks[i] = -view.Basis.Z;
+            Godot.Collections.Dictionary collider = new();
+            foreach (string name in ShapeProperties)
+            {
+                collider[name] = shape.Get(name);
+            }
+            collider["transform"] = OffsetFromRoot((Node3D)shape, root);
+            int shapeType = shape.Get("shape").AsInt32();
+            if (shapeType == HullShape || shapeType == MeshShape)
+            {
+                Mesh mesh = shape.Get("mesh").As<Mesh>();
+                collider["shape"] = HullShape;
+                if (mesh != null)
+                {
+                    collider["hull_points"] = mesh.GetFaces();
+                }
+            }
+            colliderTags |= shape.Get("tags").AsInt64();
+            shapes.Add(collider);
         }
-        PhysicsWorld.SetViewers(positions, eyes, looks);
+        if (shapes.Count == 0)
+        {
+            Logging.Error($"{scene.ResourcePath} has no GMPShape: the item can't be spawned", "ItemWorld");
+        }
+        description["shapes"] = shapes;
+        description["collider_tags"] = colliderTags;
+
+        if (info != null)
+        {
+            description["tags"] = (long)info.tags;
+            description["cast_shadows"] = info.castsShadows;
+            description["base_priority"] = info.basePriority;
+        }
+
+        Godot.Collections.Array parts = new();
+        foreach (Node node in root.FindChildren("*", "MeshInstance3D", true, false))
+        {
+            MeshInstance3D meshInstance = (MeshInstance3D)node;
+            if (meshInstance.Mesh == null || !meshInstance.Visible)
+            {
+                continue;
+            }
+            Godot.Collections.Dictionary part = new();
+            // Not used by the physics world: lets the caller pick out parts (the default box's icon faces).
+            part["name"] = meshInstance.Name;
+            part["mesh"] = meshInstance.Mesh;
+            part["transform"] = OffsetFromRoot(meshInstance, root);
+            if (meshInstance.MaterialOverride != null)
+            {
+                part["material_override"] = meshInstance.MaterialOverride;
+            }
+            Godot.Collections.Array surfaceMaterials = new();
+            for (int surface = 0; surface < meshInstance.Mesh.GetSurfaceCount(); surface++)
+            {
+                surfaceMaterials.Add(meshInstance.GetSurfaceOverrideMaterial(surface));
+            }
+            part["surface_materials"] = surfaceMaterials;
+            parts.Add(part);
+        }
+        description["parts"] = parts;
+
+        root.Free();
+        return description;
+    }
+
+    /// <summary>Where <paramref name="node"/> sits relative to <paramref name="root"/> (not in the tree, so there is no GlobalTransform).</summary>
+    static Transform3D OffsetFromRoot(Node3D node, Node root)
+    {
+        Transform3D offset = node.Transform;
+        Node parent = node.GetParent();
+        while (parent != null && parent != root)
+        {
+            if (parent is Node3D parent3D)
+            {
+                offset = parent3D.Transform * offset;
+            }
+            parent = parent.GetParent();
+        }
+        return offset;
     }
 
     // ---- saves ----
@@ -291,15 +392,15 @@ public partial class ItemWorld : Node
         List<ItemSave> saves = new();
         foreach (ItemRecord record in items.Values)
         {
-            Transform3D transform = PhysicsWorld.ItemTransform(record.id);
+            Transform3D transform = PhysicsWorld.BodyTransform(record.id);
             saves.Add(new ItemSave
             {
                 id = record.id,
                 itemID = record.itemID,
                 position = transform.Origin,
                 rotation = transform.Basis.GetRotationQuaternion(),
-                linearVelocity = PhysicsWorld.ItemLinearVelocity(record.id),
-                angularVelocity = PhysicsWorld.ItemAngularVelocity(record.id),
+                linearVelocity = PhysicsWorld.BodyLinearVelocity(record.id),
+                angularVelocity = PhysicsWorld.BodyAngularVelocity(record.id),
             });
         }
         return saves;

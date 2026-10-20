@@ -19,17 +19,17 @@ public abstract partial class IOMachine : Machine
     /// <summary>Authority only: the items in the input volumes, oldest first.</summary>
     public List<ItemRecord> inputItems = new();
 
-    static readonly StringName itemEnteredName = "item_entered";
-    static readonly StringName itemExitedName = "item_exited";
-    static readonly StringName getOverlappingItemsName = "get_overlapping_items";
+    static readonly StringName enteredName = "entered";
+    static readonly StringName exitedName = "exited";
+    static readonly StringName getOverlappingName = "get_overlapping";
 
     public override void _Ready()
     {
         base._Ready();
         foreach (Node3D volume in inputVolumes)
         {
-            volume.Connect(itemEnteredName, Callable.From<long>(InputVolumeEntered));
-            volume.Connect(itemExitedName, Callable.From<long>(InputVolumeExited));
+            volume.Connect(enteredName, Callable.From<long>(InputVolumeEntered));
+            volume.Connect(exitedName, Callable.From<long>(InputVolumeExited));
         }
         // An item despawned while inside (picked up, eaten elsewhere) might never send an exit.
         ItemWorld.ItemRemoved += OnItemRemoved;
@@ -86,7 +86,7 @@ public abstract partial class IOMachine : Machine
 
         foreach (Node3D volume in inputVolumes)
         {
-            foreach (long id in volume.Call(getOverlappingItemsName).AsInt64Array())
+            foreach (long id in volume.Call(getOverlappingName).AsInt64Array())
             {
                 ItemRecord item = ItemWorld.Get((ulong)id);
                 if (item != null && !inputItems.Contains(item))

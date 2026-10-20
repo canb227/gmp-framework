@@ -12,19 +12,38 @@ public class ItemRecord
     public readonly string itemID;
     /// <summary>The item's definition, or null for an item without one (it shows as a labelled box).</summary>
     public readonly ItemInfo info;
-    /// <summary>Its own copy of the definition's tags: a reaction can change them (call <see cref="ItemWorld.TagsChanged"/>).</summary>
-    public readonly List<ItemTags> tags = new();
+    /// <summary>
+    /// The tags the whole item was given: its definition's to begin with, and a reaction
+    /// can change them (then call <see cref="ItemWorld.TagsChanged"/>). Each of its colliders also has its own.
+    /// </summary>
+    public ItemTags ownTags;
+    /// <summary>What its colliders have between them (from its kind).</summary>
+    public readonly ItemTags colliderTags;
     /// <summary>Set once a pickup has been granted, so later simultaneous requests lose.</summary>
     public bool taken;
 
-    public ItemRecord(ulong id, string itemID, ItemInfo info)
+    public ItemRecord(ulong id, string itemID, ItemInfo info, ItemTags colliderTags)
     {
         this.id = id;
         this.itemID = itemID;
         this.info = info;
+        this.colliderTags = colliderTags;
         if (info != null)
         {
-            tags.AddRange(info.tags);
+            ownTags = info.tags;
+        }
+    }
+
+    /// <summary>The item's tags: the ones it was given, or what its colliders have between them if it was given none.</summary>
+    public ItemTags tags
+    {
+        get
+        {
+            if (ownTags != ItemTags.None)
+            {
+                return ownTags;
+            }
+            return colliderTags;
         }
     }
 
@@ -73,5 +92,5 @@ public class ItemRecord
     }
 
     /// <summary>Where it is now (asks the physics world).</summary>
-    public Vector3 position => PhysicsWorld.ItemPosition(id);
+    public Vector3 position => PhysicsWorld.BodyPosition(id);
 }

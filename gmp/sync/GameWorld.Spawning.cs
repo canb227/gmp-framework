@@ -127,6 +127,9 @@ public partial class GameWorld
             }
         }
 
+        // Every peer spawns it with the same id, GMPObject or not (a level): its bodies are known by it (and the ids
+        // after it) on every peer. Named before Init, which hands them to the physics world's sync.
+        PhysicsWorld.NameBodies(node, initData.id);
         if (node is GMPObject gmpo)
         {
             gmpo.Init(WithEarlyClaim(initData), initState);
@@ -157,6 +160,7 @@ public partial class GameWorld
                     c.QueueFree();
                     continue;
                 }
+                PhysicsWorld.NameBodies(c, ci.id);
                 gmpoChild.Init(WithEarlyClaim(ci), childStates?.GetValueOrDefault(ci.id));
                 syncedObjs.Add(gmpoChild.id, gmpoChild);
             }

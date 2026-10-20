@@ -12,7 +12,7 @@ displayName = "Scrap Piece"
 description = "A piece of ruined metal."
 icon = ExtResource("2_h0ofn")
 maxStackSize = 999
-tags = Array[int]([3, 22])
+tags = 4194312
 currencyValue = Dictionary[int, int]({
 0: 1
 })

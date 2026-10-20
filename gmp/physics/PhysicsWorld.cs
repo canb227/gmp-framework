@@ -2,7 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-/// <summary>What a ray hit: an item (<see cref="itemId"/>) or a body node (<see cref="body"/>), or nothing.</summary>
+/// <summary>What a ray hit: a body (<see cref="id"/>) and its shape, or nothing.</summary>
 public struct RayHit
 {
     public bool hit;
@@ -10,18 +10,18 @@ public struct RayHit
     public Vector3 normal;
     /// <summary>0 to 1 along the ray.</summary>
     public float fraction;
-    /// <summary>The surface type of what was hit (GMPShape.surface_type, or the item's).</summary>
-    public long surfaceType;
-    /// <summary>The item hit, or 0.</summary>
-    public ulong itemId;
-    /// <summary>The GMPBody node hit, or null.</summary>
-    public Node3D body;
+    /// <summary>The body hit: a loose item's id, or a node body's (<see cref="PhysicsWorld.BodyNode"/>).</summary>
+    public ulong id;
+    /// <summary>The shape's number in its body.</summary>
+    public int shape;
+    /// <summary>The tags of the shape hit (its own plus its body's; see ItemTags in the game).</summary>
+    public ulong tags;
 }
 
 /// <summary>
-/// An impact this tick (<see cref="PhysicsWorld.Hits"/>): a contact approaching at 1 m/s or more. Read
-/// straight from the bytes the C++ world packs, so it must keep the fields and order of HitRecord
-/// (native/src/physics_world.h): 64 bytes.
+/// An impact (<see cref="HitStream"/>): a contact approaching at 1 m/s or more, the same on every peer. Read straight
+/// from the bytes the C++ world packs, so it must keep the fields and order of HitRecord (native/src/physics_world.h):
+/// 56 bytes.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public struct ContactHit
@@ -29,30 +29,24 @@ public struct ContactHit
     public Vector3 position;
     /// <summary>How fast the two sides were approaching (m/s).</summary>
     public float speed;
-    /// <summary>The surface type of each side (GMPShape.surface_type, or the item's).</summary>
-    public long surfaceTypeA;
-    public long surfaceTypeB;
-    /// <summary>The item on each side, or 0.</summary>
-    public ulong itemIdA;
-    public ulong itemIdB;
-    /// <summary>The GMPBody node on each side as an instance id (<see cref="GodotObject.InstanceFromId"/>), or 0.</summary>
-    public ulong nodeIdA;
-    public ulong nodeIdB;
-}
-
-/// <summary>What an overlap test found: item ids and GMPBody nodes.</summary>
-public struct Overlap
-{
-    public long[] items;
-    public Godot.Collections.Array<Node3D> bodies;
+    /// <summary>The body on each side (a loose item's id, or a node body's); 0 for one no peer can name.</summary>
+    public ulong idA;
+    public ulong idB;
+    /// <summary>The shape's number in its body.</summary>
+    public int shapeA;
+    public int shapeB;
+    /// <summary>The tags of the shape on each side (its own plus its body's); 0 for a side with id 0.</summary>
+    public ulong tagsA;
+    public ulong tagsB;
 }
 
 /// <summary>
 /// Calls into our Box3D world, the GMPPhysicsWorld node (native/src/physics_world.h) that <see cref="GameWorld"/> makes
-/// as <see cref="GameWorld.physics"/>. The C++ class isn't visible to C#, so these call its methods by name; the names
-/// are cached so no call converts a string. Loose items are only data in there, known by their id.
+/// as <see cref="GameWorld.physics"/>. Every body in it, loose item or node, is known by an id that is the same on every
+/// peer: an item's id, or the one a spawned scene's GMPBody gets (<see cref="NameBodies"/>). The C++ class isn't visible
+/// to C#, so these call its methods by name; the names are cached so no call converts a string.
 /// <para>
-/// Each call into the world costs about a microsecond, so loops over many items belong in C++, not here.
+/// Each call into the world costs about a microsecond, so loops over many bodies belong in C++, not here.
 /// </para>
 /// </summary>
 public static class PhysicsWorld
@@ -70,39 +64,41 @@ public static class PhysicsWorld
     static readonly StringName spawnItemName = "spawn_item";
     static readonly StringName despawnItemName = "despawn_item";
     static readonly StringName clearItemsName = "clear_items";
-    static readonly StringName hasItemName = "has_item";
-    static readonly StringName getItemTransformName = "get_item_transform";
-    static readonly StringName getItemLinearVelocityName = "get_item_linear_velocity";
-    static readonly StringName getItemAngularVelocityName = "get_item_angular_velocity";
-    static readonly StringName getItemMassName = "get_item_mass";
-    static readonly StringName isItemAsleepName = "is_item_asleep";
-    static readonly StringName applyItemForceName = "apply_item_force";
-    static readonly StringName applyItemImpulseName = "apply_item_impulse";
-    static readonly StringName dampItemSpinName = "damp_item_spin";
-    static readonly StringName teleportItemName = "teleport_item";
-    static readonly StringName setItemReportsTouchesName = "set_item_reports_touches";
-    static readonly StringName holdItemName = "hold_item";
-    static readonly StringName showItemNewestName = "show_item_newest";
+    static readonly StringName getItemCountName = "get_item_count";
     static readonly StringName getItemsBelowName = "get_items_below";
-    static readonly StringName getItemTouchesName = "get_item_touches";
+    static readonly StringName kickRandomItemsName = "kick_random_items";
+    static readonly StringName hasBodyName = "has_body";
+    static readonly StringName getBodyNodeName = "get_body_node";
+    static readonly StringName getBodyTransformName = "get_body_transform";
+    static readonly StringName getBodyLinearVelocityName = "get_body_linear_velocity";
+    static readonly StringName getBodyAngularVelocityName = "get_body_angular_velocity";
+    static readonly StringName getBodyMassName = "get_body_mass";
+    static readonly StringName isBodyAsleepName = "is_body_asleep";
+    static readonly StringName applyBodyForceName = "apply_body_force";
+    static readonly StringName applyBodyImpulseName = "apply_body_impulse";
+    static readonly StringName dampBodySpinName = "damp_body_spin";
+    static readonly StringName teleportBodyName = "teleport_body";
+    static readonly StringName setBodyTagsName = "set_body_tags";
+    static readonly StringName setBodyAuthorityName = "set_body_authority";
+    static readonly StringName holdBodyName = "hold_body";
+    static readonly StringName showBodyNewestName = "show_body_newest";
+    static readonly StringName watcherTagsName = "watcher_tags";
+    static readonly StringName getTouchesName = "get_touches";
     static readonly StringName getHitsName = "get_hits";
     static readonly StringName setViewersName = "set_viewers";
     static readonly StringName getStatsName = "get_stats";
     static readonly StringName getProfileName = "get_profile";
-    static readonly StringName kickRandomItemsName = "kick_random_items";
-    static readonly StringName getItemCountName = "get_item_count";
+    static readonly StringName setSharedIdName = "set_shared_id";
 
     static readonly Variant hitKey = "hit";
     static readonly Variant positionKey = "position";
     static readonly Variant normalKey = "normal";
     static readonly Variant fractionKey = "fraction";
-    static readonly Variant surfaceTypeKey = "surface_type";
-    static readonly Variant itemIdKey = "item_id";
-    static readonly Variant bodyKey = "body";
-    static readonly Variant itemsKey = "items";
-    static readonly Variant bodiesKey = "bodies";
+    static readonly Variant idKey = "id";
+    static readonly Variant shapeKey = "shape";
+    static readonly Variant tagsKey = "tags";
 
-    // ---- queries ----
+    // ---- queries: body ids ----
 
     /// <summary>The closest thing between from and to. By default leaves out <see cref="GameWorld.QueryHiddenLayer"/>; sensors are never hit.</summary>
     public static RayHit Raycast(Vector3 from, Vector3 to, long mask = ~GameWorld.QueryHiddenLayer)
@@ -117,42 +113,33 @@ public static class PhysicsWorld
         hit.position = result[positionKey].AsVector3();
         hit.normal = result[normalKey].AsVector3();
         hit.fraction = result[fractionKey].AsSingle();
-        hit.surfaceType = result[surfaceTypeKey].AsInt64();
-        hit.itemId = (ulong)result[itemIdKey].AsInt64();
-        hit.body = result[bodyKey].As<Node3D>();
+        hit.id = (ulong)result[idKey].AsInt64();
+        hit.shape = result[shapeKey].AsInt32();
+        hit.tags = (ulong)result[tagsKey].AsInt64();
         return hit;
     }
 
-    public static Overlap OverlapSphere(Vector3 center, float radius, long mask = ~GameWorld.QueryHiddenLayer)
+    public static long[] OverlapSphere(Vector3 center, float radius, long mask = ~GameWorld.QueryHiddenLayer)
     {
-        return ReadOverlap(world.Call(overlapSphereName, center, radius, mask).AsGodotDictionary());
+        return world.Call(overlapSphereName, center, radius, mask).AsInt64Array();
     }
 
     /// <summary>The box of full size <paramref name="size"/> placed at <paramref name="transform"/>.</summary>
-    public static Overlap OverlapBox(Transform3D transform, Vector3 size, long mask = ~GameWorld.QueryHiddenLayer)
+    public static long[] OverlapBox(Transform3D transform, Vector3 size, long mask = ~GameWorld.QueryHiddenLayer)
     {
-        return ReadOverlap(world.Call(overlapBoxName, transform, size, mask).AsGodotDictionary());
+        return world.Call(overlapBoxName, transform, size, mask).AsInt64Array();
     }
 
     /// <summary>
     /// What the GMPShape <paramref name="shape"/> would overlap at <paramref name="transform"/> (its own world transform),
     /// made <paramref name="margin"/> metres smaller on every side.
     /// </summary>
-    public static Overlap OverlapShape(Node3D shape, Transform3D transform, long mask = ~GameWorld.QueryHiddenLayer, float margin = 0)
+    public static long[] OverlapShape(Node3D shape, Transform3D transform, long mask = ~GameWorld.QueryHiddenLayer, float margin = 0)
     {
-        return ReadOverlap(world.Call(overlapShapeName, shape, transform, mask, margin).AsGodotDictionary());
+        return world.Call(overlapShapeName, shape, transform, mask, margin).AsInt64Array();
     }
 
-    static Overlap ReadOverlap(Godot.Collections.Dictionary result)
-    {
-        Overlap overlap = new();
-        overlap.items = result[itemsKey].AsInt64Array();
-        overlap.bodies = result[bodiesKey].AsGodotArray<Node3D>();
-        result.Dispose();
-        return overlap;
-    }
-
-    // ---- items ----
+    // ---- loose items ----
 
     public static int RegisterItemKind(Godot.Collections.Dictionary description)
     {
@@ -179,106 +166,165 @@ public static class PhysicsWorld
         return world.Call(getItemCountName).AsInt32();
     }
 
-    public static bool HasItem(ulong id)
-    {
-        return world.Call(hasItemName, id).AsBool();
-    }
-
-    public static Transform3D ItemTransform(ulong id)
-    {
-        return world.Call(getItemTransformName, id).AsTransform3D();
-    }
-
-    public static Vector3 ItemPosition(ulong id)
-    {
-        return ItemTransform(id).Origin;
-    }
-
-    public static Vector3 ItemLinearVelocity(ulong id)
-    {
-        return world.Call(getItemLinearVelocityName, id).AsVector3();
-    }
-
-    public static Vector3 ItemAngularVelocity(ulong id)
-    {
-        return world.Call(getItemAngularVelocityName, id).AsVector3();
-    }
-
-    public static float ItemMass(ulong id)
-    {
-        return world.Call(getItemMassName, id).AsSingle();
-    }
-
-    /// <summary>Asleep in this peer's simulation (only means something where the item is simulated, the host).</summary>
-    public static bool IsItemAsleep(ulong id)
-    {
-        return world.Call(isItemAsleepName, id).AsBool();
-    }
-
-    public static void ApplyItemForce(ulong id, Vector3 force)
-    {
-        world.Call(applyItemForceName, id, force);
-    }
-
-    public static void ApplyItemImpulse(ulong id, Vector3 impulse)
-    {
-        world.Call(applyItemImpulseName, id, impulse);
-    }
-
-    /// <summary>Takes <paramref name="fraction"/> (0 to 1) of the item's spin away.</summary>
-    public static void DampItemSpin(ulong id, float fraction)
-    {
-        world.Call(dampItemSpinName, id, fraction);
-    }
-
-    public static void TeleportItem(ulong id, Transform3D transform)
-    {
-        world.Call(teleportItemName, id, transform);
-    }
-
-    /// <summary>Whether the item's new touches with other items are reported (<see cref="ItemTouches"/>).</summary>
-    public static void SetItemReportsTouches(ulong id, bool reports)
-    {
-        world.Call(setItemReportsTouchesName, id, reports);
-    }
-
-    /// <summary>A magnet rod holds the item this tick: it is sent often while held and for a second after.</summary>
-    public static void HoldItem(ulong id)
-    {
-        world.Call(holdItemName, id);
-    }
-
-    /// <summary>Show this follower at the newest state heard this tick, rather than two sends behind.</summary>
-    public static void ShowItemNewest(ulong id)
-    {
-        world.Call(showItemNewestName, id);
-    }
-
     /// <summary>Items this peer simulates that are below <paramref name="y"/>.</summary>
     public static long[] ItemsBelow(float y)
     {
         return world.Call(getItemsBelowName, y).AsInt64Array();
     }
 
-    /// <summary>The last step's new touches between items where one reports its touches: ids in pairs.</summary>
-    public static long[] ItemTouches()
+    /// <summary>Testing: kicks this many random items this peer simulates upwards.</summary>
+    public static void KickRandomItems(int count)
     {
-        return world.Call(getItemTouchesName).AsInt64Array();
+        world.Call(kickRandomItemsName, count);
+    }
+
+    // ---- any body, by id ----
+
+    public static bool HasBody(ulong id)
+    {
+        return world.Call(hasBodyName, id).AsBool();
+    }
+
+    /// <summary>The GMPBody node with this id, or null (a loose item, or nothing).</summary>
+    public static Node3D BodyNode(ulong id)
+    {
+        return world.Call(getBodyNodeName, id).As<Node3D>();
+    }
+
+    public static Transform3D BodyTransform(ulong id)
+    {
+        return world.Call(getBodyTransformName, id).AsTransform3D();
+    }
+
+    public static Vector3 BodyPosition(ulong id)
+    {
+        return BodyTransform(id).Origin;
+    }
+
+    public static Vector3 BodyLinearVelocity(ulong id)
+    {
+        return world.Call(getBodyLinearVelocityName, id).AsVector3();
+    }
+
+    public static Vector3 BodyAngularVelocity(ulong id)
+    {
+        return world.Call(getBodyAngularVelocityName, id).AsVector3();
+    }
+
+    public static float BodyMass(ulong id)
+    {
+        return world.Call(getBodyMassName, id).AsSingle();
+    }
+
+    /// <summary>Asleep in this peer's simulation (only means something where the body is simulated).</summary>
+    public static bool IsBodyAsleep(ulong id)
+    {
+        return world.Call(isBodyAsleepName, id).AsBool();
+    }
+
+    public static void ApplyBodyForce(ulong id, Vector3 force)
+    {
+        world.Call(applyBodyForceName, id, force);
+    }
+
+    public static void ApplyBodyImpulse(ulong id, Vector3 impulse)
+    {
+        world.Call(applyBodyImpulseName, id, impulse);
+    }
+
+    /// <summary>Takes <paramref name="fraction"/> (0 to 1) of the body's spin away.</summary>
+    public static void DampBodySpin(ulong id, float fraction)
+    {
+        world.Call(dampBodySpinName, id, fraction);
+    }
+
+    public static void TeleportBody(ulong id, Transform3D transform)
+    {
+        world.Call(teleportBodyName, id, transform);
+    }
+
+    /// <summary>Gives the whole body these tags (replacing what it was given before); its shapes keep their own.</summary>
+    public static void SetBodyTags(ulong id, ulong tags)
+    {
+        world.Call(setBodyTagsName, id, tags);
+    }
+
+    /// <summary>
+    /// Makes a dynamic body synced: simulated by <paramref name="peer"/> and followed by everyone else, like loose items
+    /// (a node body that isn't dynamic has nothing to sync and is left as it is).
+    /// </summary>
+    public static void SetBodyAuthority(ulong id, ulong peer)
+    {
+        world.Call(setBodyAuthorityName, id, peer);
+    }
+
+    /// <summary>A magnet rod holds the body this tick: it is sent often while held and for a second after.</summary>
+    public static void HoldBody(ulong id)
+    {
+        world.Call(holdBodyName, id);
+    }
+
+    /// <summary>Show this follower at the newest state heard this tick, rather than two sends behind.</summary>
+    public static void ShowBodyNewest(ulong id)
+    {
+        world.Call(showBodyNewestName, id);
+    }
+
+    /// <summary>
+    /// Gives the GMPBodies of a spawned scene (or of one GMPObject in it) the ids every peer knows them by: the first,
+    /// in tree order, gets <paramref name="id"/> and the rest the ids after it. GMPObjects under <paramref name="root"/>
+    /// get their own.
+    /// </summary>
+    public static void NameBodies(Node root, ulong id)
+    {
+        ulong next = id;
+        NameBodies(root, root, ref next);
+    }
+
+    static void NameBodies(Node node, Node root, ref ulong next)
+    {
+        if (node != root && node is GMPObject)
+        {
+            return;
+        }
+        if (node.IsClass("GMPBody"))
+        {
+            node.Call(setSharedIdName, next);
+            next++;
+        }
+        foreach (Node child in node.GetChildren())
+        {
+            NameBodies(child, root, ref next);
+        }
+    }
+
+    // ---- events ----
+
+    /// <summary>Shapes with any of these tags report their new touches (<see cref="Touches"/>); the rest don't.</summary>
+    public static void SetWatcherTags(ulong tags)
+    {
+        world.Set(watcherTagsName, tags);
+    }
+
+    /// <summary>
+    /// The last step's new touches where one side's shape has a watcher tag: four numbers each, body id A, body id B,
+    /// then the tags of A's and B's shapes that touched.
+    /// </summary>
+    public static long[] Touches()
+    {
+        return world.Call(getTouchesName).AsInt64Array();
     }
 
     /// <summary>
     /// Fills <paramref name="hits"/> with this tick's impacts at least <paramref name="minSpeed"/> (m/s) and within
-    /// <paramref name="maxDistance"/> of <paramref name="listener"/>, for impact sounds. The same on every peer: the
-    /// hits of what this peer simulates, and those its followers' authority sent, as playback reaches them (so they
-    /// come with what this peer shows; received ones have no node ids). Call once a physics tick, after the step
-    /// (<see cref="GameWorld.PhysicsStepped"/>), with the same list every time so it isn't reallocated.
+    /// <paramref name="maxDistance"/> of <paramref name="listener"/>. Read through <see cref="HitStream"/>.
     /// </summary>
     public static void Hits(List<ContactHit> hits, Vector3 listener, float maxDistance, float minSpeed)
     {
         hits.Clear();
-        if (System.Runtime.CompilerServices.Unsafe.SizeOf<ContactHit>() != 64)
+        if (System.Runtime.CompilerServices.Unsafe.SizeOf<ContactHit>() != 56)
         {
-            GD.PushError("ContactHit no longer matches HitRecord (64 bytes) in native/src/physics_world.h");
+            GD.PushError("ContactHit no longer matches HitRecord (56 bytes) in native/src/physics_world.h");
             return;
         }
         byte[] bytes = world.Call(getHitsName, listener, maxDistance, minSpeed).AsByteArray();
@@ -286,16 +332,10 @@ public static class PhysicsWorld
         hits.AddRange(MemoryMarshal.Cast<byte, ContactHit>(bytes));
     }
 
-    /// <summary>Every player's position and view, for the items' sync priorities.</summary>
+    /// <summary>Every player's position and view, for the bodies' sync priorities.</summary>
     public static void SetViewers(Vector3[] positions, Vector3[] eyes, Vector3[] looks)
     {
         world.Call(setViewersName, positions, eyes, looks);
-    }
-
-    /// <summary>Testing: kicks this many random items this peer simulates upwards.</summary>
-    public static void KickRandomItems(int count)
-    {
-        world.Call(kickRandomItemsName, count);
     }
 
     // ---- numbers, for the perf window and tests ----

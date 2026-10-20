@@ -178,11 +178,11 @@ public partial class BuildGrid
         if (chunk.scanned < 0)
         {
             var box = new Aabb(chunkMin, Vector3.One * (FillChunkCells * CellSize));
-            Godot.Collections.Array<Node3D> near = PhysicsWorld.OverlapBox(new Transform3D(Basis.Identity, box.GetCenter()), box.Size, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer).bodies;
+            long[] near = PhysicsWorld.OverlapBox(new Transform3D(Basis.Identity, box.GetCenter()), box.Size, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer);
             bool anyLevel = false;
-            foreach (Node3D body in near)
+            foreach (long id in near)
             {
-                if (PlacementProbe.IsStaticLevelCollider(body))
+                if (PlacementProbe.IsStaticLevelCollider(PhysicsWorld.BodyNode((ulong)id)))
                 {
                     anyLevel = true;
                     break;
@@ -305,9 +305,9 @@ public partial class BuildGrid
     static bool QueryLevelBlocked(Vector3I cell)
     {
         Vector3 size = Vector3.One * (CellSize - 2f * LevelOverlapDepth);
-        foreach (Node3D body in PhysicsWorld.OverlapBox(new Transform3D(Basis.Identity, CellToWorld(cell)), size, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer).bodies)
+        foreach (long id in PhysicsWorld.OverlapBox(new Transform3D(Basis.Identity, CellToWorld(cell)), size, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer))
         {
-            if (PlacementProbe.IsStaticLevelCollider(body))
+            if (PlacementProbe.IsStaticLevelCollider(PhysicsWorld.BodyNode((ulong)id)))
             {
                 return true;
             }

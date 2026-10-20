@@ -54,19 +54,19 @@ blueprintItemID = "blueprint_conveyor_short"
 [node name="WallL" type="GMPShape" parent="." unique_id=1093368241]
 shape = 4
 mesh = SubResource("ArrayMesh_WallL")
-surface_type = 3
+tags = 8
 
 [node name="WallR" type="GMPShape" parent="." unique_id=1938412650]
 shape = 4
 mesh = SubResource("ArrayMesh_WallR")
-surface_type = 3
+tags = 8
 
 [node name="Belt" type="GMPShape" parent="." unique_id=742913560]
 transform = Transform3D(1, 0, 0, 0, 0.9998, -0.02, 0, 0.02, 0.9998, 1, 0.09, -0.5005)
 size = Vector3(1.885, 0.1, 1.0001)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
-surface_type = 5
+tags = 32
 
 [node name="WallLMesh" type="MeshInstance3D" parent="." unique_id=1675140937]
 mesh = SubResource("ArrayMesh_WallL")

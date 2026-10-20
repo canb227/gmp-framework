@@ -111,6 +111,11 @@ public partial class FactoryPlayer : GMPOCharacter
     bool heardImpactSeqSet;
 
     [Export] public Camera3D camera;
+
+    public override Transform3D ViewTransform()
+    {
+        return camera.GlobalTransform;
+    }
     [Export] Node3D head;
     [Export] Node3D body;
     [Export] Node3D itemHolder;
@@ -400,8 +405,8 @@ public partial class FactoryPlayer : GMPOCharacter
                 seq = impactSeq,
                 kind = (byte)impact.kind,
                 speed = impact.speed,
-                surfaceType = impact.surfaceType,
-                itemId = impact.itemId,
+                tags = impact.tags,
+                id = impact.id,
                 position = impact.position,
                 normal = impact.normal,
             };
@@ -437,8 +442,8 @@ public partial class FactoryPlayer : GMPOCharacter
                 position = synced.position,
                 normal = synced.normal,
                 speed = synced.speed,
-                surfaceType = synced.surfaceType,
-                itemId = synced.itemId,
+                tags = synced.tags,
+                id = synced.id,
             };
             ReportImpact(impact);
         }
@@ -672,8 +677,8 @@ public partial record struct SyncedImpact
     [Key(0)] public ushort seq;
     [Key(1)] public byte kind;
     [Key(2)] public float speed;
-    [Key(3)] public long surfaceType;
-    [Key(4)] public ulong itemId;
+    [Key(3)] public ulong tags;
+    [Key(4)] public ulong id;
     [Key(5)] public Vector3 position;
     [Key(6)] public Vector3 normal;
 }

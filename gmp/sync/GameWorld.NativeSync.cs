@@ -19,8 +19,8 @@ public partial class GameWorld
     static readonly StringName setSelfPeerName = "set_self_peer";
     static readonly StringName setSendIntervalName = "set_send_interval";
     static readonly StringName setPlaybackTickName = "set_playback_tick";
-    static readonly StringName applyItemStatesName = "apply_item_states";
-    static readonly StringName buildItemStatesName = "build_item_states";
+    static readonly StringName applyBodyStatesName = "apply_body_states";
+    static readonly StringName buildBodyStatesName = "build_body_states";
 
     /// <summary>From <see cref="OnMessageReceived"/>: an item packet, kept for the next physics tick.</summary>
     static void ReceiveItemPacket(ulong from, byte[] packet)
@@ -38,6 +38,28 @@ public partial class GameWorld
         receiveCost += Stopwatch.GetTimestamp() - receiveStart;
     }
 
+    /// <summary>Every character's position and view, for the bodies' sync priorities (what someone is near or looking at is sent more often).</summary>
+    static void SendViewers()
+    {
+        viewerPositions.Clear();
+        viewerEyes.Clear();
+        viewerLooks.Clear();
+        foreach (GMPObject obj in syncedObjs.Values)
+        {
+            if (obj is GMPOCharacter character)
+            {
+                Transform3D view = character.ViewTransform();
+                viewerPositions.Add(character.GlobalPosition);
+                viewerEyes.Add(view.Origin);
+                viewerLooks.Add(-view.Basis.Z);
+            }
+        }
+        PhysicsWorld.SetViewers(viewerPositions.ToArray(), viewerEyes.ToArray(), viewerLooks.ToArray());
+    }
+    static readonly List<Vector3> viewerPositions = new();
+    static readonly List<Vector3> viewerEyes = new();
+    static readonly List<Vector3> viewerLooks = new();
+
     /// <summary>
     /// Each physics tick, after the playback clocks have moved on: applies the item packets that came in, tells the
     /// physics world where each sender's playback is, and steps it.
@@ -49,10 +71,11 @@ public partial class GameWorld
             pendingItemPackets.Clear();
             return;
         }
+        SendViewers();
         long applyStart = Stopwatch.GetTimestamp();
         foreach ((ulong from, byte[] packet) in pendingItemPackets)
         {
-            physics.Call(applyItemStatesName, packet, from);
+            physics.Call(applyBodyStatesName, packet, from);
         }
         pendingItemPackets.Clear();
         applyCost += Stopwatch.GetTimestamp() - applyStart;
@@ -73,7 +96,7 @@ public partial class GameWorld
         {
             return 0;
         }
-        Godot.Collections.Array packets = physics.Call(buildItemStatesName, maxBytes, MaxPacketSize, (int)turn, frame, netTime).AsGodotArray();
+        Godot.Collections.Array packets = physics.Call(buildBodyStatesName, maxBytes, MaxPacketSize, (int)turn, frame, netTime).AsGodotArray();
         long sendStart = Stopwatch.GetTimestamp();
         int bytes = 0;
         foreach (Variant packet in packets)

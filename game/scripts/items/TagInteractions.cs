@@ -5,12 +5,13 @@ using System.Collections.Generic;
 /// <summary>
 /// Rules for what happens when items with particular <see cref="ItemTags"/> touch. A rule is keyed by
 /// (this item's tag, the other item's tag) and runs from this item's point of view, on the host, which simulates
-/// every loose item (see <c>ItemWorld.OnPhysicsStepped</c>). Both items of a contact are checked, so a HOT/COLD touch
-/// runs the (HOT, COLD) rule for the hot item and the (COLD, HOT) rule for the cold one. Anything a rule changes
-/// must therefore be replicated (an RPC or state update), since the other peers don't run it. Box3D reports every
-/// bounce as a new touch, so each pair is debounced.
+/// every loose item (see <c>ItemWorld.OnPhysicsStepped</c>). The tags are those of the two colliders that touched, so
+/// a rule can come from one part of an item (only its handle STICKY). Both items of a contact are checked, so a
+/// HOT/COLD touch runs the (HOT, COLD) rule for the hot item and the (COLD, HOT) rule for the cold one. Anything a
+/// rule changes must therefore be replicated (an RPC or state update), since the other peers don't run it. Box3D
+/// reports every bounce as a new touch, so each pair is debounced.
 /// <para>
-/// Only items with a <see cref="watchers"/> tag report their touches (<see cref="ItemWorld.TagsChanged"/>): common
+/// Only shapes with a <see cref="Watchers"/> tag report their touches (the physics world's watcher_tags): common
 /// materials (METAL, FERROUS...) would report every bounce in a pile. Both items' sides of the rules run for every
 /// reported touch, so every rule needs a watcher tag on at least one side; a rule without one is reported at startup.
 /// </para>
@@ -42,55 +43,43 @@ public static class TagInteractions
     };
 
     /// <summary>
-    /// The tags whose items report their touches: the rarer, active side of each rule (what heats, charges, sticks,
+    /// The tags whose shapes report their touches: the rarer, active side of each rule (what heats, charges, sticks,
     /// pulls, dissolves or flows), so that ordinary materials don't. Every rule has one on at least one side.
     /// </summary>
-    static readonly HashSet<ItemTags> watchers = new()
-    {
-        ItemTags.HOT,
-        ItemTags.CHARGED,
-        ItemTags.MAGNETIC,
-        ItemTags.STICKY,
-        ItemTags.SOLUBLE,
-        ItemTags.LIQUID,
-    };
+    public const ItemTags Watchers = ItemTags.HOT | ItemTags.CHARGED | ItemTags.MAGNETIC | ItemTags.STICKY | ItemTags.SOLUBLE | ItemTags.LIQUID;
 
     static readonly Dictionary<(ulong, ulong), ulong> lastReaction = new();
+    static readonly ItemTags[] allTags = Enum.GetValues<ItemTags>();
 
     static TagInteractions()
     {
         foreach ((ItemTags self, ItemTags other) key in rules.Keys)
         {
-            if (!watchers.Contains(key.self) && !watchers.Contains(key.other))
+            if (((key.self | key.other) & Watchers) == 0)
             {
                 GD.PushError($"TagInteractions: rule ({key.self}, {key.other}) has no watcher tag, so it never runs. Add one of them to watchers.");
             }
         }
     }
 
-    /// <summary>Whether an item with <paramref name="tags"/> reports its touches (has a <see cref="watchers"/> tag).</summary>
-    public static bool IsWatcher(IEnumerable<ItemTags> tags)
+    /// <summary>
+    /// Called on the host when <paramref name="self"/>'s collider with <paramref name="selfTags"/> touches
+    /// <paramref name="other"/>'s collider with <paramref name="otherTags"/>.
+    /// </summary>
+    public static void OnTouch(ItemRecord self, ItemTags selfTags, ItemRecord other, ItemTags otherTags)
     {
-        foreach (ItemTags tag in tags)
-        {
-            if (watchers.Contains(tag)) return true;
-        }
-        return false;
-    }
-
-    /// <summary>Called on the host when <paramref name="self"/> touches <paramref name="other"/>.</summary>
-    public static void OnTouch(ItemRecord self, ItemRecord other)
-    {
-        if (other.tags.Count == 0) return;
+        if (otherTags == ItemTags.None) return;
 
         ulong now = Time.GetTicksMsec();
         if (lastReaction.TryGetValue((self.id, other.id), out ulong last) && now - last < CooldownMs) return;
 
         bool reacted = false;
-        foreach (ItemTags mine in self.tags)
+        foreach (ItemTags mine in allTags)
         {
-            foreach (ItemTags theirs in other.tags)
+            if ((selfTags & mine) == 0) continue;
+            foreach (ItemTags theirs in allTags)
             {
+                if ((otherTags & theirs) == 0) continue;
                 if (rules.TryGetValue((mine, theirs), out var rule))
                 {
                     rule(self, other);

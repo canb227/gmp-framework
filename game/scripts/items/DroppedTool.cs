@@ -27,9 +27,14 @@ public partial class DroppedTool : GMPOBody, Interactable
 
     public override void _Ready()
     {
+        ItemInfo info = ItemInfo.Fetch(itemID);
+        // Its definition's tags are the whole tool's, as for a loose item; none leaves the body's own.
+        if (info != null && info.tags != ItemTags.None)
+        {
+            tags = (ulong)info.tags;
+        }
         if (string.IsNullOrEmpty(hoverName))
         {
-            ItemInfo info = ItemInfo.Fetch(itemID);
             if (info != null)
             {
                 hoverName = info.displayName;

@@ -8,7 +8,9 @@
 #include "physics_character.h"
 #include "physics_shape.h"
 #include "physics_world.h"
+#include "shape_gizmo.h"
 
+#include <godot_cpp/classes/editor_plugin_registration.hpp>
 #include <box3d/base.h>
 
 #include <godot_cpp/variant/utility_functions.hpp>
@@ -23,20 +25,24 @@ static int box3d_assert(const char *condition, const char *fileName, int lineNum
 }
 
 void initialize_gmp_box3d(ModuleInitializationLevel p_level) {
-	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
-		return;
+	if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE) {
+		b3SetAssertFcn(box3d_assert);
+		GDREGISTER_CLASS(GMPPhysicsWorld);
+		GDREGISTER_CLASS(GMPBody);
+		GDREGISTER_CLASS(GMPShape);
+		GDREGISTER_CLASS(GMPCharacter);
 	}
-
-	b3SetAssertFcn(box3d_assert);
-	GDREGISTER_CLASS(GMPPhysicsWorld);
-	GDREGISTER_CLASS(GMPBody);
-	GDREGISTER_CLASS(GMPShape);
-	GDREGISTER_CLASS(GMPCharacter);
+	// Only in the editor: GMPShape's outline and resize handles.
+	if (p_level == MODULE_INITIALIZATION_LEVEL_EDITOR) {
+		GDREGISTER_INTERNAL_CLASS(GMPShapeGizmoPlugin);
+		GDREGISTER_INTERNAL_CLASS(GMPShapeEditorPlugin);
+		EditorPlugins::add_by_type<GMPShapeEditorPlugin>();
+	}
 }
 
 void uninitialize_gmp_box3d(ModuleInitializationLevel p_level) {
-	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
-		return;
+	if (p_level == MODULE_INITIALIZATION_LEVEL_EDITOR) {
+		EditorPlugins::remove_by_type<GMPShapeEditorPlugin>();
 	}
 }
 

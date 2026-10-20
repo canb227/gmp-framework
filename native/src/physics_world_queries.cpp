@@ -27,7 +27,7 @@ struct RayContext {
 	b3Pos point;
 	b3Vec3 normal;
 	float fraction = 1.0f;
-	uint64_t surfaceType = 0;
+	uint64_t tags = 0;
 	bool hit = false;
 };
 
@@ -48,13 +48,13 @@ static float ray_callback(b3ShapeId shapeId, b3Pos point, b3Vec3 normal, float f
 	ray->point = point;
 	ray->normal = normal;
 	ray->fraction = fraction;
-	ray->surfaceType = userMaterialId;
+	ray->tags = userMaterialId;
 	ray->hit = true;
 	return fraction;
 }
 
-// The closest thing between from and to: { hit, position, normal, fraction, surface_type, item_id, body }.
-// item_id is 0 and body null when the ray found nothing, or the other one of them.
+// The closest thing between from and to: { hit, position, normal, fraction, id (the body's), shape (its number
+// in the body), tags }.
 Dictionary GMPPhysicsWorld::raycast(Vector3 from, Vector3 to, int64_t mask) {
 	Dictionary result;
 	result["hit"] = false;
@@ -66,25 +66,25 @@ Dictionary GMPPhysicsWorld::raycast(Vector3 from, Vector3 to, int64_t mask) {
 	if (!ray.hit) {
 		return result;
 	}
-	uint64_t itemId = 0;
-	GMPBody *node = nullptr;
-	owner_of_shape(ray.shapeId, itemId, node);
+	Body *body = body_of_shape(ray.shapeId);
 	result["hit"] = true;
 	result["position"] = Vector3(ray.point.x, ray.point.y, ray.point.z);
 	result["normal"] = to_godot(ray.normal);
 	result["fraction"] = ray.fraction;
-	result["surface_type"] = (int64_t)ray.surfaceType;
-	result["item_id"] = (int64_t)itemId;
-	result["body"] = node;
+	result["tags"] = (int64_t)ray.tags;
+	result["id"] = (int64_t)0;
+	if (body != nullptr) {
+		result["id"] = (int64_t)body->id;
+	}
+	result["shape"] = shape_index(ray.shapeId);
 	return result;
 }
 
 // ---- overlaps ----
 
 struct OverlapContext {
-	const GMPPhysicsWorld *world = nullptr;
-	PackedInt64Array items;
-	Array bodies;
+	GMPPhysicsWorld *world = nullptr;
+	PackedInt64Array ids;
 };
 
 static bool overlap_callback(b3ShapeId shapeId, void *context) {
@@ -92,47 +92,35 @@ static bool overlap_callback(b3ShapeId shapeId, void *context) {
 		return true;
 	}
 	OverlapContext *overlap = (OverlapContext *)context;
-	uint64_t itemId = 0;
-	GMPBody *node = nullptr;
-	overlap->world->owner_of_shape(shapeId, itemId, node);
-	if (itemId != 0) {
-		overlap->items.push_back((int64_t)itemId);
-	}
+	Body *body = overlap->world->body_of_shape(shapeId);
 	// A body with several shapes in the volume is listed once.
-	if (node != nullptr && !overlap->bodies.has(node)) {
-		overlap->bodies.push_back(node);
+	if (body != nullptr && body->id != 0 && !overlap->ids.has((int64_t)body->id)) {
+		overlap->ids.push_back((int64_t)body->id);
 	}
 	// Keep going: we want everything.
 	return true;
 }
 
-static Dictionary overlap_result(const OverlapContext &overlap) {
-	Dictionary result;
-	result["items"] = overlap.items;
-	result["bodies"] = overlap.bodies;
-	return result;
-}
-
-// Everything inside the sphere: { items (ids), bodies (nodes) }.
-Dictionary GMPPhysicsWorld::overlap_sphere(Vector3 center, float radius, int64_t mask) {
+// Everything inside the sphere: the ids of the bodies in it.
+PackedInt64Array GMPPhysicsWorld::overlap_sphere(Vector3 center, float radius, int64_t mask) {
 	OverlapContext overlap;
 	overlap.world = this;
 	if (!b3World_IsValid(world)) {
-		return overlap_result(overlap);
+		return overlap.ids;
 	}
 	// A shape proxy is points around the origin, puffed out by radius: one point makes a sphere.
 	b3Vec3 point = { 0, 0, 0 };
 	b3ShapeProxy proxy = { &point, 1, radius };
 	b3World_OverlapShape(world, to_b3(center), &proxy, query_filter(mask), overlap_callback, &overlap);
-	return overlap_result(overlap);
+	return overlap.ids;
 }
 
-// Everything inside the box of the given full size, placed at transform: { items (ids), bodies (nodes) }.
-Dictionary GMPPhysicsWorld::overlap_box(Transform3D transform, Vector3 size, int64_t mask) {
+// Everything inside the box of the given full size, placed at transform: the ids of the bodies in it.
+PackedInt64Array GMPPhysicsWorld::overlap_box(Transform3D transform, Vector3 size, int64_t mask) {
 	OverlapContext overlap;
 	overlap.world = this;
 	if (!b3World_IsValid(world)) {
-		return overlap_result(overlap);
+		return overlap.ids;
 	}
 	// The box's eight corners, turned with it, around its centre.
 	Vector3 half = size / 2;
@@ -149,18 +137,18 @@ Dictionary GMPPhysicsWorld::overlap_box(Transform3D transform, Vector3 size, int
 	}
 	b3ShapeProxy proxy = { corners, 8, 0.0f };
 	b3World_OverlapShape(world, to_b3(transform.origin), &proxy, query_filter(mask), overlap_callback, &overlap);
-	return overlap_result(overlap);
+	return overlap.ids;
 }
 
-// Everything the shape would overlap at transform: { items (ids), bodies (nodes) }. Boxes, spheres,
+// Everything the shape would overlap at transform: the ids of the bodies in it. Boxes, spheres,
 // capsules and hulls are tested as they are; cylinders and meshes as the box around them, which is close
 // enough for checking where a structure fits.
-Dictionary GMPPhysicsWorld::overlap_shape(Object *shapeObject, Transform3D transform, int64_t mask, float margin) {
+PackedInt64Array GMPPhysicsWorld::overlap_shape(Object *shapeObject, Transform3D transform, int64_t mask, float margin) {
 	OverlapContext overlap;
 	overlap.world = this;
 	GMPShape *shape = Object::cast_to<GMPShape>(shapeObject);
 	if (shape == nullptr || !b3World_IsValid(world)) {
-		return overlap_result(overlap);
+		return overlap.ids;
 	}
 	Vector3 scale = transform.basis.get_scale();
 	Basis rotation = transform.basis.orthonormalized();
@@ -179,8 +167,8 @@ Dictionary GMPPhysicsWorld::overlap_shape(Object *shapeObject, Transform3D trans
 		points.push_back(to_b3(-axis * halfSegment));
 		points.push_back(to_b3(axis * halfSegment));
 	} else if (shape->shape == GMPShape::HULL && shape->mesh.is_valid()) {
-		// The hull's own corners (at most B3_MAX_HULL_VERTICES, which a shape proxy takes too), each pulled in by
-		// margin toward the hull's middle.
+		// The hull's own corners (at most the shape's max_hull_vertices, as its collider has; a shape proxy takes up
+		// to B3_MAX_HULL_VERTICES), each pulled in by margin toward the hull's middle.
 		PackedVector3Array faces = shape->mesh->get_faces();
 		std::vector<b3Vec3> meshPoints;
 		for (int i = 0; i < faces.size(); i++) {
@@ -188,10 +176,10 @@ Dictionary GMPPhysicsWorld::overlap_shape(Object *shapeObject, Transform3D trans
 		}
 		b3HullData *hull = nullptr;
 		if (!meshPoints.empty()) {
-			hull = b3CreateHull(meshPoints.data(), (int)meshPoints.size(), B3_MAX_HULL_VERTICES);
+			hull = b3CreateHull(meshPoints.data(), (int)meshPoints.size(), shape->maxHullVertices);
 		}
 		if (hull == nullptr) {
-			return overlap_result(overlap);
+			return overlap.ids;
 		}
 		const b3Vec3 *corners = b3GetHullPoints(hull);
 		Vector3 centre = to_godot(hull->center);
@@ -238,5 +226,5 @@ Dictionary GMPPhysicsWorld::overlap_shape(Object *shapeObject, Transform3D trans
 	}
 	b3ShapeProxy proxy = { points.data(), (int)points.size(), radius };
 	b3World_OverlapShape(world, to_b3(transform.origin), &proxy, query_filter(mask), overlap_callback, &overlap);
-	return overlap_result(overlap);
+	return overlap.ids;
 }

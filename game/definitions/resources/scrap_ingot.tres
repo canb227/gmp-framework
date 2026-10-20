@@ -12,7 +12,7 @@ displayName = "Scrap Ingot"
 description = "A cheap mixed-metal ingot. Every one comes out a different weight, depending on what went into the bale."
 icon = ExtResource("2_icon")
 maxStackSize = 999
-tags = Array[int]([3, 22])
+tags = 4194312
 currencyValue = Dictionary[int, int]({
 1: 1
 })

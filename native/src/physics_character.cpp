@@ -1,6 +1,5 @@
 #include "physics_character.h"
 
-#include "body_user_data.h"
 #include "math_convert.h"
 #include "physics_world.h"
 
@@ -58,6 +57,8 @@ void GMPCharacter::make_capsule_shape() {
 	def.filter.maskBits = collisionMask;
 	// Machines' sensors and the like can see characters.
 	def.enableSensorEvents = true;
+	// The capsule is no GMPShape, so it has only the character's own tags.
+	def.baseMaterial.userMaterialId = tags;
 	b3Capsule shape = capsule();
 	capsuleShape = b3CreateCapsuleShape(get_body_id(), &def, &shape);
 }
@@ -82,10 +83,18 @@ static bool is_self(const MoverContext *context, b3ShapeId shapeId) {
 	return B3_ID_EQUALS(b3Shape_GetBody(shapeId), context->self);
 }
 
-// Loose items and dynamic bodies give way: the character presses into them while its body shoves them.
+// Synced bodies (loose items, tools) and dynamic ones give way: the character presses into them while its body
+// shoves them. A synced body another peer simulates is kinematic here, but still gives way.
 static bool is_soft(b3ShapeId shapeId) {
-	b3BodyId body = b3Shape_GetBody(shapeId);
-	return user_data_is_item(b3Body_GetUserData(body)) || b3Body_GetType(body) == b3_dynamicBody;
+	if (b3Body_GetType(b3Shape_GetBody(shapeId)) == b3_dynamicBody) {
+		return true;
+	}
+	GMPPhysicsWorld *world = GMPPhysicsWorld::get_current();
+	if (world == nullptr) {
+		return false;
+	}
+	Body *body = world->body_of_shape(shapeId);
+	return body != nullptr && body->authority != 0;
 }
 
 static bool mover_filter(b3ShapeId shapeId, void *context) {
@@ -291,22 +300,14 @@ void GMPCharacter::add_impact(int kind, Vector3 position, Vector3 normal, float 
 	impact.normal[1] = normal.y;
 	impact.normal[2] = normal.z;
 	impact.speed = speed;
-	impact.surfaceType = 0;
-	impact.itemId = 0;
-	impact.nodeId = 0;
-	if (b3Shape_IsValid(shape)) {
-		impact.surfaceType = (int64_t)b3Shape_GetSurfaceMaterial(shape).userMaterialId;
-		void *userData = b3Body_GetUserData(b3Shape_GetBody(shape));
-		GMPPhysicsWorld *physics = GMPPhysicsWorld::get_current();
-		if (user_data_is_item(userData)) {
-			if (physics != nullptr) {
-				impact.itemId = physics->item_id_at_slot(item_slot_from_user_data(userData));
-			}
-		} else {
-			GMPBody *node = node_from_user_data(userData);
-			if (node != nullptr) {
-				impact.nodeId = node->get_instance_id();
-			}
+	impact.tags = 0;
+	impact.id = 0;
+	GMPPhysicsWorld *world = GMPPhysicsWorld::get_current();
+	if (world != nullptr) {
+		Body *body = world->body_of_shape(shape);
+		if (body != nullptr) {
+			impact.tags = b3Shape_GetSurfaceMaterial(shape).userMaterialId;
+			impact.id = body->id;
 		}
 	}
 	impacts.push_back(impact);

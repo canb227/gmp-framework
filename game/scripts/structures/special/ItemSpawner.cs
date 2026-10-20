@@ -151,7 +151,7 @@ public partial class ItemSpawner : IOMachine
     /// <summary>How many items are within <see cref="nearbyRadius"/> of <paramref name="position"/>.</summary>
     int CountNearby(Vector3 position)
     {
-        return PhysicsWorld.OverlapSphere(position, nearbyRadius, PhysicsWorld.ItemLayer).items.Length;
+        return PhysicsWorld.OverlapSphere(position, nearbyRadius, PhysicsWorld.ItemLayer).Length;
     }
 
     /// <summary>Picks a key at random in proportion to its weight; null if no key has a positive weight.</summary>

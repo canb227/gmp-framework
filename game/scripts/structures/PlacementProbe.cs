@@ -113,8 +113,9 @@ public class PlacementProbe
         List<Node> hits = new();
         foreach ((Node3D shape, Transform3D relative) in shapes)
         {
-            foreach (Node3D other in PhysicsWorld.OverlapShape(shape, testPose * relative, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer, Margin).bodies)
+            foreach (long id in PhysicsWorld.OverlapShape(shape, testPose * relative, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer, Margin))
             {
+                Node3D other = PhysicsWorld.BodyNode((ulong)id);
                 if (IsStaticLevelCollider(other) && !hits.Contains(other))
                 {
                     hits.Add(other);
@@ -130,7 +131,7 @@ public class PlacementProbe
         HashSet<ulong> items = new();
         foreach ((Node3D shape, Transform3D relative) in shapes)
         {
-            foreach (long item in PhysicsWorld.OverlapShape(shape, testPose * relative, PhysicsWorld.ItemLayer).items)
+            foreach (long item in PhysicsWorld.OverlapShape(shape, testPose * relative, PhysicsWorld.ItemLayer))
             {
                 items.Add((ulong)item);
             }

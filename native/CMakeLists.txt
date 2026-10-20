@@ -24,22 +24,22 @@ add_subdirectory(thirdparty/box3d)
 
 add_library(gmp_box3d SHARED
     src/register_types.cpp
-    src/body_user_data.h
     src/math_convert.h
     src/physics_body.h
     src/physics_body.cpp
     src/physics_shape.h
     src/physics_shape.cpp
+    src/shape_gizmo.h
+    src/shape_gizmo.cpp
+    src/tags.h
     src/physics_character.h
     src/physics_character.cpp
     src/physics_world.h
     src/physics_world.cpp
-    src/physics_world_kinds.cpp
-    src/physics_world_items.cpp
+    src/physics_world_bodies.cpp
     src/physics_world_events.cpp
     src/physics_world_queries.cpp
     src/physics_world_sync.cpp
-    src/item_state.h
     src/physics_world_render.cpp
 )
 

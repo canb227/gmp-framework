@@ -211,9 +211,9 @@ public partial class BuildGrid
             foreach (ulong item in probe.ItemOverlaps())
             {
                 // Teleporting wakes it, so it doesn't hang in the air.
-                Transform3D transform = PhysicsWorld.ItemTransform(item);
+                Transform3D transform = PhysicsWorld.BodyTransform(item);
                 transform.Origin += Vector3.Up * (height * CellSize + 0.5f);
-                PhysicsWorld.TeleportItem(item, transform);
+                PhysicsWorld.TeleportBody(item, transform);
             }
         }
 

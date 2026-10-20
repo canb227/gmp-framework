@@ -2,6 +2,7 @@
 
 #include "math_convert.h"
 #include "physics_body.h"
+#include "tags.h"
 
 #include <godot_cpp/core/class_db.hpp>
 
@@ -63,16 +64,17 @@ void GMPPhysicsWorld::destroy_world() {
 		currentWorld = nullptr;
 	}
 	// Bodies of nodes still around go with the world: tell them, so they don't use them again.
-	for (GMPBody *body : nodeBodies) {
-		body->forget_body();
+	for (Body &body : bodies) {
+		if (body.node != nullptr) {
+			body.node->forget_body();
+		}
 	}
-	nodeBodies.clear();
 	if (b3World_IsValid(world)) {
 		// Destroys every body and shape in it too.
 		b3DestroyWorld(world);
 	}
 	world = b3_nullWorldId;
-	items.clear();
+	bodies.clear();
 	followers.clear();
 	freeSlots.clear();
 	slotById.clear();
@@ -90,10 +92,10 @@ void GMPPhysicsWorld::step(float delta) {
 
 	// Followers are driven along their authorities' states.
 	play_followers(delta);
-	// Kinematic bodies go where their nodes were put since the last step.
-	for (GMPBody *body : nodeBodies) {
-		if (body->bodyType == GMPBody::KINEMATIC) {
-			body->follow_node(delta);
+	// Kinematic node bodies go where their nodes were put since the last step.
+	for (Body &body : bodies) {
+		if (body.node != nullptr && body.node->bodyType == GMPBody::KINEMATIC) {
+			body.node->follow_node(delta);
 		}
 	}
 
@@ -128,9 +130,9 @@ Dictionary GMPPhysicsWorld::get_stats() const {
 	stats["followers"] = (int64_t)followers.size();
 	// Compares peers' copies: equal (to a few mm) once followers have caught up with every item.
 	double positionSum = 0;
-	for (const Item &item : items) {
-		if (item.id != 0) {
-			positionSum += item.position.x + item.position.y + item.position.z;
+	for (const Body &body : bodies) {
+		if (body.id != 0 && body.kind >= 0) {
+			positionSum += body.position.x + body.position.y + body.position.z;
 		}
 	}
 	stats["position_sum"] = positionSum;
@@ -142,20 +144,6 @@ Dictionary GMPPhysicsWorld::get_stats() const {
 	stats["hits_sent"] = hitsSent;
 	stats["hits_heard"] = hitsHeard;
 	return stats;
-}
-
-void GMPPhysicsWorld::add_node_body(GMPBody *body) {
-	nodeBodies.push_back(body);
-}
-
-void GMPPhysicsWorld::remove_node_body(GMPBody *body) {
-	for (int i = 0; i < (int)nodeBodies.size(); i++) {
-		if (nodeBodies[i] == body) {
-			nodeBodies[i] = nodeBodies.back();
-			nodeBodies.pop_back();
-			return;
-		}
-	}
 }
 
 void GMPPhysicsWorld::set_gravity(Vector3 value) {
@@ -175,6 +163,20 @@ void GMPPhysicsWorld::set_item_layer(int64_t value) {
 
 int64_t GMPPhysicsWorld::get_item_layer() const {
 	return itemLayer;
+}
+
+void GMPPhysicsWorld::set_watcher_tags(int64_t value) {
+	watcherTags = (uint64_t)value;
+	// Items already in the world report their touches by the new tags from now on.
+	for (Body &body : bodies) {
+		if (body.id != 0 && body.kind >= 0) {
+			apply_item_tags(body);
+		}
+	}
+}
+
+int64_t GMPPhysicsWorld::get_watcher_tags() const {
+	return (int64_t)watcherTags;
 }
 
 Dictionary GMPPhysicsWorld::get_profile() const {
@@ -227,44 +229,48 @@ void GMPPhysicsWorld::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_item_layer", "value"), &GMPPhysicsWorld::set_item_layer);
 	ClassDB::bind_method(D_METHOD("get_item_layer"), &GMPPhysicsWorld::get_item_layer);
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "item_layer", PROPERTY_HINT_LAYERS_3D_PHYSICS), "set_item_layer", "get_item_layer");
+	ClassDB::bind_method(D_METHOD("set_watcher_tags", "value"), &GMPPhysicsWorld::set_watcher_tags);
+	ClassDB::bind_method(D_METHOD("get_watcher_tags"), &GMPPhysicsWorld::get_watcher_tags);
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "watcher_tags", PROPERTY_HINT_FLAGS, TagHintString), "set_watcher_tags", "get_watcher_tags");
 	ClassDB::bind_method(D_METHOD("get_profile"), &GMPPhysicsWorld::get_profile);
-	ClassDB::bind_method(D_METHOD("get_item_touches"), &GMPPhysicsWorld::get_item_touches);
-	ClassDB::bind_method(D_METHOD("overlap_shape", "shape", "transform", "mask", "margin"), &GMPPhysicsWorld::overlap_shape, DEFVAL(0xFFFFFFFF), DEFVAL(0.0f));
-	ClassDB::bind_method(D_METHOD("has_item", "id"), &GMPPhysicsWorld::has_item);
-	ClassDB::bind_method(D_METHOD("get_item_transform", "id"), &GMPPhysicsWorld::get_item_transform);
-	ClassDB::bind_method(D_METHOD("get_item_linear_velocity", "id"), &GMPPhysicsWorld::get_item_linear_velocity);
-	ClassDB::bind_method(D_METHOD("get_item_angular_velocity", "id"), &GMPPhysicsWorld::get_item_angular_velocity);
-	ClassDB::bind_method(D_METHOD("get_item_mass", "id"), &GMPPhysicsWorld::get_item_mass);
-	ClassDB::bind_method(D_METHOD("is_item_asleep", "id"), &GMPPhysicsWorld::is_item_asleep);
-	ClassDB::bind_method(D_METHOD("apply_item_force", "id", "force"), &GMPPhysicsWorld::apply_item_force);
-	ClassDB::bind_method(D_METHOD("apply_item_impulse", "id", "impulse"), &GMPPhysicsWorld::apply_item_impulse);
-	ClassDB::bind_method(D_METHOD("damp_item_spin", "id", "fraction"), &GMPPhysicsWorld::damp_item_spin);
-	ClassDB::bind_method(D_METHOD("teleport_item", "id", "transform"), &GMPPhysicsWorld::teleport_item);
-	ClassDB::bind_method(D_METHOD("set_item_reports_touches", "id", "reports"), &GMPPhysicsWorld::set_item_reports_touches);
-	ClassDB::bind_method(D_METHOD("get_items_below", "y"), &GMPPhysicsWorld::get_items_below);
-
 	ClassDB::bind_method(D_METHOD("step", "delta"), &GMPPhysicsWorld::step);
 	ClassDB::bind_method(D_METHOD("get_stats"), &GMPPhysicsWorld::get_stats);
-	ClassDB::bind_method(D_METHOD("get_hits", "listener", "max_distance", "min_speed"), &GMPPhysicsWorld::get_hits);
-	ClassDB::bind_method(D_METHOD("raycast", "from", "to", "mask"), &GMPPhysicsWorld::raycast, DEFVAL(0xFFFFFFFF));
-	ClassDB::bind_method(D_METHOD("overlap_sphere", "center", "radius", "mask"), &GMPPhysicsWorld::overlap_sphere, DEFVAL(0xFFFFFFFF));
-	ClassDB::bind_method(D_METHOD("overlap_box", "transform", "size", "mask"), &GMPPhysicsWorld::overlap_box, DEFVAL(0xFFFFFFFF));
 
 	ClassDB::bind_method(D_METHOD("register_item_kind", "description"), &GMPPhysicsWorld::register_item_kind);
-
 	ClassDB::bind_method(D_METHOD("spawn_item", "id", "kind", "authority", "transform", "linear_velocity", "angular_velocity"), &GMPPhysicsWorld::spawn_item);
 	ClassDB::bind_method(D_METHOD("despawn_item", "id"), &GMPPhysicsWorld::despawn_item);
 	ClassDB::bind_method(D_METHOD("clear_items"), &GMPPhysicsWorld::clear_items);
 	ClassDB::bind_method(D_METHOD("get_item_count"), &GMPPhysicsWorld::get_item_count);
+	ClassDB::bind_method(D_METHOD("get_items_below", "y"), &GMPPhysicsWorld::get_items_below);
 	ClassDB::bind_method(D_METHOD("kick_random_items", "count"), &GMPPhysicsWorld::kick_random_items);
+
+	ClassDB::bind_method(D_METHOD("has_body", "id"), &GMPPhysicsWorld::has_body);
+	ClassDB::bind_method(D_METHOD("get_body_node", "id"), &GMPPhysicsWorld::get_body_node);
+	ClassDB::bind_method(D_METHOD("get_body_transform", "id"), &GMPPhysicsWorld::get_body_transform);
+	ClassDB::bind_method(D_METHOD("get_body_linear_velocity", "id"), &GMPPhysicsWorld::get_body_linear_velocity);
+	ClassDB::bind_method(D_METHOD("get_body_angular_velocity", "id"), &GMPPhysicsWorld::get_body_angular_velocity);
+	ClassDB::bind_method(D_METHOD("get_body_mass", "id"), &GMPPhysicsWorld::get_body_mass);
+	ClassDB::bind_method(D_METHOD("is_body_asleep", "id"), &GMPPhysicsWorld::is_body_asleep);
+	ClassDB::bind_method(D_METHOD("apply_body_force", "id", "force"), &GMPPhysicsWorld::apply_body_force);
+	ClassDB::bind_method(D_METHOD("apply_body_impulse", "id", "impulse"), &GMPPhysicsWorld::apply_body_impulse);
+	ClassDB::bind_method(D_METHOD("damp_body_spin", "id", "fraction"), &GMPPhysicsWorld::damp_body_spin);
+	ClassDB::bind_method(D_METHOD("teleport_body", "id", "transform"), &GMPPhysicsWorld::teleport_body);
+	ClassDB::bind_method(D_METHOD("set_body_tags", "id", "tags"), &GMPPhysicsWorld::set_body_tags);
+
+	ClassDB::bind_method(D_METHOD("get_hits", "listener", "max_distance", "min_speed"), &GMPPhysicsWorld::get_hits);
+	ClassDB::bind_method(D_METHOD("get_touches"), &GMPPhysicsWorld::get_touches);
+	ClassDB::bind_method(D_METHOD("raycast", "from", "to", "mask"), &GMPPhysicsWorld::raycast, DEFVAL(0xFFFFFFFF));
+	ClassDB::bind_method(D_METHOD("overlap_sphere", "center", "radius", "mask"), &GMPPhysicsWorld::overlap_sphere, DEFVAL(0xFFFFFFFF));
+	ClassDB::bind_method(D_METHOD("overlap_box", "transform", "size", "mask"), &GMPPhysicsWorld::overlap_box, DEFVAL(0xFFFFFFFF));
+	ClassDB::bind_method(D_METHOD("overlap_shape", "shape", "transform", "mask", "margin"), &GMPPhysicsWorld::overlap_shape, DEFVAL(0xFFFFFFFF), DEFVAL(0.0f));
 
 	ClassDB::bind_method(D_METHOD("set_self_peer", "peer"), &GMPPhysicsWorld::set_self_peer);
 	ClassDB::bind_method(D_METHOD("set_send_interval", "ticks"), &GMPPhysicsWorld::set_send_interval);
-	ClassDB::bind_method(D_METHOD("set_item_authority", "id", "peer"), &GMPPhysicsWorld::set_item_authority);
+	ClassDB::bind_method(D_METHOD("set_body_authority", "id", "peer"), &GMPPhysicsWorld::set_body_authority);
 	ClassDB::bind_method(D_METHOD("set_viewers", "positions", "eyes", "looks"), &GMPPhysicsWorld::set_viewers);
-	ClassDB::bind_method(D_METHOD("hold_item", "id"), &GMPPhysicsWorld::hold_item);
-	ClassDB::bind_method(D_METHOD("show_item_newest", "id"), &GMPPhysicsWorld::show_item_newest);
+	ClassDB::bind_method(D_METHOD("hold_body", "id"), &GMPPhysicsWorld::hold_body);
+	ClassDB::bind_method(D_METHOD("show_body_newest", "id"), &GMPPhysicsWorld::show_body_newest);
 	ClassDB::bind_method(D_METHOD("set_playback_tick", "peer", "playback_tick"), &GMPPhysicsWorld::set_playback_tick);
-	ClassDB::bind_method(D_METHOD("build_item_states", "max_bytes", "max_packet_bytes", "turn", "send_tick", "send_time"), &GMPPhysicsWorld::build_item_states);
-	ClassDB::bind_method(D_METHOD("apply_item_states", "packet", "sender"), &GMPPhysicsWorld::apply_item_states);
+	ClassDB::bind_method(D_METHOD("build_body_states", "max_bytes", "max_packet_bytes", "turn", "send_tick", "send_time"), &GMPPhysicsWorld::build_body_states);
+	ClassDB::bind_method(D_METHOD("apply_body_states", "packet", "sender"), &GMPPhysicsWorld::apply_body_states);
 }

@@ -83,13 +83,37 @@ public partial class AudioManager : Node
         return Mathf.Min(speed / FullVolumeSpeed, 1.0f);
     }
 
-    /// <summary>Each physics tick: a sound for every impact near the camera, on every peer (PhysicsWorld.Hits).</summary>
-    private static void OnPhysicsStepped(double delta)
+    /// <summary>The impact sound for each surface tag. Surfaces not listed, and none, use <see cref="DefaultImpactSound"/>.</summary>
+    private static readonly System.Collections.Generic.Dictionary<ItemTags, string> ImpactSounds = new()
+    {
+        { ItemTags.METAL, "event:/Solid_Metal" },
+    };
+    const string DefaultImpactSound = "event:/Solid_Metal";
+
+    /// <summary>
+    /// Which surface a hit sounds like (one of METAL..GLASS, or None), from the tags of the two shapes that met
+    /// (<see cref="ContactHit.tagsA"/>, <see cref="ContactHit.tagsB"/>, cast to <see cref="ItemTags"/>). A side's own
+    /// surface is its lowest surface tag.
+    /// </summary>
+    private static ItemTags HitSurface(ContactHit hit)
+    {
+        // TODO(human)
+        return ItemTags.None;
+    }
+
+    /// <summary>Each physics tick: a sound for every impact near the camera, on every peer (<see cref="HitStream"/>).</summary>
+    private static void OnHits()
     {
         Camera3D camera = Instance.GetViewport().GetCamera3D();
         if (camera == null)
             return;
-        PhysicsWorld.Hits(hits, camera.GlobalPosition, MaxImpactDistance, MinImpactSpeed);
+        // Its own copy of the ones loud and near enough: the stream's list is shared, so it isn't sorted in place.
+        hits.Clear();
+        foreach (ContactHit hit in HitStream.hits)
+        {
+            if (hit.speed >= MinImpactSpeed && hit.position.DistanceTo(camera.GlobalPosition) <= MaxImpactDistance)
+                hits.Add(hit);
+        }
         if (hits.Count > MaxImpactSoundsPerTick)
         {
             hits.Sort(FastestFirst);
@@ -97,7 +121,11 @@ public partial class AudioManager : Node
         }
         foreach (ContactHit hit in hits)
         {
-            Instance.PlayOneShot("event:/Solid_Metal", ImpactVolume(hit.speed), hit.position, "Force", hit.speed);
+            if (!ImpactSounds.TryGetValue(HitSurface(hit), out string sound))
+            {
+                sound = DefaultImpactSound;
+            }
+            Instance.PlayOneShot(sound, ImpactVolume(hit.speed), hit.position, "Force", hit.speed);
         }
     }
 
@@ -114,7 +142,7 @@ public partial class AudioManager : Node
     {
         SetupFmodResolver();
         Instance = this;
-        GameWorld.PhysicsStepped += OnPhysicsStepped;
+        HitStream.Updated += OnHits;
         GMPOCharacter.Impacted += OnCharacterImpacted;
 
         try

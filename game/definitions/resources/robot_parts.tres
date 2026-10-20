@@ -12,7 +12,7 @@ displayName = "Robot Parts"
 description = "Pieces of ruined and destroyed robots"
 icon = ExtResource("2_t2g7f")
 maxStackSize = 999
-tags = Array[int]([3, 22, 20, 12, 0])
+tags = 5246984
 currencyValue = Dictionary[int, int]({
 2: 1
 })

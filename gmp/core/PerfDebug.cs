@@ -32,9 +32,9 @@ public static class PerfDebug
     private static double logTimer = 0;
     private static bool measuringRenderTime = false;
 
-    private static long lastApplyCost, lastBuildCost, lastSendCost, lastReceiveCost, lastFollowCost, lastServiceCost, lastInterpolationCost;
-    private static long lastApplied, lastBuilt, lastSent, lastReceived, lastFollowTicks, lastSentBytes, lastReceivedBytes;
-    private static double applyMs, buildMs, sendMs, receiveMs, followMs, serviceMs, interpolationMs;
+    private static long lastApplyCost, lastBuildCost, lastSendCost, lastReceiveCost, lastServiceCost;
+    private static long lastApplied, lastBuilt, lastSent, lastReceived, lastSentBytes, lastReceivedBytes;
+    private static double applyMs, buildMs, sendMs, receiveMs, followMs, serviceMs;
     /// <summary>The physics world's own running totals for its loose items (states built and applied, ms of playback), as last read.</summary>
     private static double lastItemFollowMs;
     private static long lastItemsBuilt, lastItemsApplied;
@@ -129,29 +129,25 @@ public static class PerfDebug
         buildMs = (GameWorld.buildCost - lastBuildCost) * msPerTick / seconds;
         sendMs = (GameWorld.sendCost - lastSendCost) * msPerTick / seconds;
         receiveMs = (GameWorld.receiveCost - lastReceiveCost) * msPerTick / seconds;
-        followMs = (GMPOBody.followCost - lastFollowCost) * msPerTick / seconds;
         serviceMs = (Lobby.serviceCost - lastServiceCost) * msPerTick / seconds;
-        interpolationMs = (GMPOBody.interpolationCost - lastInterpolationCost) * msPerTick / seconds;
         sentKBps = (GameWorld.sentBytes - lastSentBytes) / 1024.0 / seconds;
         receivedKBps = (GameWorld.receivedBytes - lastReceivedBytes) / 1024.0 / seconds;
         appliedPerSecond = (GameWorld.appliedCount - lastApplied) / seconds;
         builtPerSecond = (GameWorld.builtCount - lastBuilt) / seconds;
         sentPerSecond = (GameWorld.sentCount - lastSent) / seconds;
         receivedPerSecond = (GameWorld.receivedCount - lastReceived) / seconds;
-        // Follower ticks per second over physics ticks per second: how many bodies follow at once, on average.
-        followers = (GMPOBody.followTicks - lastFollowTicks) / seconds / Engine.PhysicsTicksPerSecond;
-        // Loose items are built, applied and played back in C++ (its build and apply time is in GameWorld's totals
-        // already, as GameWorld makes those calls): add their counts and their playback.
+        // Bodies are built, applied and played back in C++ (its build and apply time is in GameWorld's totals already,
+        // as GameWorld makes those calls): add their counts and their playback.
         if (GodotObject.IsInstanceValid(GameWorld.physics))
         {
             using Godot.Collections.Dictionary stats = PhysicsWorld.Stats();
             double itemFollowMs = stats["follow_ms_total"].AsDouble();
             long itemsBuilt = stats["states_built"].AsInt64();
             long itemsApplied = stats["states_applied"].AsInt64();
-            followMs += (itemFollowMs - lastItemFollowMs) / seconds;
+            followMs = (itemFollowMs - lastItemFollowMs) / seconds;
             builtPerSecond += (itemsBuilt - lastItemsBuilt) / seconds;
             appliedPerSecond += (itemsApplied - lastItemsApplied) / seconds;
-            followers += stats["followers"].AsInt32();
+            followers = stats["followers"].AsInt32();
             lastItemFollowMs = itemFollowMs;
             lastItemsBuilt = itemsBuilt;
             lastItemsApplied = itemsApplied;
@@ -161,16 +157,13 @@ public static class PerfDebug
         lastBuildCost = GameWorld.buildCost;
         lastSendCost = GameWorld.sendCost;
         lastReceiveCost = GameWorld.receiveCost;
-        lastFollowCost = GMPOBody.followCost;
         lastServiceCost = Lobby.serviceCost;
-        lastInterpolationCost = GMPOBody.interpolationCost;
         lastSentBytes = GameWorld.sentBytes;
         lastReceivedBytes = GameWorld.receivedBytes;
         lastApplied = GameWorld.appliedCount;
         lastBuilt = GameWorld.builtCount;
         lastSent = GameWorld.sentCount;
         lastReceived = GameWorld.receivedCount;
-        lastFollowTicks = GMPOBody.followTicks;
 
         Rid viewport = ((SceneTree)Engine.GetMainLoop()).Root.GetViewportRid();
         renderCpuMs = RenderingServer.ViewportGetMeasuredRenderTimeCpu(viewport) + RenderingServer.GetFrameSetupTimeCpu();
@@ -198,7 +191,7 @@ public static class PerfDebug
         Logging.Log($"fps {Mon(Performance.Monitor.TimeFps):0} (frame avg {avgMs:0.0} max {maxMs:0.0} ms)"
             + $" | process {processMs:0.0} ms | physics tick avg {physicsTickAvgMs:0.0} worst {physicsTickMs:0.0} ms (Box3D step {stepMs:0.0} ms, awake {awakeBodies})"
             + $" | render cpu {renderCpuMs:0.0} gpu {renderGpuMs:0.0} ms, draw calls {Mon(Performance.Monitor.RenderTotalDrawCallsInFrame):0}, objects {Mon(Performance.Monitor.RenderTotalObjectsInFrame):0}"
-            + $" | synced {GameWorld.syncedObjs.Count}, followers {followers:0} ({followMs:0} ms/s), {GMPOBody.interpolatedCount} interpolated (checks {interpolationMs:0.0} ms/s)"
+            + $" | synced {GameWorld.syncedObjs.Count}, followers {followers:0} ({followMs:0} ms/s)"
             + $" | sync ms/s: build {buildMs:0} ({builtPerSecond:0}/s), send {sendMs:0} ({sentPerSecond:0}/s), receive {receiveMs:0} ({receivedPerSecond:0}/s), apply {applyMs:0} ({appliedPerSecond:0}/s)"
             + $" | transport service {serviceMs:0} ms/s | state out {sentKBps:0} KB/s, in {receivedKBps:0} KB/s",
             "Perf");
@@ -252,7 +245,7 @@ public static class PerfDebug
             ImGui.Text($"Send (serialize + Steam): {sendMs:0.0} ms/s | {sentPerSecond:0} states/s");
             ImGui.Text($"Receive (deserialize): {receiveMs:0.0} ms/s | {receivedPerSecond:0} states/s");
             ImGui.Text($"Apply: {applyMs:0.0} ms/s | {appliedPerSecond:0} states/s");
-            ImGui.Text($"Followers: {followers:0} | {followMs:0.0} ms/s | interpolated bodies: {GMPOBody.interpolatedCount}");
+            ImGui.Text($"Followers: {followers:0} | {followMs:0.0} ms/s");
             ImGui.Text($"Transport service: {serviceMs:0.0} ms/s | state out {sentKBps:0} KB/s, in {receivedKBps:0} KB/s");
         }
 

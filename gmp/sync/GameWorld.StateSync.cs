@@ -267,10 +267,9 @@ public partial class GameWorld
         pendingStates.Clear();
         applyCost += Stopwatch.GetTimestamp() - applyStart;
         AdvancePlaybackClocks();
-        GMPOBody.PlayFollowers(delta);
-        GMPOBody.UpdateInterpolation(GetViewport().GetCamera3D(), syncedObjs.Values);
         CheckKillPlane();
         StepNativeWorld(delta);
+        HitStream.Update(GetViewport().GetCamera3D());
         PhysicsStepped?.Invoke(delta);
 
         // Nobody to send to (solo, or the last peer left): skip building updates, which costs per object per tick.

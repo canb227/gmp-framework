@@ -55,39 +55,39 @@ transform = Transform3D(0, -0.005, -0.99999, 0.00047, 0.99999, -0.005, 1, -0.000
 size = Vector3(2, 0.1, 1.06401)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
-surface_type = 5
+tags = 32
 
 [node name="Floor1" type="GMPShape" parent="." unique_id=337974952]
 transform = Transform3D(0.70711, -0.03531, -0.70622, 0, 0.99875, -0.04994, 0.70711, 0.03531, 0.70622, 0.88211, 0.08469, -1.12142)
 size = Vector3(1.43, 0.1, 1.06532)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
-surface_type = 5
+tags = 32
 
 [node name="Floor2" type="GMPShape" parent="." unique_id=334643199]
 transform = Transform3D(0.9998, -0.01991, 0, 0.01989, 0.99882, -0.04429, 0.00088, 0.04428, 0.99902, 1.001, 0.08751, -1.47221)
 size = Vector3(2, 0.1, 1.06504)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
-surface_type = 5
+tags = 32
 
 [node name="WallOuter0" type="GMPShape" parent="." unique_id=1107121708]
 shape = 4
 mesh = SubResource("ArrayMesh_WallOuter0")
 friction = 0.0
-surface_type = 3
+tags = 8
 
 [node name="WallOuter1" type="GMPShape" parent="." unique_id=1060106689]
 shape = 4
 mesh = SubResource("ArrayMesh_WallOuter1")
 friction = 0.0
-surface_type = 3
+tags = 8
 
 [node name="WallOuter2" type="GMPShape" parent="." unique_id=51411012]
 shape = 4
 mesh = SubResource("ArrayMesh_WallOuter2")
 friction = 0.0
-surface_type = 3
+tags = 8
 
 [node name="CornerDeflector" type="GMPShape" parent="." unique_id=1747350150]
 transform = Transform3D(0.9999992, 0, 0, 0, 1, 0, 0, 0, 0.9999992, 0.040430095, 0.29963547, -1.9580303)
@@ -96,7 +96,7 @@ radius = 0.1
 height = 0.3
 friction = 0.5
 tangent_velocity = Vector3(1.414, 0, -1.414)
-surface_type = 3
+tags = 8
 
 [node name="StructureArrow" type="Node3D" parent="." unique_id=362824754]
 transform = Transform3D(4.371139e-08, 3.821371e-15, -1, 8.742278e-08, -1, 0, -1, -8.742278e-08, -4.371139e-08, 0.16272354, 0.8026422, -0.78694737)

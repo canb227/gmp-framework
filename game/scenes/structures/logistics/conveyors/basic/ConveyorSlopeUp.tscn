@@ -70,46 +70,46 @@ blueprintItemID = "blueprint_conveyor_slope"
 shape = 4
 mesh = SubResource("ArrayMesh_WallLEntry")
 friction = 0.0
-surface_type = 3
+tags = 8
 
 [node name="WallL" type="GMPShape" parent="." unique_id=1615587082]
 shape = 4
 mesh = SubResource("ArrayMesh_WallL")
 friction = 0.0
-surface_type = 3
+tags = 8
 
 [node name="WallREntry" type="GMPShape" parent="." unique_id=954833495]
 shape = 4
 mesh = SubResource("ArrayMesh_WallREntry")
 friction = 0.0
-surface_type = 3
+tags = 8
 
 [node name="WallR" type="GMPShape" parent="." unique_id=85850733]
 shape = 4
 mesh = SubResource("ArrayMesh_WallR")
 friction = 0.0
-surface_type = 3
+tags = 8
 
 [node name="BeltIn" type="GMPShape" parent="." unique_id=1981472593]
 transform = Transform3D(1, 0, 0, 0, 0.99713, -0.07568, 0, 0.07568, 0.99713, 1, 0.09014, -0.13554)
 size = Vector3(1.885, 0.1, 0.26428)
 friction = 1.2
 tangent_velocity = Vector3(0, 0, -2)
-surface_type = 5
+tags = 32
 
 [node name="BeltIncline" type="GMPShape" parent="." unique_id=957114424]
 transform = Transform3D(1, 0, 0, 0, 0.86636, -0.49942, 0, 0.49942, 0.86636, 1, 1.08668, -2.02322)
 size = Vector3(1.885, 0.1, 4.00464)
 friction = 1.2
 tangent_velocity = Vector3(0, 0, -3)
-surface_type = 5
+tags = 32
 
 [node name="BeltOut" type="GMPShape" parent="." unique_id=1959049020]
 transform = Transform3D(1, 0, 0, 0, 0.98897, -0.14815, 0, 0.14815, 0.98897, 1, 2.08055, -3.8739)
 size = Vector3(1.885, 0.1, 0.27)
 friction = 1.2
 tangent_velocity = Vector3(0, 0, -2)
-surface_type = 5
+tags = 32
 
 [node name="StructureArrow" type="Node3D" parent="." unique_id=2045087509]
 transform = Transform3D(-1, -4.799709e-08, 7.3068605e-08, 0, -0.8358074, -0.54902273, 8.742278e-08, -0.54902273, 0.8358074, 1.046238, 1.3718457, -1.140737)

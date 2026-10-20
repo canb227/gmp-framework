@@ -47,9 +47,9 @@ public partial class FactoryPlayer
     {
         RayHit ray = PhysicsWorld.Raycast(camera.GlobalPosition, camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * pickRange);
         pickItem = null;
-        if (ray.itemId != 0)
+        if (ray.hit)
         {
-            ItemRecord item = ItemWorld.Get(ray.itemId);
+            ItemRecord item = ItemWorld.Get(ray.id);
             if (item != null && item.canBePickTarget)
             {
                 pickItem = item;
@@ -59,7 +59,7 @@ public partial class FactoryPlayer
             }
         }
         // A hit on a structure's belt line or plain child body resolves to the structure.
-        GMPOBody target = ray.body as GMPOBody;
+        GMPOBody target = PhysicsWorld.BodyNode(ray.id) as GMPOBody;
         if (target is not Interactable && string.IsNullOrEmpty(target?.hoverName) && string.IsNullOrEmpty(target?.hoverText))
         {
             target = BuildGrid.FindStructure(ray);

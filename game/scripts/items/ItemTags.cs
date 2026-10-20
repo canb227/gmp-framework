@@ -1,41 +1,37 @@
-using PolyType;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 
 /// <summary>
-/// Properties of a physical item that drive interactions between items (see <see cref="TagInteractions"/>).
-/// Stored in scenes by value, so never renumber existing entries.
+/// What an item, structure, tool or one collider of them is made of and does, as bits: a thing has any number of them.
+/// In the physics world every shape keeps its tags in its Box3D surface material, so hits, ray casts and touches carry
+/// them; a shape's tags there are its own plus its body's (native/src/tags.h, which repeats these names and values).
+/// Stored in scenes and resources by value, so never change an existing one's bit.
 /// </summary>
-public enum ItemTags
+[Flags]
+public enum ItemTags : long
 {
-    INERT = 0,
-    HOT = 1,
-    COLD = 2,
-    // Surface materials: what an item or structure sounds like when struck (see ImpactSounds). An object's first
-    // material tag is its surface; a collision shape's user_material_id may hold one of these values instead.
-    METAL = 3,
-    ROCK = 4,
-    RUBBER = 5,
-    CONCRETE = 6,
-    PLASTIC = 7,
-    GLASS = 8,
+    None = 0,
+    HOT = 1L << 1,
+    COLD = 1L << 2,
+    // Surface materials: what something sounds like when struck. The lowest one a shape has is its sound.
+    METAL = 1L << 3,
+    ROCK = 1L << 4,
+    RUBBER = 1L << 5,
+    CONCRETE = 1L << 6,
+    PLASTIC = 1L << 7,
+    GLASS = 1L << 8,
     // Behaviour tags for the resources and products (see TagInteractions for what each pair does).
-    FUEL = 9,          // burns when it touches something HOT (and becomes HOT itself)
-    FRAGILE = 10,      // shatters on hard impacts (impact-speed rule, not a tag pair)
-    STICKY = 11,       // glues itself to whatever it touches; COLD hardens it
-    MAGNETIC = 12,     // pulls FERROUS items (and other magnets) toward itself; HOT switches it off
-    VOLATILE = 13,     // detonates on HOT or CHARGED contact
-    SOLUBLE = 14,      // dissolves when WET; melts COLD items it touches
-    WET = 15,          // soaked (quench tank, melted frost)
-    SLIPPERY = 16,     // near-frictionless: belts can't carry it (physical, via friction)
-    BUOYANT = 17,      // floats in liquids (water, magma), drifts in fans
-    LIQUID = 18,       // beads merge with other LIQUID items; amalgamate with CONDUCTIVE metal
-    CHARGED = 19,      // repels other CHARGED items, discharges into CONDUCTIVE ones, sparks VOLATILE ones
-    CONDUCTIVE = 20,   // grounds CHARGED items
-    INSULATED = 21,    // blocks HOT / COLD / CHARGED interactions through it
-    FERROUS = 22,      // attracted by MAGNETIC items and magnetic belts
+    FUEL = 1L << 9,          // burns when it touches something HOT (and becomes HOT itself)
+    FRAGILE = 1L << 10,      // shatters on hard impacts (impact-speed rule, not a tag pair)
+    STICKY = 1L << 11,       // glues itself to whatever it touches; COLD hardens it
+    MAGNETIC = 1L << 12,     // pulls FERROUS items (and other magnets) toward itself; HOT switches it off
+    VOLATILE = 1L << 13,     // detonates on HOT or CHARGED contact
+    SOLUBLE = 1L << 14,      // dissolves when WET; melts COLD items it touches
+    WET = 1L << 15,          // soaked (quench tank, melted frost)
+    SLIPPERY = 1L << 16,     // near-frictionless: belts can't carry it (physical, via friction)
+    BUOYANT = 1L << 17,      // floats in liquids (water, magma), drifts in fans
+    LIQUID = 1L << 18,       // beads merge with other LIQUID items; amalgamate with CONDUCTIVE metal
+    CHARGED = 1L << 19,      // repels other CHARGED items, discharges into CONDUCTIVE ones, sparks VOLATILE ones
+    CONDUCTIVE = 1L << 20,   // grounds CHARGED items
+    INSULATED = 1L << 21,    // blocks HOT / COLD / CHARGED interactions through it
+    FERROUS = 1L << 22,      // attracted by MAGNETIC items and magnetic belts
 }

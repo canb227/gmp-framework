@@ -120,7 +120,7 @@ public partial class GameWorld : Node3D
             killChecks.Clear();
             foreach (GMPObject obj in syncedObjs.Values)
             {
-                if (obj is GMPOBody body && body.authority == Lobby.selfPeerID && body.authoredBodyType == BodyTypeEnum.Dynamic)
+                if (obj is GMPOBody body && body.authority == Lobby.selfPeerID && body.bodyType == BodyTypeEnum.Dynamic)
                 {
                     killChecks.Add(body);
                 }
@@ -232,7 +232,6 @@ public partial class GameWorld : Node3D
         {
             PhysicsWorld.ClearItems();
         }
-        GMPOBody.ClearFollowers();
         claims.Clear();
         leaseEnds.Clear();
         BuildGrid.ResetSession();

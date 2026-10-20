@@ -32,7 +32,7 @@ public partial record struct MagnetSync
 /// <para>
 /// Authority: the host simulates every item, held or not, so only its copy of each rod does any pulling; a client's own
 /// held items trail its rod by about a round trip. To keep that small, a client shows what its rod holds at the host's
-/// newest state rather than the usual interpolation delay behind (<see cref="PhysicsWorld.ShowItemNewest"/>), and the hold
+/// newest state rather than the usual interpolation delay behind (<see cref="PhysicsWorld.ShowBodyNewest"/>), and the hold
 /// point marker moves with the camera every frame.
 /// </para>
 /// <para>
@@ -232,11 +232,11 @@ public partial class MagnetRod : HeldItem
         foreach (ulong item in caught)
         {
             // Held items sync ahead of everything but the players (counts on the item's authority, the host).
-            PhysicsWorld.HoldItem(item);
+            PhysicsWorld.HoldBody(item);
             if (isLocal)
             {
                 // Show what this player holds as close to now as the host's states allow (nothing on the host).
-                PhysicsWorld.ShowItemNewest(item);
+                PhysicsWorld.ShowBodyNewest(item);
             }
             Pull(item, (float)delta);
         }
@@ -278,7 +278,7 @@ public partial class MagnetRod : HeldItem
 
         if (mode == MagnetMode.Single)
         {
-            if (PhysicsWorld.ItemPosition(caught[0]).DistanceTo(target) > breakDistance)
+            if (PhysicsWorld.BodyPosition(caught[0]).DistanceTo(target) > breakDistance)
             {
                 strainedFor += dt;
             }
@@ -287,7 +287,7 @@ public partial class MagnetRod : HeldItem
                 strainedFor = 0;
             }
             // Heavy items trail far behind a quick turn: give them longer to catch up before letting go.
-            if (strainedFor > breakTime / Lightness(PhysicsWorld.ItemMass(caught[0])))
+            if (strainedFor > breakTime / Lightness(PhysicsWorld.BodyMass(caught[0])))
             {
                 mode = MagnetMode.Off;
             }
@@ -299,13 +299,13 @@ public partial class MagnetRod : HeldItem
     {
         if (caught.Count >= maxItems) return;
         List<(ulong id, float distanceSquared)> inReach = new();
-        foreach (long found in PhysicsWorld.OverlapSphere(target, captureRadius, PhysicsWorld.ItemLayer).items)
+        foreach (long found in PhysicsWorld.OverlapSphere(target, captureRadius, PhysicsWorld.ItemLayer))
         {
             ulong id = (ulong)found;
             ItemRecord item = ItemWorld.Get(id);
             if (item != null && item.canBeGrabbed && !caught.Contains(id))
             {
-                inReach.Add((id, PhysicsWorld.ItemPosition(id).DistanceSquaredTo(target)));
+                inReach.Add((id, PhysicsWorld.BodyPosition(id).DistanceSquaredTo(target)));
             }
         }
         inReach.Sort((a, b) => a.distanceSquared.CompareTo(b.distanceSquared));
@@ -326,25 +326,25 @@ public partial class MagnetRod : HeldItem
     {
         if (!Lobby.isHost) return;
 
-        float mass = PhysicsWorld.ItemMass(item);
+        float mass = PhysicsWorld.BodyMass(item);
         float lightness = Lightness(mass);
 
         float pullSpeed = maxPullSpeed * lightness;
-        Vector3 pull = (target - PhysicsWorld.ItemPosition(item)) * positionGain;
+        Vector3 pull = (target - PhysicsWorld.BodyPosition(item)) * positionGain;
         if (pull.Length() > pullSpeed) pull = pull.Normalized() * pullSpeed;
         Vector3 wantedVelocity = targetVelocity + pull;
 
         // Correct at most 90% of the velocity difference per tick, whatever the gain: this keeps the loop stable.
         float response = Mathf.Min(velocityGain, 0.9f / dt);
-        Vector3 accel = (wantedVelocity - PhysicsWorld.ItemLinearVelocity(item)) * response;
+        Vector3 accel = (wantedVelocity - PhysicsWorld.BodyLinearVelocity(item)) * response;
         float accelLimit = maxAcceleration * lightness;
         if (accel.Length() > accelLimit) accel = accel.Normalized() * accelLimit;
         // Gravity is always cancelled in full, so nothing is too heavy to lift. With several rods on one item each
         // cancels all of it; the velocity loop takes up the extra lift.
-        PhysicsWorld.ApplyItemForce(item, (accel - gravity) * mass);
+        PhysicsWorld.ApplyBodyForce(item, (accel - gravity) * mass);
 
         // Take a fraction of its spin away.
-        PhysicsWorld.DampItemSpin(item, Mathf.Min(1f, spinDamping * dt));
+        PhysicsWorld.DampBodySpin(item, Mathf.Min(1f, spinDamping * dt));
     }
 
     /// <summary>1 for a light item, falling toward <see cref="minLightness"/> as it gets heavier (0.5 at <see cref="heavyMass"/>).</summary>

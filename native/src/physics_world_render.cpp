@@ -99,7 +99,7 @@ void GMPPhysicsWorld::update_part_rendering(ItemKind &kind, ItemPart &part) {
 	float *current = part.currentBuffer.ptrw();
 	float *previous = part.previousBuffer.ptrw();
 	for (int i = 0; i < count; i++) {
-		const Item &item = items[kind.slots[i]];
+		const Body &item = bodies[kind.slots[i]];
 		Transform3D now = item.current * part.offset;
 		write_transform(current + i * 12, now);
 		if (item.movedTick == tick) {

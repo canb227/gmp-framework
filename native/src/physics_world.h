@@ -7,7 +7,7 @@
 #include <godot_cpp/classes/node3d.hpp>
 #include <godot_cpp/variant/packed_float32_array.hpp>
 
-#include "item_state.h"
+#include "physics_shape.h"
 
 #include <cstdint>
 #include <unordered_map>
@@ -39,48 +39,38 @@ struct ItemPart {
 	godot::PackedFloat32Array previousBuffer;
 };
 
-// The collider shapes an item kind can have. The numbers match GMPShape::ShapeType.
-enum ItemShape {
-	ITEM_SHAPE_BOX = 0,
-	ITEM_SHAPE_SPHERE = 1,
-	ITEM_SHAPE_CAPSULE = 2,
-	ITEM_SHAPE_CYLINDER = 3,
-	ITEM_SHAPE_HULL = 4,
-};
-
-// Everything items of one kind share: their collider, surface and meshes. Registered once per item type
-// from C# (register_item_kind), then items are spawned by kind index.
-struct ItemKind {
-	ItemShape shape = ITEM_SHAPE_BOX;
-	// Only the one matching shape is used. Box3D copies a hull into the world when a shape is made from
-	// it, and every item with the same hull shares that one copy.
-	b3BoxHull box;
-	b3Sphere sphere;
-	b3Capsule capsule;
-	// Cylinder and Hull. Owned: freed with the kinds.
-	b3HullData *hull = nullptr;
-
-	float density = 1.0f;
+// One collider of an item kind, placed where it sits in the item, with its own surface and tags.
+struct ItemKindShape {
+	// Owned: its hull is freed with the kinds. Box3D shares one copy of a hull between every shape made from it.
+	PlacedShape placed;
+	float density = 1000.0f;
 	float friction = 0.6f;
 	float restitution = 0.0f;
 	float rollingResistance = 0.0f;
-	// The surface type, for impact sounds (GMPShape.surface_type).
-	uint64_t userMaterialId = 0;
+	uint64_t tags = 0;
+};
+
+// Everything loose items of one kind share: their colliders, tags and meshes. Registered once per item type from
+// C# (register_item_kind), then items are spawned by kind index.
+struct ItemKind {
+	std::vector<ItemKindShape> shapes;
+	// The tags the whole item starts with (its ItemInfo's), on top of each collider's own; 0 if it has none.
+	uint64_t tags = 0;
 	bool castShadows = false;
 	// Sync priority before the awake, nearness and held bonuses; -1 or lower never sends.
 	int basePriority = 1;
 
 	std::vector<ItemPart> parts;
 
-	// The items of this kind, by slot in GMPPhysicsWorld::items, in the order they are drawn.
+	// The items of this kind, by slot in GMPPhysicsWorld::bodies, in the order they are drawn.
 	std::vector<int> slots;
 	// The last physics tick an item of this kind moved, appeared or went: the renderer skips kinds that
 	// have been still for a while.
 	uint64_t changedTick = 0;
 };
 
-// One state received for an item this peer follows, by its authority's physics tick.
-struct ItemSnapshot {
+// One state received for a body this peer follows, by its authority's physics tick.
+struct Snapshot {
 	uint64_t tick = 0;
 	godot::Vector3 position;
 	godot::Quaternion rotation;
@@ -89,29 +79,32 @@ struct ItemSnapshot {
 };
 
 // States a follower keeps at most (half a second at 30 sends a second).
-const int MaxItemSnapshots = 16;
+const int MaxSnapshots = 16;
 
-// Added to an item's sync accumulator as it falls asleep, so its resting pose goes out soon.
+// Added to a body's sync accumulator as it falls asleep, so its resting pose goes out soon.
 const int RestingPoseBump = 100;
 
+// A shape that is no GMPShape (a character's capsule) has this number in its body.
+const int32_t NoShapeIndex = -1;
+
 // One impact of the last step, as get_hits hands it over: C# reads the bytes straight into its ContactHit
-// struct (gmp/physics/PhysicsWorld.cs), so the two must keep the same fields in the same order.
+// struct (gmp/physics/PhysicsWorld.cs), so the two must keep the same fields in the same order. Each side is the
+// body's id and the shape's number in it, the same on every peer; a side with id 0 has no tags.
 struct HitRecord {
 	float position[3];
 	// How fast the two sides were approaching (m/s).
 	float speed;
-	int64_t surfaceTypeA;
-	int64_t surfaceTypeB;
-	// The item on each side, or 0.
-	uint64_t itemIdA;
-	uint64_t itemIdB;
-	// The GMPBody node on each side (its instance id), or 0.
-	uint64_t nodeIdA;
-	uint64_t nodeIdB;
+	uint64_t idA;
+	uint64_t idB;
+	int32_t shapeA;
+	int32_t shapeB;
+	// The tags of the shape on each side (see tags.h).
+	uint64_t tagsA;
+	uint64_t tagsB;
 };
-static_assert(sizeof(HitRecord) == 64, "HitRecord must match ContactHit in C#");
+static_assert(sizeof(HitRecord) == 56, "HitRecord must match ContactHit in C#");
 
-// Hits wait at most this many ticks for an item packet to take them, so a sound is never sent late.
+// Hits wait at most this many ticks for a packet to take them, so a sound is never sent late.
 const uint64_t MaxHitSendAge = 10;
 // At most this many wait at once (a huge spill sends the first ones only).
 const int MaxHitsToSend = 512;
@@ -124,13 +117,22 @@ struct NetworkHit {
 	uint64_t sender = 0;
 };
 
-// One loose item in the world. Items are plain data: no node per item.
-struct Item {
-	// The item's GMPObject id, which C# knows it by. 0 marks a free slot.
+// One physics body: a loose item (plain data, drawn through its kind's multimeshes) or a GMPBody node's body.
+// Every body has an id that is the same on every peer (an item's, or the one C# gives a spawned scene's bodies),
+// and its Box3D body's userData is its slot here, plus one.
+//
+// A synced body (authority set: every item, and node bodies C# hands to set_body_authority) is simulated by its
+// authority, which sends its state; every other peer follows it.
+struct Body {
+	// 0 marks a free slot for an item, and a node body that has no id yet.
 	uint64_t id = 0;
-	int kind = -1;
 	b3BodyId body = b3_nullBodyId;
-	b3ShapeId shape = b3_nullShapeId;
+	// A loose item's kind, or -1 for a node's body.
+	int kind = -1;
+	// A node's body: its node. nullptr for a loose item.
+	GMPBody *node = nullptr;
+	// An item's whole-body tags (set_body_tags), on top of each collider's own. A node keeps its own in GMPBody.tags.
+	uint64_t tags = 0;
 	// Where its body was after the last step, and after the step before.
 	godot::Transform3D current;
 	godot::Transform3D previous;
@@ -139,15 +141,17 @@ struct Item {
 	// The same pose as current, exactly as Box3D has it.
 	godot::Vector3 position;
 	godot::Quaternion rotation;
-	// Its position in its kind's slots list.
+	// An item: its position in its kind's slots list.
 	int indexInKind = -1;
-	// Asleep in this peer's simulation (only means something on the authority).
+	// Asleep in this peer's simulation.
 	bool asleep = false;
 
 	// ---- networking (physics_world_sync.cpp) ----
-	// The peer that simulates it and sends its state. Everyone else follows it.
+	// The peer that simulates it and sends its state; 0 for a body that isn't synced. Everyone else follows it.
 	uint64_t authority = 0;
-	// Grows by the item's priority each send and goes back to 0 when it is sent: highest goes first.
+	// Sync priority before the bonuses (an item's from its kind); -1 or lower never sends.
+	int basePriority = 1;
+	// Grows by the body's priority each send and goes back to 0 when it is sent: highest goes first.
 	int priorityAccumulator = 0;
 	// Until this tick (the world's) a magnet rod holds it, or let go of it a moment ago.
 	uint64_t heldUntilTick = 0;
@@ -163,7 +167,7 @@ struct Item {
 	// Send time of the newest state taken, to drop ones that arrive out of order.
 	uint64_t lastStateTime = 0;
 	// Received states, oldest first: the newest one at or before playback, then the ones after it.
-	ItemSnapshot snapshots[MaxItemSnapshots];
+	Snapshot snapshots[MaxSnapshots];
 	int snapshotCount = 0;
 	bool following = false;
 	// In the world's followers list (it can stop and start following again before the list drops it).
@@ -177,24 +181,23 @@ struct Item {
 	godot::Quaternion errorRotation;
 	bool blendIn = false;
 	bool blended = true;
-	// Ticks it is shown ahead of the playback clock: up to the whole delay while show_item_newest is called.
+	// Ticks it is shown ahead of the playback clock: up to the whole delay while show_body_newest is called.
 	double playbackLead = 0;
-	// The tick (the world's) show_item_newest was last called on.
+	// The tick (the world's) show_body_newest was last called on.
 	uint64_t showNewestTick = 0;
 };
 
-// Our Box3D world: owns the b3World and every loose item in it, draws the items through multimeshes,
-// and is where GMPBody nodes make their bodies. C# adds one to the scene and calls step() every
-// physics tick. There is one at a time (get_current).
+// Our Box3D world: owns the b3World and the table of every body in it (loose items and node bodies alike),
+// draws the items through multimeshes, and syncs the bodies between peers. C# adds one to the scene and calls
+// step() every physics tick. There is one at a time (get_current).
 //
 // The class is split over several files by topic, like a C# partial class:
 //   physics_world.cpp          creating the world, stepping it, binding methods for C#
-//   physics_world_kinds.cpp    item kinds (colliders and meshes) from C# descriptions
-//   physics_world_items.cpp    spawning, despawning and tracking items
+//   physics_world_bodies.cpp   item kinds, spawning items, node bodies, one body by id
 //   physics_world_events.cpp   what happened in a step: moves, sensors, touches, hits
 //   physics_world_queries.cpp  ray casts and overlap tests
-//   physics_world_sync.cpp     networking: building, sending and following item states
-//   physics_world_render.cpp   filling the multimeshes each tick
+//   physics_world_sync.cpp     networking: building, sending and following body states
+//   physics_world_render.cpp   filling the item multimeshes each tick
 class GMPPhysicsWorld : public godot::Node3D {
 	GDCLASS(GMPPhysicsWorld, godot::Node3D)
 
@@ -208,6 +211,9 @@ public:
 	int subSteps = 4;
 	// The collision layer every item is on, so queries can leave items out (or find only them).
 	uint32_t itemLayer = 2;
+	// Shapes with any of these tags report their new touches (get_touches), for tag reactions; the rest don't, so
+	// ordinary materials touching in a pile cost nothing.
+	uint64_t watcherTags = 0;
 
 	void set_gravity(godot::Vector3 value);
 	godot::Vector3 get_gravity() const;
@@ -217,6 +223,8 @@ public:
 	int get_sub_steps() const;
 	void set_item_layer(int64_t value);
 	int64_t get_item_layer() const;
+	void set_watcher_tags(int64_t value);
+	int64_t get_watcher_tags() const;
 
 	// ---- world (physics_world.cpp) ----
 	// The world in the tree now, which GMPBody nodes make their bodies in. nullptr if there is none.
@@ -227,83 +235,84 @@ public:
 	// Box3D's own timings of the last step (ms) and its counters.
 	godot::Dictionary get_profile() const;
 
-	// GMPBody nodes with a body in this world (they add and remove themselves).
-	void add_node_body(GMPBody *body);
-	void remove_node_body(GMPBody *body);
-
-	// ---- events (physics_world_events.cpp) ----
-	// This tick's impacts, as HitRecords back to back: the ones of what this peer simulates (Box3D's hit
-	// events), and the ones its followers' authorities sent, as playback reaches them (so they come with
-	// what this peer shows). Only those at least minSpeed (m/s) and within maxDistance of listener.
-	godot::PackedByteArray get_hits(godot::Vector3 listener, float maxDistance, float minSpeed) const;
-	// The last step's new touches between items where one reports its touches (set_item_reports_touches):
-	// item ids in pairs, A then B.
-	godot::PackedInt64Array get_item_touches() const;
-
-	// ---- queries (physics_world_queries.cpp) ----
-	// Sensors are never hit. mask: which collision layers count.
-	godot::Dictionary raycast(godot::Vector3 from, godot::Vector3 to, int64_t mask);
-	godot::Dictionary overlap_sphere(godot::Vector3 center, float radius, int64_t mask);
-	godot::Dictionary overlap_box(godot::Transform3D transform, godot::Vector3 size, int64_t mask);
-	// Everything the GMPShape would overlap, were it at transform (the shape's own world transform, scale
-	// included), whether or not it is in the world, made margin metres smaller on every side (so a shape
-	// resting flush on a floor doesn't count as in it). For placement previews.
-	godot::Dictionary overlap_shape(godot::Object *shape, godot::Transform3D transform, int64_t mask, float margin);
-
-	// ---- item kinds (physics_world_kinds.cpp) ----
+	// ---- bodies (physics_world_bodies.cpp) ----
 	int register_item_kind(godot::Dictionary description);
-
-	// ---- items (physics_world_items.cpp) ----
 	// The authority simulates it; on every other peer it follows the authority's states.
 	void spawn_item(int64_t id, int kind, int64_t authority, godot::Transform3D transform, godot::Vector3 linearVelocity, godot::Vector3 angularVelocity);
 	void despawn_item(int64_t id);
 	void clear_items();
 	int get_item_count() const;
-	// The id of the item in slot, or 0 if the slot is free (for sensor and query results).
-	uint64_t item_id_at_slot(int slot) const;
-	// The item id (or 0) and node (or nullptr) a Box3D shape belongs to.
-	void owner_of_shape(b3ShapeId shapeId, uint64_t &itemId, GMPBody *&node) const;
+	// Items this peer simulates that are below height y (fallen out of the world).
+	godot::PackedInt64Array get_items_below(float y) const;
 	// Testing: kicks this many random items upwards, so a pile keeps moving.
 	void kick_random_items(int count);
 
-	// One item, for game code that works on a few at a time (magnet rods, machines, placement).
-	bool has_item(int64_t id) const;
-	godot::Transform3D get_item_transform(int64_t id) const;
-	godot::Vector3 get_item_linear_velocity(int64_t id) const;
-	godot::Vector3 get_item_angular_velocity(int64_t id) const;
-	float get_item_mass(int64_t id) const;
-	bool is_item_asleep(int64_t id) const;
-	void apply_item_force(int64_t id, godot::Vector3 force);
-	void apply_item_impulse(int64_t id, godot::Vector3 impulse);
-	// Takes this fraction (0 to 1) of the item's spin away.
-	void damp_item_spin(int64_t id, float fraction);
-	// Puts the item somewhere else at once (keeping its velocity).
-	void teleport_item(int64_t id, godot::Transform3D transform);
-	// Whether its new touches with other items are listed (get_item_touches), for tag reactions.
-	void set_item_reports_touches(int64_t id, bool reports);
-	// Items this peer simulates that are below height y (fallen out of the world).
-	godot::PackedInt64Array get_items_below(float y) const;
+	// A GMPBody's body joins the table when it is made (returning its slot) and leaves when it goes.
+	int add_node_body(GMPBody *node);
+	void remove_node_body(int slot);
+	void set_body_id(int slot, uint64_t id);
+	// The body a Box3D shape belongs to, or nullptr.
+	Body *body_of_shape(b3ShapeId shapeId);
+	// A shape's number in its body: an item collider's index in its kind, or a GMPShape's place in its body.
+	int32_t shape_index(b3ShapeId shapeId);
+
+	// One body by id, for game code that works on a few at a time (magnet rods, machines, placement).
+	bool has_body(int64_t id) const;
+	godot::Object *get_body_node(int64_t id) const;
+	godot::Transform3D get_body_transform(int64_t id) const;
+	godot::Vector3 get_body_linear_velocity(int64_t id) const;
+	godot::Vector3 get_body_angular_velocity(int64_t id) const;
+	float get_body_mass(int64_t id) const;
+	bool is_body_asleep(int64_t id) const;
+	void apply_body_force(int64_t id, godot::Vector3 force);
+	void apply_body_impulse(int64_t id, godot::Vector3 impulse);
+	// Takes this fraction (0 to 1) of the body's spin away.
+	void damp_body_spin(int64_t id, float fraction);
+	// Puts the body somewhere else at once (keeping its velocity).
+	void teleport_body(int64_t id, godot::Transform3D transform);
+	// Gives a whole item these tags (replacing what it was given before; its colliders keep their own).
+	void set_body_tags(int64_t id, int64_t tags);
+
+	// ---- events (physics_world_events.cpp) ----
+	// This tick's impacts, as HitRecords back to back: the ones of what this peer simulates (Box3D's hit
+	// events), and the ones other peers sent, as playback reaches them (so they come with what this peer
+	// shows). Only those at least minSpeed (m/s) and within maxDistance of listener.
+	godot::PackedByteArray get_hits(godot::Vector3 listener, float maxDistance, float minSpeed) const;
+	// The last step's new touches where one side's shape has a watcher tag: four numbers each, body id A, body
+	// id B, then the tags of A's and B's shapes that touched.
+	godot::PackedInt64Array get_touches() const;
+
+	// ---- queries (physics_world_queries.cpp): body ids ----
+	// Sensors are never hit. mask: which collision layers count.
+	godot::Dictionary raycast(godot::Vector3 from, godot::Vector3 to, int64_t mask);
+	godot::PackedInt64Array overlap_sphere(godot::Vector3 center, float radius, int64_t mask);
+	godot::PackedInt64Array overlap_box(godot::Transform3D transform, godot::Vector3 size, int64_t mask);
+	// Everything the GMPShape would overlap, were it at transform (the shape's own world transform, scale
+	// included), whether or not it is in the world, made margin metres smaller on every side (so a shape
+	// resting flush on a floor doesn't count as in it). For placement previews.
+	godot::PackedInt64Array overlap_shape(godot::Object *shape, godot::Transform3D transform, int64_t mask, float margin);
 
 	// ---- networking (physics_world_sync.cpp) ----
 	// This peer's id (Lobby.selfPeerID).
 	void set_self_peer(int64_t peer);
-	// Physics ticks between an item's sends (GameWorld.SendInterval). Followers play back two sends behind.
+	// Physics ticks between a body's sends (GameWorld.SendInterval). Followers play back two sends behind.
 	void set_send_interval(int ticks);
-	void set_item_authority(int64_t id, int64_t peer);
-	// Every player's position and view (eye and look direction), each send, for the items' priorities.
+	// Makes the body synced, simulated by peer and followed everywhere else.
+	void set_body_authority(int64_t id, int64_t peer);
+	// Every player's position and view (eye and look direction), each send, for the bodies' priorities.
 	void set_viewers(godot::PackedVector3Array positions, godot::PackedVector3Array eyes, godot::PackedVector3Array looks);
-	// A magnet rod holds the item this tick: it is sent often while held and for a second after.
-	void hold_item(int64_t id);
+	// A magnet rod holds the body this tick: it is sent often while held and for a second after.
+	void hold_body(int64_t id);
 	// Show this follower at its authority's newest state this tick, instead of two sends behind (what the
 	// local magnet rod holds).
-	void show_item_newest(int64_t id);
+	void show_body_newest(int64_t id);
 	// Which tick of peer's states followers show now (GameWorld.PlaybackTick, about two sends behind).
 	void set_playback_tick(int64_t peer, double playbackTick);
-	// The item states to send this tick: those whose turn it is (id % send interval == turn), highest
+	// The body states to send this tick: those whose turn it is (id % send interval == turn), highest
 	// priority first, as packets of at most maxPacketBytes, up to maxBytes in all.
-	godot::Array build_item_states(int maxBytes, int maxPacketBytes, int turn, int64_t sendTick, int64_t sendTime);
-	// A packet from build_item_states on another peer.
-	void apply_item_states(godot::PackedByteArray packet, int64_t sender);
+	godot::Array build_body_states(int maxBytes, int maxPacketBytes, int turn, int64_t sendTick, int64_t sendTime);
+	// A packet from build_body_states on another peer.
+	void apply_body_states(godot::PackedByteArray packet, int64_t sender);
 
 protected:
 	static void _bind_methods();
@@ -315,13 +324,11 @@ private:
 
 	std::vector<ItemKind> kinds;
 
-	std::vector<Item> items;
-	// Slots in items that are free to reuse.
+	std::vector<Body> bodies;
+	// Slots in bodies that are free to reuse.
 	std::vector<int> freeSlots;
 	std::unordered_map<uint64_t, int> slotById;
 	int itemCount = 0;
-
-	std::vector<GMPBody *> nodeBodies;
 
 	// ---- networking ----
 	uint64_t selfPeer = 0;
@@ -340,12 +347,12 @@ private:
 
 	// This tick's hits (see get_hits).
 	std::vector<HitRecord> hits;
-	// Hits of items this peer simulates, for the next item packet; and hits received, until playback gets there.
+	// Hits this peer reports, for the next packet; and hits received, until playback gets there.
 	std::vector<NetworkHit> hitsToSend;
 	std::vector<NetworkHit> hitsReceived;
 	int64_t hitsSent = 0;
 	int64_t hitsHeard = 0;
-	godot::PackedInt64Array itemTouches;
+	godot::PackedInt64Array touches;
 
 	// Timings of the last step, for get_stats.
 	double stepMs = 0;
@@ -356,7 +363,14 @@ private:
 	void destroy_world();
 	void free_kinds();
 
+	int new_slot();
 	void remove_item(int slot);
+	void remove_from_followers(int slot);
+	Body *find_body(int64_t id);
+	// Puts an item's tags on each of its colliders, and turns on touch reports where they have a watcher tag.
+	void apply_item_tags(Body &item);
+	// The tags of the shape a received hit names, as this peer has it; 0 if it isn't here.
+	uint64_t named_shape_tags(uint64_t id, int32_t shapeIndex);
 
 	void read_move_events();
 	void read_sensor_events();
@@ -366,13 +380,15 @@ private:
 	int write_hits(std::vector<uint8_t> &packet, int maxPacketBytes);
 	int read_hits_from_packet(const uint8_t *packet, int size, uint64_t senderTick, int64_t sender);
 
-	int item_priority(Item &item, uint64_t sendTick);
-	bool at_rest_and_sent(const Item &item, uint64_t sendTick) const;
-	ItemState build_item_state(Item &item, uint64_t sendTick);
+	int body_priority(Body &body, uint64_t sendTick);
+	bool at_rest_and_sent(const Body &body, uint64_t sendTick) const;
+	int write_body_state(Body &body, uint64_t sendTick, uint8_t *to);
 	void start_following(int slot);
 	void play_followers(float delta);
-	bool follow(Item &item, float delta);
-	bool play_back(Item &item, double playbackTick, godot::Vector3 &position, godot::Quaternion &rotation);
+	bool follow(Body &body, float delta);
+	bool play_back(Body &body, double playbackTick, godot::Vector3 &position, godot::Quaternion &rotation);
+	// Puts a body's pose where it is drawn from (and its node, if it has one), outside a step.
+	void set_pose(Body &body, godot::Vector3 position, godot::Quaternion rotation);
 
 	void update_rendering();
 	void update_part_rendering(ItemKind &kind, ItemPart &part);

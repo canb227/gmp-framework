@@ -68,7 +68,7 @@ public partial class Console
     }
 
     /// <summary>
-    /// Host: spawns count loose items in a column above x y z, 0.5 m apart so they land one after another, each up to
+    /// Host: spawns count items (loose items or tools) in a column above x y z, 0.5 m apart so they land one after another, each up to
     /// spread metres off to the side (else a column of balls stacks into a tower).
     /// </summary>
     public void drop_items(string itemID, int count, float x, float y, float z, float spread)
@@ -82,7 +82,7 @@ public partial class Console
         {
             float dx = (float)GD.RandRange(-spread, spread);
             float dz = (float)GD.RandRange(-spread, spread);
-            ItemWorld.Spawn(itemID, new Vector3(x + dx, y + i * 0.5f, z + dz), Vector3.Zero);
+            ItemInfo.SpawnInWorld(itemID, new Vector3(x + dx, y + i * 0.5f, z + dz));
         }
         LimboConsole.Info($"drop_items: spawned={count}");
     }
@@ -95,7 +95,7 @@ public partial class Console
         string first = "";
         foreach (ulong id in ItemWorld.items.Keys)
         {
-            Vector3 p = PhysicsWorld.ItemPosition(id);
+            Vector3 p = PhysicsWorld.BodyPosition(id);
             if (box.HasPoint(p))
             {
                 inside++;
@@ -175,10 +175,10 @@ public partial class Console
     {
         Vector3I cell = new Vector3I(x, y, z);
         Vector3 size = Vector3.One * (BuildGrid.CellSize - 2f * BuildGrid.LevelOverlapDepth);
-        Overlap overlap = PhysicsWorld.OverlapBox(new Transform3D(Basis.Identity, BuildGrid.CellToWorld(cell)), size, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer);
         string bodies = "";
-        foreach (Node3D body in overlap.bodies)
+        foreach (long id in PhysicsWorld.OverlapBox(new Transform3D(Basis.Identity, BuildGrid.CellToWorld(cell)), size, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer))
         {
+            Node3D body = PhysicsWorld.BodyNode((ulong)id);
             bodies += $" {body.Name}(static level {PlacementProbe.IsStaticLevelCollider(body)})";
         }
         LimboConsole.Info($"build_cell: {cell} centre {BuildGrid.CellToWorld(cell)} blocked={BuildGrid.IsLevelBlocked(cell)} overlaps:{bodies}");
@@ -207,9 +207,9 @@ public partial class Console
             Node3D shape = (Node3D)node;
             if (shape.Get("is_sensor").AsBool() || shape.Get("shape").AsInt32() == 5)
                 continue;
-            foreach (Node3D other in PhysicsWorld.OverlapShape(shape, shape.GlobalTransform, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer, 0.1f).bodies)
+            foreach (long id in PhysicsWorld.OverlapShape(shape, shape.GlobalTransform, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer, 0.1f))
             {
-                if (PlacementProbe.IsStaticLevelCollider(other))
+                if (PlacementProbe.IsStaticLevelCollider(PhysicsWorld.BodyNode((ulong)id)))
                     blamed += $" {probe.structure.GetPathTo(shape)}(shape {shape.Get("shape")} at {shape.GlobalPosition} scale {shape.GlobalBasis.Scale} size {shape.Get("size")})";
             }
         }
@@ -350,95 +350,10 @@ public partial class Console
         LimboConsole.Info($"test_arena: at {ArenaPosition}; stand at tp {spot.X} {spot.Y} {spot.Z}");
     }
 
-    // ---- followstats: how followers are updated and moved here (a client) ----
-    double followStatsLeft;
-    readonly Dictionary<GMPOBody, (Vector3 last, float delta, float before)> followMotion = new();
-    long frozenTicks, movingTicks;
-    int followStatsTicks;
-    double inViewStates, inViewBodyTicks, outViewStates, outViewBodyTicks;
-    readonly Dictionary<GMPOBody, int> statesAtStart = new();
-
-    /// <summary>
-    /// Over the next n seconds, for every body following here: states received per second, in the local camera's view
-    /// and out of it (the send priority's view bonus), and "frozen" ticks, where a moving body didn't move between two
-    /// ticks where it did (the stutter of a body placed only every other tick).
-    /// </summary>
-    public void followstats(float seconds)
-    {
-        followStatsLeft = seconds;
-        followMotion.Clear();
-        statesAtStart.Clear();
-        frozenTicks = 0;
-        movingTicks = 0;
-        followStatsTicks = 0;
-        inViewStates = 0;
-        inViewBodyTicks = 0;
-        outViewStates = 0;
-        outViewBodyTicks = 0;
-        LimboConsole.Info($"followstats: measuring for {seconds} s");
-    }
-
-    void FollowStatsTick(double delta)
-    {
-        if (followStatsLeft <= 0)
-            return;
-        Camera3D camera = GetViewport().GetCamera3D();
-        foreach (GMPOBody body in GMPOBody.Followers)
-        {
-            if (!IsInstanceValid(body))
-                continue;
-            if (!statesAtStart.ContainsKey(body))
-                statesAtStart[body] = body.statesReceived;
-            Vector3 now = body.Transform.Origin;
-            if (followMotion.TryGetValue(body, out var motion))
-            {
-                float moved = now.DistanceTo(motion.last);
-                // The tick before this one didn't move, but the ones either side did: it froze for a tick.
-                if (motion.delta < 1e-6f && motion.before > 1e-4f && moved > 1e-4f)
-                    frozenTicks++;
-                if (moved > 1e-4f)
-                    movingTicks++;
-                followMotion[body] = (now, moved, motion.delta);
-            }
-            else
-            {
-                followMotion[body] = (now, 1, 1);
-            }
-            bool inView = camera != null && camera.IsPositionInFrustum(now);
-            if (inView)
-                inViewBodyTicks++;
-            else
-                outViewBodyTicks++;
-        }
-        followStatsTicks++;
-        followStatsLeft -= delta;
-        if (followStatsLeft > 0)
-            return;
-        // States received over the window, split by where each body was at the end (most stay put either side).
-        foreach ((GMPOBody body, int start) in statesAtStart)
-        {
-            if (!IsInstanceValid(body))
-                continue;
-            int received = body.statesReceived - start;
-            if (camera != null && camera.IsPositionInFrustum(body.Transform.Origin))
-                inViewStates += received;
-            else
-                outViewStates += received;
-        }
-        double seconds = (double)followStatsTicks / Engine.PhysicsTicksPerSecond;
-        double inViewBodies = inViewBodyTicks / followStatsTicks;
-        double outViewBodies = outViewBodyTicks / followStatsTicks;
-        double inViewHz = inViewBodies > 0 ? inViewStates / seconds / inViewBodies : 0;
-        double outViewHz = outViewBodies > 0 ? outViewStates / seconds / outViewBodies : 0;
-        double frozenPercent = movingTicks > 0 ? 100.0 * frozenTicks / movingTicks : 0;
-        // Logged (not just the console) as it finishes after the command has replied.
-        Logging.Log($"followstats: {seconds:0.0} s | in view {inViewBodies:0} bodies at {inViewHz:0.0} states/s each | out of view {outViewBodies:0} at {outViewHz:0.0} states/s | frozen ticks {frozenTicks} of {movingTicks} moving ({frozenPercent:0.00}%)", "Test");
-    }
-
     // ---- hitstats: the physics world's impacts here, to compare host and client ----
     double hitStatsLeft;
     int hitStatsTicks;
-    long hitCount, hardHitCount, itemOnItemHits, nodeHits, unknownNodes;
+    long hitCount, hardHitCount, itemOnItemHits, unnamedSides, taggedSides;
     long localLandings, localBumps, remoteLandings, remoteBumps;
     float maxLandingSpeed;
     double hitSpeedTotal, hitSpeedMax;
@@ -457,8 +372,8 @@ public partial class Console
         hitCount = 0;
         hardHitCount = 0;
         itemOnItemHits = 0;
-        nodeHits = 0;
-        unknownNodes = 0;
+        unnamedSides = 0;
+        taggedSides = 0;
         localLandings = 0;
         localBumps = 0;
         remoteLandings = 0;
@@ -484,17 +399,17 @@ public partial class Console
             hitSpeedMax = Math.Max(hitSpeedMax, hit.speed);
             if (hit.speed >= HardHitSpeed)
                 hardHitCount++;
-            if (hit.itemIdA != 0 && hit.itemIdB != 0)
+            if (ItemWorld.Get(hit.idA) != null && ItemWorld.Get(hit.idB) != null)
                 itemOnItemHits++;
-            // A node side must be a GMPBody that still exists.
-            foreach (ulong nodeId in new[] { hit.nodeIdA, hit.nodeIdB })
-            {
-                if (nodeId == 0)
-                    continue;
-                nodeHits++;
-                if (GodotObject.InstanceFromId(nodeId) is not Node3D node || node.GetClass() != "GMPBody")
-                    unknownNodes++;
-            }
+            // Sides no peer can name (a player's capsule, a body not spawned through GameWorld).
+            if (hit.idA == 0)
+                unnamedSides++;
+            if (hit.idB == 0)
+                unnamedSides++;
+            if (hit.tagsA != 0)
+                taggedSides++;
+            if (hit.tagsB != 0)
+                taggedSides++;
         }
         hitStatsTicks++;
         hitStatsLeft -= delta;
@@ -510,7 +425,7 @@ public partial class Console
         // Logged (not just the console) as it finishes after the command has replied.
         Logging.Log($"hitstats: role={role} seconds={measured:0.0} hits_per_s={hitCount / measured:0.0} hard_per_s={hardHitCount / measured:0.0} " +
             $"item_on_item_per_s={itemOnItemHits / measured:0.0} other_per_s={(hitCount - itemOnItemHits) / measured:0.0} " +
-            $"node_sides={nodeHits} unknown_nodes={unknownNodes} avg_speed={averageSpeed:0.00} max_speed={hitSpeedMax:0.00}", "Test");
+            $"unnamed_sides={unnamedSides} tagged_sides={taggedSides} avg_speed={averageSpeed:0.00} max_speed={hitSpeedMax:0.00}", "Test");
         Godot.Collections.Dictionary stats = PhysicsWorld.Stats();
         Logging.Log($"hitstats: role={role} hits_sent_total={stats["hits_sent"]} hits_heard_total={stats["hits_heard"]} " +
             $"local_landings={localLandings} local_bumps={localBumps} remote_landings={remoteLandings} remote_bumps={remoteBumps} " +
@@ -553,8 +468,7 @@ public partial class Console
                 break;
             if (item.itemID == BodyItem)
             {
-                item.tags.Clear();
-                item.tags.Add(ItemTags.MAGNETIC);
+                item.ownTags = ItemTags.MAGNETIC;
                 ItemWorld.TagsChanged(item);
                 done++;
             }
@@ -597,7 +511,6 @@ public partial class Console
         if (!GameWorld.started || GetTree().Paused)
             return;
         FloodTick();
-        FollowStatsTick(delta);
         HitStatsTick(delta);
         SpawnPendingBodies();
         StirBodies(delta);

@@ -31,9 +31,9 @@ public partial class ItemInfo : Resource
     // ---- as a loose item in the world (see ItemWorld) ----
 
     [ExportGroup("In the world")]
-    /// <summary>What it is made of and does when touching other items (see TagInteractions).</summary>
+    /// <summary>What the whole item is made of and does (see TagInteractions); none leaves it what its colliders have.</summary>
     [Export]
-    public Godot.Collections.Array<ItemTags> tags = new();
+    public ItemTags tags;
 
     /// <summary>What it is worth when turned in to the void, by currency (empty: nothing, though the deposit still counts).</summary>
     [Export]

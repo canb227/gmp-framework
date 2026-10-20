@@ -42,19 +42,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.000918448, 0)
 [node name="WallL" type="GMPShape" parent="." unique_id=892695477]
 shape = 4
 mesh = SubResource("ArrayMesh_WallL")
-surface_type = 3
+tags = 8
 
 [node name="WallR" type="GMPShape" parent="." unique_id=282947330]
 shape = 4
 mesh = SubResource("ArrayMesh_WallR")
-surface_type = 3
+tags = 8
 
 [node name="Belt" type="GMPShape" parent="." unique_id=61098809]
 transform = Transform3D(1, 0, 0, 0, 0.99995, -0.01, 0, 0.01, 0.99995, 1, 0.09, -1.0005)
 size = Vector3(1.885, 0.1, 2.0001)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
-surface_type = 5
+tags = 32
 
 [node name="StructureArrow" type="Node3D" parent="." unique_id=909107365]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.96666133, 0.71025324, -0.41426277)

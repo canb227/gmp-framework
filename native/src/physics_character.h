@@ -16,12 +16,11 @@ struct CharacterImpactRecord {
 	float normal[3];
 	// How fast it was going into it (m/s).
 	float speed;
-	// What it hit: its surface type, and the item (or 0) and GMPBody node (instance id, or 0) it belongs to.
-	int64_t surfaceType;
-	uint64_t itemId;
-	uint64_t nodeId;
+	// What it hit: the shape's tags (see tags.h) and its body's id (0 if it has none).
+	uint64_t tags;
+	uint64_t id;
 };
-static_assert(sizeof(CharacterImpactRecord) == 56, "CharacterImpactRecord must match CharacterImpact in C#");
+static_assert(sizeof(CharacterImpactRecord) == 48, "CharacterImpactRecord must match CharacterImpact in C#");
 
 // A walking character (the player): a capsule moved by Box3D's character mover, which slides it along
 // whatever it meets, plus a spring on a "legs" cast below it that holds it at standing height, so it

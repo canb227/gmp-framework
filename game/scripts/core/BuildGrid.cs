@@ -393,7 +393,7 @@ public partial class BuildGrid : Node3D
         {
             return null;
         }
-        return FindStructure(hit.body);
+        return FindStructure(PhysicsWorld.BodyNode(hit.id));
     }
 
     /// <summary>The Structure a collider belongs to (it may be a child body), or null.</summary>

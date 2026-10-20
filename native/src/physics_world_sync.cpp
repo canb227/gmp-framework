@@ -1,33 +1,178 @@
-// GMPPhysicsWorld: networking the items. See physics_world.h.
+// GMPPhysicsWorld: networking the bodies. See physics_world.h.
 //
-// Each item has one authority, the peer that simulates it (the host, for every loose item). The authority
-// sends its state; every other peer follows: the item's body is kinematic there, and is driven along the
-// authority's states, played back about two sends behind the newest so packets arriving unevenly don't
-// show. C# moves the packets (GameWorld) and keeps the playback clock per sending peer (set_playback_tick).
+// Each synced body (every loose item, and the node bodies C# hands to set_body_authority) has one authority,
+// the peer that simulates it. The authority sends its state; every other peer follows: the body is kinematic
+// there, and is driven along the authority's states, played back about two sends behind the newest so packets
+// arriving unevenly don't show. C# moves the packets (GameWorld) and keeps the playback clock per sending peer
+// (set_playback_tick).
 //
-// Sending: on each send, every item whose turn it is (id % send interval) adds its priority to its
+// Sending: on each send, every body whose turn it is (id % send interval) adds its priority to its
 // accumulator, and the states go out highest accumulator first until the budget for this send is used up.
-// A sent item starts again from 0, so everything gets sent eventually, the important things more often.
-// An item at rest stops sending once its resting pose has gone out a few times, until it moves.
+// A sent body starts again from 0, so everything gets sent eventually, the important things more often.
+// A body at rest stops sending once its resting pose has gone out a few times, until it moves.
 //
 // A packet:   send time (8 bytes, GameWorld.netTime)   sender's physics tick (8 bytes)
 //             hit count (2 bytes), then the hits (HitWireSize each, see write_hits)
-//             then per item: id (8 bytes), state size (1 byte), state (item_state.h)
+//             then per body: id (8 bytes), state size (1 byte), state (see write_state)
 //
-// Hits: the impacts of items the sender simulates since its last packet, so every peer hears what its
-// followers do (they don't collide here). Each is played back with the item states it came with.
+// Hits: the impacts the sender reported since its last packet, so every peer hears what its followers do
+// (they don't collide here). Each is played back with the states it came with.
 
 #include "physics_world.h"
 
 #include "math_convert.h"
+#include "physics_body.h"
 
 #include <godot_cpp/classes/engine.hpp>
 
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <cstring>
 
 using namespace godot;
+
+// One body's state on the wire:
+//
+//   position          3 floats                                       12 bytes
+//   rotation          the three smaller quaternion parts as shorts,   7 bytes
+//                     then which part was left out (0-3)
+//   velocity          3 half floats, only when moving                  6 bytes
+//   angular velocity  3 half floats, only when moving                  6 bytes
+//
+// The largest quaternion part is left out: the other three give it back, as the quaternion has length 1,
+// and with it made positive (the same rotation) it needs no sign. The others are at most 1/sqrt(2), so
+// times StatePartScale they fit a short. A resting state has no velocities: 19 bytes, else 31.
+
+struct BodyState {
+	Vector3 position;
+	Quaternion rotation;
+	Vector3 velocity;
+	Vector3 angularVelocity;
+};
+
+const int StateRestingSize = 19;
+const int StateMovingSize = 31;
+const float StatePartScale = 32767.0f * 1.41421356f;
+
+static void write_float(uint8_t *to, float value) {
+	std::memcpy(to, &value, 4);
+}
+
+static float read_float(const uint8_t *from) {
+	float value;
+	std::memcpy(&value, from, 4);
+	return value;
+}
+
+static void write_short(uint8_t *to, int16_t value) {
+	std::memcpy(to, &value, 2);
+}
+
+static int16_t read_short(const uint8_t *from) {
+	int16_t value;
+	std::memcpy(&value, from, 2);
+	return value;
+}
+
+static void write_half(uint8_t *to, float value) {
+	uint16_t half = Math::make_half_float(value);
+	std::memcpy(to, &half, 2);
+}
+
+static float read_half(const uint8_t *from) {
+	uint16_t half;
+	std::memcpy(&half, from, 2);
+	return Math::half_to_float(half);
+}
+
+static void write_u64(uint8_t *to, uint64_t value) {
+	std::memcpy(to, &value, 8);
+}
+
+static uint64_t read_u64(const uint8_t *from) {
+	uint64_t value;
+	std::memcpy(&value, from, 8);
+	return value;
+}
+
+// Writes the state and returns how many bytes it took (StateRestingSize or StateMovingSize).
+static int write_state(uint8_t *to, const BodyState &state) {
+	write_float(to + 0, state.position.x);
+	write_float(to + 4, state.position.y);
+	write_float(to + 8, state.position.z);
+
+	Quaternion q = state.rotation.normalized();
+	float parts[4] = { q.x, q.y, q.z, q.w };
+	int largest = 0;
+	for (int i = 1; i < 4; i++) {
+		if (std::fabs(parts[i]) > std::fabs(parts[largest])) {
+			largest = i;
+		}
+	}
+	if (parts[largest] < 0) {
+		for (int i = 0; i < 4; i++) {
+			parts[i] = -parts[i];
+		}
+	}
+	int written = 0;
+	for (int i = 0; i < 4; i++) {
+		if (i != largest) {
+			float scaled = std::round(parts[i] * StatePartScale);
+			if (scaled > 32767.0f) {
+				scaled = 32767.0f;
+			}
+			if (scaled < -32767.0f) {
+				scaled = -32767.0f;
+			}
+			write_short(to + 12 + 2 * written, (int16_t)scaled);
+			written++;
+		}
+	}
+	to[18] = (uint8_t)largest;
+
+	bool resting = state.velocity == Vector3() && state.angularVelocity == Vector3();
+	if (resting) {
+		return StateRestingSize;
+	}
+	write_half(to + 19, state.velocity.x);
+	write_half(to + 21, state.velocity.y);
+	write_half(to + 23, state.velocity.z);
+	write_half(to + 25, state.angularVelocity.x);
+	write_half(to + 27, state.angularVelocity.y);
+	write_half(to + 29, state.angularVelocity.z);
+	return StateMovingSize;
+}
+
+// Reads a state of size bytes (StateRestingSize or StateMovingSize).
+static BodyState read_body_state(const uint8_t *from, int size) {
+	BodyState state;
+	state.position = Vector3(read_float(from + 0), read_float(from + 4), read_float(from + 8));
+
+	int largest = from[18] & 3;
+	float parts[4] = { 0, 0, 0, 0 };
+	float sumOfSquares = 0;
+	int read = 0;
+	for (int i = 0; i < 4; i++) {
+		if (i != largest) {
+			parts[i] = read_short(from + 12 + 2 * read) / StatePartScale;
+			sumOfSquares += parts[i] * parts[i];
+			read++;
+		}
+	}
+	float rest = 1.0f - sumOfSquares;
+	if (rest < 0) {
+		rest = 0;
+	}
+	parts[largest] = std::sqrt(rest);
+	state.rotation = Quaternion(parts[0], parts[1], parts[2], parts[3]);
+
+	if (size >= StateMovingSize) {
+		state.velocity = Vector3(read_half(from + 19), read_half(from + 21), read_half(from + 23));
+		state.angularVelocity = Vector3(read_half(from + 25), read_half(from + 27), read_half(from + 29));
+	}
+	return state;
+}
 
 static double now_ms() {
 	return std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch()).count();
@@ -42,14 +187,14 @@ static int ticks_per_second() {
 // Up to this many times the priority right next to a player, falling evenly to 1x at ProximityRange (m).
 const float ProximityMultiplier = 10.0f;
 const float ProximityRange = 30.0f;
-// Times the priority of an item inside any player's view cone (about 57 degrees either side of where they
+// Times the priority of a body inside any player's view cone (about 57 degrees either side of where they
 // look), so what someone looks at is updated more often than what's behind them.
 const float ViewMultiplier = 2.5f;
 const float ViewConeCos = 0.55f;
-// Priority of an item a magnet rod holds: above any nearness bonus, below the players.
+// Priority of a body a magnet rod holds: above any nearness bonus, below the players.
 const int HeldPriority = 100;
-// Times a resting pose is sent before the item goes quiet (each is unreliable), and how often a quiet
-// item still sends its pose, in case every copy of it was lost.
+// Times a resting pose is sent before the body goes quiet (each is unreliable), and how often a quiet
+// body still sends its pose, in case every copy of it was lost.
 const int RestingSends = 3;
 const int RestingHeartbeatSeconds = 10;
 
@@ -84,17 +229,17 @@ void GMPPhysicsWorld::set_viewers(PackedVector3Array positions, PackedVector3Arr
 	}
 }
 
-void GMPPhysicsWorld::hold_item(int64_t id) {
+void GMPPhysicsWorld::hold_body(int64_t id) {
 	auto found = slotById.find((uint64_t)id);
 	if (found != slotById.end()) {
-		items[found->second].heldUntilTick = tick + ticks_per_second();
+		bodies[found->second].heldUntilTick = tick + ticks_per_second();
 	}
 }
 
-void GMPPhysicsWorld::show_item_newest(int64_t id) {
+void GMPPhysicsWorld::show_body_newest(int64_t id) {
 	auto found = slotById.find((uint64_t)id);
 	if (found != slotById.end()) {
-		items[found->second].showNewestTick = tick;
+		bodies[found->second].showNewestTick = tick;
 	}
 }
 
@@ -102,56 +247,61 @@ void GMPPhysicsWorld::set_playback_tick(int64_t peer, double playbackTick) {
 	playbackTicks[(uint64_t)peer] = playbackTick;
 }
 
-void GMPPhysicsWorld::set_item_authority(int64_t id, int64_t peer) {
+// A node body's own type comes back when this peer simulates it; a node body that isn't dynamic (a static
+// structure, a kinematic part moved by its node) has nothing to follow and stays as it is.
+void GMPPhysicsWorld::set_body_authority(int64_t id, int64_t peer) {
 	auto found = slotById.find((uint64_t)id);
 	if (found == slotById.end()) {
 		return;
 	}
-	Item &item = items[found->second];
-	item.authority = (uint64_t)peer;
+	Body &body = bodies[found->second];
+	if (body.node != nullptr && body.node->bodyType != GMPBody::DYNAMIC) {
+		return;
+	}
+	body.authority = (uint64_t)peer;
 	// The new authority's followers need its resting pose again, and its ticks are counted by its own clock.
-	item.lastBuiltResting = false;
-	item.snapshotCount = 0;
-	item.lastStateTime = 0;
-	item.following = false;
-	if (item.authority == selfPeer) {
+	body.lastBuiltResting = false;
+	body.snapshotCount = 0;
+	body.lastStateTime = 0;
+	body.following = false;
+	if (body.authority == selfPeer) {
 		// A follower is only ever driven along, so it carries on at the velocity it was followed at.
-		b3Body_SetType(item.body, b3_dynamicBody);
-		b3Body_SetLinearVelocity(item.body, to_b3(item.followVelocity));
-		b3Body_SetAngularVelocity(item.body, to_b3(item.followAngularVelocity));
-		b3Body_SetAwake(item.body, true);
-		item.asleep = false;
+		b3Body_SetType(body.body, b3_dynamicBody);
+		b3Body_SetLinearVelocity(body.body, to_b3(body.followVelocity));
+		b3Body_SetAngularVelocity(body.body, to_b3(body.followAngularVelocity));
+		b3Body_SetAwake(body.body, true);
+		body.asleep = false;
 	} else {
-		b3Body_SetType(item.body, b3_kinematicBody);
-		b3Body_SetLinearVelocity(item.body, b3Vec3{ 0, 0, 0 });
-		b3Body_SetAngularVelocity(item.body, b3Vec3{ 0, 0, 0 });
+		b3Body_SetType(body.body, b3_kinematicBody);
+		b3Body_SetLinearVelocity(body.body, b3Vec3{ 0, 0, 0 });
+		b3Body_SetAngularVelocity(body.body, b3Vec3{ 0, 0, 0 });
 	}
 }
 
-// True while the item is at rest, its resting pose has gone out RestingSends times and it hasn't moved
+// True while the body is at rest, its resting pose has gone out RestingSends times and it hasn't moved
 // since: a send would only repeat it.
-bool GMPPhysicsWorld::at_rest_and_sent(const Item &item, uint64_t sendTick) const {
-	if (!item.lastBuiltResting || item.restingSendsLeft > 0) {
+bool GMPPhysicsWorld::at_rest_and_sent(const Body &body, uint64_t sendTick) const {
+	if (!body.lastBuiltResting || body.restingSendsLeft > 0) {
 		return false;
 	}
-	if (sendTick - item.lastBuiltSendTick >= (uint64_t)(RestingHeartbeatSeconds * ticks_per_second())) {
+	if (sendTick - body.lastBuiltSendTick >= (uint64_t)(RestingHeartbeatSeconds * ticks_per_second())) {
 		return false;
 	}
-	return item.position == item.lastBuiltPosition && item.rotation == item.lastBuiltRotation;
+	return body.position == body.lastBuiltPosition && body.rotation == body.lastBuiltRotation;
 }
 
-int GMPPhysicsWorld::item_priority(Item &item, uint64_t sendTick) {
-	int basePriority = kinds[item.kind].basePriority;
-	if (basePriority <= -1 || at_rest_and_sent(item, sendTick)) {
+int GMPPhysicsWorld::body_priority(Body &body, uint64_t sendTick) {
+	int basePriority = body.basePriority;
+	if (basePriority <= -1 || at_rest_and_sent(body, sendTick)) {
 		return -1;
 	}
 	int unscaled = basePriority;
-	if (!item.asleep) {
+	if (!body.asleep) {
 		unscaled += 1;
 	}
 	float nearestSquared = ProximityRange * ProximityRange;
 	for (const Vector3 &viewer : viewerPositions) {
-		float distanceSquared = item.position.distance_squared_to(viewer);
+		float distanceSquared = body.position.distance_squared_to(viewer);
 		if (distanceSquared < nearestSquared) {
 			nearestSquared = distanceSquared;
 		}
@@ -159,41 +309,41 @@ int GMPPhysicsWorld::item_priority(Item &item, uint64_t sendTick) {
 	float nearest = std::sqrt(nearestSquared);
 	float multiplier = 1.0f + (ProximityMultiplier - 1.0f) * (1.0f - nearest / ProximityRange);
 	for (int i = 0; i < (int)viewerEyes.size(); i++) {
-		Vector3 toItem = item.position - viewerEyes[i];
-		float distance = toItem.length();
-		if (distance > 0 && viewerLooks[i].dot(toItem) >= ViewConeCos * distance) {
+		Vector3 toBody = body.position - viewerEyes[i];
+		float distance = toBody.length();
+		if (distance > 0 && viewerLooks[i].dot(toBody) >= ViewConeCos * distance) {
 			multiplier *= ViewMultiplier;
 			break;
 		}
 	}
 	int priority = (int)std::round(unscaled * multiplier);
-	if (tick < item.heldUntilTick && priority < HeldPriority) {
+	if (tick < body.heldUntilTick && priority < HeldPriority) {
 		priority = HeldPriority;
 	}
 	return priority;
 }
 
-ItemState GMPPhysicsWorld::build_item_state(Item &item, uint64_t sendTick) {
-	ItemState state;
-	state.position = item.position;
-	state.rotation = item.rotation;
+int GMPPhysicsWorld::write_body_state(Body &body, uint64_t sendTick, uint8_t *to) {
+	BodyState state;
+	state.position = body.position;
+	state.rotation = body.rotation;
 	// At rest it goes out without velocities, so followers don't drift on whatever it fell asleep with.
-	bool resting = item.asleep;
+	bool resting = body.asleep;
 	if (!resting) {
-		state.velocity = to_godot(b3Body_GetLinearVelocity(item.body));
-		state.angularVelocity = to_godot(b3Body_GetAngularVelocity(item.body));
+		state.velocity = to_godot(b3Body_GetLinearVelocity(body.body));
+		state.angularVelocity = to_godot(b3Body_GetAngularVelocity(body.body));
 	}
-	bool unmoved = item.position == item.lastBuiltPosition && item.rotation == item.lastBuiltRotation;
-	if (resting && item.lastBuiltResting && unmoved) {
-		item.restingSendsLeft = std::max(0, item.restingSendsLeft - 1);
+	bool unmoved = body.position == body.lastBuiltPosition && body.rotation == body.lastBuiltRotation;
+	if (resting && body.lastBuiltResting && unmoved) {
+		body.restingSendsLeft = std::max(0, body.restingSendsLeft - 1);
 	} else if (resting) {
-		item.restingSendsLeft = RestingSends - 1;
+		body.restingSendsLeft = RestingSends - 1;
 	}
-	item.lastBuiltPosition = item.position;
-	item.lastBuiltRotation = item.rotation;
-	item.lastBuiltResting = resting;
-	item.lastBuiltSendTick = sendTick;
-	return state;
+	body.lastBuiltPosition = body.position;
+	body.lastBuiltRotation = body.rotation;
+	body.lastBuiltResting = resting;
+	body.lastBuiltSendTick = sendTick;
+	return write_state(to, state);
 }
 
 static PackedByteArray to_packet(const std::vector<uint8_t> &bytes) {
@@ -203,26 +353,26 @@ static PackedByteArray to_packet(const std::vector<uint8_t> &bytes) {
 	return packet;
 }
 
-Array GMPPhysicsWorld::build_item_states(int maxBytes, int maxPacketBytes, int turn, int64_t sendTick, int64_t sendTime) {
+Array GMPPhysicsWorld::build_body_states(int maxBytes, int maxPacketBytes, int turn, int64_t sendTick, int64_t sendTime) {
 	double start = now_ms();
 	Array packets;
 
 	std::vector<int> candidates;
-	for (int slot = 0; slot < (int)items.size(); slot++) {
-		Item &item = items[slot];
-		if (item.id == 0 || item.authority != selfPeer || (int)(item.id % (uint64_t)sendInterval) != turn) {
+	for (int slot = 0; slot < (int)bodies.size(); slot++) {
+		Body &body = bodies[slot];
+		if (body.id == 0 || body.authority != selfPeer || (int)(body.id % (uint64_t)sendInterval) != turn) {
 			continue;
 		}
-		int priority = item_priority(item, (uint64_t)sendTick);
+		int priority = body_priority(body, (uint64_t)sendTick);
 		if (priority <= -1) {
 			continue;
 		}
-		item.priorityAccumulator += priority;
+		body.priorityAccumulator += priority;
 		candidates.push_back(slot);
 	}
 	// Highest accumulator first (std::sort takes the comparison as a function).
 	std::sort(candidates.begin(), candidates.end(), [this](int a, int b) {
-		return items[a].priorityAccumulator > items[b].priorityAccumulator;
+		return bodies[a].priorityAccumulator > bodies[b].priorityAccumulator;
 	});
 
 	// Every packet has the header and a hit count; only the first carries hits.
@@ -233,11 +383,10 @@ Array GMPPhysicsWorld::build_item_states(int maxBytes, int maxPacketBytes, int t
 	int hitsWritten = write_hits(packet, maxPacketBytes);
 	int sentBytes = (int)packet.size() - headerSize;
 	for (int slot : candidates) {
-		Item &item = items[slot];
-		ItemState state = build_item_state(item, (uint64_t)sendTick);
+		Body &body = bodies[slot];
+		uint8_t stateBytes[StateMovingSize];
+		int stateSize = write_body_state(body, (uint64_t)sendTick, stateBytes);
 		statesBuilt++;
-		uint8_t stateBytes[ItemStateMovingSize];
-		int stateSize = write_item_state(stateBytes, state);
 		int entrySize = 8 + 1 + stateSize;
 		if (sentBytes + entrySize > maxBytes) {
 			// This send is full: the rest wait for the next one (without being built).
@@ -251,11 +400,11 @@ Array GMPPhysicsWorld::build_item_states(int maxBytes, int maxPacketBytes, int t
 		}
 		size_t at = packet.size();
 		packet.resize(at + entrySize);
-		write_u64(packet.data() + at, item.id);
+		write_u64(packet.data() + at, body.id);
 		packet[at + 8] = (uint8_t)stateSize;
 		std::memcpy(packet.data() + at + 9, stateBytes, stateSize);
 		sentBytes += entrySize;
-		item.priorityAccumulator = 0;
+		body.priorityAccumulator = 0;
 	}
 	if ((int)packet.size() > headerSize || (packets.size() == 0 && hitsWritten > 0)) {
 		packets.push_back(to_packet(packet));
@@ -266,8 +415,8 @@ Array GMPPhysicsWorld::build_item_states(int maxBytes, int maxPacketBytes, int t
 
 // ---- hits on the wire ----
 
-// position (3 floats), ticks since it happened (1 byte), speed (half float), the two surface types
-// (2 bytes each), the two item ids (8 bytes each). Node ids are this peer's own, so they don't go.
+// position (3 floats), ticks since it happened (1 byte), speed (half float), then each side's id (8 bytes) and shape
+// number (2 bytes). The receiver looks the tags up itself.
 const int HitWireSize = 35;
 
 // Writes the hit count and as many waiting hits as fit after the header; returns how many went.
@@ -295,10 +444,10 @@ int GMPPhysicsWorld::write_hits(std::vector<uint8_t> &packet, int maxPacketBytes
 		write_float(to + 8, toSend.hit.position[2]);
 		to[12] = (uint8_t)std::min<uint64_t>(tick - (uint64_t)toSend.tick, 255);
 		write_half(to + 13, toSend.hit.speed);
-		write_short(to + 15, (int16_t)toSend.hit.surfaceTypeA);
-		write_short(to + 17, (int16_t)toSend.hit.surfaceTypeB);
-		write_u64(to + 19, toSend.hit.itemIdA);
-		write_u64(to + 27, toSend.hit.itemIdB);
+		write_u64(to + 15, toSend.hit.idA);
+		write_short(to + 23, (int16_t)toSend.hit.shapeA);
+		write_u64(to + 25, toSend.hit.idB);
+		write_short(to + 33, (int16_t)toSend.hit.shapeB);
 	}
 	hitsToSend.erase(hitsToSend.begin(), hitsToSend.begin() + count);
 	hitsSent += count;
@@ -323,12 +472,12 @@ int GMPPhysicsWorld::read_hits_from_packet(const uint8_t *packet, int size, uint
 		received.hit.position[2] = read_float(from + 8);
 		received.tick = (double)senderTick - from[12];
 		received.hit.speed = read_half(from + 13);
-		received.hit.surfaceTypeA = read_short(from + 15);
-		received.hit.surfaceTypeB = read_short(from + 17);
-		received.hit.itemIdA = read_u64(from + 19);
-		received.hit.itemIdB = read_u64(from + 27);
-		received.hit.nodeIdA = 0;
-		received.hit.nodeIdB = 0;
+		received.hit.idA = read_u64(from + 15);
+		received.hit.shapeA = read_short(from + 23);
+		received.hit.idB = read_u64(from + 25);
+		received.hit.shapeB = read_short(from + 33);
+		received.hit.tagsA = named_shape_tags(received.hit.idA, received.hit.shapeA);
+		received.hit.tagsB = named_shape_tags(received.hit.idB, received.hit.shapeB);
 		received.sender = (uint64_t)sender;
 		hitsReceived.push_back(received);
 	}
@@ -338,7 +487,7 @@ int GMPPhysicsWorld::read_hits_from_packet(const uint8_t *packet, int size, uint
 
 // ---- receiving ----
 
-void GMPPhysicsWorld::apply_item_states(PackedByteArray packetArray, int64_t sender) {
+void GMPPhysicsWorld::apply_body_states(PackedByteArray packetArray, int64_t sender) {
 	double start = now_ms();
 	const uint8_t *packet = packetArray.ptr();
 	int size = (int)packetArray.size();
@@ -356,7 +505,7 @@ void GMPPhysicsWorld::apply_item_states(PackedByteArray packetArray, int64_t sen
 		uint64_t id = read_u64(packet + offset);
 		int stateSize = packet[offset + 8];
 		offset += 9;
-		if ((stateSize != ItemStateRestingSize && stateSize != ItemStateMovingSize) || offset + stateSize > size) {
+		if ((stateSize != StateRestingSize && stateSize != StateMovingSize) || offset + stateSize > size) {
 			// Not a packet we can read.
 			break;
 		}
@@ -368,45 +517,45 @@ void GMPPhysicsWorld::apply_item_states(PackedByteArray packetArray, int64_t sen
 			continue;
 		}
 		int slot = found->second;
-		Item &item = items[slot];
+		Body &body = bodies[slot];
 		// Only the current authority's states count, and never for what this peer simulates itself.
-		if (item.authority != (uint64_t)sender || item.authority == selfPeer) {
+		if (body.authority != (uint64_t)sender || body.authority == selfPeer) {
 			continue;
 		}
 		// Out of order: a newer state is in already.
-		if (sendTime < item.lastStateTime) {
+		if (sendTime < body.lastStateTime) {
 			continue;
 		}
-		item.lastStateTime = sendTime;
-		ItemState state = read_item_state(stateBytes, stateSize);
+		body.lastStateTime = sendTime;
+		BodyState state = read_body_state(stateBytes, stateSize);
 
-		if (item.snapshotCount > 0) {
-			const ItemSnapshot &newest = item.snapshots[item.snapshotCount - 1];
+		if (body.snapshotCount > 0) {
+			const Snapshot &newest = body.snapshots[body.snapshotCount - 1];
 			if (newest.tick >= senderTick) {
 				continue;
 			}
-			// A resting item keeps being sent unchanged: a follower that has already arrived there has nothing to do.
+			// A resting body keeps being sent unchanged: a follower that has already arrived there has nothing to do.
 			bool same = newest.position == state.position && newest.rotation == state.rotation &&
 					newest.velocity == state.velocity && newest.angularVelocity == state.angularVelocity;
-			if (same && !item.following) {
+			if (same && !body.following) {
 				continue;
 			}
 		}
-		if (item.snapshotCount == MaxItemSnapshots) {
-			for (int i = 1; i < MaxItemSnapshots; i++) {
-				item.snapshots[i - 1] = item.snapshots[i];
+		if (body.snapshotCount == MaxSnapshots) {
+			for (int i = 1; i < MaxSnapshots; i++) {
+				body.snapshots[i - 1] = body.snapshots[i];
 			}
-			item.snapshotCount--;
+			body.snapshotCount--;
 		}
-		ItemSnapshot &snapshot = item.snapshots[item.snapshotCount];
+		Snapshot &snapshot = body.snapshots[body.snapshotCount];
 		snapshot.tick = senderTick;
 		snapshot.position = state.position;
 		snapshot.rotation = state.rotation;
 		snapshot.velocity = state.velocity;
 		snapshot.angularVelocity = state.angularVelocity;
-		item.snapshotCount++;
+		body.snapshotCount++;
 		statesApplied++;
-		if (!item.following) {
+		if (!body.following) {
 			start_following(slot);
 		}
 	}
@@ -414,11 +563,11 @@ void GMPPhysicsWorld::apply_item_states(PackedByteArray packetArray, int64_t sen
 }
 
 void GMPPhysicsWorld::start_following(int slot) {
-	Item &item = items[slot];
-	item.following = true;
-	item.blendIn = true;
-	if (!item.inFollowers) {
-		item.inFollowers = true;
+	Body &body = bodies[slot];
+	body.following = true;
+	body.blendIn = true;
+	if (!body.inFollowers) {
+		body.inFollowers = true;
 		followers.push_back(slot);
 	}
 }
@@ -429,11 +578,11 @@ void GMPPhysicsWorld::play_followers(float delta) {
 	double start = now_ms();
 	// Backwards, so a finished one can be swapped for the last one, which has been played already.
 	for (int i = (int)followers.size() - 1; i >= 0; i--) {
-		Item &item = items[followers[i]];
-		if (follow(item, delta)) {
+		Body &body = bodies[followers[i]];
+		if (follow(body, delta)) {
 			continue;
 		}
-		item.inFollowers = false;
+		body.inFollowers = false;
 		followers[i] = followers.back();
 		followers.pop_back();
 	}
@@ -441,101 +590,96 @@ void GMPPhysicsWorld::play_followers(float delta) {
 }
 
 // Drives a follower along its authority's states for this tick; false once it has stopped following.
-bool GMPPhysicsWorld::follow(Item &item, float delta) {
-	if (!item.following || item.snapshotCount == 0) {
-		item.following = false;
+bool GMPPhysicsWorld::follow(Body &body, float delta) {
+	if (!body.following || body.snapshotCount == 0) {
+		body.following = false;
 		return false;
 	}
 	double interpolationDelay = 2.0 * sendInterval;
 
 	// Asked for this tick or the last.
-	bool showingNewest = item.showNewestTick + 1 >= tick;
+	bool showingNewest = body.showNewestTick + 1 >= tick;
 	double wantedLead = 0;
 	if (showingNewest) {
 		wantedLead = interpolationDelay;
 	}
 	// Eased over about half a second, so playback never jumps.
-	item.playbackLead = Math::move_toward(item.playbackLead, wantedLead, interpolationDelay * 2 * delta);
+	body.playbackLead = Math::move_toward(body.playbackLead, wantedLead, interpolationDelay * 2 * delta);
 
-	double playbackTick = item.playbackLead;
-	auto clock = playbackTicks.find(item.authority);
+	double playbackTick = body.playbackLead;
+	auto clock = playbackTicks.find(body.authority);
 	if (clock != playbackTicks.end()) {
 		playbackTick += clock->second;
 	}
 	Vector3 position;
 	Quaternion rotation;
-	bool done = play_back(item, playbackTick, position, rotation);
+	bool done = play_back(body, playbackTick, position, rotation);
 
-	if (item.blendIn) {
+	if (body.blendIn) {
 		// Wherever it was (e.g. simulated here before a hand-off), as an offset that fades out.
-		item.blendIn = false;
-		item.errorPosition = item.position - position;
-		item.errorRotation = item.rotation * rotation.inverse();
-		item.blended = false;
-	} else if (!item.blended) {
+		body.blendIn = false;
+		body.errorPosition = body.position - position;
+		body.errorRotation = body.rotation * rotation.inverse();
+		body.blended = false;
+	} else if (!body.blended) {
 		float keep = std::exp(-delta / ErrorBlendSeconds);
-		item.errorPosition *= keep;
-		item.errorRotation = Quaternion().slerp(item.errorRotation.normalized(), keep);
+		body.errorPosition *= keep;
+		body.errorRotation = Quaternion().slerp(body.errorRotation.normalized(), keep);
 	}
-	if (!item.blended && item.errorPosition.length() < ArrivedDistance && 1.0f - std::fabs(item.errorRotation.w) < ArrivedRotation) {
-		item.blended = true;
-		item.errorPosition = Vector3();
-		item.errorRotation = Quaternion();
+	if (!body.blended && body.errorPosition.length() < ArrivedDistance && 1.0f - std::fabs(body.errorRotation.w) < ArrivedRotation) {
+		body.blended = true;
+		body.errorPosition = Vector3();
+		body.errorRotation = Quaternion();
 	}
 
-	Vector3 targetPosition = position + item.errorPosition;
+	Vector3 targetPosition = position + body.errorPosition;
 	Quaternion targetRotation = rotation;
-	if (!item.blended) {
-		targetRotation = (item.errorRotation * rotation).normalized();
+	if (!body.blended) {
+		targetRotation = (body.errorRotation * rotation).normalized();
 	}
 
-	if (done && item.blended) {
+	if (done && body.blended) {
 		// At rest where the authority left it: put it there exactly and stop.
-		b3Body_SetTransform(item.body, to_b3(targetPosition), to_b3(targetRotation));
-		b3Body_SetLinearVelocity(item.body, b3Vec3{ 0, 0, 0 });
-		b3Body_SetAngularVelocity(item.body, b3Vec3{ 0, 0, 0 });
-		// A sleeping body sends no move event for this, so it is drawn there from here.
-		item.previous = item.current;
-		item.position = targetPosition;
-		item.rotation = targetRotation;
-		item.current = Transform3D(Basis(targetRotation), targetPosition);
-		item.movedTick = tick;
-		kinds[item.kind].changedTick = tick;
-		item.following = false;
+		b3Body_SetTransform(body.body, to_b3(targetPosition), to_b3(targetRotation));
+		b3Body_SetLinearVelocity(body.body, b3Vec3{ 0, 0, 0 });
+		b3Body_SetAngularVelocity(body.body, b3Vec3{ 0, 0, 0 });
+		// A sleeping body sends no move event for this, so it is drawn (and its node put) there from here.
+		set_pose(body, targetPosition, targetRotation);
+		body.following = false;
 		return false;
 	}
 	// Driven there over this step, with the velocity that takes it there, so it pushes what it meets.
 	b3WorldTransform target = { to_b3(targetPosition), to_b3(targetRotation) };
-	b3Body_SetTargetTransform(item.body, target, delta, true);
+	b3Body_SetTargetTransform(body.body, target, delta, true);
 	return true;
 }
 
-// The authority's pose at playbackTick from the item's snapshots; also sets its follow velocities. True
+// The authority's pose at playbackTick from the body's snapshots; also sets its follow velocities. True
 // once there is nothing left to play: the newest state is at rest, or has been carried on long enough.
-bool GMPPhysicsWorld::play_back(Item &item, double playbackTick, Vector3 &position, Quaternion &rotation) {
+bool GMPPhysicsWorld::play_back(Body &body, double playbackTick, Vector3 &position, Quaternion &rotation) {
 	// Drop the states playback has moved past, keeping the newest one at or before it.
-	while (item.snapshotCount >= 2 && item.snapshots[1].tick <= playbackTick) {
-		for (int i = 1; i < item.snapshotCount; i++) {
-			item.snapshots[i - 1] = item.snapshots[i];
+	while (body.snapshotCount >= 2 && body.snapshots[1].tick <= playbackTick) {
+		for (int i = 1; i < body.snapshotCount; i++) {
+			body.snapshots[i - 1] = body.snapshots[i];
 		}
-		item.snapshotCount--;
+		body.snapshotCount--;
 	}
-	const ItemSnapshot &from = item.snapshots[0];
+	const Snapshot &from = body.snapshots[0];
 	if (playbackTick < from.tick) {
 		// Every state is still ahead of playback (it has only just started): wait at the first.
 		position = from.position;
 		rotation = from.rotation;
-		item.followVelocity = from.velocity;
-		item.followAngularVelocity = from.angularVelocity;
+		body.followVelocity = from.velocity;
+		body.followAngularVelocity = from.angularVelocity;
 		return false;
 	}
-	if (item.snapshotCount >= 2) {
-		const ItemSnapshot &to = item.snapshots[1];
+	if (body.snapshotCount >= 2) {
+		const Snapshot &to = body.snapshots[1];
 		float t = (float)((playbackTick - from.tick) / (double)(to.tick - from.tick));
 		position = from.position.lerp(to.position, t);
 		rotation = from.rotation.slerp(to.rotation, t);
-		item.followVelocity = from.velocity.lerp(to.velocity, t);
-		item.followAngularVelocity = from.angularVelocity.lerp(to.angularVelocity, t);
+		body.followVelocity = from.velocity.lerp(to.velocity, t);
+		body.followAngularVelocity = from.angularVelocity.lerp(to.angularVelocity, t);
 		return false;
 	}
 
@@ -547,16 +691,16 @@ bool GMPPhysicsWorld::play_back(Item &item, double playbackTick, Vector3 &positi
 	Vector3 spin = from.angularVelocity * carried;
 	float angle = spin.length();
 	if (angle > 1e-5f) {
-		// Angular velocity is in world axes, so the turn goes before the item's own rotation.
+		// Angular velocity is in world axes, so the turn goes before the body's own rotation.
 		rotation = Quaternion(spin / angle, angle) * from.rotation;
 	}
 	bool atRest = from.velocity == Vector3() && from.angularVelocity == Vector3();
 	if (atRest || ahead >= MaxExtrapolationSeconds) {
-		item.followVelocity = Vector3();
-		item.followAngularVelocity = Vector3();
+		body.followVelocity = Vector3();
+		body.followAngularVelocity = Vector3();
 		return true;
 	}
-	item.followVelocity = from.velocity;
-	item.followAngularVelocity = from.angularVelocity;
+	body.followVelocity = from.velocity;
+	body.followAngularVelocity = from.angularVelocity;
 	return false;
 }

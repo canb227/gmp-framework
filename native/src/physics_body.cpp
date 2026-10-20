@@ -1,9 +1,9 @@
 #include "physics_body.h"
 
-#include "body_user_data.h"
 #include "math_convert.h"
 #include "physics_shape.h"
 #include "physics_world.h"
+#include "tags.h"
 
 #include <godot_cpp/core/class_db.hpp>
 
@@ -59,15 +59,11 @@ void GMPBody::create_body() {
 	def.linearDamping = linearDamping;
 	def.angularDamping = angularDamping;
 	def.enableSleep = canSleep;
-	def.userData = user_data_for_node(this);
 	bodyId = b3CreateBody(world->get_world_id(), &def);
-	world->add_node_body(this);
-
-	std::vector<GMPShape *> shapes;
-	collect_shapes(this, shapes);
-	for (GMPShape *shape : shapes) {
-		shape->attach(this);
-	}
+	// Its slot in the world's table, plus one, tells events and queries which body it is.
+	slot = world->add_node_body(this);
+	b3Body_SetUserData(bodyId, (void *)(uintptr_t)(slot + 1));
+	attach_shapes();
 }
 
 void GMPBody::destroy_body() {
@@ -84,12 +80,14 @@ void GMPBody::destroy_body() {
 	bodyId = b3_nullBodyId;
 	GMPPhysicsWorld *world = GMPPhysicsWorld::get_current();
 	if (world != nullptr) {
-		world->remove_node_body(this);
+		world->remove_node_body(slot);
 	}
+	slot = -1;
 }
 
 void GMPBody::forget_body() {
 	bodyId = b3_nullBodyId;
+	slot = -1;
 	std::vector<GMPShape *> shapes;
 	collect_shapes(this, shapes);
 	for (GMPShape *shape : shapes) {
@@ -113,13 +111,18 @@ void GMPBody::collect_shapes(Node *node, std::vector<GMPShape *> &shapes) {
 }
 
 void GMPBody::rebuild_shapes() {
-	if (!has_body()) {
-		return;
+	if (has_body()) {
+		attach_shapes();
 	}
+}
+
+void GMPBody::attach_shapes() {
 	std::vector<GMPShape *> shapes;
 	collect_shapes(this, shapes);
-	for (GMPShape *shape : shapes) {
-		shape->attach(this);
+	for (int i = 0; i < (int)shapes.size(); i++) {
+		// Numbered in tree order, the same on every peer, so a hit can name the shape.
+		shapes[i]->bodyShapeIndex = i;
+		shapes[i]->attach(this);
 	}
 }
 
@@ -315,23 +318,6 @@ int64_t GMPBody::get_collision_mask() const {
 	return collisionMask;
 }
 
-void GMPBody::set_contact_monitor(bool value) {
-	contactMonitor = value;
-	rebuild_shapes();
-}
-
-bool GMPBody::get_contact_monitor() const {
-	return contactMonitor;
-}
-
-void GMPBody::set_hit_events(bool value) {
-	hitEvents = value;
-	rebuild_shapes();
-}
-
-bool GMPBody::get_hit_events() const {
-	return hitEvents;
-}
 
 void GMPBody::set_enabled(bool value) {
 	enabled = value;
@@ -347,6 +333,40 @@ void GMPBody::set_enabled(bool value) {
 
 bool GMPBody::get_enabled() const {
 	return enabled;
+}
+
+void GMPBody::set_tags(int64_t value) {
+	tags = (uint64_t)value;
+	rebuild_shapes();
+}
+
+int64_t GMPBody::get_tags() const {
+	return (int64_t)tags;
+}
+
+void GMPBody::set_shared_id(int64_t value) {
+	sharedId = (uint64_t)value;
+	GMPPhysicsWorld *world = GMPPhysicsWorld::get_current();
+	if (world != nullptr && slot >= 0) {
+		world->set_body_id(slot, sharedId);
+	}
+}
+
+int64_t GMPBody::get_shared_id() const {
+	return (int64_t)sharedId;
+}
+
+int64_t GMPBody::get_all_tags() {
+	if (tags != 0) {
+		return (int64_t)tags;
+	}
+	uint64_t all = 0;
+	std::vector<GMPShape *> shapes;
+	collect_shapes(this, shapes);
+	for (GMPShape *shape : shapes) {
+		all |= shape->tags;
+	}
+	return (int64_t)all;
 }
 
 void GMPBody::_bind_methods() {
@@ -381,12 +401,13 @@ void GMPBody::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_collision_layer"), &GMPBody::get_collision_layer);
 	ClassDB::bind_method(D_METHOD("set_collision_mask", "value"), &GMPBody::set_collision_mask);
 	ClassDB::bind_method(D_METHOD("get_collision_mask"), &GMPBody::get_collision_mask);
-	ClassDB::bind_method(D_METHOD("set_contact_monitor", "value"), &GMPBody::set_contact_monitor);
-	ClassDB::bind_method(D_METHOD("get_contact_monitor"), &GMPBody::get_contact_monitor);
-	ClassDB::bind_method(D_METHOD("set_hit_events", "value"), &GMPBody::set_hit_events);
-	ClassDB::bind_method(D_METHOD("get_hit_events"), &GMPBody::get_hit_events);
 	ClassDB::bind_method(D_METHOD("set_enabled", "value"), &GMPBody::set_enabled);
 	ClassDB::bind_method(D_METHOD("get_enabled"), &GMPBody::get_enabled);
+	ClassDB::bind_method(D_METHOD("set_tags", "value"), &GMPBody::set_tags);
+	ClassDB::bind_method(D_METHOD("get_tags"), &GMPBody::get_tags);
+	ClassDB::bind_method(D_METHOD("get_all_tags"), &GMPBody::get_all_tags);
+	ClassDB::bind_method(D_METHOD("set_shared_id", "value"), &GMPBody::set_shared_id);
+	ClassDB::bind_method(D_METHOD("get_shared_id"), &GMPBody::get_shared_id);
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "body_type", PROPERTY_HINT_ENUM, "Static,Kinematic,Dynamic"), "set_body_type", "get_body_type");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "gravity_scale"), "set_gravity_scale", "get_gravity_scale");
@@ -395,10 +416,8 @@ void GMPBody::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "can_sleep"), "set_can_sleep", "get_can_sleep");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "collision_layer", PROPERTY_HINT_LAYERS_3D_PHYSICS), "set_collision_layer", "get_collision_layer");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "collision_mask", PROPERTY_HINT_LAYERS_3D_PHYSICS), "set_collision_mask", "get_collision_mask");
-	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "contact_monitor"), "set_contact_monitor", "get_contact_monitor");
-	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "hit_events"), "set_hit_events", "get_hit_events");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "enabled"), "set_enabled", "get_enabled");
-
-	ADD_SIGNAL(MethodInfo("body_touched", PropertyInfo(Variant::OBJECT, "body", PROPERTY_HINT_NODE_TYPE, "GMPBody")));
-	ADD_SIGNAL(MethodInfo("item_touched", PropertyInfo(Variant::INT, "item_id")));
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "tags", PROPERTY_HINT_FLAGS, TagHintString), "set_tags", "get_tags");
+	// Set by C# at spawn, never saved in a scene.
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "shared_id", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_shared_id", "get_shared_id");
 }

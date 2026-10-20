@@ -43,8 +43,9 @@ public partial class Console : Node
         LimboConsole.RegisterCommand(new Callable(this, "magnetize"));
         LimboConsole.RegisterCommand(new Callable(this, "interp"));
         LimboConsole.RegisterCommand(new Callable(this, "lightshadows"));
-        LimboConsole.RegisterCommand(new Callable(this, "followstats"));
         LimboConsole.RegisterCommand(new Callable(this, "hitstats"));
+        LimboConsole.RegisterCommand(new Callable(this, "objects"));
+        LimboConsole.RegisterCommand(new Callable(this, "spawn_scene"));
         LimboConsole.RegisterCommand(new Callable(this, "stir"));
         LimboConsole.RegisterCommand(new Callable(this, "repair_all"));
         LimboConsole.RegisterCommand(new Callable(this, "item_counts"));
@@ -200,16 +201,41 @@ public partial class Console : Node
 
     // ---- testing ----
 
-    /// <summary>A physics ray from one point to another: what it hits first (an item id or a body node) and where.</summary>
+    /// <summary>A physics ray from one point to another: what it hits first (a body id, and its node if it has one) and where.</summary>
     public void raycast(float fromX, float fromY, float fromZ, float toX, float toY, float toZ)
     {
         RayHit hit = PhysicsWorld.Raycast(new Vector3(fromX, fromY, fromZ), new Vector3(toX, toY, toZ));
         string body = "none";
-        if (hit.body != null)
+        Node3D node = PhysicsWorld.BodyNode(hit.id);
+        if (node != null)
         {
-            body = hit.body.GetPath();
+            body = node.GetPath();
         }
-        LimboConsole.Info($"raycast: hit={hit.hit} at={hit.position} normal={hit.normal} item={hit.itemId} body={body} surface={hit.surfaceType}");
+        LimboConsole.Info($"raycast: hit={hit.hit} at={hit.position} normal={hit.normal} id={hit.id} shape={hit.shape} body={body} tags={hit.tags}");
+    }
+
+    /// <summary>Host: spawns the scene at path (res://...) at x y z for every peer, the host its authority.</summary>
+    public void spawn_scene(string path, float x, float y, float z)
+    {
+        if (!Lobby.isHost)
+        {
+            LimboConsole.Error("spawn_scene: host only.");
+            return;
+        }
+        ulong id = GameWorld.SpawnScene(path, new Vector3(x, y, z), default, new GMPOInitData { authority = Lobby.hostID });
+        LimboConsole.Info($"spawn_scene: id={id}");
+    }
+
+    /// <summary>Every dynamic node body (tools and the like): its type, id, authority and where it is, to compare peers.</summary>
+    public void objects()
+    {
+        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
+        {
+            if (obj is GMPOBody body && body.bodyType == BodyTypeEnum.Dynamic)
+            {
+                LimboConsole.Info($"object: {body.GetType()} id={body.id} authority={body.authority} pos={body.GlobalPosition}");
+            }
+        }
     }
 
     /// <summary>Box3D's own step profile (ms, last step) and counters.</summary>

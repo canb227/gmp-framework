@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 /// <summary>
 /// Something a character ran into (<see cref="GMPOCharacter.Impacted"/>): landing on the floor, or running into a wall or
 /// ceiling. Read straight from the bytes the C++ character packs, so it must keep the fields and order of
-/// CharacterImpactRecord (native/src/physics_character.h): 56 bytes.
+/// CharacterImpactRecord (native/src/physics_character.h): 48 bytes.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public struct CharacterImpact
@@ -20,12 +20,10 @@ public struct CharacterImpact
     public Vector3 normal;
     /// <summary>How fast the character was going into it (m/s).</summary>
     public float speed;
-    /// <summary>The surface type of what it hit (GMPShape.surface_type, or the item's).</summary>
-    public long surfaceType;
-    /// <summary>The item it hit, or 0.</summary>
-    public ulong itemId;
-    /// <summary>The GMPBody node it hit as an instance id (<see cref="GodotObject.InstanceFromId"/>), or 0. Always 0 on remote copies.</summary>
-    public ulong nodeId;
+    /// <summary>The tags of the shape it hit (its own plus its body's).</summary>
+    public ulong tags;
+    /// <summary>The body it hit (a loose item's id, or a node body's), or 0.</summary>
+    public ulong id;
 }
 
 /// <summary>
@@ -70,6 +68,12 @@ public partial class GMPOCharacter : Node3D, GMPObject
     public void ReportImpact(CharacterImpact impact)
     {
         Impacted?.Invoke(this, impact);
+    }
+
+    /// <summary>Where the character looks from and toward (forward is -Z): the bodies it sees sync more often.</summary>
+    public virtual Transform3D ViewTransform()
+    {
+        return GlobalTransform;
     }
 
     public virtual void AfterInit()
@@ -129,9 +133,9 @@ public partial class GMPOCharacter : Node3D, GMPObject
     {
         Vector3 after = Call(moveName, velocity, (float)delta).AsVector3();
         lastImpacts.Clear();
-        if (System.Runtime.CompilerServices.Unsafe.SizeOf<CharacterImpact>() != 56)
+        if (System.Runtime.CompilerServices.Unsafe.SizeOf<CharacterImpact>() != 48)
         {
-            GD.PushError("CharacterImpact no longer matches CharacterImpactRecord (56 bytes) in native/src/physics_character.h");
+            GD.PushError("CharacterImpact no longer matches CharacterImpactRecord (48 bytes) in native/src/physics_character.h");
             return after;
         }
         byte[] bytes = Call(getImpactsName).AsByteArray();

@@ -8,13 +8,15 @@
 
 class GMPShape;
 
-// A physics body that is a node: for structures, level geometry, players and tools (loose items are not
-// nodes, see GMPPhysicsWorld). Its colliders are the GMPShape nodes under it.
+// A physics body that is a node: for structures, level geometry, players and tools. Its colliders are the
+// GMPShape nodes under it. In the world it is a body like any loose item (GMPPhysicsWorld's table), known by
+// the same shared id on every peer.
 //
 //   static     never moves (level geometry, placed structures). Move it with teleport().
 //   kinematic  moves where its node is put: every tick the body is driven to the node's transform, with
-//              the velocity that takes it there, so it pushes what it touches (moving parts, followers).
-//   dynamic    simulated: the node is moved to wherever the body is after each step.
+//              the velocity that takes it there, so it pushes what it touches (moving parts, players).
+//   dynamic    simulated: the node is moved to wherever the body is after each step. Once C# makes it synced
+//              (set_body_authority), other peers follow its authority's states, as they do items'.
 //
 // The body is made when the node is ready (so its shapes are there) and goes when it leaves the tree.
 class GMPBody : public godot::Node3D {
@@ -35,12 +37,13 @@ public:
 	// Which layers the body is on, and which layers it collides with (bit masks, like Godot's).
 	uint32_t collisionLayer = 1;
 	uint32_t collisionMask = 0xFFFFFFFF;
-	// Sends body_touched / item_touched when something starts touching it. Costs a little per contact.
-	bool contactMonitor = false;
-	// Adds its impacts to the world's hit list (impact sounds). Items always report theirs.
-	bool hitEvents = false;
 	// Off: the node has no body in the world at all (placement previews and the like).
 	bool enabled = true;
+	// Tags the whole body has (see tags.h), on top of each shape's own. Left empty, the body's tags are what its
+	// shapes have between them (get_all_tags).
+	uint64_t tags = 0;
+	// The id every peer knows this body by (given by C# when its scene spawns); 0 until then.
+	uint64_t sharedId = 0;
 
 	GMPBody();
 	~GMPBody();
@@ -84,12 +87,14 @@ public:
 	int64_t get_collision_layer() const;
 	void set_collision_mask(int64_t value);
 	int64_t get_collision_mask() const;
-	void set_contact_monitor(bool value);
-	bool get_contact_monitor() const;
-	void set_hit_events(bool value);
-	bool get_hit_events() const;
 	void set_enabled(bool value);
 	bool get_enabled() const;
+	void set_tags(int64_t value);
+	int64_t get_tags() const;
+	void set_shared_id(int64_t value);
+	int64_t get_shared_id() const;
+	// The body's tags if it was given any, otherwise every tag its shapes have.
+	int64_t get_all_tags();
 
 protected:
 	static void _bind_methods();
@@ -97,6 +102,8 @@ protected:
 
 private:
 	b3BodyId bodyId = b3_nullBodyId;
+	// Its place in the world's body table; -1 without a body.
+	int slot = -1;
 	// The node's scale when the body was made: Box3D bodies have none, so it is put back on the node.
 	godot::Vector3 nodeScale = godot::Vector3(1, 1, 1);
 	// Kinematic: the transform the body was last driven to, and whether it moved on the last tick.
@@ -107,7 +114,9 @@ private:
 	void destroy_body();
 	// Every GMPShape under this node whose nearest body is this one.
 	void collect_shapes(godot::Node *node, std::vector<GMPShape *> &shapes);
-	// Remakes the shapes after a change that every shape uses (layers, contact or hit events).
+	// Numbers and attaches every shape under this body (once its Box3D body exists).
+	void attach_shapes();
+	// Remakes the shapes after a change that every shape uses (layers, tags).
 	void rebuild_shapes();
 };
 
