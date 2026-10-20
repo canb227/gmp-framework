@@ -378,9 +378,20 @@ public partial class FactoryPlayer : GMPOCharacter
             relative.Y = Mathf.Sqrt(2 * gravityMagnitude * jumpHeight);
             sinceJumpPressed = 10;
             sinceOnFloor = 10;
+            AudioManager.Instance.PlayOneShot("event:/Footsteps/FS_Jump", 1.0f, GlobalPosition, new Dictionary<string, float>{["Surfaces"] = 2});
         }
 
         velocity = Move(relative + ground, delta);
+        Vector3 ground_velocity = new Vector3(velocity.X, 0, velocity.Z);
+        if(sprinting && onFloor)
+        {
+            AudioManager.Instance.PlayOneShot("event:/Footsteps/FS_Run", 1.0f, GlobalPosition, new Dictionary<string, float>{["Surfaces"] = 2});
+        }
+        else if(ground_velocity.Length() > walkSpeed-1.0f && onFloor)
+        {
+            AudioManager.Instance.PlayOneShot("event:/Footsteps/FS_Walk", 1.0f, GlobalPosition, new Dictionary<string, float>{["Surfaces"] = 2});
+        }
+
         QueueImpactsToSend();
     }
 
