@@ -70,7 +70,7 @@ void GMPShape::attach(GMPBody *body) {
 	def.baseMaterial.rollingResistance = rollingResistance;
 	// Box3D wants it in the body's axes.
 	def.baseMaterial.tangentVelocity = to_b3(rotation.xform(tangentVelocity));
-	def.baseMaterial.userMaterialId = combined_tags(tags, body->tags);
+	def.baseMaterial.userMaterialId = tags | body->tags;
 	def.isSensor = isSensor;
 	// Sensors only see shapes that have this on, so every shape has it, and a sensor needs it to report.
 	def.enableSensorEvents = true;

@@ -55,6 +55,7 @@ void GMPPhysicsWorld::create_world() {
 	def.gravity = to_b3(gravity);
 	// Box3D's own task scheduler runs the solver on this many threads.
 	def.workerCount = workerCount;
+	def.hitEventThreshold = MinHitSpeed;
 	world = b3CreateWorld(&def);
 }
 

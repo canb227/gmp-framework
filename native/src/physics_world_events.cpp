@@ -9,6 +9,7 @@
 
 #include "math_convert.h"
 #include "physics_body.h"
+#include "physics_character.h"
 #include "physics_shape.h"
 #include "tags.h"
 
@@ -116,14 +117,15 @@ PackedInt64Array GMPPhysicsWorld::get_touches() const {
 	return touches;
 }
 
-// The hits this peer reports are sent to the other peers if they are this close to any player (m).
-const float HitSendRange = 60.0f;
-
-// This tick's hits (get_hits) from Box3D's hit events: impacts at 1 m/s or more (the world's hit event
+// This tick's hits (get_hits) from Box3D's hit events: impacts at MinHitSpeed or more (the world's hit event
 // threshold). Box3D only sees impacts of what this peer simulates: followers are kinematic and don't collide
 // with each other or the level, so their hits come from their authority instead (play_received_hits).
 void GMPPhysicsWorld::read_hits(const b3ContactEvents &contactEvents) {
 	hits.clear();
+	for (const HitRecord &hit : characterHits) {
+		report_hit(hit);
+	}
+	characterHits.clear();
 	for (int i = 0; i < contactEvents.hitCount; i++) {
 		const b3ContactHitEvent &event = contactEvents.hitEvents[i];
 		Body *a = body_of_shape(event.shapeIdA);
@@ -138,6 +140,9 @@ void GMPPhysicsWorld::read_hits(const b3ContactEvents &contactEvents) {
 		hit.position[0] = (float)event.point.x;
 		hit.position[1] = (float)event.point.y;
 		hit.position[2] = (float)event.point.z;
+		hit.normal[0] = event.normal.x;
+		hit.normal[1] = event.normal.y;
+		hit.normal[2] = event.normal.z;
 		hit.speed = event.approachSpeed;
 		hit.shapeA = NoShapeIndex;
 		hit.shapeB = NoShapeIndex;
@@ -152,28 +157,40 @@ void GMPPhysicsWorld::read_hits(const b3ContactEvents &contactEvents) {
 			hit.shapeB = shape_index(event.shapeIdB);
 			hit.tagsB = event.userMaterialIdB;
 		}
-		hits.push_back(hit);
+		// A player in a hit is always side A, as in its own impacts.
+		if ((hit.tagsB & PlayerTag) != 0 && (hit.tagsA & PlayerTag) == 0) {
+			std::swap(hit.idA, hit.idB);
+			std::swap(hit.shapeA, hit.shapeB);
+			std::swap(hit.tagsA, hit.tagsB);
+			hit.normal[0] = -hit.normal[0];
+			hit.normal[1] = -hit.normal[1];
+			hit.normal[2] = -hit.normal[2];
+		}
+		report_hit(hit);
+	}
+	play_received_hits();
+}
 
-		if ((int)hitsToSend.size() >= MaxHitsToSend) {
-			continue;
-		}
-		Vector3 point = Vector3(hit.position[0], hit.position[1], hit.position[2]);
-		bool nearAPlayer = false;
-		for (const Vector3 &viewer : viewerPositions) {
-			if (point.distance_squared_to(viewer) <= HitSendRange * HitSendRange) {
-				nearAPlayer = true;
-				break;
-			}
-		}
-		if (nearAPlayer) {
+void GMPPhysicsWorld::report_hit(const HitRecord &hit) {
+	hits.push_back(hit);
+	if ((int)hitsToSend.size() >= MaxHitsToSend) {
+		return;
+	}
+	Vector3 point = Vector3(hit.position[0], hit.position[1], hit.position[2]);
+	for (const Vector3 &viewer : viewerPositions) {
+		if (point.distance_squared_to(viewer) <= HitRange * HitRange) {
 			NetworkHit toSend;
 			toSend.hit = hit;
 			toSend.tick = (double)tick;
 			toSend.sender = selfPeer;
 			hitsToSend.push_back(toSend);
+			return;
 		}
 	}
-	play_received_hits();
+}
+
+void GMPPhysicsWorld::add_character_hit(const HitRecord &hit) {
+	characterHits.push_back(hit);
 }
 
 uint64_t GMPPhysicsWorld::named_shape_tags(uint64_t id, int32_t shapeIndex) {
@@ -186,7 +203,7 @@ uint64_t GMPPhysicsWorld::named_shape_tags(uint64_t id, int32_t shapeIndex) {
 		if (shapeIndex < 0 || shapeIndex >= (int)kind.shapes.size()) {
 			return 0;
 		}
-		return combined_tags(kind.shapes[shapeIndex].tags, body->tags);
+		return kind.shapes[shapeIndex].tags | body->tags;
 	}
 	if (body->node == nullptr) {
 		return 0;
@@ -207,12 +224,14 @@ uint64_t GMPPhysicsWorld::named_shape_tags(uint64_t id, int32_t shapeIndex) {
 }
 
 // Hits other peers sent join this tick's once their sender's playback clock gets to them, so they come with
-// the followers' motion. A hit whose sender has no clock here yet plays at once.
+// the followers' motion. Players are shown at their newest state (not played back), so a hit with a player in
+// it (side A) plays as soon as it arrives; so does one whose sender has no clock here yet.
 void GMPPhysicsWorld::play_received_hits() {
 	for (int i = (int)hitsReceived.size() - 1; i >= 0; i--) {
 		const NetworkHit &received = hitsReceived[i];
 		auto clock = playbackTicks.find(received.sender);
-		if (clock != playbackTicks.end() && clock->second < received.tick) {
+		bool waiting = clock != playbackTicks.end() && clock->second < received.tick;
+		if (waiting && (received.hit.tagsA & PlayerTag) == 0) {
 			continue;
 		}
 		hits.push_back(received.hit);

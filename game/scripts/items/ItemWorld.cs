@@ -21,7 +21,7 @@ public partial record struct ItemSave
 /// per item here, by the same id, on every peer.
 /// <para>
 /// The host simulates every loose item, so it is the authority of all of them and decides what happens to one (pickups,
-/// tag reactions, the kill plane); spawns and despawns go to every peer by RPC. Things that are more than an item —
+/// the kill plane); spawns and despawns go to every peer by RPC. Things that are more than an item —
 /// dropped tools, with their own scripts — stay nodes (<see cref="DroppedTool"/>, spawned by <see cref="ItemInfo.SpawnInWorld"/>).
 /// </para>
 /// </summary>
@@ -56,10 +56,6 @@ public partial class ItemWorld : Node
         instance = this;
         GameWorld.PhysicsStepped += OnPhysicsStepped;
         GameWorld.WorldCleared += OnWorldCleared;
-        if (GameWorld.physics != null)
-        {
-            PhysicsWorld.SetWatcherTags((ulong)TagInteractions.Watchers);
-        }
     }
 
     /// <summary>How many of <paramref name="itemID"/> there are in the world.</summary>
@@ -186,11 +182,7 @@ public partial class ItemWorld : Node
         return kind;
     }
 
-    /// <summary>
-    /// Puts the item's <see cref="ItemRecord.ownTags"/> on its colliders in the physics world. Call after changing them.
-    /// Only colliders with a watcher tag report their touches (TagInteractions): each report is work per new contact,
-    /// and common materials touching in a pile would report every bounce.
-    /// </summary>
+    /// <summary>Puts the item's <see cref="ItemRecord.ownTags"/> on its colliders in the physics world. Call after changing them.</summary>
     public static void TagsChanged(ItemRecord record)
     {
         PhysicsWorld.SetBodyTags(record.id, (ulong)record.ownTags);
@@ -247,22 +239,6 @@ public partial class ItemWorld : Node
         if (!Lobby.isHost)
         {
             return;
-        }
-        // Reactions run on the host, which simulates every item; anything they change must be replicated.
-        long[] touches = PhysicsWorld.Touches();
-        for (int i = 0; i + 3 < touches.Length; i += 4)
-        {
-            ItemRecord a = Get((ulong)touches[i]);
-            ItemRecord b = Get((ulong)touches[i + 1]);
-            if (a == null || b == null)
-            {
-                continue;
-            }
-            // The tags of the two colliders that touched, so a reaction can come from one part of an item.
-            ItemTags tagsA = (ItemTags)touches[i + 2];
-            ItemTags tagsB = (ItemTags)touches[i + 3];
-            TagInteractions.OnTouch(a, tagsA, b, tagsB);
-            TagInteractions.OnTouch(b, tagsB, a, tagsA);
         }
         if (ticks % KillPlaneInterval == 0)
         {

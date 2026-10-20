@@ -323,7 +323,7 @@ public partial class Console
         Godot.Collections.Dictionary stats = PhysicsWorld.Stats();
         // The position sum (every item) compares two peers' copies: equal to a few mm once followers have caught up.
         LimboConsole.Info($"bodies: count={count} awake={stats["awake"]} followers={stats["followers"]} y={lowest:0.0}..{highest:0.0} " +
-            $"sum={stats["position_sum"].AsDouble():0.00} reactions={TagInteractions.reactions} |{bands}");
+            $"sum={stats["position_sum"].AsDouble():0.00} |{bands}");
     }
 
     /// <summary>
@@ -354,8 +354,7 @@ public partial class Console
     double hitStatsLeft;
     int hitStatsTicks;
     long hitCount, hardHitCount, itemOnItemHits, unnamedSides, taggedSides;
-    long localLandings, localBumps, remoteLandings, remoteBumps;
-    float maxLandingSpeed;
+    long localCharacterHits, remoteCharacterHits, outOfOrder;
     double hitSpeedTotal, hitSpeedMax;
     readonly List<ContactHit> hits = new();
     const float HardHitSpeed = 3;
@@ -374,13 +373,9 @@ public partial class Console
         itemOnItemHits = 0;
         unnamedSides = 0;
         taggedSides = 0;
-        localLandings = 0;
-        localBumps = 0;
-        remoteLandings = 0;
-        remoteBumps = 0;
-        maxLandingSpeed = 0;
-        GMPOCharacter.Impacted -= CountImpact;
-        GMPOCharacter.Impacted += CountImpact;
+        localCharacterHits = 0;
+        outOfOrder = 0;
+        remoteCharacterHits = 0;
         hitSpeedTotal = 0;
         hitSpeedMax = 0;
         LimboConsole.Info($"hitstats: measuring for {seconds} s");
@@ -410,6 +405,19 @@ public partial class Console
                 taggedSides++;
             if (hit.tagsB != 0)
                 taggedSides++;
+            // A player landing or running into something (side A), or hit by an item.
+            ItemTags a = (ItemTags)hit.tagsA;
+            ItemTags b = (ItemTags)hit.tagsB;
+            // A player is always side A: this should stay 0.
+            if ((b & ItemTags.PLAYER) != 0 && (a & ItemTags.PLAYER) == 0)
+                outOfOrder++;
+            GMPOCharacter character = null;
+            if ((a & ItemTags.PLAYER) != 0)
+                character = PhysicsWorld.BodyNode(hit.idA) as GMPOCharacter;
+            if (character != null && character.authority == Lobby.selfPeerID)
+                localCharacterHits++;
+            else if (character != null)
+                remoteCharacterHits++;
         }
         hitStatsTicks++;
         hitStatsLeft -= delta;
@@ -428,52 +436,7 @@ public partial class Console
             $"unnamed_sides={unnamedSides} tagged_sides={taggedSides} avg_speed={averageSpeed:0.00} max_speed={hitSpeedMax:0.00}", "Test");
         Godot.Collections.Dictionary stats = PhysicsWorld.Stats();
         Logging.Log($"hitstats: role={role} hits_sent_total={stats["hits_sent"]} hits_heard_total={stats["hits_heard"]} " +
-            $"local_landings={localLandings} local_bumps={localBumps} remote_landings={remoteLandings} remote_bumps={remoteBumps} " +
-            $"max_landing_speed={maxLandingSpeed:0.00}", "Test");
-        GMPOCharacter.Impacted -= CountImpact;
-    }
-
-    void CountImpact(GMPOCharacter character, CharacterImpact impact)
-    {
-        bool local = character.authority == Lobby.selfPeerID;
-        if (impact.kind == CharacterImpact.Landed)
-        {
-            maxLandingSpeed = Math.Max(maxLandingSpeed, impact.speed);
-            if (local)
-                localLandings++;
-            else
-                remoteLandings++;
-        }
-        else
-        {
-            if (local)
-                localBumps++;
-            else
-                remoteBumps++;
-        }
-    }
-
-    /// <summary>Host: makes the first n scrap pieces MAGNETIC (instead of METAL, FERROUS), to test tag reactions.</summary>
-    public void magnetize(int n)
-    {
-        if (!Lobby.isHost)
-        {
-            LimboConsole.Error("magnetize: only the host (it runs the reactions).");
-            return;
-        }
-        int done = 0;
-        foreach (ItemRecord item in ItemWorld.items.Values)
-        {
-            if (done >= n)
-                break;
-            if (item.itemID == BodyItem)
-            {
-                item.ownTags = ItemTags.MAGNETIC;
-                ItemWorld.TagsChanged(item);
-                done++;
-            }
-        }
-        LimboConsole.Info($"magnetize: {done} bodies are MAGNETIC");
+            $"local_character_hits={localCharacterHits} remote_character_hits={remoteCharacterHits} out_of_order={outOfOrder}", "Test");
     }
 
     /// <summary>Host: despawns every scrap piece of the kind spawn_bodies makes.</summary>

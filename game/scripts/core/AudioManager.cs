@@ -65,49 +65,39 @@ public partial class AudioManager : Node
             : IntPtr.Zero; // falls back to default probing
     }
 
-    // Impacts quieter than this (m/s) or farther than this from the camera (m) make no sound.
-    const float MinImpactSpeed = 2.0f;
-    const float MaxImpactDistance = 40.0f;
-    private static readonly System.Collections.Generic.List<ContactHit> hits = new();
 
-    private static int FastestFirst(ContactHit a, ContactHit b)
-    {
-        return b.speed.CompareTo(a.speed);
-    }
 
-    /// <summary>Each physics tick: a sound for every impact near the camera, on every peer (PhysicsWorld.Hits).</summary>
-    private static void OnPhysicsStepped(double delta)
+    private void OnHitstreamUpdated()
     {
-        Camera3D camera = Instance.GetViewport().GetCamera3D();
+        Camera3D camera = GetViewport().GetCamera3D();
         if (camera == null)
-            return;
-        PhysicsWorld.Hits(hits, camera.GlobalPosition, MaxImpactDistance, MinImpactSpeed);
-        foreach (ContactHit hit in hits)
+            return; 
+
+        foreach (ContactHit hit in HitStream.hits)
         {
-            Instance.PlayOneShot("event:/Impacts/Solid_Metal", 1.0f, hit.position, new Dictionary<string, float>{["Force"] = hit.speed/10.0f});
+            // What met, by tags (ItemTags): a player is always side A. The normal points from A into B.
+            ItemTags a = (ItemTags)hit.tagsA;
+            ItemTags b = (ItemTags)hit.tagsB;
+
+            if ((a & ItemTags.PLAYER) != 0)
+            {
+                // A player landing, running into something, or hit by something; b is what it met.
+                if (hit.speed >= 7.5f)
+                    PlayOneShot("event:/Impacts/Player_Impact", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 15.0f, ["Damage"] = 0.0f });
+            }
+            else
+            {
+
+                PlayOneShot("event:/Impacts/Solid_Metal", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
+            }
         }
-    }
-
-    /// <summary>A player landing or running into a wall, local or remote (GMPOCharacter.Impacted).</summary>
-    private static void OnCharacterImpacted(GMPOCharacter character, CharacterImpact impact)
-    {
-        GD.Print(impact.speed);
-        if(impact.speed < 7.5f)
-            return;
-
-        Camera3D camera = Instance.GetViewport().GetCamera3D();
-        if (camera == null || impact.speed < MinImpactSpeed || impact.position.DistanceTo(camera.GlobalPosition) > MaxImpactDistance)
-            return;
-        Instance.PlayOneShot("event:/Impacts/Player_Impact", 1.0f, impact.position, new Dictionary<string, float>{["Force"] = impact.speed/15.0f, ["Damage"] = 0.0f});
     }
 
     public override void _Ready()
     {
         SetupFmodResolver();
         Instance = this;
-        GameWorld.PhysicsStepped += OnPhysicsStepped;
-        GMPOCharacter.Impacted += OnCharacterImpacted;
-
+        HitStream.Updated += OnHitstreamUpdated;
         try
         {
             Check(FmodStudio.System.create(out _studio));
@@ -144,6 +134,8 @@ public partial class AudioManager : Node
             GD.Print("Test copy: sound muted");
         }
     }
+
+
 
     public override void _Process(double delta)
     {

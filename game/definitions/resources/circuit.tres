@@ -12,7 +12,7 @@ displayName = "Circuit"
 description = "A multi-purpose chip board"
 icon = ExtResource("2_niwpk")
 maxStackSize = 999
-tags = 5246984
+tags = 2
 currencyValue = Dictionary[int, int]({
 3: 1
 })

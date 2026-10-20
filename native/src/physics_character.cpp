@@ -209,7 +209,6 @@ Vector3 GMPCharacter::move(Vector3 velocity, float delta) {
 	}
 	b3WorldId world = b3Body_GetWorld(get_body_id());
 	b3Pos feet = to_b3(transform.origin);
-	impacts.clear();
 	// As the last move left it.
 	bool wasOnFloor = onFloor;
 	Vector3 velocityIn = velocity;
@@ -273,7 +272,7 @@ Vector3 GMPCharacter::move(Vector3 velocity, float delta) {
 		Vector3 normal = to_godot(context.planes[bumpPlane].plane.normal);
 		// Where the capsule's middle meets it.
 		Vector3 middle = feetAfter + Vector3(0, (stepHeight + height) * 0.5f, 0);
-		add_impact(1, middle - normal * radius, normal, bumpSpeed, context.planeShapes[bumpPlane]);
+		add_impact(middle - normal * radius, normal, bumpSpeed, context.planeShapes[bumpPlane]);
 	}
 	againstWall = wall;
 
@@ -284,42 +283,40 @@ Vector3 GMPCharacter::move(Vector3 velocity, float delta) {
 	if (onFloor && !wasOnFloor) {
 		float speed = -velocityIn.dot(floorNormal);
 		if (speed > 0) {
-			add_impact(0, floorPoint, floorNormal, speed, floorShape);
+			add_impact(floorPoint, floorNormal, speed, floorShape);
 		}
 	}
 	return velocity;
 }
 
-void GMPCharacter::add_impact(int kind, Vector3 position, Vector3 normal, float speed, b3ShapeId shape) {
-	CharacterImpactRecord impact;
-	impact.kind = kind;
-	impact.position[0] = position.x;
-	impact.position[1] = position.y;
-	impact.position[2] = position.z;
-	impact.normal[0] = normal.x;
-	impact.normal[1] = normal.y;
-	impact.normal[2] = normal.z;
-	impact.speed = speed;
-	impact.tags = 0;
-	impact.id = 0;
+void GMPCharacter::add_impact(Vector3 position, Vector3 normal, float speed, b3ShapeId shape) {
 	GMPPhysicsWorld *world = GMPPhysicsWorld::get_current();
-	if (world != nullptr) {
-		Body *body = world->body_of_shape(shape);
-		if (body != nullptr) {
-			impact.tags = b3Shape_GetSurfaceMaterial(shape).userMaterialId;
-			impact.id = body->id;
-		}
+	if (world == nullptr || speed < MinHitSpeed) {
+		return;
 	}
-	impacts.push_back(impact);
-}
-
-PackedByteArray GMPCharacter::get_impacts() const {
-	PackedByteArray bytes;
-	bytes.resize((int64_t)(impacts.size() * sizeof(CharacterImpactRecord)));
-	if (!impacts.empty()) {
-		std::memcpy(bytes.ptrw(), impacts.data(), impacts.size() * sizeof(CharacterImpactRecord));
+	HitRecord hit = {};
+	hit.shapeA = NoShapeIndex;
+	hit.shapeB = NoShapeIndex;
+	// Side A, the character: only its own tags (its capsule is no GMPShape).
+	if (sharedId != 0) {
+		hit.idA = sharedId;
+		hit.tagsA = tags;
 	}
-	return bytes;
+	Body *body = world->body_of_shape(shape);
+	if (body != nullptr && body->id != 0) {
+		hit.idB = body->id;
+		hit.shapeB = world->shape_index(shape);
+		hit.tagsB = b3Shape_GetSurfaceMaterial(shape).userMaterialId;
+	}
+	hit.position[0] = position.x;
+	hit.position[1] = position.y;
+	hit.position[2] = position.z;
+	// Hits point from side A to side B: from the character into what it hit.
+	hit.normal[0] = -normal.x;
+	hit.normal[1] = -normal.y;
+	hit.normal[2] = -normal.z;
+	hit.speed = speed;
+	world->add_character_hit(hit);
 }
 
 void GMPCharacter::teleport_character(Transform3D transform) {
@@ -418,7 +415,6 @@ void GMPCharacter::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_floor_normal"), &GMPCharacter::get_floor_normal);
 	ClassDB::bind_method(D_METHOD("get_floor_velocity"), &GMPCharacter::get_floor_velocity);
 	ClassDB::bind_method(D_METHOD("can_fit_height", "height"), &GMPCharacter::can_fit_height);
-	ClassDB::bind_method(D_METHOD("get_impacts"), &GMPCharacter::get_impacts);
 
 	ClassDB::bind_method(D_METHOD("set_radius", "value"), &GMPCharacter::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &GMPCharacter::get_radius);

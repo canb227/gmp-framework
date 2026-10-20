@@ -415,9 +415,9 @@ Array GMPPhysicsWorld::build_body_states(int maxBytes, int maxPacketBytes, int t
 
 // ---- hits on the wire ----
 
-// position (3 floats), ticks since it happened (1 byte), speed (half float), then each side's id (8 bytes) and shape
-// number (2 bytes). The receiver looks the tags up itself.
-const int HitWireSize = 35;
+// position (3 floats), ticks since it happened (1 byte), speed (half float), normal (3 half floats), then each
+// side's id (8 bytes) and shape number (2 bytes). The receiver looks the tags up itself.
+const int HitWireSize = 41;
 
 // Writes the hit count and as many waiting hits as fit after the header; returns how many went.
 int GMPPhysicsWorld::write_hits(std::vector<uint8_t> &packet, int maxPacketBytes) {
@@ -444,10 +444,13 @@ int GMPPhysicsWorld::write_hits(std::vector<uint8_t> &packet, int maxPacketBytes
 		write_float(to + 8, toSend.hit.position[2]);
 		to[12] = (uint8_t)std::min<uint64_t>(tick - (uint64_t)toSend.tick, 255);
 		write_half(to + 13, toSend.hit.speed);
-		write_u64(to + 15, toSend.hit.idA);
-		write_short(to + 23, (int16_t)toSend.hit.shapeA);
-		write_u64(to + 25, toSend.hit.idB);
-		write_short(to + 33, (int16_t)toSend.hit.shapeB);
+		write_half(to + 15, toSend.hit.normal[0]);
+		write_half(to + 17, toSend.hit.normal[1]);
+		write_half(to + 19, toSend.hit.normal[2]);
+		write_u64(to + 21, toSend.hit.idA);
+		write_short(to + 29, (int16_t)toSend.hit.shapeA);
+		write_u64(to + 31, toSend.hit.idB);
+		write_short(to + 39, (int16_t)toSend.hit.shapeB);
 	}
 	hitsToSend.erase(hitsToSend.begin(), hitsToSend.begin() + count);
 	hitsSent += count;
@@ -472,10 +475,13 @@ int GMPPhysicsWorld::read_hits_from_packet(const uint8_t *packet, int size, uint
 		received.hit.position[2] = read_float(from + 8);
 		received.tick = (double)senderTick - from[12];
 		received.hit.speed = read_half(from + 13);
-		received.hit.idA = read_u64(from + 15);
-		received.hit.shapeA = read_short(from + 23);
-		received.hit.idB = read_u64(from + 25);
-		received.hit.shapeB = read_short(from + 33);
+		received.hit.normal[0] = read_half(from + 15);
+		received.hit.normal[1] = read_half(from + 17);
+		received.hit.normal[2] = read_half(from + 19);
+		received.hit.idA = read_u64(from + 21);
+		received.hit.shapeA = read_short(from + 29);
+		received.hit.idB = read_u64(from + 31);
+		received.hit.shapeB = read_short(from + 39);
 		received.hit.tagsA = named_shape_tags(received.hit.idA, received.hit.shapeA);
 		received.hit.tagsB = named_shape_tags(received.hit.idB, received.hit.shapeB);
 		received.sender = (uint64_t)sender;

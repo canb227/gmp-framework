@@ -62,39 +62,39 @@ blueprintItemID = "blueprint_conveyor_loader"
 shape = 4
 mesh = SubResource("ArrayMesh_WallLFlat")
 friction = 0.0
-tags = 8
+tags = 2
 
 [node name="WallLLift" type="GMPShape" parent="." unique_id=791558715]
 shape = 4
 mesh = SubResource("ArrayMesh_WallLLift")
 friction = 0.0
-tags = 8
+tags = 2
 
 [node name="WallRFlat" type="GMPShape" parent="." unique_id=2130064128]
 shape = 4
 mesh = SubResource("ArrayMesh_WallRFlat")
 friction = 0.0
-tags = 8
+tags = 2
 
 [node name="WallRLift" type="GMPShape" parent="." unique_id=1235895753]
 shape = 4
 mesh = SubResource("ArrayMesh_WallRLift")
 friction = 0.0
-tags = 8
+tags = 2
 
 [node name="BeltFlat" type="GMPShape" parent="." unique_id=579466451]
 transform = Transform3D(1, 0, 0, 0, 0.9998, -0.02025, 0, 0.02025, 0.9998, 1, 0.09001, -0.49481)
 size = Vector3(1.885, 0.1, 0.98779)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
-tags = 32
+tags = 128
 
 [node name="BeltLift" type="GMPShape" parent="." unique_id=1785350793]
 transform = Transform3D(1, 0, 0, 0, 0.93978, -0.34177, 0, 0.34177, 0.93978, 1, 0.25801, -1.48588)
 size = Vector3(1.68, 0.1, 1.02408)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
-tags = 32
+tags = 128
 
 [node name="StructureArrow" type="Node3D" parent="." unique_id=1996480043]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8817806, 0.6749563, -0.5244819)

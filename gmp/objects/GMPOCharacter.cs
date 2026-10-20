@@ -3,30 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 /// <summary>
-/// Something a character ran into (<see cref="GMPOCharacter.Impacted"/>): landing on the floor, or running into a wall or
-/// ceiling. Read straight from the bytes the C++ character packs, so it must keep the fields and order of
-/// CharacterImpactRecord (native/src/physics_character.h): 48 bytes.
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public struct CharacterImpact
-{
-    public const int Landed = 0;
-    public const int Bumped = 1;
-
-    /// <summary><see cref="Landed"/> or <see cref="Bumped"/>.</summary>
-    public int kind;
-    public Vector3 position;
-    /// <summary>Out of what it hit, toward the character.</summary>
-    public Vector3 normal;
-    /// <summary>How fast the character was going into it (m/s).</summary>
-    public float speed;
-    /// <summary>The tags of the shape it hit (its own plus its body's).</summary>
-    public ulong tags;
-    /// <summary>The body it hit (a loose item's id, or a node body's), or 0.</summary>
-    public ulong id;
-}
-
-/// <summary>
 /// GMPObject base for walking characters (the player). Attach a script deriving from this to a <c>GMPCharacter</c> node
 /// (our C++ character, native/src/physics_character.h; C# sees it as a Node3D), whose origin is at the feet. The
 /// character's authority moves it with <see cref="Move"/> each physics tick; every other peer places it from its states,
@@ -54,21 +30,6 @@ public partial class GMPOCharacter : Node3D, GMPObject
     [Export]
     public int priorityAccumulator { get; set; }
     public byte[] desiredState { get; set; }
-
-    /// <summary>
-    /// A character ran into something, on every peer: the local one's from its own moves (<see cref="Move"/>), remote
-    /// copies' as their controller reports them (game code passes them on in the character's state and calls
-    /// <see cref="ReportImpact"/>). For sounds.
-    /// </summary>
-    public static event System.Action<GMPOCharacter, CharacterImpact> Impacted;
-
-    /// <summary>What the last <see cref="Move"/> ran into (the local character only).</summary>
-    public readonly List<CharacterImpact> lastImpacts = new();
-
-    public void ReportImpact(CharacterImpact impact)
-    {
-        Impacted?.Invoke(this, impact);
-    }
 
     /// <summary>Where the character looks from and toward (forward is -Z): the bodies it sees sync more often.</summary>
     public virtual Transform3D ViewTransform()
@@ -120,34 +81,17 @@ public partial class GMPOCharacter : Node3D, GMPObject
     static readonly StringName getFloorNormalName = "get_floor_normal";
     static readonly StringName getFloorVelocityName = "get_floor_velocity";
     static readonly StringName canFitHeightName = "can_fit_height";
-    static readonly StringName getImpactsName = "get_impacts";
     static readonly StringName heightName = "height";
 
     /// <summary>
     /// Moves the character by <paramref name="velocity"/> over <paramref name="delta"/> seconds, sliding along what it
     /// meets, and returns its velocity afterwards. The legs hold it at standing height while it is on the floor, so
     /// give it no vertical velocity there (but a jump's).
-    /// <para>What it ran into is in <see cref="lastImpacts"/> afterwards, and each is reported (<see cref="Impacted"/>).</para>
+    /// <para>What it lands on or runs into goes into the physics world's hits (<see cref="HitStream"/>), with the character as side A.</para>
     /// </summary>
     public Vector3 Move(Vector3 velocity, double delta)
     {
-        Vector3 after = Call(moveName, velocity, (float)delta).AsVector3();
-        lastImpacts.Clear();
-        if (System.Runtime.CompilerServices.Unsafe.SizeOf<CharacterImpact>() != 48)
-        {
-            GD.PushError("CharacterImpact no longer matches CharacterImpactRecord (48 bytes) in native/src/physics_character.h");
-            return after;
-        }
-        byte[] bytes = Call(getImpactsName).AsByteArray();
-        if (bytes.Length > 0)
-        {
-            lastImpacts.AddRange(MemoryMarshal.Cast<byte, CharacterImpact>(bytes));
-            foreach (CharacterImpact impact in lastImpacts)
-            {
-                ReportImpact(impact);
-            }
-        }
-        return after;
+        return Call(moveName, velocity, (float)delta).AsVector3();
     }
 
     /// <summary>Puts the character there at once, without sweeping its body across (which would bowl things over).</summary>

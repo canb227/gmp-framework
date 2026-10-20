@@ -40,7 +40,6 @@ public partial class Console : Node
         LimboConsole.RegisterCommand(new Callable(this, "clear_bodies"));
         LimboConsole.RegisterCommand(new Callable(this, "bodies"));
         LimboConsole.RegisterCommand(new Callable(this, "test_arena"));
-        LimboConsole.RegisterCommand(new Callable(this, "magnetize"));
         LimboConsole.RegisterCommand(new Callable(this, "interp"));
         LimboConsole.RegisterCommand(new Callable(this, "lightshadows"));
         LimboConsole.RegisterCommand(new Callable(this, "hitstats"));

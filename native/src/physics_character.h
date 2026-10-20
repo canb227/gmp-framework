@@ -5,23 +5,6 @@
 #include <cstdint>
 #include <vector>
 
-// Something the character ran into in its last move, as get_impacts hands it over: C# reads the bytes
-// straight into its CharacterImpact struct (gmp/objects/GMPOCharacter.cs), so the two must keep the same
-// fields in the same order.
-struct CharacterImpactRecord {
-	// 0: landed on the floor. 1: ran into a wall or ceiling (solid, too steep to stand on).
-	int32_t kind;
-	float position[3];
-	// Out of what it hit, toward the character.
-	float normal[3];
-	// How fast it was going into it (m/s).
-	float speed;
-	// What it hit: the shape's tags (see tags.h) and its body's id (0 if it has none).
-	uint64_t tags;
-	uint64_t id;
-};
-static_assert(sizeof(CharacterImpactRecord) == 48, "CharacterImpactRecord must match CharacterImpact in C#");
-
 // A walking character (the player): a capsule moved by Box3D's character mover, which slides it along
 // whatever it meets, plus a spring on a "legs" cast below it that holds it at standing height, so it
 // glides up steps and stays on the ground walking down slopes.
@@ -67,11 +50,6 @@ public:
 	// means moving with it.
 	godot::Vector3 get_floor_velocity() const;
 
-	// What the last move ran into (CharacterImpactRecords back to back): landing on the floor, and coming up
-	// against a wall or ceiling it wasn't against before. Soft things (items, dynamic bodies) aren't listed:
-	// their own hits are (GMPPhysicsWorld::get_hits).
-	godot::PackedByteArray get_impacts() const;
-
 	// Whether a capsule of this height would fit where the character is (standing up from a crouch).
 	bool can_fit_height(float newHeight) const;
 
@@ -103,7 +81,6 @@ private:
 	b3ShapeId floorShape = b3_nullShapeId;
 	// The last move ended against a solid wall or ceiling: running along it doesn't count as running into it.
 	bool againstWall = false;
-	std::vector<CharacterImpactRecord> impacts;
 
 	// The capsule, relative to the feet.
 	b3Capsule capsule() const;
@@ -112,6 +89,8 @@ private:
 	// Casts the legs down from the capsule and sets the floor fields. distance: how far below standing
 	// height the ground is (negative: above it).
 	void probe_floor(b3WorldId world, b3Pos feet, bool rising, float &distance);
-	// An impact on shape, for get_impacts.
-	void add_impact(int kind, godot::Vector3 position, godot::Vector3 normal, float speed, b3ShapeId shape);
+	// Something the move ran into: landing on the floor, or coming up against a wall or ceiling it wasn't against
+	// before. It goes into the world's hits, with this character as side A. Soft things (items, dynamic bodies)
+	// aren't reported here: Box3D's own hits are. normal: out of what it hit, toward the character.
+	void add_impact(godot::Vector3 position, godot::Vector3 normal, float speed, b3ShapeId shape);
 };

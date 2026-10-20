@@ -89,20 +89,29 @@ const int32_t NoShapeIndex = -1;
 
 // One impact of the last step, as get_hits hands it over: C# reads the bytes straight into its ContactHit
 // struct (gmp/physics/PhysicsWorld.cs), so the two must keep the same fields in the same order. Each side is the
-// body's id and the shape's number in it, the same on every peer; a side with id 0 has no tags.
+// body's id and the shape's number in it, the same on every peer; a side with id 0 has no tags. The sides come in a
+// fixed order: side A is never further down this list than side B: a character (its own landings and wall bumps,
+// and things hitting it), another node body, a loose item.
 struct HitRecord {
-	float position[3];
-	// How fast the two sides were approaching (m/s).
-	float speed;
 	uint64_t idA;
 	uint64_t idB;
-	int32_t shapeA;
-	int32_t shapeB;
 	// The tags of the shape on each side (see tags.h).
 	uint64_t tagsA;
 	uint64_t tagsB;
+	int32_t shapeA;
+	int32_t shapeB;
+	float position[3];
+	// From side A toward side B.
+	float normal[3];
+	// How fast the two sides were approaching (m/s).
+	float speed;
 };
-static_assert(sizeof(HitRecord) == 56, "HitRecord must match ContactHit in C#");
+static_assert(sizeof(HitRecord) == 72, "HitRecord must match ContactHit in C#");
+
+// Impacts slower than this (m/s) make no hit at all (Box3D's hit event threshold, and characters' own impacts).
+const float MinHitSpeed = 2.0f;
+// Hits are only sent to the other peers if they are this close to any player (m); HitStream.Range in C# is the same.
+const float HitRange = 40.0f;
 
 // Hits wait at most this many ticks for a packet to take them, so a sound is never sent late.
 const uint64_t MaxHitSendAge = 10;
@@ -278,6 +287,9 @@ public:
 	// events), and the ones other peers sent, as playback reaches them (so they come with what this peer
 	// shows). Only those at least minSpeed (m/s) and within maxDistance of listener.
 	godot::PackedByteArray get_hits(godot::Vector3 listener, float maxDistance, float minSpeed) const;
+	// A character's impact from its move, for the next step's hits (C# moves the local player before the step,
+	// so that is this tick's).
+	void add_character_hit(const HitRecord &hit);
 	// The last step's new touches where one side's shape has a watcher tag: four numbers each, body id A, body
 	// id B, then the tags of A's and B's shapes that touched.
 	godot::PackedInt64Array get_touches() const;
@@ -347,6 +359,8 @@ private:
 
 	// This tick's hits (see get_hits).
 	std::vector<HitRecord> hits;
+	// Characters' impacts since the last step, for its hits.
+	std::vector<HitRecord> characterHits;
 	// Hits this peer reports, for the next packet; and hits received, until playback gets there.
 	std::vector<NetworkHit> hitsToSend;
 	std::vector<NetworkHit> hitsReceived;
@@ -376,6 +390,8 @@ private:
 	void read_sensor_events();
 	void read_contact_events();
 	void read_hits(const b3ContactEvents &contactEvents);
+	// Keeps a hit this peer reports for this tick, and queues it for the other peers if it is near a player.
+	void report_hit(const HitRecord &hit);
 	void play_received_hits();
 	int write_hits(std::vector<uint8_t> &packet, int maxPacketBytes);
 	int read_hits_from_packet(const uint8_t *packet, int size, uint64_t senderTick, int64_t sender);

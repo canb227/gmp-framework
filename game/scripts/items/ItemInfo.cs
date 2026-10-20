@@ -31,7 +31,7 @@ public partial class ItemInfo : Resource
     // ---- as a loose item in the world (see ItemWorld) ----
 
     [ExportGroup("In the world")]
-    /// <summary>What the whole item is made of and does (see TagInteractions); none leaves it what its colliders have.</summary>
+    /// <summary>The whole item's tags (see <see cref="ItemTags"/>); none leaves it what its colliders have.</summary>
     [Export]
     public ItemTags tags;
 

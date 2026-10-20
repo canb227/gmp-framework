@@ -207,7 +207,7 @@ void GMPPhysicsWorld::spawn_item(int64_t id, int kindIndex, int64_t authority, T
 		shapeDef.baseMaterial.friction = kindShape.friction;
 		shapeDef.baseMaterial.restitution = kindShape.restitution;
 		shapeDef.baseMaterial.rollingResistance = kindShape.rollingResistance;
-		uint64_t tags = combined_tags(kindShape.tags, item.tags);
+		uint64_t tags = kindShape.tags | item.tags;
 		shapeDef.baseMaterial.userMaterialId = tags;
 		// Contact begin/end events cost per contact: only colliders a tag reaction watches report them.
 		shapeDef.enableContactEvents = (tags & watcherTags) != 0;
@@ -298,7 +298,7 @@ void GMPPhysicsWorld::apply_item_tags(Body &item) {
 		if (index < 0 || index >= (int)kind.shapes.size()) {
 			continue;
 		}
-		uint64_t tags = combined_tags(kind.shapes[index].tags, item.tags);
+		uint64_t tags = kind.shapes[index].tags | item.tags;
 		b3SurfaceMaterial material = b3Shape_GetSurfaceMaterial(shapes[i]);
 		material.userMaterialId = tags;
 		b3Shape_SetSurfaceMaterial(shapes[i], material);

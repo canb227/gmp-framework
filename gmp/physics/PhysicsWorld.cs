@@ -19,25 +19,28 @@ public struct RayHit
 }
 
 /// <summary>
-/// An impact (<see cref="HitStream"/>): a contact approaching at 1 m/s or more, the same on every peer. Read straight
-/// from the bytes the C++ world packs, so it must keep the fields and order of HitRecord (native/src/physics_world.h):
-/// 56 bytes.
+/// An impact (<see cref="HitStream"/>): a contact approaching at 2 m/s or more, the same on every peer. Nodes come
+/// first: if either side is a node body it is side A, a character first of all (its own landing or running into a
+/// wall, or something hitting it); two loose items are A and B either way. Read straight from the bytes the C++ world
+/// packs, so it must keep the fields and order of HitRecord (native/src/physics_world.h): 72 bytes.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public struct ContactHit
 {
-    public Vector3 position;
-    /// <summary>How fast the two sides were approaching (m/s).</summary>
-    public float speed;
     /// <summary>The body on each side (a loose item's id, or a node body's); 0 for one no peer can name.</summary>
     public ulong idA;
     public ulong idB;
-    /// <summary>The shape's number in its body.</summary>
-    public int shapeA;
-    public int shapeB;
     /// <summary>The tags of the shape on each side (its own plus its body's); 0 for a side with id 0.</summary>
     public ulong tagsA;
     public ulong tagsB;
+    /// <summary>The shape's number in its body (-1 for a character's capsule).</summary>
+    public int shapeA;
+    public int shapeB;
+    public Vector3 position;
+    /// <summary>From side A toward side B.</summary>
+    public Vector3 normal;
+    /// <summary>How fast the two sides were approaching (m/s).</summary>
+    public float speed;
 }
 
 /// <summary>
@@ -322,9 +325,9 @@ public static class PhysicsWorld
     public static void Hits(List<ContactHit> hits, Vector3 listener, float maxDistance, float minSpeed)
     {
         hits.Clear();
-        if (System.Runtime.CompilerServices.Unsafe.SizeOf<ContactHit>() != 56)
+        if (System.Runtime.CompilerServices.Unsafe.SizeOf<ContactHit>() != 72)
         {
-            GD.PushError("ContactHit no longer matches HitRecord (56 bytes) in native/src/physics_world.h");
+            GD.PushError("ContactHit no longer matches HitRecord (72 bytes) in native/src/physics_world.h");
             return;
         }
         byte[] bytes = world.Call(getHitsName, listener, maxDistance, minSpeed).AsByteArray();

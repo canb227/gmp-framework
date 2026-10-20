@@ -295,222 +295,222 @@ radius = 0.05
 
 [node name="CoreA" type="GMPShape" parent="Node3D/Roller0" unique_id=213806232]
 size = Vector3(6.5, 0.56, 0.56)
-tags = 8
+tags = 2
 
 [node name="CoreB" type="GMPShape" parent="Node3D/Roller0" unique_id=1187470402]
 transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
 size = Vector3(6.5, 0.56, 0.56)
-tags = 8
+tags = 2
 
 [node name="Tooth0_0" type="GMPShape" parent="Node3D/Roller0" unique_id=1677719799]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.925, 0.45, 0)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_1" type="GMPShape" parent="Node3D/Roller0" unique_id=10887112]
 transform = Transform3D(1, 0, 0, 0, 0.309017, -0.951057, 0, 0.951057, 0.309017, -2.925, 0.139058, 0.427975)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_2" type="GMPShape" parent="Node3D/Roller0" unique_id=442108202]
 transform = Transform3D(1, 0, 0, 0, -0.809017, -0.587785, 0, 0.587785, -0.809017, -2.925, -0.364058, 0.264503)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_3" type="GMPShape" parent="Node3D/Roller0" unique_id=1747198820]
 transform = Transform3D(1, 0, 0, 0, -0.809017, 0.587785, 0, -0.587785, -0.809017, -2.925, -0.364058, -0.264503)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_4" type="GMPShape" parent="Node3D/Roller0" unique_id=70597950]
 transform = Transform3D(1, 0, 0, 0, 0.309017, 0.951057, 0, -0.951057, 0.309017, -2.925, 0.139058, -0.427975)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_0" type="GMPShape" parent="Node3D/Roller0" unique_id=1978999051]
 transform = Transform3D(1, 0, 0, 0, 0.808028, -0.589145, 0, 0.589145, 0.808028, -2.025, 0.363612, 0.265115)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_1" type="GMPShape" parent="Node3D/Roller0" unique_id=1360435688]
 transform = Transform3D(1, 0, 0, 0, -0.310616, -0.950536, 0, 0.950536, -0.310616, -2.025, -0.139777, 0.427741)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_2" type="GMPShape" parent="Node3D/Roller0" unique_id=641935410]
 transform = Transform3D(1, 0, 0, 0, -0.999999, 0.00168147, 0, -0.00168147, -0.999999, -2.025, -0.449999, -0.000756661)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_3" type="GMPShape" parent="Node3D/Roller0" unique_id=500128173]
 transform = Transform3D(1, 0, 0, 0, -0.307417, 0.951575, 0, -0.951575, -0.307417, -2.025, -0.138338, -0.428209)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_4" type="GMPShape" parent="Node3D/Roller0" unique_id=1019725602]
 transform = Transform3D(1, 0, 0, 0, 0.810004, 0.586424, 0, -0.586424, 0.810004, -2.025, 0.364502, -0.263891)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_0" type="GMPShape" parent="Node3D/Roller0" unique_id=1756463825]
 transform = Transform3D(1, 0, 0, 0, 0.305817, -0.95209, 0, 0.95209, 0.305817, -1.125, 0.137618, 0.428441)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_1" type="GMPShape" parent="Node3D/Roller0" unique_id=1950298507]
 transform = Transform3D(1, 0, 0, 0, -0.810989, -0.585061, 0, 0.585061, -0.810989, -1.125, -0.364945, 0.263278)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_2" type="GMPShape" parent="Node3D/Roller0" unique_id=1863220106]
 transform = Transform3D(1, 0, 0, 0, -0.807036, 0.590503, 0, -0.590503, -0.807036, -1.125, -0.363166, -0.265726)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_3" type="GMPShape" parent="Node3D/Roller0" unique_id=306492899]
 transform = Transform3D(1, 0, 0, 0, 0.312214, 0.950012, 0, -0.950012, 0.312214, -1.125, 0.140496, -0.427505)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_4" type="GMPShape" parent="Node3D/Roller0" unique_id=1728950626]
 transform = Transform3D(1, 0, 0, 0, 0.999994, -0.00336293, 0, 0.00336293, 0.999994, -1.125, 0.449997, 0.00151332)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_0" type="GMPShape" parent="Node3D/Roller0" unique_id=711806751]
 transform = Transform3D(1, 0, 0, 0, -0.313811, -0.949486, 0, 0.949486, -0.313811, -0.225, -0.141215, 0.427269)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_1" type="GMPShape" parent="Node3D/Roller0" unique_id=1626766790]
 transform = Transform3D(1, 0, 0, 0, -0.999987, 0.00504439, 0, -0.00504439, -0.999987, -0.225, -0.449994, -0.00226997)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_2" type="GMPShape" parent="Node3D/Roller0" unique_id=721391547]
 transform = Transform3D(1, 0, 0, 0, -0.304216, 0.952603, 0, -0.952603, -0.304216, -0.225, -0.136897, -0.428671)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_3" type="GMPShape" parent="Node3D/Roller0" unique_id=2062271599]
 transform = Transform3D(1, 0, 0, 0, 0.811972, 0.583697, 0, -0.583697, 0.811972, -0.225, 0.365387, -0.262664)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_4" type="GMPShape" parent="Node3D/Roller0" unique_id=1123165901]
 transform = Transform3D(1, 0, 0, 0, 0.806042, -0.591859, 0, 0.591859, 0.806042, -0.225, 0.362719, 0.266336)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_0" type="GMPShape" parent="Node3D/Roller0" unique_id=1311850802]
 transform = Transform3D(1, 0, 0, 0, -0.812952, -0.582331, 0, 0.582331, -0.812952, 0.675, -0.365828, 0.262049)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_1" type="GMPShape" parent="Node3D/Roller0" unique_id=1533083261]
 transform = Transform3D(1, 0, 0, 0, -0.805045, 0.593213, 0, -0.593213, -0.805045, 0.675, -0.36227, -0.266946)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_2" type="GMPShape" parent="Node3D/Roller0" unique_id=1972853472]
 transform = Transform3D(1, 0, 0, 0, 0.315407, 0.948957, 0, -0.948957, 0.315407, 0.675, 0.141933, -0.42703)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_3" type="GMPShape" parent="Node3D/Roller0" unique_id=2107850285]
 transform = Transform3D(1, 0, 0, 0, 0.999977, -0.00672583, 0, 0.00672583, 0.999977, 0.675, 0.44999, 0.00302662)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_4" type="GMPShape" parent="Node3D/Roller0" unique_id=146833136]
 transform = Transform3D(1, 0, 0, 0, 0.302613, -0.953113, 0, 0.953113, 0.302613, 0.675, 0.136176, 0.428901)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_0" type="GMPShape" parent="Node3D/Roller0" unique_id=1220051922]
 transform = Transform3D(1, 0, 0, 0, -0.999965, 0.00840725, 0, -0.00840725, -0.999965, 1.575, -0.449984, -0.00378326)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_1" type="GMPShape" parent="Node3D/Roller0" unique_id=93303097]
 transform = Transform3D(1, 0, 0, 0, -0.30101, 0.953621, 0, -0.953621, -0.30101, 1.575, -0.135455, -0.429129)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_2" type="GMPShape" parent="Node3D/Roller0" unique_id=1911359421]
 transform = Transform3D(1, 0, 0, 0, 0.81393, 0.580963, 0, -0.580963, 0.81393, 1.575, 0.366269, -0.261433)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_3" type="GMPShape" parent="Node3D/Roller0" unique_id=2110444768]
 transform = Transform3D(1, 0, 0, 0, 0.804047, -0.594566, 0, 0.594566, 0.804047, 1.575, 0.361821, 0.267555)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_4" type="GMPShape" parent="Node3D/Roller0" unique_id=329687736]
 transform = Transform3D(1, 0, 0, 0, -0.317002, -0.948425, 0, 0.948425, -0.317002, 1.575, -0.142651, 0.426791)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_0" type="GMPShape" parent="Node3D/Roller0" unique_id=868141623]
 transform = Transform3D(1, 0, 0, 0, -0.803046, 0.595917, 0, -0.595917, -0.803046, 2.475, -0.361371, -0.268163)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_1" type="GMPShape" parent="Node3D/Roller0" unique_id=766120775]
 transform = Transform3D(1, 0, 0, 0, 0.318596, 0.947891, 0, -0.947891, 0.318596, 2.475, 0.143368, -0.426551)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_2" type="GMPShape" parent="Node3D/Roller0" unique_id=941461174]
 transform = Transform3D(1, 0, 0, 0, 0.999949, -0.0100886, 0, 0.0100886, 0.999949, 2.475, 0.449977, 0.00453989)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_3" type="GMPShape" parent="Node3D/Roller0" unique_id=1148002102]
 transform = Transform3D(1, 0, 0, 0, 0.299406, -0.954126, 0, 0.954126, 0.299406, 2.475, 0.134733, 0.429357)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_4" type="GMPShape" parent="Node3D/Roller0" unique_id=1752698394]
 transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906, 2.475, -0.366708, 0.260817)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Roller1" type="GMPBody" parent="Node3D" unique_id=231886918]
 body_type = 1
@@ -524,222 +524,222 @@ radius = 0.05
 
 [node name="CoreA" type="GMPShape" parent="Node3D/Roller1" unique_id=454695649]
 size = Vector3(6.5, 0.56, 0.56)
-tags = 8
+tags = 2
 
 [node name="CoreB" type="GMPShape" parent="Node3D/Roller1" unique_id=1103633816]
 transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
 size = Vector3(6.5, 0.56, 0.56)
-tags = 8
+tags = 2
 
 [node name="Tooth0_0" type="GMPShape" parent="Node3D/Roller1" unique_id=2038246012]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.925, 0.45, 0)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_1" type="GMPShape" parent="Node3D/Roller1" unique_id=1813661814]
 transform = Transform3D(1, 0, 0, 0, 0.309017, -0.951057, 0, 0.951057, 0.309017, -2.925, 0.139058, 0.427975)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_2" type="GMPShape" parent="Node3D/Roller1" unique_id=1143065838]
 transform = Transform3D(1, 0, 0, 0, -0.809017, -0.587785, 0, 0.587785, -0.809017, -2.925, -0.364058, 0.264503)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_3" type="GMPShape" parent="Node3D/Roller1" unique_id=1952450135]
 transform = Transform3D(1, 0, 0, 0, -0.809017, 0.587785, 0, -0.587785, -0.809017, -2.925, -0.364058, -0.264503)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_4" type="GMPShape" parent="Node3D/Roller1" unique_id=1807533828]
 transform = Transform3D(1, 0, 0, 0, 0.309017, 0.951057, 0, -0.951057, 0.309017, -2.925, 0.139058, -0.427975)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_0" type="GMPShape" parent="Node3D/Roller1" unique_id=1760114813]
 transform = Transform3D(1, 0, 0, 0, 0.808028, -0.589145, 0, 0.589145, 0.808028, -2.025, 0.363612, 0.265115)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_1" type="GMPShape" parent="Node3D/Roller1" unique_id=1460712843]
 transform = Transform3D(1, 0, 0, 0, -0.310616, -0.950536, 0, 0.950536, -0.310616, -2.025, -0.139777, 0.427741)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_2" type="GMPShape" parent="Node3D/Roller1" unique_id=1732447597]
 transform = Transform3D(1, 0, 0, 0, -0.999999, 0.00168147, 0, -0.00168147, -0.999999, -2.025, -0.449999, -0.000756661)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_3" type="GMPShape" parent="Node3D/Roller1" unique_id=1856856564]
 transform = Transform3D(1, 0, 0, 0, -0.307417, 0.951575, 0, -0.951575, -0.307417, -2.025, -0.138338, -0.428209)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_4" type="GMPShape" parent="Node3D/Roller1" unique_id=431825048]
 transform = Transform3D(1, 0, 0, 0, 0.810004, 0.586424, 0, -0.586424, 0.810004, -2.025, 0.364502, -0.263891)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_0" type="GMPShape" parent="Node3D/Roller1" unique_id=1273198160]
 transform = Transform3D(1, 0, 0, 0, 0.305817, -0.95209, 0, 0.95209, 0.305817, -1.125, 0.137618, 0.428441)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_1" type="GMPShape" parent="Node3D/Roller1" unique_id=2047527754]
 transform = Transform3D(1, 0, 0, 0, -0.810989, -0.585061, 0, 0.585061, -0.810989, -1.125, -0.364945, 0.263278)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_2" type="GMPShape" parent="Node3D/Roller1" unique_id=2041507504]
 transform = Transform3D(1, 0, 0, 0, -0.807036, 0.590503, 0, -0.590503, -0.807036, -1.125, -0.363166, -0.265726)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_3" type="GMPShape" parent="Node3D/Roller1" unique_id=191721031]
 transform = Transform3D(1, 0, 0, 0, 0.312214, 0.950012, 0, -0.950012, 0.312214, -1.125, 0.140496, -0.427505)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_4" type="GMPShape" parent="Node3D/Roller1" unique_id=546244652]
 transform = Transform3D(1, 0, 0, 0, 0.999994, -0.00336293, 0, 0.00336293, 0.999994, -1.125, 0.449997, 0.00151332)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_0" type="GMPShape" parent="Node3D/Roller1" unique_id=1883336077]
 transform = Transform3D(1, 0, 0, 0, -0.313811, -0.949486, 0, 0.949486, -0.313811, -0.225, -0.141215, 0.427269)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_1" type="GMPShape" parent="Node3D/Roller1" unique_id=476946400]
 transform = Transform3D(1, 0, 0, 0, -0.999987, 0.00504439, 0, -0.00504439, -0.999987, -0.225, -0.449994, -0.00226997)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_2" type="GMPShape" parent="Node3D/Roller1" unique_id=336230291]
 transform = Transform3D(1, 0, 0, 0, -0.304216, 0.952603, 0, -0.952603, -0.304216, -0.225, -0.136897, -0.428671)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_3" type="GMPShape" parent="Node3D/Roller1" unique_id=424365067]
 transform = Transform3D(1, 0, 0, 0, 0.811972, 0.583697, 0, -0.583697, 0.811972, -0.225, 0.365387, -0.262664)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_4" type="GMPShape" parent="Node3D/Roller1" unique_id=2104696173]
 transform = Transform3D(1, 0, 0, 0, 0.806042, -0.591859, 0, 0.591859, 0.806042, -0.225, 0.362719, 0.266336)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_0" type="GMPShape" parent="Node3D/Roller1" unique_id=498526505]
 transform = Transform3D(1, 0, 0, 0, -0.812952, -0.582331, 0, 0.582331, -0.812952, 0.675, -0.365828, 0.262049)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_1" type="GMPShape" parent="Node3D/Roller1" unique_id=568597981]
 transform = Transform3D(1, 0, 0, 0, -0.805045, 0.593213, 0, -0.593213, -0.805045, 0.675, -0.36227, -0.266946)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_2" type="GMPShape" parent="Node3D/Roller1" unique_id=968724209]
 transform = Transform3D(1, 0, 0, 0, 0.315407, 0.948957, 0, -0.948957, 0.315407, 0.675, 0.141933, -0.42703)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_3" type="GMPShape" parent="Node3D/Roller1" unique_id=215668777]
 transform = Transform3D(1, 0, 0, 0, 0.999977, -0.00672583, 0, 0.00672583, 0.999977, 0.675, 0.44999, 0.00302662)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_4" type="GMPShape" parent="Node3D/Roller1" unique_id=1280853680]
 transform = Transform3D(1, 0, 0, 0, 0.302613, -0.953113, 0, 0.953113, 0.302613, 0.675, 0.136176, 0.428901)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_0" type="GMPShape" parent="Node3D/Roller1" unique_id=162858954]
 transform = Transform3D(1, 0, 0, 0, -0.999965, 0.00840725, 0, -0.00840725, -0.999965, 1.575, -0.449984, -0.00378326)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_1" type="GMPShape" parent="Node3D/Roller1" unique_id=1642709292]
 transform = Transform3D(1, 0, 0, 0, -0.30101, 0.953621, 0, -0.953621, -0.30101, 1.575, -0.135455, -0.429129)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_2" type="GMPShape" parent="Node3D/Roller1" unique_id=1790893461]
 transform = Transform3D(1, 0, 0, 0, 0.81393, 0.580963, 0, -0.580963, 0.81393, 1.575, 0.366269, -0.261433)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_3" type="GMPShape" parent="Node3D/Roller1" unique_id=1117734623]
 transform = Transform3D(1, 0, 0, 0, 0.804047, -0.594566, 0, 0.594566, 0.804047, 1.575, 0.361821, 0.267555)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_4" type="GMPShape" parent="Node3D/Roller1" unique_id=1889089647]
 transform = Transform3D(1, 0, 0, 0, -0.317002, -0.948425, 0, 0.948425, -0.317002, 1.575, -0.142651, 0.426791)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_0" type="GMPShape" parent="Node3D/Roller1" unique_id=1952637564]
 transform = Transform3D(1, 0, 0, 0, -0.803046, 0.595917, 0, -0.595917, -0.803046, 2.475, -0.361371, -0.268163)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_1" type="GMPShape" parent="Node3D/Roller1" unique_id=949347793]
 transform = Transform3D(1, 0, 0, 0, 0.318596, 0.947891, 0, -0.947891, 0.318596, 2.475, 0.143368, -0.426551)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_2" type="GMPShape" parent="Node3D/Roller1" unique_id=1677749616]
 transform = Transform3D(1, 0, 0, 0, 0.999949, -0.0100886, 0, 0.0100886, 0.999949, 2.475, 0.449977, 0.00453989)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_3" type="GMPShape" parent="Node3D/Roller1" unique_id=1252983173]
 transform = Transform3D(1, 0, 0, 0, 0.299406, -0.954126, 0, 0.954126, 0.299406, 2.475, 0.134733, 0.429357)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_4" type="GMPShape" parent="Node3D/Roller1" unique_id=1382539361]
 transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906, 2.475, -0.366708, 0.260817)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Roller2" type="GMPBody" parent="Node3D" unique_id=1774619725]
 body_type = 1
@@ -753,222 +753,222 @@ radius = 0.05
 
 [node name="CoreA" type="GMPShape" parent="Node3D/Roller2" unique_id=542555200]
 size = Vector3(6.5, 0.56, 0.56)
-tags = 8
+tags = 2
 
 [node name="CoreB" type="GMPShape" parent="Node3D/Roller2" unique_id=2133428666]
 transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
 size = Vector3(6.5, 0.56, 0.56)
-tags = 8
+tags = 2
 
 [node name="Tooth0_0" type="GMPShape" parent="Node3D/Roller2" unique_id=1856216947]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.925, 0.45, 0)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_1" type="GMPShape" parent="Node3D/Roller2" unique_id=1314660544]
 transform = Transform3D(1, 0, 0, 0, 0.309017, -0.951057, 0, 0.951057, 0.309017, -2.925, 0.139058, 0.427975)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_2" type="GMPShape" parent="Node3D/Roller2" unique_id=299852110]
 transform = Transform3D(1, 0, 0, 0, -0.809017, -0.587785, 0, 0.587785, -0.809017, -2.925, -0.364058, 0.264503)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_3" type="GMPShape" parent="Node3D/Roller2" unique_id=835886951]
 transform = Transform3D(1, 0, 0, 0, -0.809017, 0.587785, 0, -0.587785, -0.809017, -2.925, -0.364058, -0.264503)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_4" type="GMPShape" parent="Node3D/Roller2" unique_id=1004249789]
 transform = Transform3D(1, 0, 0, 0, 0.309017, 0.951057, 0, -0.951057, 0.309017, -2.925, 0.139058, -0.427975)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_0" type="GMPShape" parent="Node3D/Roller2" unique_id=1354159409]
 transform = Transform3D(1, 0, 0, 0, 0.808028, -0.589145, 0, 0.589145, 0.808028, -2.025, 0.363612, 0.265115)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_1" type="GMPShape" parent="Node3D/Roller2" unique_id=1528661815]
 transform = Transform3D(1, 0, 0, 0, -0.310616, -0.950536, 0, 0.950536, -0.310616, -2.025, -0.139777, 0.427741)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_2" type="GMPShape" parent="Node3D/Roller2" unique_id=324115252]
 transform = Transform3D(1, 0, 0, 0, -0.999999, 0.00168147, 0, -0.00168147, -0.999999, -2.025, -0.449999, -0.000756661)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_3" type="GMPShape" parent="Node3D/Roller2" unique_id=277925304]
 transform = Transform3D(1, 0, 0, 0, -0.307417, 0.951575, 0, -0.951575, -0.307417, -2.025, -0.138338, -0.428209)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_4" type="GMPShape" parent="Node3D/Roller2" unique_id=155259346]
 transform = Transform3D(1, 0, 0, 0, 0.810004, 0.586424, 0, -0.586424, 0.810004, -2.025, 0.364502, -0.263891)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_0" type="GMPShape" parent="Node3D/Roller2" unique_id=2100468140]
 transform = Transform3D(1, 0, 0, 0, 0.305817, -0.95209, 0, 0.95209, 0.305817, -1.125, 0.137618, 0.428441)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_1" type="GMPShape" parent="Node3D/Roller2" unique_id=571457765]
 transform = Transform3D(1, 0, 0, 0, -0.810989, -0.585061, 0, 0.585061, -0.810989, -1.125, -0.364945, 0.263278)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_2" type="GMPShape" parent="Node3D/Roller2" unique_id=1075180496]
 transform = Transform3D(1, 0, 0, 0, -0.807036, 0.590503, 0, -0.590503, -0.807036, -1.125, -0.363166, -0.265726)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_3" type="GMPShape" parent="Node3D/Roller2" unique_id=417213007]
 transform = Transform3D(1, 0, 0, 0, 0.312214, 0.950012, 0, -0.950012, 0.312214, -1.125, 0.140496, -0.427505)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_4" type="GMPShape" parent="Node3D/Roller2" unique_id=971753312]
 transform = Transform3D(1, 0, 0, 0, 0.999994, -0.00336293, 0, 0.00336293, 0.999994, -1.125, 0.449997, 0.00151332)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_0" type="GMPShape" parent="Node3D/Roller2" unique_id=1203955653]
 transform = Transform3D(1, 0, 0, 0, -0.313811, -0.949486, 0, 0.949486, -0.313811, -0.225, -0.141215, 0.427269)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_1" type="GMPShape" parent="Node3D/Roller2" unique_id=1831858937]
 transform = Transform3D(1, 0, 0, 0, -0.999987, 0.00504439, 0, -0.00504439, -0.999987, -0.225, -0.449994, -0.00226997)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_2" type="GMPShape" parent="Node3D/Roller2" unique_id=1311226897]
 transform = Transform3D(1, 0, 0, 0, -0.304216, 0.952603, 0, -0.952603, -0.304216, -0.225, -0.136897, -0.428671)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_3" type="GMPShape" parent="Node3D/Roller2" unique_id=2064262757]
 transform = Transform3D(1, 0, 0, 0, 0.811972, 0.583697, 0, -0.583697, 0.811972, -0.225, 0.365387, -0.262664)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_4" type="GMPShape" parent="Node3D/Roller2" unique_id=1905115601]
 transform = Transform3D(1, 0, 0, 0, 0.806042, -0.591859, 0, 0.591859, 0.806042, -0.225, 0.362719, 0.266336)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_0" type="GMPShape" parent="Node3D/Roller2" unique_id=1660601166]
 transform = Transform3D(1, 0, 0, 0, -0.812952, -0.582331, 0, 0.582331, -0.812952, 0.675, -0.365828, 0.262049)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_1" type="GMPShape" parent="Node3D/Roller2" unique_id=1685004635]
 transform = Transform3D(1, 0, 0, 0, -0.805045, 0.593213, 0, -0.593213, -0.805045, 0.675, -0.36227, -0.266946)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_2" type="GMPShape" parent="Node3D/Roller2" unique_id=452286872]
 transform = Transform3D(1, 0, 0, 0, 0.315407, 0.948957, 0, -0.948957, 0.315407, 0.675, 0.141933, -0.42703)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_3" type="GMPShape" parent="Node3D/Roller2" unique_id=1098517533]
 transform = Transform3D(1, 0, 0, 0, 0.999977, -0.00672583, 0, 0.00672583, 0.999977, 0.675, 0.44999, 0.00302662)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_4" type="GMPShape" parent="Node3D/Roller2" unique_id=1500282673]
 transform = Transform3D(1, 0, 0, 0, 0.302613, -0.953113, 0, 0.953113, 0.302613, 0.675, 0.136176, 0.428901)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_0" type="GMPShape" parent="Node3D/Roller2" unique_id=2069072259]
 transform = Transform3D(1, 0, 0, 0, -0.999965, 0.00840725, 0, -0.00840725, -0.999965, 1.575, -0.449984, -0.00378326)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_1" type="GMPShape" parent="Node3D/Roller2" unique_id=216661736]
 transform = Transform3D(1, 0, 0, 0, -0.30101, 0.953621, 0, -0.953621, -0.30101, 1.575, -0.135455, -0.429129)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_2" type="GMPShape" parent="Node3D/Roller2" unique_id=462738341]
 transform = Transform3D(1, 0, 0, 0, 0.81393, 0.580963, 0, -0.580963, 0.81393, 1.575, 0.366269, -0.261433)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_3" type="GMPShape" parent="Node3D/Roller2" unique_id=1597667037]
 transform = Transform3D(1, 0, 0, 0, 0.804047, -0.594566, 0, 0.594566, 0.804047, 1.575, 0.361821, 0.267555)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_4" type="GMPShape" parent="Node3D/Roller2" unique_id=933003747]
 transform = Transform3D(1, 0, 0, 0, -0.317002, -0.948425, 0, 0.948425, -0.317002, 1.575, -0.142651, 0.426791)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_0" type="GMPShape" parent="Node3D/Roller2" unique_id=845022412]
 transform = Transform3D(1, 0, 0, 0, -0.803046, 0.595917, 0, -0.595917, -0.803046, 2.475, -0.361371, -0.268163)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_1" type="GMPShape" parent="Node3D/Roller2" unique_id=725265200]
 transform = Transform3D(1, 0, 0, 0, 0.318596, 0.947891, 0, -0.947891, 0.318596, 2.475, 0.143368, -0.426551)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_2" type="GMPShape" parent="Node3D/Roller2" unique_id=1678943588]
 transform = Transform3D(1, 0, 0, 0, 0.999949, -0.0100886, 0, 0.0100886, 0.999949, 2.475, 0.449977, 0.00453989)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_3" type="GMPShape" parent="Node3D/Roller2" unique_id=2094166570]
 transform = Transform3D(1, 0, 0, 0, 0.299406, -0.954126, 0, 0.954126, 0.299406, 2.475, 0.134733, 0.429357)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_4" type="GMPShape" parent="Node3D/Roller2" unique_id=1021622150]
 transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906, 2.475, -0.366708, 0.260817)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Roller3" type="GMPBody" parent="Node3D" unique_id=1270848776]
 body_type = 1
@@ -982,222 +982,222 @@ radius = 0.05
 
 [node name="CoreA" type="GMPShape" parent="Node3D/Roller3" unique_id=877443628]
 size = Vector3(6.5, 0.56, 0.56)
-tags = 8
+tags = 2
 
 [node name="CoreB" type="GMPShape" parent="Node3D/Roller3" unique_id=1078636924]
 transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
 size = Vector3(6.5, 0.56, 0.56)
-tags = 8
+tags = 2
 
 [node name="Tooth0_0" type="GMPShape" parent="Node3D/Roller3" unique_id=568677540]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.925, 0.45, 0)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_1" type="GMPShape" parent="Node3D/Roller3" unique_id=1841014621]
 transform = Transform3D(1, 0, 0, 0, 0.309017, -0.951057, 0, 0.951057, 0.309017, -2.925, 0.139058, 0.427975)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_2" type="GMPShape" parent="Node3D/Roller3" unique_id=518145093]
 transform = Transform3D(1, 0, 0, 0, -0.809017, -0.587785, 0, 0.587785, -0.809017, -2.925, -0.364058, 0.264503)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_3" type="GMPShape" parent="Node3D/Roller3" unique_id=2082056067]
 transform = Transform3D(1, 0, 0, 0, -0.809017, 0.587785, 0, -0.587785, -0.809017, -2.925, -0.364058, -0.264503)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_4" type="GMPShape" parent="Node3D/Roller3" unique_id=446707589]
 transform = Transform3D(1, 0, 0, 0, 0.309017, 0.951057, 0, -0.951057, 0.309017, -2.925, 0.139058, -0.427975)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_0" type="GMPShape" parent="Node3D/Roller3" unique_id=603084768]
 transform = Transform3D(1, 0, 0, 0, 0.808028, -0.589145, 0, 0.589145, 0.808028, -2.025, 0.363612, 0.265115)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_1" type="GMPShape" parent="Node3D/Roller3" unique_id=226348257]
 transform = Transform3D(1, 0, 0, 0, -0.310616, -0.950536, 0, 0.950536, -0.310616, -2.025, -0.139777, 0.427741)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_2" type="GMPShape" parent="Node3D/Roller3" unique_id=1671779176]
 transform = Transform3D(1, 0, 0, 0, -0.999999, 0.00168147, 0, -0.00168147, -0.999999, -2.025, -0.449999, -0.000756661)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_3" type="GMPShape" parent="Node3D/Roller3" unique_id=1044473841]
 transform = Transform3D(1, 0, 0, 0, -0.307417, 0.951575, 0, -0.951575, -0.307417, -2.025, -0.138338, -0.428209)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_4" type="GMPShape" parent="Node3D/Roller3" unique_id=2067936994]
 transform = Transform3D(1, 0, 0, 0, 0.810004, 0.586424, 0, -0.586424, 0.810004, -2.025, 0.364502, -0.263891)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_0" type="GMPShape" parent="Node3D/Roller3" unique_id=1843464621]
 transform = Transform3D(1, 0, 0, 0, 0.305817, -0.95209, 0, 0.95209, 0.305817, -1.125, 0.137618, 0.428441)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_1" type="GMPShape" parent="Node3D/Roller3" unique_id=50174613]
 transform = Transform3D(1, 0, 0, 0, -0.810989, -0.585061, 0, 0.585061, -0.810989, -1.125, -0.364945, 0.263278)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_2" type="GMPShape" parent="Node3D/Roller3" unique_id=1031789926]
 transform = Transform3D(1, 0, 0, 0, -0.807036, 0.590503, 0, -0.590503, -0.807036, -1.125, -0.363166, -0.265726)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_3" type="GMPShape" parent="Node3D/Roller3" unique_id=2100551816]
 transform = Transform3D(1, 0, 0, 0, 0.312214, 0.950012, 0, -0.950012, 0.312214, -1.125, 0.140496, -0.427505)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_4" type="GMPShape" parent="Node3D/Roller3" unique_id=1677512583]
 transform = Transform3D(1, 0, 0, 0, 0.999994, -0.00336293, 0, 0.00336293, 0.999994, -1.125, 0.449997, 0.00151332)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_0" type="GMPShape" parent="Node3D/Roller3" unique_id=1235683150]
 transform = Transform3D(1, 0, 0, 0, -0.313811, -0.949486, 0, 0.949486, -0.313811, -0.225, -0.141215, 0.427269)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_1" type="GMPShape" parent="Node3D/Roller3" unique_id=567657630]
 transform = Transform3D(1, 0, 0, 0, -0.999987, 0.00504439, 0, -0.00504439, -0.999987, -0.225, -0.449994, -0.00226997)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_2" type="GMPShape" parent="Node3D/Roller3" unique_id=1531284320]
 transform = Transform3D(1, 0, 0, 0, -0.304216, 0.952603, 0, -0.952603, -0.304216, -0.225, -0.136897, -0.428671)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_3" type="GMPShape" parent="Node3D/Roller3" unique_id=634067606]
 transform = Transform3D(1, 0, 0, 0, 0.811972, 0.583697, 0, -0.583697, 0.811972, -0.225, 0.365387, -0.262664)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_4" type="GMPShape" parent="Node3D/Roller3" unique_id=247151143]
 transform = Transform3D(1, 0, 0, 0, 0.806042, -0.591859, 0, 0.591859, 0.806042, -0.225, 0.362719, 0.266336)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_0" type="GMPShape" parent="Node3D/Roller3" unique_id=753380967]
 transform = Transform3D(1, 0, 0, 0, -0.812952, -0.582331, 0, 0.582331, -0.812952, 0.675, -0.365828, 0.262049)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_1" type="GMPShape" parent="Node3D/Roller3" unique_id=185600188]
 transform = Transform3D(1, 0, 0, 0, -0.805045, 0.593213, 0, -0.593213, -0.805045, 0.675, -0.36227, -0.266946)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_2" type="GMPShape" parent="Node3D/Roller3" unique_id=978514049]
 transform = Transform3D(1, 0, 0, 0, 0.315407, 0.948957, 0, -0.948957, 0.315407, 0.675, 0.141933, -0.42703)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_3" type="GMPShape" parent="Node3D/Roller3" unique_id=22553826]
 transform = Transform3D(1, 0, 0, 0, 0.999977, -0.00672583, 0, 0.00672583, 0.999977, 0.675, 0.44999, 0.00302662)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_4" type="GMPShape" parent="Node3D/Roller3" unique_id=1220249214]
 transform = Transform3D(1, 0, 0, 0, 0.302613, -0.953113, 0, 0.953113, 0.302613, 0.675, 0.136176, 0.428901)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_0" type="GMPShape" parent="Node3D/Roller3" unique_id=655245001]
 transform = Transform3D(1, 0, 0, 0, -0.999965, 0.00840725, 0, -0.00840725, -0.999965, 1.575, -0.449984, -0.00378326)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_1" type="GMPShape" parent="Node3D/Roller3" unique_id=163376949]
 transform = Transform3D(1, 0, 0, 0, -0.30101, 0.953621, 0, -0.953621, -0.30101, 1.575, -0.135455, -0.429129)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_2" type="GMPShape" parent="Node3D/Roller3" unique_id=1526950656]
 transform = Transform3D(1, 0, 0, 0, 0.81393, 0.580963, 0, -0.580963, 0.81393, 1.575, 0.366269, -0.261433)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_3" type="GMPShape" parent="Node3D/Roller3" unique_id=607383869]
 transform = Transform3D(1, 0, 0, 0, 0.804047, -0.594566, 0, 0.594566, 0.804047, 1.575, 0.361821, 0.267555)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_4" type="GMPShape" parent="Node3D/Roller3" unique_id=1334623229]
 transform = Transform3D(1, 0, 0, 0, -0.317002, -0.948425, 0, 0.948425, -0.317002, 1.575, -0.142651, 0.426791)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_0" type="GMPShape" parent="Node3D/Roller3" unique_id=721609807]
 transform = Transform3D(1, 0, 0, 0, -0.803046, 0.595917, 0, -0.595917, -0.803046, 2.475, -0.361371, -0.268163)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_1" type="GMPShape" parent="Node3D/Roller3" unique_id=522691612]
 transform = Transform3D(1, 0, 0, 0, 0.318596, 0.947891, 0, -0.947891, 0.318596, 2.475, 0.143368, -0.426551)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_2" type="GMPShape" parent="Node3D/Roller3" unique_id=589608501]
 transform = Transform3D(1, 0, 0, 0, 0.999949, -0.0100886, 0, 0.0100886, 0.999949, 2.475, 0.449977, 0.00453989)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_3" type="GMPShape" parent="Node3D/Roller3" unique_id=2008180938]
 transform = Transform3D(1, 0, 0, 0, 0.299406, -0.954126, 0, 0.954126, 0.299406, 2.475, 0.134733, 0.429357)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_4" type="GMPShape" parent="Node3D/Roller3" unique_id=1087241253]
 transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906, 2.475, -0.366708, 0.260817)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Roller4" type="GMPBody" parent="Node3D" unique_id=642109654]
 body_type = 1
@@ -1211,222 +1211,222 @@ radius = 0.05
 
 [node name="CoreA" type="GMPShape" parent="Node3D/Roller4" unique_id=1340622419]
 size = Vector3(6.5, 0.56, 0.56)
-tags = 8
+tags = 2
 
 [node name="CoreB" type="GMPShape" parent="Node3D/Roller4" unique_id=723310803]
 transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
 size = Vector3(6.5, 0.56, 0.56)
-tags = 8
+tags = 2
 
 [node name="Tooth0_0" type="GMPShape" parent="Node3D/Roller4" unique_id=419896396]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.925, 0.45, 0)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_1" type="GMPShape" parent="Node3D/Roller4" unique_id=1241571005]
 transform = Transform3D(1, 0, 0, 0, 0.309017, -0.951057, 0, 0.951057, 0.309017, -2.925, 0.139058, 0.427975)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_2" type="GMPShape" parent="Node3D/Roller4" unique_id=1730281032]
 transform = Transform3D(1, 0, 0, 0, -0.809017, -0.587785, 0, 0.587785, -0.809017, -2.925, -0.364058, 0.264503)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_3" type="GMPShape" parent="Node3D/Roller4" unique_id=280926429]
 transform = Transform3D(1, 0, 0, 0, -0.809017, 0.587785, 0, -0.587785, -0.809017, -2.925, -0.364058, -0.264503)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_4" type="GMPShape" parent="Node3D/Roller4" unique_id=1060292488]
 transform = Transform3D(1, 0, 0, 0, 0.309017, 0.951057, 0, -0.951057, 0.309017, -2.925, 0.139058, -0.427975)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_0" type="GMPShape" parent="Node3D/Roller4" unique_id=1093716660]
 transform = Transform3D(1, 0, 0, 0, 0.808028, -0.589145, 0, 0.589145, 0.808028, -2.025, 0.363612, 0.265115)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_1" type="GMPShape" parent="Node3D/Roller4" unique_id=2070357548]
 transform = Transform3D(1, 0, 0, 0, -0.310616, -0.950536, 0, 0.950536, -0.310616, -2.025, -0.139777, 0.427741)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_2" type="GMPShape" parent="Node3D/Roller4" unique_id=1554968338]
 transform = Transform3D(1, 0, 0, 0, -0.999999, 0.00168147, 0, -0.00168147, -0.999999, -2.025, -0.449999, -0.000756661)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_3" type="GMPShape" parent="Node3D/Roller4" unique_id=1348222268]
 transform = Transform3D(1, 0, 0, 0, -0.307417, 0.951575, 0, -0.951575, -0.307417, -2.025, -0.138338, -0.428209)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_4" type="GMPShape" parent="Node3D/Roller4" unique_id=1632749384]
 transform = Transform3D(1, 0, 0, 0, 0.810004, 0.586424, 0, -0.586424, 0.810004, -2.025, 0.364502, -0.263891)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_0" type="GMPShape" parent="Node3D/Roller4" unique_id=1994584465]
 transform = Transform3D(1, 0, 0, 0, 0.305817, -0.95209, 0, 0.95209, 0.305817, -1.125, 0.137618, 0.428441)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_1" type="GMPShape" parent="Node3D/Roller4" unique_id=827826933]
 transform = Transform3D(1, 0, 0, 0, -0.810989, -0.585061, 0, 0.585061, -0.810989, -1.125, -0.364945, 0.263278)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_2" type="GMPShape" parent="Node3D/Roller4" unique_id=1471394142]
 transform = Transform3D(1, 0, 0, 0, -0.807036, 0.590503, 0, -0.590503, -0.807036, -1.125, -0.363166, -0.265726)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_3" type="GMPShape" parent="Node3D/Roller4" unique_id=535535810]
 transform = Transform3D(1, 0, 0, 0, 0.312214, 0.950012, 0, -0.950012, 0.312214, -1.125, 0.140496, -0.427505)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_4" type="GMPShape" parent="Node3D/Roller4" unique_id=1417301127]
 transform = Transform3D(1, 0, 0, 0, 0.999994, -0.00336293, 0, 0.00336293, 0.999994, -1.125, 0.449997, 0.00151332)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_0" type="GMPShape" parent="Node3D/Roller4" unique_id=1489444621]
 transform = Transform3D(1, 0, 0, 0, -0.313811, -0.949486, 0, 0.949486, -0.313811, -0.225, -0.141215, 0.427269)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_1" type="GMPShape" parent="Node3D/Roller4" unique_id=123290791]
 transform = Transform3D(1, 0, 0, 0, -0.999987, 0.00504439, 0, -0.00504439, -0.999987, -0.225, -0.449994, -0.00226997)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_2" type="GMPShape" parent="Node3D/Roller4" unique_id=1563774993]
 transform = Transform3D(1, 0, 0, 0, -0.304216, 0.952603, 0, -0.952603, -0.304216, -0.225, -0.136897, -0.428671)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_3" type="GMPShape" parent="Node3D/Roller4" unique_id=660722291]
 transform = Transform3D(1, 0, 0, 0, 0.811972, 0.583697, 0, -0.583697, 0.811972, -0.225, 0.365387, -0.262664)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_4" type="GMPShape" parent="Node3D/Roller4" unique_id=1807157201]
 transform = Transform3D(1, 0, 0, 0, 0.806042, -0.591859, 0, 0.591859, 0.806042, -0.225, 0.362719, 0.266336)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_0" type="GMPShape" parent="Node3D/Roller4" unique_id=1453384320]
 transform = Transform3D(1, 0, 0, 0, -0.812952, -0.582331, 0, 0.582331, -0.812952, 0.675, -0.365828, 0.262049)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_1" type="GMPShape" parent="Node3D/Roller4" unique_id=765388518]
 transform = Transform3D(1, 0, 0, 0, -0.805045, 0.593213, 0, -0.593213, -0.805045, 0.675, -0.36227, -0.266946)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_2" type="GMPShape" parent="Node3D/Roller4" unique_id=1223362745]
 transform = Transform3D(1, 0, 0, 0, 0.315407, 0.948957, 0, -0.948957, 0.315407, 0.675, 0.141933, -0.42703)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_3" type="GMPShape" parent="Node3D/Roller4" unique_id=754168808]
 transform = Transform3D(1, 0, 0, 0, 0.999977, -0.00672583, 0, 0.00672583, 0.999977, 0.675, 0.44999, 0.00302662)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_4" type="GMPShape" parent="Node3D/Roller4" unique_id=1578773016]
 transform = Transform3D(1, 0, 0, 0, 0.302613, -0.953113, 0, 0.953113, 0.302613, 0.675, 0.136176, 0.428901)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_0" type="GMPShape" parent="Node3D/Roller4" unique_id=1402380003]
 transform = Transform3D(1, 0, 0, 0, -0.999965, 0.00840725, 0, -0.00840725, -0.999965, 1.575, -0.449984, -0.00378326)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_1" type="GMPShape" parent="Node3D/Roller4" unique_id=1260578886]
 transform = Transform3D(1, 0, 0, 0, -0.30101, 0.953621, 0, -0.953621, -0.30101, 1.575, -0.135455, -0.429129)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_2" type="GMPShape" parent="Node3D/Roller4" unique_id=1638134487]
 transform = Transform3D(1, 0, 0, 0, 0.81393, 0.580963, 0, -0.580963, 0.81393, 1.575, 0.366269, -0.261433)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_3" type="GMPShape" parent="Node3D/Roller4" unique_id=703053541]
 transform = Transform3D(1, 0, 0, 0, 0.804047, -0.594566, 0, 0.594566, 0.804047, 1.575, 0.361821, 0.267555)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_4" type="GMPShape" parent="Node3D/Roller4" unique_id=1959718819]
 transform = Transform3D(1, 0, 0, 0, -0.317002, -0.948425, 0, 0.948425, -0.317002, 1.575, -0.142651, 0.426791)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_0" type="GMPShape" parent="Node3D/Roller4" unique_id=1493509549]
 transform = Transform3D(1, 0, 0, 0, -0.803046, 0.595917, 0, -0.595917, -0.803046, 2.475, -0.361371, -0.268163)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_1" type="GMPShape" parent="Node3D/Roller4" unique_id=141724564]
 transform = Transform3D(1, 0, 0, 0, 0.318596, 0.947891, 0, -0.947891, 0.318596, 2.475, 0.143368, -0.426551)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_2" type="GMPShape" parent="Node3D/Roller4" unique_id=1978676877]
 transform = Transform3D(1, 0, 0, 0, 0.999949, -0.0100886, 0, 0.0100886, 0.999949, 2.475, 0.449977, 0.00453989)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_3" type="GMPShape" parent="Node3D/Roller4" unique_id=1015582325]
 transform = Transform3D(1, 0, 0, 0, 0.299406, -0.954126, 0, 0.954126, 0.299406, 2.475, 0.134733, 0.429357)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_4" type="GMPShape" parent="Node3D/Roller4" unique_id=1340326339]
 transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906, 2.475, -0.366708, 0.260817)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Roller5" type="GMPBody" parent="Node3D" unique_id=1092205495]
 body_type = 1
@@ -1440,222 +1440,222 @@ radius = 0.05
 
 [node name="CoreA" type="GMPShape" parent="Node3D/Roller5" unique_id=2122107255]
 size = Vector3(6.5, 0.56, 0.56)
-tags = 8
+tags = 2
 
 [node name="CoreB" type="GMPShape" parent="Node3D/Roller5" unique_id=324794972]
 transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
 size = Vector3(6.5, 0.56, 0.56)
-tags = 8
+tags = 2
 
 [node name="Tooth0_0" type="GMPShape" parent="Node3D/Roller5" unique_id=415698369]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.925, 0.45, 0)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_1" type="GMPShape" parent="Node3D/Roller5" unique_id=950681166]
 transform = Transform3D(1, 0, 0, 0, 0.309017, -0.951057, 0, 0.951057, 0.309017, -2.925, 0.139058, 0.427975)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_2" type="GMPShape" parent="Node3D/Roller5" unique_id=1663925407]
 transform = Transform3D(1, 0, 0, 0, -0.809017, -0.587785, 0, 0.587785, -0.809017, -2.925, -0.364058, 0.264503)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_3" type="GMPShape" parent="Node3D/Roller5" unique_id=1877482050]
 transform = Transform3D(1, 0, 0, 0, -0.809017, 0.587785, 0, -0.587785, -0.809017, -2.925, -0.364058, -0.264503)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth0_4" type="GMPShape" parent="Node3D/Roller5" unique_id=368766744]
 transform = Transform3D(1, 0, 0, 0, 0.309017, 0.951057, 0, -0.951057, 0.309017, -2.925, 0.139058, -0.427975)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_0" type="GMPShape" parent="Node3D/Roller5" unique_id=464423321]
 transform = Transform3D(1, 0, 0, 0, 0.808028, -0.589145, 0, 0.589145, 0.808028, -2.025, 0.363612, 0.265115)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_1" type="GMPShape" parent="Node3D/Roller5" unique_id=325040759]
 transform = Transform3D(1, 0, 0, 0, -0.310616, -0.950536, 0, 0.950536, -0.310616, -2.025, -0.139777, 0.427741)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_2" type="GMPShape" parent="Node3D/Roller5" unique_id=1125182327]
 transform = Transform3D(1, 0, 0, 0, -0.999999, 0.00168147, 0, -0.00168147, -0.999999, -2.025, -0.449999, -0.000756661)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_3" type="GMPShape" parent="Node3D/Roller5" unique_id=1710809766]
 transform = Transform3D(1, 0, 0, 0, -0.307417, 0.951575, 0, -0.951575, -0.307417, -2.025, -0.138338, -0.428209)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth1_4" type="GMPShape" parent="Node3D/Roller5" unique_id=518102995]
 transform = Transform3D(1, 0, 0, 0, 0.810004, 0.586424, 0, -0.586424, 0.810004, -2.025, 0.364502, -0.263891)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_0" type="GMPShape" parent="Node3D/Roller5" unique_id=1670608765]
 transform = Transform3D(1, 0, 0, 0, 0.305817, -0.95209, 0, 0.95209, 0.305817, -1.125, 0.137618, 0.428441)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_1" type="GMPShape" parent="Node3D/Roller5" unique_id=786326045]
 transform = Transform3D(1, 0, 0, 0, -0.810989, -0.585061, 0, 0.585061, -0.810989, -1.125, -0.364945, 0.263278)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_2" type="GMPShape" parent="Node3D/Roller5" unique_id=1530651378]
 transform = Transform3D(1, 0, 0, 0, -0.807036, 0.590503, 0, -0.590503, -0.807036, -1.125, -0.363166, -0.265726)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_3" type="GMPShape" parent="Node3D/Roller5" unique_id=1602126065]
 transform = Transform3D(1, 0, 0, 0, 0.312214, 0.950012, 0, -0.950012, 0.312214, -1.125, 0.140496, -0.427505)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth2_4" type="GMPShape" parent="Node3D/Roller5" unique_id=1675995295]
 transform = Transform3D(1, 0, 0, 0, 0.999994, -0.00336293, 0, 0.00336293, 0.999994, -1.125, 0.449997, 0.00151332)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_0" type="GMPShape" parent="Node3D/Roller5" unique_id=2105788375]
 transform = Transform3D(1, 0, 0, 0, -0.313811, -0.949486, 0, 0.949486, -0.313811, -0.225, -0.141215, 0.427269)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_1" type="GMPShape" parent="Node3D/Roller5" unique_id=139256533]
 transform = Transform3D(1, 0, 0, 0, -0.999987, 0.00504439, 0, -0.00504439, -0.999987, -0.225, -0.449994, -0.00226997)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_2" type="GMPShape" parent="Node3D/Roller5" unique_id=1659788859]
 transform = Transform3D(1, 0, 0, 0, -0.304216, 0.952603, 0, -0.952603, -0.304216, -0.225, -0.136897, -0.428671)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_3" type="GMPShape" parent="Node3D/Roller5" unique_id=1648716054]
 transform = Transform3D(1, 0, 0, 0, 0.811972, 0.583697, 0, -0.583697, 0.811972, -0.225, 0.365387, -0.262664)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth3_4" type="GMPShape" parent="Node3D/Roller5" unique_id=1000678817]
 transform = Transform3D(1, 0, 0, 0, 0.806042, -0.591859, 0, 0.591859, 0.806042, -0.225, 0.362719, 0.266336)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_0" type="GMPShape" parent="Node3D/Roller5" unique_id=1687387098]
 transform = Transform3D(1, 0, 0, 0, -0.812952, -0.582331, 0, 0.582331, -0.812952, 0.675, -0.365828, 0.262049)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_1" type="GMPShape" parent="Node3D/Roller5" unique_id=418101694]
 transform = Transform3D(1, 0, 0, 0, -0.805045, 0.593213, 0, -0.593213, -0.805045, 0.675, -0.36227, -0.266946)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_2" type="GMPShape" parent="Node3D/Roller5" unique_id=1553851470]
 transform = Transform3D(1, 0, 0, 0, 0.315407, 0.948957, 0, -0.948957, 0.315407, 0.675, 0.141933, -0.42703)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_3" type="GMPShape" parent="Node3D/Roller5" unique_id=2083686312]
 transform = Transform3D(1, 0, 0, 0, 0.999977, -0.00672583, 0, 0.00672583, 0.999977, 0.675, 0.44999, 0.00302662)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth4_4" type="GMPShape" parent="Node3D/Roller5" unique_id=1446992973]
 transform = Transform3D(1, 0, 0, 0, 0.302613, -0.953113, 0, 0.953113, 0.302613, 0.675, 0.136176, 0.428901)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_0" type="GMPShape" parent="Node3D/Roller5" unique_id=1941421433]
 transform = Transform3D(1, 0, 0, 0, -0.999965, 0.00840725, 0, -0.00840725, -0.999965, 1.575, -0.449984, -0.00378326)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_1" type="GMPShape" parent="Node3D/Roller5" unique_id=2037300922]
 transform = Transform3D(1, 0, 0, 0, -0.30101, 0.953621, 0, -0.953621, -0.30101, 1.575, -0.135455, -0.429129)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_2" type="GMPShape" parent="Node3D/Roller5" unique_id=1450669621]
 transform = Transform3D(1, 0, 0, 0, 0.81393, 0.580963, 0, -0.580963, 0.81393, 1.575, 0.366269, -0.261433)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_3" type="GMPShape" parent="Node3D/Roller5" unique_id=1813278895]
 transform = Transform3D(1, 0, 0, 0, 0.804047, -0.594566, 0, 0.594566, 0.804047, 1.575, 0.361821, 0.267555)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth5_4" type="GMPShape" parent="Node3D/Roller5" unique_id=1983012465]
 transform = Transform3D(1, 0, 0, 0, -0.317002, -0.948425, 0, 0.948425, -0.317002, 1.575, -0.142651, 0.426791)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_0" type="GMPShape" parent="Node3D/Roller5" unique_id=1717695942]
 transform = Transform3D(1, 0, 0, 0, -0.803046, 0.595917, 0, -0.595917, -0.803046, 2.475, -0.361371, -0.268163)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_1" type="GMPShape" parent="Node3D/Roller5" unique_id=655134489]
 transform = Transform3D(1, 0, 0, 0, 0.318596, 0.947891, 0, -0.947891, 0.318596, 2.475, 0.143368, -0.426551)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_2" type="GMPShape" parent="Node3D/Roller5" unique_id=2102460140]
 transform = Transform3D(1, 0, 0, 0, 0.999949, -0.0100886, 0, 0.0100886, 0.999949, 2.475, 0.449977, 0.00453989)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_3" type="GMPShape" parent="Node3D/Roller5" unique_id=2028655608]
 transform = Transform3D(1, 0, 0, 0, 0.299406, -0.954126, 0, 0.954126, 0.299406, 2.475, 0.134733, 0.429357)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Tooth6_4" type="GMPShape" parent="Node3D/Roller5" unique_id=1679037176]
 transform = Transform3D(1, 0, 0, 0, -0.814906, -0.579593, 0, 0.579593, -0.814906, 2.475, -0.366708, 0.260817)
 size = Vector3(0.17, 0.18, 0.2)
 friction = 0.7
-tags = 8
+tags = 2
 
 [node name="Valley" type="GMPShape" parent="Node3D" unique_id=1181216794]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.7875, -4)
@@ -1671,32 +1671,32 @@ transform = Transform3D(0.9967116, -0.08089818, 0.0046279905, 0.07962337, 0.9884
 [node name="FrontWall" type="GMPShape" parent="." unique_id=171403305]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 6.7214117, -7.55)
 size = Vector3(8, 2.6, 0.9)
-tags = 8
+tags = 2
 
 [node name="BackWall" type="GMPShape" parent="." unique_id=736543744]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 6.7214117, -0.45)
 size = Vector3(8, 2.6, 0.9)
-tags = 8
+tags = 2
 
 [node name="WallL" type="GMPShape" parent="." unique_id=1686450195]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 6.7214117, -4)
 size = Vector3(0.7, 2.6, 6.2)
-tags = 8
+tags = 2
 
 [node name="WallR" type="GMPShape" parent="." unique_id=894681464]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.65, 6.7214117, -4)
 size = Vector3(0.7, 2.6, 6.2)
-tags = 8
+tags = 2
 
 [node name="ValleyBack" type="GMPShape" parent="." unique_id=477329451]
 transform = Transform3D(1, 0, 0, 0, 0.911922, 0.410365, 0, -0.410365, 0.911922, 4, 6.548311, -2.42948)
 size = Vector3(6.6, 0.1, 3.49942)
-tags = 8
+tags = 2
 
 [node name="ValleyFront" type="GMPShape" parent="." unique_id=408864449]
 transform = Transform3D(1, 0, 0, 0, 0.911922, -0.410365, 0, 0.410365, 0.911922, 4, 6.548311, -5.57052)
 size = Vector3(6.6, 0.1, 3.49942)
-tags = 8
+tags = 2
 
 [node name="Box3DCollisionShape" type="GMPShape" parent="." unique_id=1258724699]
 transform = Transform3D(0.615416, 0, 0, 0, 1.3388085, 0, 0, 0, 0.73106647, 0.28211844, 2.7258444, -0.36482584)

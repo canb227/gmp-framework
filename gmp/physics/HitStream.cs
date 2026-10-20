@@ -10,8 +10,8 @@ using System.Collections.Generic;
 /// </summary>
 public static class HitStream
 {
-    /// <summary>Hits further than this from the camera are left out (m), the same range peers send hits within.</summary>
-    public const float Range = 60;
+    /// <summary>Hits further than this from the camera are left out (m): the range peers send hits within (HitRange in native/src/physics_world.h).</summary>
+    public const float Range = 40;
 
     /// <summary>This tick's hits, refilled every physics tick. To see each tick's once, read them in <see cref="Updated"/>.</summary>
     public static readonly List<ContactHit> hits = new();

@@ -12,6 +12,6 @@ displayName = "Electronic Bits"
 description = "Random assortment of resistors and doo-dads"
 icon = ExtResource("2_d2xa2")
 maxStackSize = 999
-tags = 5246984
+tags = 2
 canBePickTarget = true
 canBeGrabbed = true

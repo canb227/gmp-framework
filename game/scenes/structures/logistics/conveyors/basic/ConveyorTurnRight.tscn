@@ -53,40 +53,40 @@ blueprintItemID = "blueprint_conveyor"
 shape = 4
 mesh = SubResource("ArrayMesh_WallOuter0")
 friction = 0.0
-tags = 8
+tags = 2
 
 [node name="WallOuter1" type="GMPShape" parent="." unique_id=1086159749]
 shape = 4
 mesh = SubResource("ArrayMesh_WallOuter1")
 friction = 0.0
-tags = 8
+tags = 2
 
 [node name="WallOuter2" type="GMPShape" parent="." unique_id=305098591]
 shape = 4
 mesh = SubResource("ArrayMesh_WallOuter2")
 friction = 0.0
-tags = 8
+tags = 2
 
 [node name="Floor0" type="GMPShape" parent="." unique_id=723475997]
 transform = Transform3D(0, 0.005, 0.99999, -0.00047, 0.99999, -0.005, -1, -0.00047, 0, 1.46975, 0.08622, -0.99998)
 size = Vector3(2, 0.1, 1.06401)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
-tags = 32
+tags = 128
 
 [node name="Floor1" type="GMPShape" parent="." unique_id=260296978]
 transform = Transform3D(0.70711, 0.03531, 0.70622, 0, 0.99875, -0.04994, -0.70711, 0.03531, 0.70622, 1.11789, 0.08469, -1.12142)
 size = Vector3(1.43, 0.1, 1.06532)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
-tags = 32
+tags = 128
 
 [node name="Floor2" type="GMPShape" parent="." unique_id=368166759]
 transform = Transform3D(0.9998, 0.01991, 0, -0.01989, 0.99882, -0.04429, -0.00088, 0.04428, 0.99902, 0.999, 0.08751, -1.47221)
 size = Vector3(2, 0.1, 1.06504)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
-tags = 32
+tags = 128
 
 [node name="StructureArrow" type="Node3D" parent="." unique_id=589559048]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.7333997, 0.8026422, -0.993477)
@@ -101,4 +101,4 @@ radius = 0.1
 height = 0.3
 friction = 0.5
 tangent_velocity = Vector3(1.414, 0, -1.414)
-tags = 8
+tags = 2
