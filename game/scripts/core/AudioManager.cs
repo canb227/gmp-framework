@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Fmod = FMOD;
@@ -67,10 +68,6 @@ public partial class AudioManager : Node
     // Impacts quieter than this (m/s) or farther than this from the camera (m) make no sound.
     const float MinImpactSpeed = 2.0f;
     const float MaxImpactDistance = 40.0f;
-    // An impact this fast (m/s) or faster plays at full volume.
-    const float FullVolumeSpeed = 10.0f;
-    // A spill makes hundreds of hits a tick: only the loudest few play.
-    const int MaxImpactSoundsPerTick = 8;
     private static readonly System.Collections.Generic.List<ContactHit> hits = new();
 
     private static int FastestFirst(ContactHit a, ContactHit b)
@@ -78,71 +75,37 @@ public partial class AudioManager : Node
         return b.speed.CompareTo(a.speed);
     }
 
-    private static float ImpactVolume(float speed)
-    {
-        return Mathf.Min(speed / FullVolumeSpeed, 1.0f);
-    }
-
-    /// <summary>The impact sound for each surface tag. Surfaces not listed, and none, use <see cref="DefaultImpactSound"/>.</summary>
-    private static readonly System.Collections.Generic.Dictionary<ItemTags, string> ImpactSounds = new()
-    {
-        { ItemTags.METAL, "event:/Solid_Metal" },
-    };
-    const string DefaultImpactSound = "event:/Solid_Metal";
-
-    /// <summary>
-    /// Which surface a hit sounds like (one of METAL..GLASS, or None), from the tags of the two shapes that met
-    /// (<see cref="ContactHit.tagsA"/>, <see cref="ContactHit.tagsB"/>, cast to <see cref="ItemTags"/>). A side's own
-    /// surface is its lowest surface tag.
-    /// </summary>
-    private static ItemTags HitSurface(ContactHit hit)
-    {
-        // TODO(human)
-        return ItemTags.None;
-    }
-
-    /// <summary>Each physics tick: a sound for every impact near the camera, on every peer (<see cref="HitStream"/>).</summary>
-    private static void OnHits()
+    /// <summary>Each physics tick: a sound for every impact near the camera, on every peer (PhysicsWorld.Hits).</summary>
+    private static void OnPhysicsStepped(double delta)
     {
         Camera3D camera = Instance.GetViewport().GetCamera3D();
         if (camera == null)
             return;
-        // Its own copy of the ones loud and near enough: the stream's list is shared, so it isn't sorted in place.
-        hits.Clear();
-        foreach (ContactHit hit in HitStream.hits)
-        {
-            if (hit.speed >= MinImpactSpeed && hit.position.DistanceTo(camera.GlobalPosition) <= MaxImpactDistance)
-                hits.Add(hit);
-        }
-        if (hits.Count > MaxImpactSoundsPerTick)
-        {
-            hits.Sort(FastestFirst);
-            hits.RemoveRange(MaxImpactSoundsPerTick, hits.Count - MaxImpactSoundsPerTick);
-        }
+        PhysicsWorld.Hits(hits, camera.GlobalPosition, MaxImpactDistance, MinImpactSpeed);
         foreach (ContactHit hit in hits)
         {
-            if (!ImpactSounds.TryGetValue(HitSurface(hit), out string sound))
-            {
-                sound = DefaultImpactSound;
-            }
-            Instance.PlayOneShot(sound, ImpactVolume(hit.speed), hit.position, "Force", hit.speed);
+            Instance.PlayOneShot("event:/Impacts/Solid_Metal", 1.0f, hit.position, new Dictionary<string, float>{["Force"] = hit.speed/10.0f});
         }
     }
 
     /// <summary>A player landing or running into a wall, local or remote (GMPOCharacter.Impacted).</summary>
     private static void OnCharacterImpacted(GMPOCharacter character, CharacterImpact impact)
     {
+        GD.Print(impact.speed);
+        if(impact.speed < 7.5f)
+            return;
+
         Camera3D camera = Instance.GetViewport().GetCamera3D();
         if (camera == null || impact.speed < MinImpactSpeed || impact.position.DistanceTo(camera.GlobalPosition) > MaxImpactDistance)
             return;
-        Instance.PlayOneShot("event:/Solid_Metal", ImpactVolume(impact.speed), impact.position, "Force", impact.speed);
+        Instance.PlayOneShot("event:/Impacts/Player_Impact", 1.0f, impact.position, new Dictionary<string, float>{["Force"] = impact.speed/15.0f, ["Damage"] = 0.0f});
     }
 
     public override void _Ready()
     {
         SetupFmodResolver();
         Instance = this;
-        HitStream.Updated += OnHits;
+        GameWorld.PhysicsStepped += OnPhysicsStepped;
         GMPOCharacter.Impacted += OnCharacterImpacted;
 
         try
@@ -212,7 +175,7 @@ public partial class AudioManager : Node
     // --- Playing events ---
 
     /// Fire-and-forget (footsteps, gunshots, UI clicks)
-    public void PlayOneShot(string eventPath, float volume = 1.0f, Vector3? position = null, string param_name = "", float? param_val = 0.0f)
+    public void PlayOneShot(string eventPath, float volume = 1.0f, Vector3? position = null, Dictionary<string, float> parameters = null)
     {
         if (!_audioOn) return;
         if (_studio.getEvent(eventPath, out FmodStudio.EventDescription desc) != Fmod.RESULT.OK)
@@ -222,16 +185,25 @@ public partial class AudioManager : Node
         }
 
         desc.createInstance(out FmodStudio.EventInstance inst);
+
         if (position.HasValue)
         {
             inst.set3DAttributes(To3D(position.Value));
         }
-        if (param_val.HasValue && param_name.Length > 0)
+
+        if (parameters != null)
         {
-            inst.setParameterByName(param_name, param_val.Value);
+            foreach (var kvp in parameters)
+            {
+                var result = inst.setParameterByName(kvp.Key, kvp.Value);
+                if (result != Fmod.RESULT.OK)
+                {
+                    GD.PushWarning($"FMOD param '{kvp.Key}' failed on {eventPath}: {result}");
+                }
+            }
         }
+
         inst.setVolume(volume);
-        //GD.Print("Play the sound at: " + position.Value.ToString());
         inst.start();
         inst.release(); // instance is freed automatically once it stops
     }
