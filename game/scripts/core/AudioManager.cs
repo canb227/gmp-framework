@@ -67,20 +67,11 @@ public partial class AudioManager : Node
     // Impacts quieter than this (m/s) or farther than this from the camera (m) make no sound.
     const float MinImpactSpeed = 2.0f;
     const float MaxImpactDistance = 40.0f;
-    // An impact this fast (m/s) or faster plays at full volume.
-    const float FullVolumeSpeed = 10.0f;
-    // A spill makes hundreds of hits a tick: only the loudest few play.
-    const int MaxImpactSoundsPerTick = 8;
     private static readonly System.Collections.Generic.List<ContactHit> hits = new();
 
     private static int FastestFirst(ContactHit a, ContactHit b)
     {
         return b.speed.CompareTo(a.speed);
-    }
-
-    private static float ImpactVolume(float speed)
-    {
-        return Mathf.Min(speed / FullVolumeSpeed, 1.0f);
     }
 
     /// <summary>Each physics tick: a sound for every impact near the camera, on every peer (PhysicsWorld.Hits).</summary>
@@ -90,24 +81,20 @@ public partial class AudioManager : Node
         if (camera == null)
             return;
         PhysicsWorld.Hits(hits, camera.GlobalPosition, MaxImpactDistance, MinImpactSpeed);
-        if (hits.Count > MaxImpactSoundsPerTick)
-        {
-            hits.Sort(FastestFirst);
-            hits.RemoveRange(MaxImpactSoundsPerTick, hits.Count - MaxImpactSoundsPerTick);
-        }
         foreach (ContactHit hit in hits)
         {
-            Instance.PlayOneShot("event:/Solid_Metal", ImpactVolume(hit.speed), hit.position, "Force", hit.speed);
+            Instance.PlayOneShot("event:/Solid_Metal",  hit.speed/10.0f, hit.position, "Force", hit.speed/10.0f);
         }
     }
 
     /// <summary>A player landing or running into a wall, local or remote (GMPOCharacter.Impacted).</summary>
     private static void OnCharacterImpacted(GMPOCharacter character, CharacterImpact impact)
     {
+        GD.Print(impact.speed);
         Camera3D camera = Instance.GetViewport().GetCamera3D();
         if (camera == null || impact.speed < MinImpactSpeed || impact.position.DistanceTo(camera.GlobalPosition) > MaxImpactDistance)
             return;
-        Instance.PlayOneShot("event:/Solid_Metal", ImpactVolume(impact.speed), impact.position, "Force", impact.speed);
+        Instance.PlayOneShot("event:/Player_Impact", impact.speed/10.0f, impact.position, "Force", impact.speed/10.0f);
     }
 
     public override void _Ready()
