@@ -66,6 +66,7 @@ public partial class Structure : GMPOBody, Interactable
     [Export]
     public string blueprintItemID;
 
+    /// <summary>Off: interacting does nothing (it can't be deconstructed by hand).</summary>
     [Export]
     public bool interactable = true;
 
@@ -89,22 +90,17 @@ public partial class Structure : GMPOBody, Interactable
     {
         if (!interactable)
         {
-            Logging.Log("this structure has interact disabled.", "Structure");
+            Logging.Log($"{Name} can't be interacted with (interactable is off)", "Structure");
             return;
         }
         FactoryPlayer player = (FactoryPlayer)GameWorld.syncedObjs[playerID];
         if (!player.inventory.HasRoomFor(blueprintItemID))
         {
-            Logging.Log("interaction failed i dunno", "Structure");
+            Logging.Log($"No room in the inventory for {blueprintItemID}: {Name} isn't deconstructed", "Structure");
             return;
         }
         // Arbitrated by the item's authority so two players can't both pick it up.
         BuildGrid.RequestDeconstruct(player, this);
-    }
-
-    public Structure()
-    {
-
     }
 
     /// <summary>Where the root sits relative to its anchor cell's centre, before rotation: the cell's left-bottom-back corner.</summary>
@@ -195,6 +191,5 @@ public partial class Structure : GMPOBody, Interactable
     public override void _ExitTree()
     {
         BuildGrid.Vacate(this);
-
     }
 }

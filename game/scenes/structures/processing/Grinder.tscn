@@ -1,6 +1,6 @@
 [gd_scene format=4 uid="uid://bylawd3koqxrb"]
 
-[ext_resource type="Script" uid="uid://bbkovbjsnajma" path="res://game/scripts/structures/processing/Grinder.cs" id="1_j2mte"]
+[ext_resource type="Script" uid="uid://oh8soyl4ps6h" path="res://game/scripts/structures/RecipeMachine.cs" id="1_j2mte"]
 [ext_resource type="Script" uid="uid://bptcoo3qayabg" path="res://game/scripts/structures/Recipe.cs" id="2_rjx8u"]
 [ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="3_rfl1m"]
 [ext_resource type="Resource" uid="uid://del77s80urbou" path="res://game/definitions/resources/robot_parts.tres" id="4_f11oh"]

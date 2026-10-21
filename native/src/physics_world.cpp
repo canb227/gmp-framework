@@ -166,20 +166,6 @@ int64_t GMPPhysicsWorld::get_item_layer() const {
 	return itemLayer;
 }
 
-void GMPPhysicsWorld::set_watcher_tags(int64_t value) {
-	watcherTags = (uint64_t)value;
-	// Items already in the world report their touches by the new tags from now on.
-	for (Body &body : bodies) {
-		if (body.id != 0 && body.kind >= 0) {
-			apply_item_tags(body);
-		}
-	}
-}
-
-int64_t GMPPhysicsWorld::get_watcher_tags() const {
-	return (int64_t)watcherTags;
-}
-
 Dictionary GMPPhysicsWorld::get_profile() const {
 	Dictionary profile;
 	if (!b3World_IsValid(world)) {
@@ -230,9 +216,6 @@ void GMPPhysicsWorld::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_item_layer", "value"), &GMPPhysicsWorld::set_item_layer);
 	ClassDB::bind_method(D_METHOD("get_item_layer"), &GMPPhysicsWorld::get_item_layer);
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "item_layer", PROPERTY_HINT_LAYERS_3D_PHYSICS), "set_item_layer", "get_item_layer");
-	ClassDB::bind_method(D_METHOD("set_watcher_tags", "value"), &GMPPhysicsWorld::set_watcher_tags);
-	ClassDB::bind_method(D_METHOD("get_watcher_tags"), &GMPPhysicsWorld::get_watcher_tags);
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "watcher_tags", PROPERTY_HINT_FLAGS, TagHintString), "set_watcher_tags", "get_watcher_tags");
 	ClassDB::bind_method(D_METHOD("get_profile"), &GMPPhysicsWorld::get_profile);
 	ClassDB::bind_method(D_METHOD("step", "delta"), &GMPPhysicsWorld::step);
 	ClassDB::bind_method(D_METHOD("get_stats"), &GMPPhysicsWorld::get_stats);
@@ -259,7 +242,6 @@ void GMPPhysicsWorld::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_body_tags", "id", "tags"), &GMPPhysicsWorld::set_body_tags);
 
 	ClassDB::bind_method(D_METHOD("get_hits", "listener", "max_distance", "min_speed"), &GMPPhysicsWorld::get_hits);
-	ClassDB::bind_method(D_METHOD("get_touches"), &GMPPhysicsWorld::get_touches);
 	ClassDB::bind_method(D_METHOD("raycast", "from", "to", "mask"), &GMPPhysicsWorld::raycast, DEFVAL(0xFFFFFFFF));
 	ClassDB::bind_method(D_METHOD("overlap_sphere", "center", "radius", "mask"), &GMPPhysicsWorld::overlap_sphere, DEFVAL(0xFFFFFFFF));
 	ClassDB::bind_method(D_METHOD("overlap_box", "transform", "size", "mask"), &GMPPhysicsWorld::overlap_box, DEFVAL(0xFFFFFFFF));

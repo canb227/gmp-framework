@@ -47,7 +47,7 @@ public class ENetNetwork : Network
     // uses ids up to 16; 64 leaves headroom.
     private const int ChannelCount = 64;
     private const int MaxInbound = 32;
-    private const Channel DirChannel = Channel.NET_tba; // (2) transport endpoint directory
+    private const Channel DirChannel = Channel.NET_Directory;
 
     /// <summary>Sent with the disconnect when this peer leaves on purpose; a timeout carries 0.</summary>
     private const int LeavingCode = 1;
@@ -120,10 +120,10 @@ public class ENetNetwork : Network
 
     private readonly System.Collections.Generic.Dictionary<ulong, SendQueue> _sendQueues = new();
 
-    public event Network.MessageReceived MessageReceivedEvent;
-    public event Network.PeerConnected PeerConnectedEvent;
-    public event Network.PeerDisconnected PeerDisconnectedEvent;
-    public event Network.PeerRepaired PeerRepairedEvent;
+    public event System.Action<ulong, Channel, byte[]> MessageReceivedEvent;
+    public event System.Action<ulong> PeerConnectedEvent;
+    public event System.Action<ulong> PeerDisconnectedEvent;
+    public event System.Action<ulong> PeerRepairedEvent;
 
     // ---- the network thread ----------------------------------------------------
 

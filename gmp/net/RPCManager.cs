@@ -6,14 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
+/// <summary>One RPC on the wire. Its target is either a node path or a GMPObject id, never both.</summary>
 [GenerateShape]
 public partial record RPC
 {
-
     public string MethodName;
 
+    /// <summary>The target node's path, or null when <see cref="ObjectID"/> names the target.</summary>
     public string NodePath;
 
+    /// <summary>The target GMPObject's id, or 0 when <see cref="NodePath"/> names the target.</summary>
     public ulong ObjectID;
 
     /// <summary>When it was sent (<see cref="GameWorld.netTime"/>).</summary>
@@ -74,7 +76,7 @@ public partial class RPCManager : Node
 
     /// <summary>
     /// When the RPC currently being handled was sent (<see cref="GameWorld.netTime"/>; 0 outside a handler). For
-    /// state several peers may write, the newest send wins (see <c>GameWorld.Ownership.cs</c>).
+    /// state several peers may write, keep the value with the newest send time (ties to the higher peer id).
     /// </summary>
     public static ulong sendTime { get; private set; }
 
@@ -113,12 +115,6 @@ public partial class RPCManager : Node
     public static Error RPC(ulong objectID, string methodName, object[] args)
     {
         return Lobby.SendToAllAndSelf(Channel.RPC_Main, Pack(methodName, null, objectID, args));
-    }
-
-    /// <summary>Calls <paramref name="methodName"/> on the node at <paramref name="nodePath"/> on every peer, including this one.</summary>
-    public static Error RPC(string nodePath, string methodName, object[] args)
-    {
-        return Lobby.SendToAllAndSelf(Channel.RPC_Main, Pack(methodName, nodePath, 0, args));
     }
 
     /// <summary>Calls <paramref name="methodName"/> on <paramref name="targetNode"/> on one peer only (may be this peer).</summary>
@@ -313,8 +309,7 @@ public partial class RPCManager : Node
         }
     }
 
-    // Walks the type hierarchy so private [RPC] methods declared on base classes are found too, then the
-    // implemented interfaces, so an interface's default [RPC] methods (e.g. Activator's) are found as well.
+    // Walks the type hierarchy so private [RPC] methods declared on base classes are found too.
     private static RpcMethod FindRpcMethod(Type type, string name)
     {
         if (methodCache.TryGetValue((type, name), out RpcMethod cached))
@@ -324,11 +319,6 @@ public partial class RPCManager : Node
         for (Type t = type; t != null && found == null; t = t.BaseType)
         {
             found = FindDeclaredRpcMethod(t, name);
-        }
-        foreach (Type i in type.GetInterfaces())
-        {
-            if (found != null) break;
-            found = FindDeclaredRpcMethod(i, name);
         }
         methodCache[(type, name)] = found;
         return found;

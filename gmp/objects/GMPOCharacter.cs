@@ -1,12 +1,11 @@
 using Godot;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 /// <summary>
 /// GMPObject base for walking characters (the player). Attach a script deriving from this to a <c>GMPCharacter</c> node
 /// (our C++ character, native/src/physics_character.h; C# sees it as a Node3D), whose origin is at the feet. The
-/// character's authority moves it with <see cref="Move"/> each physics tick; every other peer places it from its states,
-/// and its body follows the node, so it pushes items and blocks other characters everywhere.
+/// character's authority moves it with <see cref="Move"/> each physics tick; every other peer places it from the states
+/// the subclass sends (<see cref="GenerateStateUpdate"/>), and its body follows the node, so it pushes items and blocks
+/// other characters everywhere.
 /// </summary>
 public partial class GMPOCharacter : Node3D, GMPObject
 {
@@ -16,9 +15,6 @@ public partial class GMPOCharacter : Node3D, GMPObject
     public int priority { get; set; }
     [Export]
     public bool pauseable { get; set; } = true;
-    /// <summary>How quickly non-authority copies close the gap to replicated state (1/s); 0 snaps.</summary>
-    [Export]
-    public float syncLerpRate { get; set; } = 10f;
 
     [ExportGroup("READONLY")]
     [Export]
@@ -29,7 +25,6 @@ public partial class GMPOCharacter : Node3D, GMPObject
     public ulong owner { get; set; }
     [Export]
     public int priorityAccumulator { get; set; }
-    public byte[] desiredState { get; set; }
 
     /// <summary>Where the character looks from and toward (forward is -Z): the bodies it sees sync more often.</summary>
     public virtual Transform3D ViewTransform()
@@ -39,20 +34,16 @@ public partial class GMPOCharacter : Node3D, GMPObject
 
     public virtual void AfterInit()
     {
-        if (authority == Lobby.selfPeerID && SyncHelpers.TryReadTransform(desiredState, out var s))
-        {
-            TeleportCharacter(new Transform3D(Basis.FromEuler(s.rot), s.pos));
-        }
     }
 
+    /// <summary>Nothing by default: a subclass sends where its character is (and anything else) itself.</summary>
     public virtual byte[] GenerateStateUpdate()
     {
-        return SyncHelpers.WriteTransform(this);
+        return null;
     }
 
     public virtual void ApplyStateUpdate(byte[] update)
     {
-        desiredState = update;
     }
 
     public virtual byte[] SaveState()
@@ -62,14 +53,6 @@ public partial class GMPOCharacter : Node3D, GMPObject
 
     public virtual void LoadState(byte[] state)
     {
-    }
-
-    public override void _PhysicsProcess(double delta)
-    {
-        if (authority != Lobby.selfPeerID && SyncHelpers.TryReadTransform(desiredState, out var s))
-        {
-            SyncHelpers.LerpTransform(this, s, SyncHelpers.LerpWeight(syncLerpRate, delta));
-        }
     }
 
     // ---- GMPCharacter ----

@@ -80,23 +80,18 @@ public static class PhysicsWorld
     static readonly StringName getItemCountName = "get_item_count";
     static readonly StringName getItemsBelowName = "get_items_below";
     static readonly StringName kickRandomItemsName = "kick_random_items";
-    static readonly StringName hasBodyName = "has_body";
     static readonly StringName getBodyNodeName = "get_body_node";
     static readonly StringName getBodyTransformName = "get_body_transform";
     static readonly StringName getBodyLinearVelocityName = "get_body_linear_velocity";
     static readonly StringName getBodyAngularVelocityName = "get_body_angular_velocity";
     static readonly StringName getBodyMassName = "get_body_mass";
-    static readonly StringName isBodyAsleepName = "is_body_asleep";
     static readonly StringName applyBodyForceName = "apply_body_force";
-    static readonly StringName applyBodyImpulseName = "apply_body_impulse";
     static readonly StringName dampBodySpinName = "damp_body_spin";
     static readonly StringName teleportBodyName = "teleport_body";
     static readonly StringName setBodyTagsName = "set_body_tags";
     static readonly StringName setBodyAuthorityName = "set_body_authority";
     static readonly StringName holdBodyName = "hold_body";
     static readonly StringName showBodyNewestName = "show_body_newest";
-    static readonly StringName watcherTagsName = "watcher_tags";
-    static readonly StringName getTouchesName = "get_touches";
     static readonly StringName getHitsName = "get_hits";
     static readonly StringName setViewersName = "set_viewers";
     static readonly StringName getStatsName = "get_stats";
@@ -132,6 +127,7 @@ public static class PhysicsWorld
         return hit;
     }
 
+    /// <summary>The ids of the bodies overlapping the sphere. By default leaves out <see cref="GameWorld.QueryHiddenLayer"/>; sensors are never found.</summary>
     public static long[] OverlapSphere(Vector3 center, float radius, long mask = ~GameWorld.QueryHiddenLayer)
     {
         return world.Call(overlapSphereName, center, radius, mask).AsInt64Array();
@@ -154,26 +150,35 @@ public static class PhysicsWorld
 
     // ---- loose items ----
 
+    /// <summary>
+    /// Registers a kind of loose item (its colliders, meshes, tags, priority) and returns its index for
+    /// <see cref="SpawnItem"/>, or -1 if the description can't be used. ItemWorld builds the description from an item's
+    /// dropped scene, once per item id; see ItemWorld.KindOf for its keys.
+    /// </summary>
     public static int RegisterItemKind(Godot.Collections.Dictionary description)
     {
         return world.Call(registerItemKindName, description).AsInt32();
     }
 
+    /// <summary>Adds a loose item of <paramref name="kind"/> on this peer only, simulated by <paramref name="authority"/>. Use ItemWorld.Spawn, which keeps the game's record too.</summary>
     public static void SpawnItem(ulong id, int kind, ulong authority, Transform3D transform, Vector3 linearVelocity, Vector3 angularVelocity)
     {
         world.Call(spawnItemName, id, kind, authority, transform, linearVelocity, angularVelocity);
     }
 
+    /// <summary>Removes a loose item on this peer only. Use ItemWorld.Despawn or RemoveLocal, which keep the game's record too.</summary>
     public static void DespawnItem(ulong id)
     {
         world.Call(despawnItemName, id);
     }
 
+    /// <summary>Removes every loose item on this peer (GameWorld.ClearWorld).</summary>
     public static void ClearItems()
     {
         world.Call(clearItemsName);
     }
 
+    /// <summary>How many loose items there are on this peer.</summary>
     public static int ItemCount()
     {
         return world.Call(getItemCountName).AsInt32();
@@ -193,56 +198,46 @@ public static class PhysicsWorld
 
     // ---- any body, by id ----
 
-    public static bool HasBody(ulong id)
-    {
-        return world.Call(hasBodyName, id).AsBool();
-    }
-
     /// <summary>The GMPBody node with this id, or null (a loose item, or nothing).</summary>
     public static Node3D BodyNode(ulong id)
     {
         return world.Call(getBodyNodeName, id).As<Node3D>();
     }
 
+    /// <summary>Where the body is in the world now (identity if there is no body with this id).</summary>
     public static Transform3D BodyTransform(ulong id)
     {
         return world.Call(getBodyTransformName, id).AsTransform3D();
     }
 
+    /// <summary>The body's position: the origin of <see cref="BodyTransform"/>.</summary>
     public static Vector3 BodyPosition(ulong id)
     {
         return BodyTransform(id).Origin;
     }
 
+    /// <summary>The body's velocity (m/s).</summary>
     public static Vector3 BodyLinearVelocity(ulong id)
     {
         return world.Call(getBodyLinearVelocityName, id).AsVector3();
     }
 
+    /// <summary>The body's spin (radians/s about each axis).</summary>
     public static Vector3 BodyAngularVelocity(ulong id)
     {
         return world.Call(getBodyAngularVelocityName, id).AsVector3();
     }
 
+    /// <summary>The body's mass (kg), from its shapes' sizes and densities.</summary>
     public static float BodyMass(ulong id)
     {
         return world.Call(getBodyMassName, id).AsSingle();
     }
 
-    /// <summary>Asleep in this peer's simulation (only means something where the body is simulated).</summary>
-    public static bool IsBodyAsleep(ulong id)
-    {
-        return world.Call(isBodyAsleepName, id).AsBool();
-    }
-
+    /// <summary>Pushes the body through its centre for the next step (newtons), waking it. Only does anything where the body is simulated.</summary>
     public static void ApplyBodyForce(ulong id, Vector3 force)
     {
         world.Call(applyBodyForceName, id, force);
-    }
-
-    public static void ApplyBodyImpulse(ulong id, Vector3 impulse)
-    {
-        world.Call(applyBodyImpulseName, id, impulse);
     }
 
     /// <summary>Takes <paramref name="fraction"/> (0 to 1) of the body's spin away.</summary>
@@ -251,6 +246,7 @@ public static class PhysicsWorld
         world.Call(dampBodySpinName, id, fraction);
     }
 
+    /// <summary>Puts the body there at once, without sweeping it across.</summary>
     public static void TeleportBody(ulong id, Transform3D transform)
     {
         world.Call(teleportBodyName, id, transform);
@@ -313,21 +309,6 @@ public static class PhysicsWorld
 
     // ---- events ----
 
-    /// <summary>Shapes with any of these tags report their new touches (<see cref="Touches"/>); the rest don't.</summary>
-    public static void SetWatcherTags(ulong tags)
-    {
-        world.Set(watcherTagsName, tags);
-    }
-
-    /// <summary>
-    /// The last step's new touches where one side's shape has a watcher tag: four numbers each, body id A, body id B,
-    /// then the tags of A's and B's shapes that touched.
-    /// </summary>
-    public static long[] Touches()
-    {
-        return world.Call(getTouchesName).AsInt64Array();
-    }
-
     /// <summary>
     /// Fills <paramref name="hits"/> with this tick's impacts at least <paramref name="minSpeed"/> (m/s) and within
     /// <paramref name="maxDistance"/> of <paramref name="listener"/>. Read through <see cref="HitStream"/>.
@@ -353,6 +334,7 @@ public static class PhysicsWorld
 
     // ---- numbers, for the perf window and tests ----
 
+    /// <summary>The world's counts and timings (items, awake bodies, step times, sync), for the perf window and tests.</summary>
     public static Godot.Collections.Dictionary Stats()
     {
         return world.Call(getStatsName).AsGodotDictionary();

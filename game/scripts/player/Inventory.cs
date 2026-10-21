@@ -2,39 +2,52 @@ using Godot;
 using PolyType;
 using System;
 
+/// <summary>One inventory slot: an item id and how many (empty when the id is null or the count 0).</summary>
 [GenerateShape]
 public partial struct InventorySlot
 {
     public string itemID;
     public int Count;
 
+    /// <summary>Nothing in it.</summary>
     public bool IsEmpty => itemID == null || Count <= 0;
 }
 
 [GenerateShapeFor<InventorySlot[]>]
 public partial class Witness { }
 
+/// <summary>
+/// A player's items (<see cref="FactoryPlayer.inventory"/>): <see cref="TotalSlots"/> slots, the first
+/// <see cref="HotbarSlots"/> of them the hotbar. Plain data on each peer; the player syncs its own changes.
+/// Every method that changes it raises <see cref="InventoryChanged"/>; out-of-range slot indices are ignored.
+/// </summary>
 public class Inventory
 {
     public const int TotalSlots = 35;
+    /// <summary>Slots 0 to HotbarSlots - 1 are the hotbar.</summary>
     public const int HotbarSlots = 10;
 
     public InventorySlot[] slots = new InventorySlot[TotalSlots];
+    /// <summary>The hotbar slot whose item is in hand; -1 for none.</summary>
     public int ActiveHotbarSlot { get; set; } = 0;
 
+    /// <summary>Something in <see cref="slots"/> changed.</summary>
     public event Action InventoryChanged;
 
+    /// <summary>The slot at <paramref name="index"/>; an empty one if out of range.</summary>
     public InventorySlot GetSlot(int index)
     {
         if (index < 0 || index >= TotalSlots) return default;
         return slots[index];
     }
 
+    /// <summary>Raises <see cref="InventoryChanged"/>, for code that changed <see cref="slots"/> directly.</summary>
     public void InventoryUpdated()
     {
         InventoryChanged?.Invoke();
     }
 
+    /// <summary>Empties the slot.</summary>
     public void ClearSlot(int index)
     {
         if (index < 0 || index >= TotalSlots) return;
@@ -43,6 +56,7 @@ public class Inventory
         InventoryChanged?.Invoke();
     }
 
+    /// <summary>Swaps the contents of two slots.</summary>
     public void SwapSlots(int a, int b)
     {
         if (a < 0 || a >= TotalSlots || b < 0 || b >= TotalSlots) return;
@@ -51,6 +65,10 @@ public class Inventory
         InventoryChanged?.Invoke();
     }
 
+    /// <summary>
+    /// Moves as much of <paramref name="source"/>'s stack onto <paramref name="target"/>'s as fits, if both hold the same
+    /// item. Returns what is left in <paramref name="source"/> (0 if nothing was moved because they can't merge).
+    /// </summary>
     public int MergeSlots(int source, int target)
     {
         if (source < 0 || source >= TotalSlots || target < 0 || target >= TotalSlots) return 0;
@@ -72,6 +90,7 @@ public class Inventory
         return slots[source].Count;
     }
 
+    /// <summary>Adds <paramref name="count"/> of an item, topping up its stacks first, then filling empty slots. Returns how many didn't fit (all of them for an item with no definition).</summary>
     public int AddItem(string itemID, int count = 1)
     {
         ItemInfo item = ItemInfo.Fetch(itemID);
@@ -107,6 +126,7 @@ public class Inventory
         return remaining;
     }
 
+    /// <summary>Takes up to <paramref name="count"/> from the slot; returns how many were taken.</summary>
     public int RemoveFromSlot(int index, int count = 1)
     {
         if (index < 0 || index >= TotalSlots || slots[index].IsEmpty) return 0;
@@ -140,16 +160,10 @@ public class Inventory
     /// <summary>True if at least one more of <paramref name="itemID"/> fits (a free slot or a stack with space).</summary>
     public bool HasRoomFor(string itemID)
     {
-        ItemInfo item = ItemInfo.Fetch(itemID);
-        if (item == null) return false;
-        foreach (InventorySlot slot in slots)
-        {
-            if (slot.IsEmpty || (slot.itemID == itemID && slot.Count < item.maxStackSize))
-                return true;
-        }
-        return false;
+        return RoomFor(itemID) > 0;
     }
 
+    /// <summary>The item id in the active hotbar slot, or null if it's empty (or none is active).</summary>
     public string GetEquippedItem()
     {
         if (ActiveHotbarSlot == -1) return null;

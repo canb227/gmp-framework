@@ -196,7 +196,7 @@ public partial class GameWorld
     static void SendRestore()
     {
         restoreSent = true;
-        byte[] data = syncMode == SyncMode.Load ? SaveManager.PrepareLoaded(loadData) : SaveManager.Capture(syncMode == SyncMode.Resync, syncMode == SyncMode.Join);
+        byte[] data = syncMode == SyncMode.Load ? SaveManager.PrepareLoaded(loadData) : SaveManager.Capture(syncMode == SyncMode.Resync);
         loadData = null;
         if (data == null)
         {
@@ -343,8 +343,18 @@ public partial class GameWorld
         if (started)
         {
             // Its avatar goes first (the game keeps it for saves), then whatever else it simulated goes to the host.
+            // Every peer does this when it loses its link to a peer that left, so they all agree without sending anything.
             GameBootstrap.PeerLeft(peer);
-            RehomeFrom(peer);
+            foreach (GMPObject gmpo in syncedObjs.Values)
+            {
+                if (gmpo.authority == peer)
+                {
+                    gmpo.authority = Lobby.hostID;
+                    // The new authority's clock may be behind the old one's: don't hold its updates against the old ones'.
+                    lastStateTime.Remove(gmpo.id);
+                    gmpo.OnAuthorityChanged();
+                }
+            }
         }
         // Should it come back, its tick count starts again from scratch.
         playbackClocks.Remove(peer);

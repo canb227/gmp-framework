@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-// Tags: data about a body or one of its shapes, one bit each, for whoever reads hits, ray casts and touches to
+// Tags: data about a body or one of its shapes, one bit each, for whoever reads hits and ray casts to
 // interpret as they wish. Bit n is the tag numbered n in the game's SurfaceTags enum
 // (game/scripts/items/SurfaceTags.cs), so those numbers must never change.
 //

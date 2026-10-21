@@ -17,9 +17,10 @@ public partial class FactoryPlayer : GMPOCharacter
     public static bool displayPlayerDebugInfo = false;
     /// <summary>Every player in the world, local and remote (e.g. for the items' sync priority by distance).</summary>
     public static readonly List<FactoryPlayer> all = new();
-    public int team;
-    public bool isHuman;
+    /// <summary>The peer whose input drives this player (its authority, unless it has left).</summary>
     public ulong controllingPeerID;
+    /// <summary>How quickly remote copies close the gap to where their controller says they are (1/s); 0 snaps.</summary>
+    [Export] public float syncLerpRate = 10f;
     float gravityMagnitude = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
     Vector3 gravityDirection = ProjectSettings.GetSetting("physics/3d/default_gravity_vector").AsVector3();
     Vector3 gravity;
@@ -259,6 +260,13 @@ public partial class FactoryPlayer : GMPOCharacter
 
     public override void _PhysicsProcess(double delta)
     {
+        if (!isLocal)
+        {
+            FollowRemote(delta);
+            return;
+        }
+
+        // The surface underfoot, for the footstep sounds (only the local player plays them).
         RayHit hit = PhysicsWorld.Raycast(new Vector3(GlobalPosition.X, GlobalPosition.Y+2.0f, GlobalPosition.Z), new Vector3(GlobalPosition.X, GlobalPosition.Y-4.0f, GlobalPosition.Z), ~(1L << 2));
         SurfaceTags tags = (SurfaceTags)hit.tags;
 
@@ -286,21 +294,12 @@ public partial class FactoryPlayer : GMPOCharacter
         {
             currentSurface = 9; //tile
         }
-        GD.Print(tags.ToString());
-        
-        if (!isLocal)
-        {
-            FollowRemote(delta);
-            return;
-        }
 
         // Gameplay rays and held tools use where the player actually is this tick, not where it's drawn.
         PoseCamera(false);
         UpdatePickTarget();
         ApplyMovement((float)delta);
         PoseCamera(false);
-
-        
     }
 
     /// <summary>Remote copy: eases toward where its controller says it is now (the latest state carried on at its velocity).</summary>
@@ -313,7 +312,13 @@ public partial class FactoryPlayer : GMPOCharacter
         remoteAge += (float)delta;
         // Carried on for a little while only, so a copy whose updates stop doesn't drift off.
         Vector3 predicted = remotePosition + remoteVelocity * Mathf.Min(remoteAge, 0.25f);
-        Vector3 position = GlobalPosition.Lerp(predicted, SyncHelpers.LerpWeight(syncLerpRate, delta));
+        // Frame-rate independent: the fraction of the gap closed this frame at syncLerpRate.
+        float weight = 1f;
+        if (syncLerpRate > 0)
+        {
+            weight = 1f - Mathf.Exp(-syncLerpRate * (float)delta);
+        }
+        Vector3 position = GlobalPosition.Lerp(predicted, weight);
         if (position.DistanceTo(predicted) > 5f)
         {
             // Far off (a teleport, a respawn): jump there rather than sweep through everything on the way.
@@ -534,7 +539,6 @@ public partial class FactoryPlayer : GMPOCharacter
         PlayerSync msg = new PlayerSync
         {
             controllingPeerID = this.controllingPeerID,
-            isHuman = this.isHuman,
             pos = this.Position,
             rot = this.Rotation,
             // Remote copies keep their camera as a child of the body, so send the pitch alone, not the
@@ -553,7 +557,6 @@ public partial class FactoryPlayer : GMPOCharacter
         if (update == null || update.Length == 0) return;
         PlayerSync msg = GMPObject.serializer.Deserialize<PlayerSync>(update);
         controllingPeerID = msg.controllingPeerID;
-        isHuman = msg.isHuman;
         if (isLocal)
         {
             // Only a spawn-time state reaches the local player: put it there.
@@ -602,7 +605,7 @@ public partial class FactoryPlayer : GMPOCharacter
         var cell = BuildGrid.WorldToCell(GlobalPosition);
 
         ImGui.Begin("debugui player", ref displayPlayerDebugInfo);
-        ImGui.Text($"Peer ID: {controllingPeerID} | Team: {team} | Human: {isHuman}");
+        ImGui.Text($"Peer ID: {controllingPeerID}");
         ImGui.Text($"Position: {GlobalPosition} | Velocity: {cachedVel}");
         ImGui.Text($"Grid Cell: ({cell.X}, {cell.Y}, {cell.Z})");
         ImGui.Text($"Highlighted Cell: {(BuildGrid.highlightedCell is (int, int, int) hc ? $"({hc.X}, {hc.Y}, {hc.Z})" : "none")}");
@@ -614,12 +617,12 @@ public partial class FactoryPlayer : GMPOCharacter
     }
 }
 
-/// <summary>Sent as an array of values; see the note on <see cref="TransformSyncState"/> about [Key] numbers.</summary>
+/// <summary>Sent as an array of values; see the note on <see cref="WorldTickMessage"/> about [Key] numbers.</summary>
 [GenerateShape]
 public partial record struct PlayerSync
 {
     [Key(0)] public ulong controllingPeerID;
-    [Key(1)] public bool isHuman;
+    // Key 1 held isHuman once: don't reuse it.
     [Key(2)] public Vector3 pos;
     [Key(3)] public Vector3 rot;
     [Key(4)] public Vector3 headRot;

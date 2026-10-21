@@ -56,16 +56,16 @@ public static class SaveManager
 
     /// <summary>
     /// Host: the current game. <paramref name="forRestore"/> readies it for every peer to restore at once (a resync):
-    /// departed peers' objects go to the host and their avatars are left out. <paramref name="keepClaims"/> keeps
+    /// departed peers' objects go to the host and their avatars are left out.
     /// claimed objects with their claimers, for a joiner restoring alone while everyone else plays on.
     /// </summary>
-    public static byte[] Capture(bool forRestore, bool keepClaims = false)
+    public static byte[] Capture(bool forRestore)
     {
         SaveGame save = new()
         {
             version = Version,
             gameInfo = Lobby.gameInfo,
-            world = GameWorld.SnapshotWorld(keepClaims),
+            world = GameWorld.SnapshotWorld(),
             items = ItemWorld.Capture(),
             shopStock = Shop.Stock.ToList(),
             shopBalances = Shop.SaveBalances(),
@@ -219,7 +219,7 @@ public static class SaveManager
     // Locally, like the rest of the restore: every restoring peer spawns the same avatars with the same ids.
     static void SpawnPlayer(PlayerSave p)
     {
-        PlayerSync sync = new() { controllingPeerID = p.peerID, isHuman = true, pos = p.pos, rot = p.rot, equippedSlot = p.equippedSlot };
+        PlayerSync sync = new() { controllingPeerID = p.peerID, pos = p.pos, rot = p.rot, equippedSlot = p.equippedSlot };
         GMPOInitData init = new(p.id, p.peerID, p.peerID, 0, true);
         if (GameWorld.SpawnLocal(GameBootstrap.PlayerScene, p.pos, p.rot, init, GMPObject.serializer.Serialize(sync)) is not FactoryPlayer player)
         {

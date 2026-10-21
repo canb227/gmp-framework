@@ -2,17 +2,26 @@ using Godot;
 using Nerdbank.MessagePack;
 using Nerdbank.MessagePack.Godot;
 using PolyType;
-using System;
 using static Godot.Node;
 
+/// <summary>
+/// The identity a spawned <see cref="GMPObject"/> gets on every peer, handed to <see cref="GMPObject.Init"/>. Pass
+/// <c>new()</c> (or set only what you need) to <see cref="GameWorld.SpawnScene(string, Vector3, Vector3, GMPOInitData, byte[], NodePath)"/>:
+/// a 0 id, authority or owner is filled in there (a new random id, and the spawning peer).
+/// </summary>
 [GenerateShape]
-public partial record struct GMPOInitData : IEquatable<GMPOInitData>
+public partial record struct GMPOInitData
 {
+    /// <summary>The object's network-wide id; 0 to have one generated.</summary>
     public ulong id;
+    /// <summary>The peer that simulates it and sends its state; 0 for the spawning peer.</summary>
     public ulong authority;
+    /// <summary>The peer it belongs to (e.g. the player who built it); 0 for the spawning peer.</summary>
     public ulong owner;
+    /// <summary>Sync priority; 0 keeps the scene's own (or 1).</summary>
     public int priority;
-    public bool pauseable;  
+    /// <summary>Whether it stops while the tree is paused (see <see cref="GMPObject.pauseable"/>).</summary>
+    public bool pauseable;
 
     public GMPOInitData(ulong id, ulong authority, ulong owner, int priority, bool pauseable)
     {
@@ -28,7 +37,8 @@ public partial record struct GMPOInitData : IEquatable<GMPOInitData>
 /// <summary>
 /// Contract for a networked, spawnable object. Godot never sees this interface directly — it is a
 /// plain C# interface, so `[Export]` here has no effect and Godot never calls its default methods.
-/// Each concrete GMPO base (Node3D/Box3D wrapper) re-declares its own `[Export]`ed backing members.
+/// Each concrete base (<see cref="GMPOBody"/>, <see cref="GMPOCharacter"/>) re-declares its own `[Export]`ed backing
+/// members, and its own virtual copies of the default methods below so subclasses can override them.
 /// </summary>
 [GenerateShape]
 public partial interface GMPObject
@@ -57,10 +67,7 @@ public partial interface GMPObject
     /// <summary>Running per-send accumulation of <see cref="priority"/>, used to decide send order within the state-update byte budget. Reset to 0 when this object's update is sent, or when <see cref="GenerateStateUpdate"/> returns nothing.</summary>
     public int priorityAccumulator { get; set; }
 
-    /// <summary>The most recent state stored by <see cref="ApplyStateUpdate"/>. Non-authority peers consume it in <c>_PhysicsProcess</c>; the authority reads it once in <c>AfterInit</c> to move to its spawn state.</summary>
-    public byte[] desiredState { get; set; }
-
-
+    /// <summary>The serializer for every GMPObject state, save and RPC payload type (knows Godot's value types).</summary>
     public static MessagePackSerializer serializer = new MessagePackSerializer().WithGodotConverters();
 
     /// <summary>Called on the authority peer on every send, highest <see cref="priorityAccumulator"/> first, for each object that may send (an update that doesn't fit what is left of the budget is discarded, and the object keeps its accumulator for next time). Serializes this object's current state for every other peer to apply via <see cref="ApplyStateUpdate"/>. Return null/empty to send nothing.</summary>
@@ -75,7 +82,7 @@ public partial interface GMPObject
     {
     }
 
-    /// <summary>Called on non-authority peers when a state update arrives from the authority, and on <b>every</b> peer (authority included) by <see cref="Init"/> with the spawn-time <c>initState</c>. The transform-synced bases just store it into <see cref="desiredState"/>; overrides may apply it immediately (e.g. FactoryPlayer).</summary>
+    /// <summary>Called on non-authority peers when a state update arrives from the authority, and on <b>every</b> peer (authority included) by <see cref="Init"/> with the spawn-time <c>initState</c> when there is one. <see cref="GameWorld.stateTick"/> is the sender's tick it was sent on.</summary>
     public void ApplyStateUpdate(byte[] update);
 
     /// <summary>
@@ -131,8 +138,7 @@ public partial interface GMPObject
     }
 
     /// <summary>
-    /// Called on every peer after <see cref="authority"/> changes hands (see <c>GameWorld.Claim</c>), including when
-    /// a peer leaves and its objects go to the host.
+    /// Called on every peer after <see cref="authority"/> changes hands: when a peer leaves, its objects go to the host.
     /// Override to switch between simulating (authority) and following replicated state.
     /// </summary>
     public virtual void OnAuthorityChanged()

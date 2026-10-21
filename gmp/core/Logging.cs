@@ -1,75 +1,37 @@
 using Godot;
-using System;
 using System.Runtime.CompilerServices;
-using Limbo;
 using Limbo.Console.Sharp;
 
 /// <summary>
-/// Static logger class to keep things organized.
+/// The game's log: each line goes to the in-game console (LimboConsole) and to Godot's output, which Godot also writes
+/// to user://logs/godot.log. Lines read "[prefix][time]message"; the prefix is usually the class logging.
 /// </summary>
 public static class Logging
 {
-    //Todo: Logging to file should be a launch option probably
-    /// <summary>
-    /// compile time constant! Set to true if the logger should start a new logfile at game launch and write to it
-    /// </summary>
-    public const bool bSaveLogsToFile = false;
-
-    /// <summary>
-    /// Is true if Logger is functioning.
-    /// </summary>
+    /// <summary>True once <see cref="Start"/> has run; lines logged before then are dropped.</summary>
     public static bool IsStarted = false;
-    private static FileAccess logFile = null;
-    private static bool writeToFile = false;
 
-    /// <summary>
-    /// Starts up the logging engine. Logging functions don't work until after this called.
-    /// </summary>
+    /// <summary>Starts the log (Global does it at startup, once the console exists).</summary>
     public static void Start()
     {
         IsStarted = true;
         Logging.Log("Logger started!", "Logging");
     }
 
-    /// <summary>
-    /// Starts logging to file
-    /// </summary>
-    public static void StartLoggingToFile()
-    {
-        Logging.Log("SaveLogsToFile is enabled, writing logs to disk. (This will reduce performance!)", "[Logging]");
-        string logName = $"[{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}]--[{DateTime.Now.Hour};{DateTime.Now.Minute};{DateTime.Now.Second}].txt";
-        string fileName = $"user://logs/{Global.steamid.ToString()}/{logName}";
-        Logging.Log($"Starting log file at: {fileName}", "LoggingMeta");
-        Logging.logFile = FileAccess.Open(fileName, FileAccess.ModeFlags.WriteRead);
-        if (Logging.logFile == null)
-        {
-            GD.PushError($"Error creating log file: {FileAccess.GetOpenError().ToString()}");
-        }
-        Logging.Log($"Log file created succesfully.", "LoggingMeta");
-        writeToFile = true;
-    }
-
-    /// <summary>
-    /// Prints the message to both the ingame console and to the default Godot console using default formatting. Also logs to file if <see cref="bSaveLogsToFile"/>
-    /// </summary>
-    /// <param name="message">message to log</param>
-    /// <param name="prefix">A custom prefix. Leave blank to remove prefix.</param>
-    /// <param name="timestamp">If true a system timestamp is added to the message.</param>
+    /// <summary>Logs an ordinary line.</summary>
+    /// <param name="message">What to log.</param>
+    /// <param name="prefix">Shown in brackets before the line, usually the class logging; empty or null for none.</param>
+    /// <param name="timestamp">Adds the system time after the prefix.</param>
+    /// <param name="codeTrace">Adds the calling method, file and line (filled in by the compiler).</param>
     public static void Log(string message, string prefix, bool timestamp = true, bool codeTrace = false, [CallerLineNumber] int line = 0, [CallerMemberName] string caller = "", [CallerFilePath] string callerFile = "")
     {
         if (!IsStarted) return;
         string finalMessage = Format(message, prefix, timestamp, codeTrace, line, caller, callerFile);
         LimboConsole.Info(finalMessage);
         GD.Print(finalMessage);
-        WriteToFile(finalMessage);
     }
 
-    /// <summary>
-    /// Prints the message to both the ingame console and to the default Godot console using warning formatting.
-    /// </summary>
-    /// <param name="message">message to log</param>
-    /// <param name="prefix">A custom prefix. Leave blank to remove prefix.</param>
-    /// <param name="timestamp">If true a system timestamp is added to the message.</param>
+    /// <summary>Logs a warning: also shown in the editor's debugger as one. Parameters as for <see cref="Log"/>.</summary>
     public static void Warn(string message, string prefix, bool timestamp = true, bool codeTrace = false, [CallerLineNumber] int line = 0, [CallerMemberName] string callerMethod = "", [CallerFilePath] string callerFile = "")
     {
         if (!IsStarted) return;
@@ -77,15 +39,9 @@ public static class Logging
         LimboConsole.Warn(finalMessage);
         GD.Print(finalMessage);
         GD.PushWarning(finalMessage);
-        WriteToFile(finalMessage);
     }
 
-    /// <summary>
-    /// Prints the message to both the ingame console and to the default Godot console using error formatting.
-    /// </summary>
-    /// <param name="message">message to log</param>
-    /// <param name="prefix">A custom prefix. Leave blank to remove prefix.</param>
-    /// <param name="timestamp">If true a system timestamp is added to the message.</param>
+    /// <summary>Logs an error: also shown in the editor's debugger as one. Parameters as for <see cref="Log"/>.</summary>
     public static void Error(string message, string prefix, bool timestamp = true, bool codeTrace = false, [CallerLineNumber] int line = 0, [CallerMemberName] string callerMethod = "", [CallerFilePath] string callerFile = "")
     {
         if (!IsStarted) return;
@@ -93,7 +49,6 @@ public static class Logging
         GD.Print(finalMessage);
         LimboConsole.Error(finalMessage);
         GD.PushError(finalMessage);
-        WriteToFile(finalMessage);
     }
 
     private static string Format(string message, string prefix, bool timestamp, bool codeTrace, int line, string caller, string callerFile)
@@ -108,18 +63,5 @@ public static class Logging
         if (codeTrace) trace = $" [from {caller} in {callerFile.Substring(callerFile.IndexOf("scripts"))} at line {line}]";
 
         return customPrefix + ts + message + trace;
-    }
-
-    private static void WriteToFile(string finalMessage)
-    {
-        if (!writeToFile) return;
-        if (logFile.StoreLine(finalMessage))
-        {
-            logFile.Flush(); //Flush the buffer to disk per line in case we crash. This probably incurs a non-trivial performance hit if you are logging a lot.
-        }
-        else
-        {
-            GD.PrintErr("ALERT! LOG TO FILE ERROR! Log file may be missing options!");
-        }
     }
 }

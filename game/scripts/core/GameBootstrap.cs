@@ -57,7 +57,6 @@ public static class GameBootstrap
 
         PlayerSync init = new PlayerSync();
         init.controllingPeerID = Lobby.selfPeerID;
-        init.isHuman = true;
         Vector3 spawnPos = PickSpawnPosition();
         Vector3 spawnRot = default;
         if (returning != null)

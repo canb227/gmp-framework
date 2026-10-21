@@ -6,45 +6,44 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-/*
- * Lobby flow
- * Host clicks Start Game in a Lobby 
- * Lobby.SendStartGame() is called on the host, a GameInfo update is sent out, then a START message is sent to everyone (including self)
- * The START message triggers the Lobby.OnStartGame() method on all peers, which starts GameWorld.Preload(), loading the assets we know we'll
- *      need (from gameInfo) and sends a DonePreloading message to everyone (including self) when done loading
- * Once all players have finished Preloading, the Lobby.LobbyDonePreloadingEvent is triggered, which the GameWorld listens for to run GameWorld.Init()
- * Everyone starts spawning shit. The host spawns the placeholders from the scene, players spawn their own player controller.
- * Once everyone has finished spawning shit, the Lobby.LobbyDoneLoadingEvent is triggered, at which point the game starts for real (is unpaused) and the lobby UI is dropped.
- */
-
-
+/// <summary>What a <see cref="Channel.LOBBY_Control"/> message says (its first byte).</summary>
 public enum LobbyControlCode : byte
 {
     START = 0,
     DonePreloading = 1,
-    UNREADY = 2,
     DoneLoading = 3,
 }
+
+/// <summary>
+/// The lobby (autoload): who is in the session and how to reach them, over a <see cref="Network"/> transport. Every
+/// peer links directly to every other (a mesh): the host hands each newcomer the roster, and the newcomer dials the rest.
+/// <para>
+/// Starting a game: the host's <see cref="SendStartGame"/> sends the <see cref="GameInfo"/>, then START to everyone. Each
+/// peer runs <c>GameWorld.Preload</c> (the host spawns the level) and says DonePreloading. Once every peer has,
+/// <see cref="LobbyDonePreloadingEvent"/> runs <c>GameWorld.Init</c> (each peer spawns its player) and each says
+/// DoneLoading. Once every peer has, <see cref="LobbyDoneLoadingEvent"/> starts the game (unpauses, drops the lobby UI).
+/// A peer that joins a running game skips all that: the host sends it the world (GameWorld.Resync.cs).
+/// </para>
+/// </summary>
 public partial class Lobby : Node
 {
-
     public static bool displayLobbyDebugInfo = false;
     public static Lobby instance;
-    
+
+    /// <summary>The settings of the game being set up or played (level, starter items, save to load); the host's, sent to everyone.</summary>
     public static GameInfo gameInfo = new();
+    /// <summary>The host's peer id (this peer's own when hosting); 0 until a joiner has linked to the host.</summary>
     public static ulong hostID = 0;
+    /// <summary>The transport in use, or null outside a lobby.</summary>
     public static Network network;
 
+    /// <summary>This peer's id: its Steam id, or a made-up one on LAN.</summary>
     public static ulong selfPeerID;
+    /// <summary>This peer hosts the lobby: it decides the game settings and is the default authority (and the shop's and quests' only writer).</summary>
     public static bool isHost;
 
-    // Every known member, including self, keyed by peerID.
+    /// <summary>Every known member, including this peer, by peer id.</summary>
     public static Dictionary<ulong, PlayerInfo> members = new();
-
-    private static List<(ulong, int)> outgoingTracker = new();
-    private static List<(ulong, int)> incomingTracker = new();
-    public static int incomingBandwidth = 0;
-    public static int outgoingBandwidth = 0;
 
     /// <summary>
     /// Running total of main-thread time in the transport's service() (Stopwatch ticks), for PerfDebug: receiving and
@@ -54,27 +53,26 @@ public partial class Lobby : Node
     /// </summary>
     public static long serviceCost;
 
-    public delegate void NewPeerConnected(ulong peerID);
-    public delegate void PeerDisconnected(ulong peerID);
-    public delegate void DisconnectedFromHost(ulong HostID);
-    public delegate void ConnectedToHost(ulong HostID);
-    public delegate void LobbyMembersChanged();
-    public delegate void LobbyGameInfoChanged();
-    public delegate void LobbyDoneLoading();
-    public delegate void LobbyDonePreloading();
-
-    public static event NewPeerConnected PeerConnectedEvent;
-    public static event PeerDisconnected PeerDisconnectedEvent;
+    /// <summary>A direct link to a peer is up (it is in <see cref="members"/> now).</summary>
+    public static event Action<ulong> PeerConnectedEvent;
+    /// <summary>A peer has gone (left, or its link timed out); it is out of <see cref="members"/> already.</summary>
+    public static event Action<ulong> PeerDisconnectedEvent;
     /// <summary>A link to this peer dropped and was made again; it stayed a member, but messages in the gap were lost.</summary>
-    public static event NewPeerConnected PeerRepairedEvent;
-    public static event ConnectedToHost ConnectedToHostEvent;
-    public static event DisconnectedFromHost DisconnectedFromHostEvent;
-    public static event LobbyMembersChanged LobbyMembersChangedEvent;   // any add/remove/rename
-    public static event LobbyGameInfoChanged LobbyGameInfoChangedEvent;
+    public static event Action<ulong> PeerRepairedEvent;
+    /// <summary>This peer is linked to the host (raised at once when hosting): the network can be listened to now.</summary>
+    public static event Action<ulong> ConnectedToHostEvent;
+    /// <summary>The host has gone.</summary>
+    public static event Action<ulong> DisconnectedFromHostEvent;
+    /// <summary>A member was added, removed or renamed.</summary>
+    public static event Action LobbyMembersChangedEvent;
+    /// <summary>The host sent new <see cref="gameInfo"/>.</summary>
+    public static event Action LobbyGameInfoChangedEvent;
+    /// <summary>Every peer has spawned its part of a new game, or a joiner has been sent the world: the game starts.</summary>
+    public static event Action LobbyDoneLoadingEvent;
+    /// <summary>Every peer has preloaded a new game: time to spawn (GameWorld.Init).</summary>
+    public static event Action LobbyDonePreloadingEvent;
 
-    public static event LobbyDoneLoading LobbyDoneLoadingEvent;
-    public static event LobbyDonePreloading LobbyDonePreloadingEvent;
-
+    /// <summary>How many members there are, this peer included.</summary>
     public static int MemberCount => members.Count;
 
     public override void _Ready()
@@ -90,8 +88,6 @@ public partial class Lobby : Node
         network?.Disconnect();
     }
 
-    public double timerMax = 2;
-    public double timer = 0;
     public override void _Process(double delta)
     {
         if (displayLobbyDebugInfo)
@@ -101,37 +97,6 @@ public partial class Lobby : Node
         long serviceStart = System.Diagnostics.Stopwatch.GetTimestamp();
         network?.service();
         serviceCost += System.Diagnostics.Stopwatch.GetTimestamp() - serviceStart;
-        incomingBandwidth = PruneAndSum(incomingTracker, timer * 1000);
-        outgoingBandwidth = PruneAndSum(outgoingTracker, timer * 1000);
-
-        timer += delta;
-        if (timer>timerMax)
-        {
-            timer = 0;
-        }
-
-    }
-
-    /// <summary>
-    /// Drops the entries older than <paramref name="windowMs"/> and returns the byte total of the rest. In place and
-    /// without LINQ: this runs every frame, and per-frame garbage brings on the collector's pauses sooner.
-    /// </summary>
-    private static int PruneAndSum(List<(ulong, int)> tracker, double windowMs)
-    {
-        ulong now = Time.GetTicksMsec();
-        int total = 0;
-        for (int i = tracker.Count - 1; i >= 0; i--)
-        {
-            if (now - tracker[i].Item1 > windowMs)
-            {
-                tracker.RemoveAt(i);
-            }
-            else
-            {
-                total += tracker[i].Item2;
-            }
-        }
-        return total;
     }
 
     private void renderLobbyDebugInfo()
@@ -140,7 +105,6 @@ public partial class Lobby : Node
         ImGui.Text($"Network mode: {network?.GetType()}");
         ImGui.Text($"My Peer ID: {Lobby.selfPeerID}");
         ImGui.Text($"Lobby Host: {hostID} | Lobby Members: {members?.Count}");
-        ImGui.Text($"Bandwidth estimates (1s interval) in: {incomingBandwidth/ (int)timerMax /1000} KB/s | out: {outgoingBandwidth/ (int)timerMax /1000} KB/s");
         foreach(var member in members)
         {
             ImGui.Text($"   Name: {member.Value.Name} | ID: {member.Value.PeerID}");
@@ -165,6 +129,7 @@ public partial class Lobby : Node
         AddOrUpdateMember(selfID, selfName, isHost: false);
     }
 
+    /// <summary>Hosts a lobby over <paramref name="net"/> as <paramref name="selfID"/> (shown to others as <paramref name="selfName"/>).</summary>
     public static Error StartHost(Network net, ulong selfID, string selfName)
     {
         isHost = true;
@@ -173,12 +138,12 @@ public partial class Lobby : Node
         Error err = net.Host();
         LobbyMembersChangedEvent?.Invoke();
         Logging.Log($"hosting lobby as {selfName} (peer {selfID})", "NetworkSession");
-        BlastRoster();
+        SendToAllExceptSelf(Channel.LOBBY_Roster, RosterBytes());
         ConnectedToHostEvent?.Invoke(selfID);
         return err;
     }
 
-
+    /// <summary>Gets ready to join a lobby (listens, so later members can dial in); then <c>network.Connect</c> the host.</summary>
     public static Error StartJoin(Network net, ulong selfID, string selfName)
     {
         isHost = false;
@@ -189,7 +154,6 @@ public partial class Lobby : Node
         Logging.Log($"joining lobby as {selfName} (peer {selfID})", "NetworkSession");
         return err;
     }
-
 
     /// <summary>Disconnects, clears the roster and resets the game world so a new lobby can be hosted or joined.</summary>
     public static void LeaveLobby()
@@ -228,7 +192,7 @@ public partial class Lobby : Node
 
         // Introduce ourselves on every direct link so names propagate even across links the host never
         // brokered. From the host this is the full roster, so the newcomer can mesh.
-        SendRoster(peerID);
+        Send(peerID, Channel.LOBBY_Roster, RosterBytes());
 
         PeerConnectedEvent?.Invoke(peerID);
         if (discoveredHost)
@@ -253,8 +217,6 @@ public partial class Lobby : Node
 
     private static void OnIncomingNetworkMessage(ulong from, Channel ch, byte[] msg)
     {
-        incomingTracker.Add((Time.GetTicksMsec(), msg.Length));
-
         switch (ch)
         {
             case Channel.LOBBY_Roster:
@@ -351,16 +313,13 @@ public partial class Lobby : Node
 
     private static void OnIncomingGameInfoNetMessage(ulong from, byte[] data)
     {
-        MessagePackSerializer s = new();
-        GameInfo gi = s.Deserialize<GameInfo>(data);
-        gameInfo = gi;
+        gameInfo = serializer.Deserialize<GameInfo>(data);
         LobbyGameInfoChangedEvent?.Invoke();
     }
 
     private static void OnIncomingRosterNetMessage(ulong from, byte[] data)
     {
-        MessagePackSerializer s = new();
-        PlayerInfo[] roster = s.Deserialize<PlayerInfo[], Witness>(data);
+        PlayerInfo[] roster = serializer.Deserialize<PlayerInfo[], Witness>(data);
         foreach (var m in roster)
         {
             if (m.PeerID == selfPeerID)
@@ -377,6 +336,7 @@ public partial class Lobby : Node
         LobbyDoneLoadingEvent?.Invoke();
     }
 
+    /// <summary>Host: starts the game for every member with the current <see cref="gameInfo"/> (see the class summary).</summary>
     public static void SendStartGame()
     {
         Logging.Log($"Host is starting the game", "Lobby");
@@ -385,30 +345,20 @@ public partial class Lobby : Node
         {
             SendToAllAndSelf(Channel.LOBBY_Control, [(byte)LobbyControlCode.START]);
         }));
-
     }
 
+    /// <summary>Host: sends <see cref="gameInfo"/> to every other member (call after changing it).</summary>
     public static void SendGameInfoUpdate()
     {
         if (network == null)
             return;
-        MessagePackSerializer s = new();
-        byte[] data = s.Serialize(gameInfo);
+        byte[] data = serializer.Serialize(gameInfo);
         SendToAllExceptSelf(Channel.LOBBY_GameInfo, data);
     }
 
-    private static void SendRoster(ulong to)
+    private static byte[] RosterBytes()
     {
-        MessagePackSerializer s = new();
-        byte[] data = s.Serialize<PlayerInfo[],Witness>(members.Values.ToArray());
-        Send(to, Channel.LOBBY_Roster, data);
-    }
-
-    private static void BlastRoster()
-    {
-        MessagePackSerializer s = new();
-        byte[] data = s.Serialize<PlayerInfo[], Witness>(members.Values.ToArray());
-        SendToAllExceptSelf(Channel.LOBBY_Roster, data);
+        return serializer.Serialize<PlayerInfo[], Witness>(members.Values.ToArray());
     }
 
     // ---- app-facing send -------------------------------------------------------
@@ -418,7 +368,6 @@ public partial class Lobby : Node
     {
         if (network == null || members.Count == 0)
             return Error.Unconfigured;
-        outgoingTracker.Add((Time.GetTicksMsec(),msg.Length * members.Count));
         return BroadcastToMembers(true, ch, msg, sendFlags);
     }
 
@@ -427,7 +376,6 @@ public partial class Lobby : Node
     {
         if (network == null || members.Count <= 1)
             return Error.Unconfigured;
-        outgoingTracker.Add((Time.GetTicksMsec(), msg.Length * (members.Count-1)));
         return BroadcastToMembers(false, ch, msg, sendFlags);
     }
 
@@ -463,11 +411,13 @@ public partial class Lobby : Node
     {
         if (network == null)
             return Error.Unconfigured;
-        outgoingTracker.Add((Time.GetTicksMsec(), msg.Length));
         return network.Send(to, ch, msg, sendFlags);
     }
 
     // ---- helpers ---------------------------------------------------------------
+
+    /// <summary>For the lobby's own messages (roster, game info).</summary>
+    private static readonly MessagePackSerializer serializer = new();
 
     // Updates an existing entry in place: replacing it would wipe its loading flags whenever a roster arrives mid-load.
     private static void AddOrUpdateMember(ulong id, string name, bool isHost)

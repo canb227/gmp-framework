@@ -177,7 +177,7 @@ public partial class GameWorld : Node3D
 
     internal static void Preload(GameInfo gameInfo)
     {
-        //This runs on all players. Use it to preload the shit from the gameinfo you know you'll need.
+        // Runs on every peer when the host starts the game: load what the game info says will be needed.
         // The physics world needs to know whose items are whose before the level (and anything in it) spawns.
         physics.Call(setSelfPeerName, Lobby.selfPeerID);
         physics.Call(setSendIntervalName, SendInterval);
@@ -186,13 +186,13 @@ public partial class GameWorld : Node3D
 
     internal static void Init()
     {
-        //When this is called all players have completed the Preload function and are sitting staring at a loading screen.
+        // Every peer has finished Preload and is on the loading screen.
         GameBootstrap.Init();
         Lobby.SendToAllAndSelf(Channel.LOBBY_Control, [(byte)LobbyControlCode.DoneLoading]);
     }
 
     /// <summary>
-    /// Clears all per-session world state (spawned nodes, registries, claims, pending sync data) and the game's
+    /// Clears all per-session world state (spawned nodes, registries, pending sync data) and the game's
     /// (<see cref="GameBootstrap.ResetSession"/>), and re-pauses the tree, so the next lobby/game in this process
     /// starts clean. Called from
     /// <see cref="Lobby.LeaveLobby"/>.
@@ -232,8 +232,6 @@ public partial class GameWorld : Node3D
         {
             PhysicsWorld.ClearItems();
         }
-        claims.Clear();
-        leaseEnds.Clear();
         BuildGrid.ResetSession();
         ResetStateSync();
         WorldCleared?.Invoke();

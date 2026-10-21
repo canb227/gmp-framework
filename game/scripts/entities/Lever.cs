@@ -1,7 +1,7 @@
 using Godot;
 
 /// <summary>
-/// A two-position <see cref="Activator"/> (a toggle): pulled is on, pushed is off.
+/// A two-position <see cref="GMPOActivator"/> (a toggle): pulled is on, pushed is off.
 /// <para>
 /// Scene: the root is a static <c>GMPBody</c> whose collider covers the lever (it's what the player aims at),
 /// with <see cref="handle"/> a pivot node that tilts between <see cref="pushedAngle"/> and <see cref="pulledAngle"/>.

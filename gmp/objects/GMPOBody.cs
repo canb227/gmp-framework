@@ -1,5 +1,6 @@
 using Godot;
 
+/// <summary>How a <c>GMPBody</c> moves (its <c>body_type</c>).</summary>
 public enum BodyTypeEnum
 {
     Static = 0,
@@ -45,7 +46,6 @@ public partial class GMPOBody : Node3D, GMPObject
     public ulong owner { get; set; }
     [Export]
     public int priorityAccumulator { get; set; }
-    public byte[] desiredState { get; set; }
 
     /// <summary>Its authority simulates it; every other peer follows (the physics world does both).</summary>
     public virtual void AfterInit()
@@ -70,7 +70,6 @@ public partial class GMPOBody : Node3D, GMPObject
 
     public virtual void ApplyStateUpdate(byte[] update)
     {
-        desiredState = update;
     }
 
     public virtual void UpdateSyncPriority()
@@ -88,137 +87,30 @@ public partial class GMPOBody : Node3D, GMPObject
 
     // ---- GMPBody ----
     // Its properties and methods, called by name with cached names (C# can't see the C++ class). A plain Get/Set would
-    // first be matched against every property of this C# script.
+    // first be matched against every property of this C# script. For anything else, the by-id calls in PhysicsWorld
+    // work on node bodies too (velocities, forces, mass).
 
     static readonly StringName bodyTypeName = "body_type";
-    static readonly StringName enabledName = "enabled";
     static readonly StringName tagsName = "tags";
-    static readonly StringName getAllTagsName = "get_all_tags";
-    static readonly StringName collisionLayerName = "collision_layer";
-    static readonly StringName collisionMaskName = "collision_mask";
-    static readonly StringName gravityScaleName = "gravity_scale";
     static readonly StringName teleportName = "teleport";
-    static readonly StringName getLinearVelocityName = "get_linear_velocity";
-    static readonly StringName setLinearVelocityName = "set_linear_velocity";
-    static readonly StringName getAngularVelocityName = "get_angular_velocity";
-    static readonly StringName setAngularVelocityName = "set_angular_velocity";
-    static readonly StringName applyCentralImpulseName = "apply_central_impulse";
-    static readonly StringName applyImpulseName = "apply_impulse";
-    static readonly StringName applyCentralForceName = "apply_central_force";
-    static readonly StringName applyAngularImpulseName = "apply_angular_impulse";
-    static readonly StringName getMassName = "get_mass";
-    static readonly StringName isAwakeName = "is_awake";
-    static readonly StringName setAwakeName = "set_awake";
 
+    /// <summary>Static (never moves), kinematic (driven to its node each tick) or dynamic (simulated; its node follows it).</summary>
     public BodyTypeEnum bodyType
     {
         get => (BodyTypeEnum)ClassDB.ClassGetProperty(this, bodyTypeName).AsInt32();
         set => ClassDB.ClassSetProperty(this, bodyTypeName, (int)value);
     }
 
-    /// <summary>Off: no body in the world at all.</summary>
-    public bool enabled
-    {
-        get => ClassDB.ClassGetProperty(this, enabledName).AsBool();
-        set => ClassDB.ClassSetProperty(this, enabledName, value);
-    }
-
-    /// <summary>Tags the whole body was given (bits: tag n is bit n), on top of each GMPShape's own. 0: none of its own.</summary>
+    /// <summary>Tags the whole body was given (bits: tag n is bit n, see SurfaceTags), on top of each GMPShape's own. 0: none of its own.</summary>
     public ulong tags
     {
         get => (ulong)ClassDB.ClassGetProperty(this, tagsName).AsInt64();
         set => ClassDB.ClassSetProperty(this, tagsName, value);
     }
 
-    /// <summary>The body's tags: the ones it was given, or what its shapes have between them if it was given none.</summary>
-    public ulong allTags => (ulong)Call(getAllTagsName).AsInt64();
-
-    public long collisionLayer
-    {
-        get => ClassDB.ClassGetProperty(this, collisionLayerName).AsInt64();
-        set => ClassDB.ClassSetProperty(this, collisionLayerName, value);
-    }
-
-    public long collisionMask
-    {
-        get => ClassDB.ClassGetProperty(this, collisionMaskName).AsInt64();
-        set => ClassDB.ClassSetProperty(this, collisionMaskName, value);
-    }
-
-    public float gravityScale
-    {
-        get => ClassDB.ClassGetProperty(this, gravityScaleName).AsSingle();
-        set => ClassDB.ClassSetProperty(this, gravityScaleName, value);
-    }
-
     /// <summary>Moves the node and its body there at once.</summary>
     public void Teleport(Transform3D transform)
     {
         Call(teleportName, transform);
-    }
-
-    public void Teleport(Vector3 position, Vector3 rotation)
-    {
-        Teleport(new Transform3D(Basis.FromEuler(rotation), position));
-    }
-
-    public void Teleport(Vector3 position)
-    {
-        Teleport(new Transform3D(Basis, position));
-    }
-
-    public Vector3 GetLinearVelocity()
-    {
-        return Call(getLinearVelocityName).AsVector3();
-    }
-
-    public void SetLinearVelocity(Vector3 velocity)
-    {
-        Call(setLinearVelocityName, velocity);
-    }
-
-    public Vector3 GetAngularVelocity()
-    {
-        return Call(getAngularVelocityName).AsVector3();
-    }
-
-    public void SetAngularVelocity(Vector3 velocity)
-    {
-        Call(setAngularVelocityName, velocity);
-    }
-
-    public void ApplyCentralImpulse(Vector3 impulse)
-    {
-        Call(applyCentralImpulseName, impulse);
-    }
-
-    public void ApplyImpulse(Vector3 impulse, Vector3 point)
-    {
-        Call(applyImpulseName, impulse, point);
-    }
-
-    public void ApplyCentralForce(Vector3 force)
-    {
-        Call(applyCentralForceName, force);
-    }
-
-    public void ApplyAngularImpulse(Vector3 impulse)
-    {
-        Call(applyAngularImpulseName, impulse);
-    }
-
-    public float GetMass()
-    {
-        return Call(getMassName).AsSingle();
-    }
-
-    public bool IsAwake()
-    {
-        return Call(isAwakeName).AsBool();
-    }
-
-    public void SetAwake(bool awake)
-    {
-        Call(setAwakeName, awake);
     }
 }

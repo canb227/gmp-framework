@@ -204,7 +204,7 @@ struct Body {
 // The class is split over several files by topic, like a C# partial class:
 //   physics_world.cpp          creating the world, stepping it, binding methods for C#
 //   physics_world_bodies.cpp   item kinds, spawning items, node bodies, one body by id
-//   physics_world_events.cpp   what happened in a step: moves, sensors, touches, hits
+//   physics_world_events.cpp   what happened in a step: moves, sensors, hits
 //   physics_world_queries.cpp  ray casts and overlap tests
 //   physics_world_sync.cpp     networking: building, sending and following body states
 //   physics_world_render.cpp   filling the item multimeshes each tick
@@ -221,9 +221,6 @@ public:
 	int subSteps = 4;
 	// The collision layer every item is on, so queries can leave items out (or find only them).
 	uint32_t itemLayer = 2;
-	// Shapes with any of these tags report their new touches (get_touches), for tag reactions; the rest don't, so
-	// ordinary materials touching in a pile cost nothing.
-	uint64_t watcherTags = 0;
 
 	void set_gravity(godot::Vector3 value);
 	godot::Vector3 get_gravity() const;
@@ -233,8 +230,6 @@ public:
 	int get_sub_steps() const;
 	void set_item_layer(int64_t value);
 	int64_t get_item_layer() const;
-	void set_watcher_tags(int64_t value);
-	int64_t get_watcher_tags() const;
 
 	// ---- world (physics_world.cpp) ----
 	// The world in the tree now, which GMPBody nodes make their bodies in. nullptr if there is none.
@@ -291,9 +286,6 @@ public:
 	// A character's impact from its move, for the next step's hits (C# moves the local player before the step,
 	// so that is this tick's).
 	void add_character_hit(const HitRecord &hit);
-	// The last step's new touches where one side's shape has a watcher tag: four numbers each, body id A, body
-	// id B, then the tags of A's and B's shapes that touched.
-	godot::PackedInt64Array get_touches() const;
 
 	// ---- queries (physics_world_queries.cpp): body ids ----
 	// Sensors are never hit. mask: which collision layers count.
@@ -367,7 +359,6 @@ private:
 	std::vector<NetworkHit> hitsReceived;
 	int64_t hitsSent = 0;
 	int64_t hitsHeard = 0;
-	godot::PackedInt64Array touches;
 
 	// Timings of the last step, for get_stats.
 	double stepMs = 0;
@@ -382,7 +373,7 @@ private:
 	void remove_item(int slot);
 	void remove_from_followers(int slot);
 	Body *find_body(int64_t id);
-	// Puts an item's tags on each of its colliders, and turns on touch reports where they have a watcher tag.
+	// Puts an item's tags on each of its colliders.
 	void apply_item_tags(Body &item);
 	// The tags of the shape a received hit names, as this peer has it; 0 if it isn't here.
 	uint64_t named_shape_tags(uint64_t id, int32_t shapeIndex);

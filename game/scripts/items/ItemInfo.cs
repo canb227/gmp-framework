@@ -3,28 +3,42 @@ using PolyType;
 using System;
 using System.Collections.Generic;
 
+/// <summary>
+/// An item's definition: game/definitions/**/&lt;itemID&gt;.tres. Refer to items by this resource in the editor
+/// (<c>[Export] ItemInfo</c>); the <see cref="itemID"/> string is for the wire, saves and inventories (<see cref="Fetch"/>).
+/// Subclasses add what kinds of item do: <see cref="PurchasableItem"/>, <see cref="BlueprintItem"/>, <see cref="EquipmentItem"/>.
+/// </summary>
 [GlobalClass]
 [GenerateShape]
 public partial class ItemInfo : Resource
 {
+    /// <summary>Unique id, the same as the .tres file's name.</summary>
     [Export]
     public string itemID;
 
+    /// <summary>
+    /// How it looks and collides lying in the world: a GMPBody root with GMPShapes and meshes, no script (a loose item),
+    /// or a <see cref="DroppedTool"/> root (a tool, which stays a node). None: a box with the <see cref="icon"/> on it.
+    /// </summary>
     [Export]
     public PackedScene droppedScene;
 
+    /// <summary>Shown in the inventory, the shop and under the crosshair.</summary>
     [Export]
     public string displayName;
 
     [Export]
     public string description;
 
+    /// <summary>The inventory and shop picture.</summary>
     [Export]
     public CompressedTexture2D icon;
 
+    /// <summary>Shown in the player's hand while equipped. Its root must be a <see cref="HeldItem"/> (a subclass does a tool's work). None: a box with the <see cref="icon"/> on it.</summary>
     [Export]
     public PackedScene inHandScene;
 
+    /// <summary>How many fit in one inventory slot.</summary>
     [Export]
     public int maxStackSize = 1;
 
@@ -146,8 +160,11 @@ public partial class ItemInfo : Resource
                 return null;
             }
             string path = FindItemDefinition("res://game/definitions", itemID + ".tres");
-            // Some props (e.g. spawner test items) have no definition.
-            item = ResourceLoader.Load<ItemInfo>(path);
+            // Some props (e.g. spawner test items, the wrench) have no definition.
+            if (path != null)
+            {
+                item = ResourceLoader.Load<ItemInfo>(path);
+            }
 
             definitions[itemID] = item;
         }

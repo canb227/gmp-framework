@@ -6,7 +6,7 @@ using Godot;
 /// put away (override <c>_ExitTree</c> to clean up). Only the holder's own copy receives input: the player
 /// offers each unhandled event to <see cref="HandleInput"/> and each hotbar scroll step to
 /// <see cref="HandleScroll"/> before its own handling (grab, hotbar), while the inventory screen is closed.
-/// Anything a tool does to the world must go through the usual networking (claims, RPCs, spawns); its own state rides
+/// Anything a tool does to the world must go through the usual networking (RPCs, spawns); its own state rides
 /// along with the player's (<see cref="GenerateSyncState"/>).
 /// </summary>
 public partial class HeldItem : Node3D

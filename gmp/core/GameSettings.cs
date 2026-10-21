@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// Player-facing settings (graphics and input), saved to <see cref="FilePath"/>. <see cref="Global"/> loads and applies
-/// them at startup; the options screen changes them through the setters here, which apply and save straight away.
+/// Player-facing settings (graphics and input), saved to <see cref="FilePath"/>. <see cref="LoadAndApply"/> loads and
+/// applies them (Global's call to it is commented out for now, so saved settings aren't applied and the options screen's
+/// setters are disconnected); the setters here apply and save straight away.
 /// Defaults are whatever the project settings and input map give at startup, so "reset" returns to those.
 /// <para>
 /// Launches with command-line user args (the dev/test flags such as --lan or --host) keep their own window: the

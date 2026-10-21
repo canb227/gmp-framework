@@ -1,7 +1,7 @@
 using Godot;
 
 /// <summary>
-/// A structure that has to be repaired before it works: switched by an <see cref="Activator"/> (usually a
+/// A structure that has to be repaired before it works: switched by an <see cref="GMPOActivator"/> (usually a
 /// <see cref="PricedButton"/>), it replaces itself with <see cref="repairedScene"/> in the same cells. Activators
 /// switch it on every peer, but only its authority (the host, for a level structure) does the swap, through the
 /// usual despawn and spawn broadcasts. Interacting does nothing, so it can't be deconstructed for a free blueprint.

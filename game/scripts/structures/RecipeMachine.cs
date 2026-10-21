@@ -10,10 +10,15 @@ public partial record struct RecipeMachineSave
 
 /// <summary>
 /// A machine that makes <see cref="recipes"/>: when idle it starts the first one whose inputs are all there, taking
-/// them oldest first. Each machine spawns the outputs of <see cref="currentRecipe"/> itself in
-/// <see cref="Machine.FinishProcess"/>.
+/// them oldest first, and when the cycle is done it spawns the recipe's outputs at its first output
+/// (<see cref="IOMachine.OutputPosition"/>). Items no recipe wants stay in the input. Use it as is (the grinder), or
+/// override <see cref="FinishProcess"/> to put the outputs out differently.
+/// <para>
+/// Known gap: an item grabbed or picked up at the moment it enters the input is decided separately by its own
+/// authority, so in that race it could be both kept and used.
+/// </para>
 /// </summary>
-public abstract partial class RecipeMachine : IOMachine
+public partial class RecipeMachine : IOMachine
 {
     /// <summary>What this machine can make, in order of preference.</summary>
     [Export] public Godot.Collections.Array<Recipe> recipes = new();
@@ -61,6 +66,18 @@ public abstract partial class RecipeMachine : IOMachine
             return true;
         }
         return false;
+    }
+
+    protected override void FinishProcess()
+    {
+        if (currentRecipe == null) return; // a save from before recipes were saved
+        foreach (var (item, count) in currentRecipe.outputs)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                ItemInfo.SpawnInWorld(item.itemID, OutputPosition(), GlobalRotation);
+            }
+        }
     }
 
     [RPC(requireAuthority = true)]

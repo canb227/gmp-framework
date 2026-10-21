@@ -3,16 +3,20 @@ using Steamworks;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
-
-
+/// <summary>
+/// First autoload: starts Steam (unless launched with --lan, --host or --join), the log, and the user:// folders.
+/// </summary>
 public partial class Global : Node
 {
-
     public static Global instance;
+    /// <summary>This user's Steam id; 0 in LAN-only mode. Names their save and config folders.</summary>
     public static ulong steamid = 0;
+    /// <summary>Steam started, so <see cref="SteamNetwork"/> can be used.</summary>
     public static bool bIsSteamConnected = false;
+    /// <summary>The Steam app id (480 is Valve's Spacewar test app).</summary>
     public const int APP_ID = 480;
 
+    /// <summary>Launched with --lan, --host or --join: Steam isn't started at all.</summary>
     public static bool lanOnly = false;
 
     public override void _Ready()
@@ -43,18 +47,11 @@ public partial class Global : Node
         //This makes sure the file structure in the godot user data folder is setup correctly
         Logging.Log($" mkdir user://saves                    | {DirAccess.MakeDirAbsolute("user://saves").ToString()}", "FirstTimeSetup");
         Logging.Log($" mkdir user://config                  | {DirAccess.MakeDirAbsolute("user://config").ToString()}", "FirstTimeSetup");
-        Logging.Log($" mkdir user://logs                      | {DirAccess.MakeDirAbsolute("user://logs").ToString()}", "FirstTimeSetup");
         Logging.Log($" mkdir user://saves/{Global.steamid}   | {DirAccess.MakeDirAbsolute("user://saves/" + Global.steamid).ToString()}", "FirstTimeSetup");
         Logging.Log($" mkdir user://config/{Global.steamid} | {DirAccess.MakeDirAbsolute("user://config/" + Global.steamid).ToString()}", "FirstTimeSetup");
-        Logging.Log($" mkdir user://logs/{Global.steamid}     | {DirAccess.MakeDirAbsolute("user://logs/" + Global.steamid).ToString()}", "FirstTimeSetup");
 
         // Options menu unplugged: saved settings are not applied.
         // GameSettings.LoadAndApply(GetTree().Root);
-
-        if (Logging.bSaveLogsToFile)
-        {
-            Logging.StartLoggingToFile();
-        }
 
         if (lanOnly)
             Logging.Log("LAN-only mode — Steam init skipped", "SteamAPI");

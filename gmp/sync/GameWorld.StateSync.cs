@@ -6,7 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Stopwatch = System.Diagnostics.Stopwatch;
 
-/// <summary>One packet of state updates. Sent as an array of values; see the note on <see cref="TransformSyncState"/> about [Key] numbers.</summary>
+/// <summary>
+/// One packet of state updates.
+/// <para>
+/// This and the other per-tick sync states (<see cref="PlayerSync"/>, <see cref="MagnetSync"/>) are sent as arrays of
+/// values rather than maps of field names, which is about a quarter smaller. The [Key] number is each field's place in
+/// the array: give a new field the next number, and never renumber or reuse one, or peers on different builds (and
+/// anything saved) read into the wrong fields. A reader from before a field was added reads it as its default.
+/// </para>
+/// </summary>
 [GenerateShape]
 public partial record WorldTickMessage
 {
@@ -18,9 +26,6 @@ public partial record WorldTickMessage
 }
 
 [GenerateShapeFor<List<(ulong,byte[])>>]
-public partial class Witness;
-
-[GenerateShapeFor<Type>]
 public partial class Witness;
 
 /// <summary>
@@ -251,12 +256,11 @@ public partial class GameWorld
         {
             return;
         }
-        CheckLeases();
         long applyStart = Stopwatch.GetTimestamp();
         appliedCount += pendingStates.Count;
         foreach ((ulong id, ulong sender, ulong tick, byte[] state) in pendingStates)
         {
-            // Only the object's current authority may move it (drops stragglers after a Claim).
+            // Only the object's current authority may move it (drops stragglers from the one before).
             if (syncedObjs.TryGetValue(id, out GMPObject gmpo) && gmpo.authority == sender)
             {
                 stateTick = tick;

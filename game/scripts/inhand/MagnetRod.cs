@@ -9,7 +9,7 @@ using FmodStudio = FMOD.Studio;
 public enum MagnetMode : byte { Off, Single, Area }
 
 /// <summary>What the other peers' copies of a magnet rod need each tick (<see cref="MagnetRod.GenerateSyncState"/>).</summary>
-/// <remarks>Sent as an array of values; see the note on <see cref="TransformSyncState"/> about [Key] numbers.</remarks>
+/// <remarks>Sent as an array of values; see the note on <see cref="WorldTickMessage"/> about [Key] numbers.</remarks>
 [GenerateShape]
 public partial record struct MagnetSync
 {

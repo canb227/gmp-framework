@@ -32,12 +32,12 @@ public class SteamNetwork :  Network
     private Callback<SteamNetworkingMessagesSessionRequest_t> _onSessionRequest;
     private Callback<SteamNetworkingMessagesSessionFailed_t> _onSessionFailed;
 
-    public event Network.MessageReceived MessageReceivedEvent;
-    public event Network.PeerConnected PeerConnectedEvent;
-    public event Network.PeerDisconnected PeerDisconnectedEvent;
+    public event Action<ulong, Channel, byte[]> MessageReceivedEvent;
+    public event Action<ulong> PeerConnectedEvent;
+    public event Action<ulong> PeerDisconnectedEvent;
     // Never raised: Steam re-establishes its own sessions.
 #pragma warning disable CS0067
-    public event Network.PeerRepaired PeerRepairedEvent;
+    public event Action<ulong> PeerRepairedEvent;
 #pragma warning restore CS0067
 
     private static ulong SelfId => SteamUser.GetSteamID().m_SteamID;

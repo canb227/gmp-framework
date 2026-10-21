@@ -172,7 +172,7 @@ public partial class Console : Node
         int bytes = floodMbps * 1000 * 1000 / 8 / Engine.PhysicsTicksPerSecond;
         for (; bytes > 0; bytes -= floodPacket.Length)
         {
-            Lobby.SendToAllExceptSelf(Channel.GAME_tba2, floodPacket, Network.k_nSteamNetworkingSend_Unreliable);
+            Lobby.SendToAllExceptSelf(Channel.GAME_Flood, floodPacket, Network.k_nSteamNetworkingSend_Unreliable);
         }
     }
 

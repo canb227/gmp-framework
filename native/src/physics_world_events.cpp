@@ -3,7 +3,7 @@
 // Box3D collects its events during the step and lists them afterwards. Moves are applied straight away.
 // Sensor events become signals, which run game code that may despawn things, so they are first copied into a
 // list that names the sensors by instance id, and only then sent: a sensor freed by an earlier signal is then
-// simply skipped. Touches and hits are lists C# reads after the step.
+// simply skipped. Hits are a list C# reads after the step.
 
 #include "physics_world.h"
 
@@ -96,25 +96,6 @@ void GMPPhysicsWorld::read_sensor_events() {
 void GMPPhysicsWorld::read_contact_events() {
 	b3ContactEvents contactEvents = b3World_GetContactEvents(world);
 	read_hits(contactEvents);
-
-	// Touches: only shapes with contact events on report them (those with a watcher tag).
-	touches.clear();
-	for (int i = 0; i < contactEvents.beginCount; i++) {
-		const b3ContactBeginTouchEvent &begin = contactEvents.beginEvents[i];
-		Body *a = body_of_shape(begin.shapeIdA);
-		Body *b = body_of_shape(begin.shapeIdB);
-		if (a == nullptr || b == nullptr || a->id == 0 || b->id == 0) {
-			continue;
-		}
-		touches.push_back((int64_t)a->id);
-		touches.push_back((int64_t)b->id);
-		touches.push_back((int64_t)b3Shape_GetSurfaceMaterial(begin.shapeIdA).userMaterialId);
-		touches.push_back((int64_t)b3Shape_GetSurfaceMaterial(begin.shapeIdB).userMaterialId);
-	}
-}
-
-PackedInt64Array GMPPhysicsWorld::get_touches() const {
-	return touches;
 }
 
 // Where one side of a hit ranks for being side A: lower comes first. body is the side's Body (nullptr if it has

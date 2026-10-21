@@ -13,12 +13,28 @@ public enum DespawnReason { Removed, PickedUp, Consumed, Voided, Broken }
 /// </summary>
 public partial class GameWorld
 {
+    /// <summary>Every live GMPObject on this peer, by id (the same on every peer).</summary>
     public static Dictionary<ulong, GMPObject> syncedObjs = new();
 
     /// <summary>Every root node spawned this session (synced or not, e.g. the level), freed by <see cref="ResetSession"/>.</summary>
     private static readonly List<Node> spawnedRoots = new();
 
-    private static GMPOInitData initDataNormalizer(GMPOInitData initData)
+    /// <summary>
+    /// Spawns a scene for every peer via RPC, including the caller, and returns its root's id. The RPC target running on
+    /// this peer is invoked synchronously as part of this call, so by the time <c>SpawnScene</c> returns,
+    /// <see cref="syncedObjs"/>[returned id] is already populated with the local copy.
+    /// </summary>
+    /// <param name="position">The root's position (and <paramref name="rotation"/> its Euler rotation) under its parent.</param>
+    /// <param name="initData">The root's identity; leave fields 0 to have them filled in (see <see cref="GMPOInitData"/>). GMPObjects inside the scene get new ids and the root's authority and owner.</param>
+    /// <param name="initState">Handed to the root's <see cref="GMPObject.ApplyStateUpdate"/> on every peer before <c>AfterInit</c>.</param>
+    /// <param name="parent">The node to spawn under; null for the physics world, where nearly everything goes.</param>
+    public static ulong SpawnScene(string scenePath, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null, NodePath parent = null)
+    {
+        return SpawnScene(ResourceLoader.Load<PackedScene>(scenePath), position, rotation, initData, initState, parent);
+    }
+
+    /// <summary>Overload of <see cref="SpawnScene(string, Vector3, Vector3, GMPOInitData, byte[], NodePath)"/> taking an already-loaded <see cref="PackedScene"/>.</summary>
+    public static ulong SpawnScene(PackedScene pck, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null, NodePath parent = null)
     {
         if (initData.id == 0)
         {
@@ -32,45 +48,21 @@ public partial class GameWorld
         {
             initData.owner = Lobby.selfPeerID;
         }
-        return initData;
-    }
-
-    private static Dictionary<string,GMPOInitData> childGMPORegisterGenerator(Node node, GMPOInitData initData)
-    {
-        Dictionary<string, GMPOInitData> childInit = new();
-        foreach (Node c in node.FindChildren("*").ToList())
-        {
-            if (c is GMPObject gmpoChild)
-            {
-                childInit[node.GetPathTo(c)] = new GMPOInitData(
-                    GenRandomID(), initData.authority, initData.owner,
-                    gmpoChild.priority, gmpoChild.pauseable);
-            }
-        }
-        return childInit;
-    }
-
-    /// <summary>
-    /// Spawns a scene for every peer via RPC, including the caller. The RPC target running on this
-    /// peer is invoked synchronously as part of this call, so by the time <c>SpawnScene</c> returns,
-    /// <see cref="syncedObjs"/>[returned id] is already populated with the local copy.
-    /// </summary>
-    public static ulong SpawnScene(string scenePath, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null, NodePath parent = null)
-    {
-        return SpawnScene(ResourceLoader.Load<PackedScene>(scenePath), position, rotation, initData, initState,parent);
-    }
-
-    /// <summary>Overload of <see cref="SpawnScene(string, Vector3, Vector3, GMPOInitData, byte[], NodePath)"/> taking an already-loaded <see cref="PackedScene"/>.</summary>
-    public static ulong SpawnScene(PackedScene pck, Vector3 position = default, Vector3 rotation = default, GMPOInitData initData = new(), byte[] initState = null, NodePath parent = null)
-    {
+        // Instanced here only to read the scene's own settings and find its GMPObject children.
         Node node = pck.Instantiate();
-        initData = initDataNormalizer(initData);
         if (node is GMPObject rootGmpo)
         {
             // Carry the scene's own "pauseable" setting (Init applies it on every peer).
             initData.pauseable = rootGmpo.pauseable;
         }
-        Dictionary<string, GMPOInitData> childInit = childGMPORegisterGenerator(node, initData);
+        Dictionary<string, GMPOInitData> childInit = new();
+        foreach (Node c in node.FindChildren("*"))
+        {
+            if (c is GMPObject gmpoChild)
+            {
+                childInit[node.GetPathTo(c)] = new GMPOInitData(GenRandomID(), initData.authority, initData.owner, gmpoChild.priority, gmpoChild.pauseable);
+            }
+        }
         node.Free();
         // NodePath is a native-handle wrapper that MessagePack serializes as empty; send it as a string.
         RPCManager.RPC(instance, nameof(_SpawnScene), [pck.ResourcePath, position, rotation, initData, initState, childInit, parent?.ToString()]);
@@ -132,7 +124,7 @@ public partial class GameWorld
         PhysicsWorld.NameBodies(node, initData.id);
         if (node is GMPObject gmpo)
         {
-            gmpo.Init(WithEarlyClaim(initData), initState);
+            gmpo.Init(initData, initState);
             syncedObjs.Add(gmpo.id, gmpo);
         }
         else
@@ -161,7 +153,7 @@ public partial class GameWorld
                     continue;
                 }
                 PhysicsWorld.NameBodies(c, ci.id);
-                gmpoChild.Init(WithEarlyClaim(ci), childStates?.GetValueOrDefault(ci.id));
+                gmpoChild.Init(ci, childStates?.GetValueOrDefault(ci.id));
                 syncedObjs.Add(gmpoChild.id, gmpoChild);
             }
         }
@@ -190,7 +182,6 @@ public partial class GameWorld
         {
             gmpo.OnDespawned(reason);
             syncedObjs.Remove(id);
-            ForgetClaim(id);
             (gmpo as Node)?.QueueFree();
         }
     }

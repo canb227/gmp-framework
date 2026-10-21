@@ -209,8 +209,8 @@ void GMPPhysicsWorld::spawn_item(int64_t id, int kindIndex, int64_t authority, T
 		shapeDef.baseMaterial.rollingResistance = kindShape.rollingResistance;
 		uint64_t tags = kindShape.tags | item.tags;
 		shapeDef.baseMaterial.userMaterialId = tags;
-		// Contact begin/end events cost per contact: only colliders a tag reaction watches report them.
-		shapeDef.enableContactEvents = (tags & watcherTags) != 0;
+		// No contact begin/end events: they cost per contact, and nothing reads them.
+		shapeDef.enableContactEvents = false;
 		// Machines' sensors see items, and items' impacts make sounds.
 		shapeDef.enableSensorEvents = true;
 		shapeDef.enableHitEvents = true;
@@ -302,7 +302,6 @@ void GMPPhysicsWorld::apply_item_tags(Body &item) {
 		b3SurfaceMaterial material = b3Shape_GetSurfaceMaterial(shapes[i]);
 		material.userMaterialId = tags;
 		b3Shape_SetSurfaceMaterial(shapes[i], material);
-		b3Shape_EnableContactEvents(shapes[i], (tags & watcherTags) != 0);
 	}
 }
 

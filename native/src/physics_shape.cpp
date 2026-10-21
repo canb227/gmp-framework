@@ -74,9 +74,8 @@ void GMPShape::attach(GMPBody *body) {
 	def.isSensor = isSensor;
 	// Sensors only see shapes that have this on, so every shape has it, and a sensor needs it to report.
 	def.enableSensorEvents = true;
-	// Touches are reported where a tag reaction watches, and every impact makes a hit (for sounds and effects).
-	GMPPhysicsWorld *world = GMPPhysicsWorld::get_current();
-	def.enableContactEvents = world != nullptr && (def.baseMaterial.userMaterialId & world->watcherTags) != 0;
+	// No contact begin/end events (they cost per contact), but every impact makes a hit (for sounds and effects).
+	def.enableContactEvents = false;
 	def.enableHitEvents = true;
 	def.filter.categoryBits = body->collisionLayer;
 	def.filter.maskBits = body->collisionMask;
