@@ -19,6 +19,9 @@ public partial record RPC
     /// <summary>When it was sent (<see cref="GameWorld.netTime"/>).</summary>
     public ulong sendTime;
 
+    /// <summary>The sender's physics tick it was sent on (for <see cref="RPCAttribute.playbackDelayed"/>).</summary>
+    public ulong sendTick;
+
     // Each argument is serialized independently with its own concrete type so the
     // type identity survives the wire. A null element means the argument was null.
     public byte[][] args;
@@ -37,6 +40,15 @@ public sealed class RPCAttribute : Attribute
     /// Use this on the "apply the outcome" half of an authority-arbitrated action.
     /// </summary>
     public bool requireAuthority { get; set; }
+
+    /// <summary>
+    /// On other peers, wait until the sender's playback clock (<see cref="GameWorld.PlaybackTick"/>) reaches the tick it
+    /// was sent on, so it happens in step with the sender's bodies as followers show them, about
+    /// <see cref="GameWorld.InterpolationDelay"/> later. Use this when the call is about something those bodies just
+    /// did (an item breaking on impact). It runs at once on the sender, and on a peer with no clock for the sender yet.
+    /// Calls that wait can run after later calls from the same sender that don't.
+    /// </summary>
+    public bool playbackDelayed { get; set; }
 }
 
 /// <summary>
@@ -67,10 +79,13 @@ public partial class RPCManager : Node
     public static ulong sendTime { get; private set; }
 
     /// <summary>An [RPC] method with what dispatch needs from reflection, looked up once per type and name.</summary>
-    private sealed record RpcMethod(MethodInfo method, ParameterInfo[] parameters, bool requireAuthority);
+    private sealed record RpcMethod(MethodInfo method, ParameterInfo[] parameters, bool requireAuthority, bool playbackDelayed);
 
     // Both attribute reads and GetParameters() allocate on every call, so dispatch reads them from here.
     private static readonly Dictionary<(Type, string), RpcMethod> methodCache = new();
+
+    /// <summary>Received <see cref="RPCAttribute.playbackDelayed"/> calls waiting for their sender's playback clock, in arrival order.</summary>
+    private static readonly List<(ulong from, RPC rpc)> delayedRpcs = new();
 
     public override void _Ready()
     {
@@ -136,6 +151,7 @@ public partial class RPCManager : Node
         rpc.NodePath = nodePath;
         rpc.ObjectID = objectID;
         rpc.sendTime = GameWorld.netTime;
+        rpc.sendTick = Engine.GetPhysicsFrames();
         rpc.args = SerializeArgs(args);
         return s.Serialize(rpc);
     }
@@ -189,10 +205,28 @@ public partial class RPCManager : Node
     {
         if (ch != Channel.RPC_Main) return;
         RPC rpc = s.Deserialize<RPC>(msg);
-        HandleRPC(from, rpc);
+        HandleRPC(from, rpc, true);
     }
 
-    private void HandleRPC(ulong from, RPC rpc)
+    // Each physics tick: runs the delayed calls whose sender's playback has reached them.
+    public override void _PhysicsProcess(double delta)
+    {
+        for (int i = 0; i < delayedRpcs.Count; i++)
+        {
+            (ulong from, RPC rpc) = delayedRpcs[i];
+            // A clock that has gone (0: the sender left, or the world was reset) waits for nothing.
+            double playback = GameWorld.PlaybackTick(from);
+            if (playback != 0 && playback < rpc.sendTick)
+            {
+                continue;
+            }
+            delayedRpcs.RemoveAt(i);
+            i--;
+            HandleRPC(from, rpc, false);
+        }
+    }
+
+    private void HandleRPC(ulong from, RPC rpc, bool mayDelay)
     {
         if (rpc.ObjectID != 0 && rpc.NodePath != null)
         {
@@ -235,6 +269,17 @@ public partial class RPCManager : Node
             if (from != expected)
             {
                 Logging.Warn($"RPC {rpc.MethodName} from {from} rejected: requires authority {expected}", "RPCManager");
+                return;
+            }
+        }
+
+        // A sender with no clock here (0) has nothing to wait for.
+        if (mayDelay && method.playbackDelayed && from != Lobby.selfPeerID)
+        {
+            double playback = GameWorld.PlaybackTick(from);
+            if (playback != 0 && playback < rpc.sendTick)
+            {
+                delayedRpcs.Add((from, rpc));
                 return;
             }
         }
@@ -295,7 +340,7 @@ public partial class RPCManager : Node
         {
             if (m.Name == name && m.GetCustomAttribute<RPCAttribute>() is RPCAttribute attribute)
             {
-                return new RpcMethod(m, m.GetParameters(), attribute.requireAuthority);
+                return new RpcMethod(m, m.GetParameters(), attribute.requireAuthority, attribute.playbackDelayed);
             }
         }
         return null;

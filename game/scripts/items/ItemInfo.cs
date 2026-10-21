@@ -63,6 +63,37 @@ public partial class ItemInfo : Resource
     public bool castsShadows;
 
     /// <summary>
+    /// With the BREAKABLE tag (the item's own or the collider that was hit): an impact at this speed or more (m/s, how
+    /// fast the two sides approached) calls <see cref="OnBreakingImpact"/>.
+    /// </summary>
+    [Export]
+    public float breakSpeed = 8;
+
+    /// <summary>
+    /// Runs on every peer when the host saw the item hit at <see cref="breakSpeed"/> or more: on the host at once, on
+    /// the others when their playback of the host reaches the impact, so whatever it does happens as each peer sees the
+    /// hit. What the item does is up to it: by default it breaks (is removed). Override it in a subclass, set as the
+    /// script of the item's .tres, to crack, shed pieces, survive, and so on.
+    /// <para>
+    /// It already runs on every peer, so it must decide the same on every peer and change only this peer's copy:
+    /// <list type="bullet">
+    /// <item>Use the local calls (<see cref="ItemWorld.RemoveLocal"/>, <see cref="ItemWorld.SpawnLocal"/>), never the
+    /// RPC ones (<see cref="ItemWorld.Spawn"/>, <see cref="ItemWorld.Despawn"/>), which would happen once per peer;
+    /// those log an error and do nothing in here.</item>
+    /// <item>Take every random number (shard ids, offsets) from <paramref name="rng"/>, which gives every peer the same
+    /// ones, and draw from it the same way on every peer: one draw inside a <see cref="Lobby.isHost"/> branch puts the
+    /// host's numbers out of step.</item>
+    /// <item>Decide only from what every peer has: the item's record (keep anything it should remember between hits
+    /// there), the hit and <paramref name="rng"/>.</item>
+    /// </list>
+    /// </para>
+    /// </summary>
+    public virtual void OnBreakingImpact(ItemRecord item, Vector3 hitPosition, float hitSpeed, Random rng)
+    {
+        ItemWorld.RemoveLocal(item.id, DespawnReason.Broken);
+    }
+
+    /// <summary>
     /// Spawns <paramref name="itemID"/> in the world for every peer. A tool (whose droppedScene has a
     /// <see cref="DroppedTool"/> root) spawns as that node; anything else is a loose item (<see cref="ItemWorld"/>), drawn
     /// from its droppedScene, or as a box with its icon if it has none. Returns the new item's (or node's) id.

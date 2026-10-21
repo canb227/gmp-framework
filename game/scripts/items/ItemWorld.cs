@@ -74,6 +74,11 @@ public partial class ItemWorld : Node
     /// <summary>Spawns a loose <paramref name="itemID"/> for every peer; returns its id. Use <see cref="ItemInfo.SpawnInWorld"/>, which also handles tools.</summary>
     public static ulong Spawn(string itemID, Vector3 position, Vector3 rotation, Vector3 velocity = default)
     {
+        if (insideImpactHook)
+        {
+            Logging.Error($"Spawn({itemID}) inside OnBreakingImpact, which runs on every peer: use SpawnLocal there", "ItemWorld");
+            return 0;
+        }
         ulong id = (ulong)Random.Shared.NextInt64();
         RPCManager.RPC(instance, nameof(_Spawn), [id, itemID, position, rotation, velocity]);
         return id;
@@ -116,6 +121,11 @@ public partial class ItemWorld : Node
     /// <summary>Removes an item for every peer.</summary>
     public static void Despawn(ulong id, DespawnReason reason = DespawnReason.Removed)
     {
+        if (insideImpactHook)
+        {
+            Logging.Error($"Despawn({id}) inside OnBreakingImpact, which runs on every peer: use RemoveLocal there", "ItemWorld");
+            return;
+        }
         RPCManager.RPC(instance, nameof(_Despawn), [id, reason]);
     }
 
@@ -124,6 +134,39 @@ public partial class ItemWorld : Node
     {
         RemoveLocal(id, reason);
     }
+
+    /// <summary>
+    /// Tells every peer an item was hit hard enough to break (host only): each runs its
+    /// <see cref="ItemInfo.OnBreakingImpact"/> when its playback of the host reaches the impact. The seed gives every
+    /// peer the same random numbers there.
+    /// </summary>
+    public static void Impact(ulong id, Vector3 hitPosition, float hitSpeed)
+    {
+        int seed = Random.Shared.Next();
+        RPCManager.RPC(instance, nameof(_Impact), [id, hitPosition, hitSpeed, seed]);
+    }
+
+    [RPC(playbackDelayed = true)]
+    private void _Impact(ulong id, Vector3 hitPosition, float hitSpeed, int seed)
+    {
+        ItemRecord record = Get(id);
+        if (record == null || record.info == null)
+        {
+            return;
+        }
+        insideImpactHook = true;
+        try
+        {
+            record.info.OnBreakingImpact(record, hitPosition, hitSpeed, new Random(seed));
+        }
+        finally
+        {
+            insideImpactHook = false;
+        }
+    }
+
+    /// <summary>Set while <see cref="ItemInfo.OnBreakingImpact"/> runs, where Spawn and Despawn (RPCs) would happen once per peer.</summary>
+    static bool insideImpactHook;
 
     /// <summary>Removes this peer's copy of an item without messaging anyone (for handlers that run on every peer).</summary>
     public static void RemoveLocal(ulong id, DespawnReason reason = DespawnReason.Removed)
@@ -250,6 +293,46 @@ public partial class ItemWorld : Node
                 Despawn((ulong)id);
             }
         }
+        // Every hit this tick, however far from the camera (HitStream only keeps the ones near it): the host's own,
+        // and the ones other peers sent (their players bumping items).
+        PhysicsWorld.Hits(breakHits, Vector3.Zero, BreakHitRange, 0);
+        impactedThisTick.Clear();
+        foreach (ContactHit hit in breakHits)
+        {
+            CheckImpact(hit.idA, (SurfaceTags)hit.tagsA, hit);
+            CheckImpact(hit.idB, (SurfaceTags)hit.tagsB, hit);
+        }
+    }
+
+    /// <summary>Further than any level reaches (m): every hit counts for breaking.</summary>
+    const float BreakHitRange = 100000;
+    static readonly List<ContactHit> breakHits = new();
+    /// <summary>Items that took an impact this tick: one hit can touch at several points, but counts once.</summary>
+    static readonly HashSet<ulong> impactedThisTick = new();
+
+    /// <summary>One side of a hit (host only): an impact if it is a breakable item hit hard enough.</summary>
+    static void CheckImpact(ulong id, SurfaceTags tags, ContactHit hit)
+    {
+        // Most hits have no BREAKABLE side, so this cheap test goes first.
+        if (!tags.HasFlag(SurfaceTags.BREAKABLE))
+        {
+            return;
+        }
+        // Not a loose item (level, structure, player), or one an impact this tick already removed.
+        ItemRecord record = Get(id);
+        if (record == null || record.info == null)
+        {
+            return;
+        }
+        if (hit.speed < record.info.breakSpeed)
+        {
+            return;
+        }
+        if (!impactedThisTick.Add(id))
+        {
+            return;
+        }
+        Impact(id, hit.position, hit.speed);
     }
 
     // ---- kinds: what the physics world needs to know about an item's scene ----

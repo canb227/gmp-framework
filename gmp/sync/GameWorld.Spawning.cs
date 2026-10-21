@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>Why a synced object was despawned, passed to <see cref="GMPObject.OnDespawned"/> on every peer.</summary>
-public enum DespawnReason { Removed, PickedUp, Consumed, Voided }
+public enum DespawnReason { Removed, PickedUp, Consumed, Voided, Broken }
 
 /// <summary>
 /// GameWorld: scene spawning and despawning. Owns <see cref="SpawnScene"/>/<see cref="DespawnObject"/>
