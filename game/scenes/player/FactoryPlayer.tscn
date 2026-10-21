@@ -15,13 +15,13 @@ radius = 0.35
 height = 1.8
 
 [node name="FactoryPlayer" type="GMPCharacter" unique_id=274687070 node_paths=PackedStringArray("camera", "head", "body", "itemHolder")]
+tags = 1
 script = ExtResource("1_tuubh")
 camera = NodePath("Camera3D")
 head = NodePath("Camera3D")
 body = NodePath("body")
 itemHolder = NodePath("Camera3D/ItemHolder")
 priority = 1000
-tags = 1
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=962695158]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.62, 0)

@@ -14,3 +14,4 @@ albedo_color = Color(0.6706895, 0.6706895, 0.6706895, 1)
 metallic = 0.8
 roughness_texture = SubResource("NoiseTexture2D_kuy7m")
 normal_texture = SubResource("NoiseTexture2D_kuy7m")
+uv1_scale = Vector3(1, 0.14, 1)

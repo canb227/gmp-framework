@@ -6,7 +6,7 @@
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_WallL"]
 _surfaces = [{
-"aabb": AABB(-0.06008, 0.00000, -2.10698, 0.16747, 0.40500, 2.21697),
+"aabb": AABB(-0.06008, 0, -2.10698, 0.16747, 0.405, 2.21697),
 "format": 34359738369,
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
@@ -16,7 +16,7 @@ _surfaces = [{
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_WallR"]
 _surfaces = [{
-"aabb": AABB(1.89261, 0.00000, -2.10698, 0.16747, 0.40500, 2.21697),
+"aabb": AABB(1.89261, 0, -2.10698, 0.16747, 0.405, 2.21697),
 "format": 34359738369,
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
@@ -25,8 +25,8 @@ _surfaces = [{
 }]
 
 [node name="Conveyor" type="GMPBody" unique_id=1852099020 node_paths=PackedStringArray("beltSurfaces")]
-tags = 512
 body_type = 0
+tags = 512
 script = ExtResource("1_r")
 beltSurfaces = []
 cells = Dictionary[Vector3i, int]({
@@ -51,11 +51,11 @@ mesh = SubResource("ArrayMesh_WallR")
 tags = 2
 
 [node name="Belt" type="GMPShape" parent="." unique_id=61098809]
-transform = Transform3D(1, 0, 0, 0, 0.99995, -0.01, 0, 0.01, 0.99995, 1, 0.09, -1.0005)
 size = Vector3(1.885, 0.1, 2.0001)
 friction = 0.8
 tangent_velocity = Vector3(0, 0, -2)
 tags = 128
+transform = Transform3D(1, 0, 0, 0, 0.99995, -0.01, 0, 0.01, 0.99995, 1, 0.09, -1.0005)
 
 [node name="StructureArrow" type="Node3D" parent="." unique_id=909107365]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.96666133, 0.71025324, -0.41426277)

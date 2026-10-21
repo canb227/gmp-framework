@@ -76,18 +76,31 @@ public partial class AudioManager : Node
         foreach (ContactHit hit in HitStream.hits)
         {
             // What met, by tags (SurfaceTags): a player is always side A. The normal points from A into B.
-            SurfaceTags a = (SurfaceTags)hit.tagsA;
-            SurfaceTags b = (SurfaceTags)hit.tagsB;
+            HitSoundHelper((SurfaceTags)hit.tagsA, hit);
+            HitSoundHelper((SurfaceTags)hit.tagsB, hit);
+        }
+    }
 
-            if ((a & SurfaceTags.PLAYER) != 0)
-            {
-                // A player landing, running into something, or hit by something; b is what it met.
-                if (hit.speed >= 7.5f)
-                    PlayOneShot("event:/Impacts/Player_Impact", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 15.0f, ["Damage"] = 0.0f });
-            }
-            else
+    private void HitSoundHelper(SurfaceTags tags, ContactHit hit)
+    {
+        if(!tags.HasFlag(SurfaceTags.STRUCTURE) && !tags.HasFlag(SurfaceTags.LEVEL))
+        {
+            if(tags.HasFlag(SurfaceTags.METAL))
             {
                 PlayOneShot("event:/Impacts/Metal_Impact", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
+            }
+            else if(tags.HasFlag(SurfaceTags.PLASTIC))
+            {
+                PlayOneShot("event:/Impacts/Plastic_Impact", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
+            }
+            else if(tags.HasFlag(SurfaceTags.GLASS))
+            {
+                PlayOneShot("event:/Impacts/Glass_Impact", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
+            }
+            else if(tags.HasFlag(SurfaceTags.PLAYER))
+            {
+                if (hit.speed >= 7.5f)
+                    PlayOneShot("event:/Impacts/Player_Impact", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 15.0f, ["Damage"] = 0.0f });
             }
         }
     }

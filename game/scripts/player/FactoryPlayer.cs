@@ -115,6 +115,8 @@ public partial class FactoryPlayer : GMPOCharacter
     float lookPitch;
     /// <summary>The camera's offset from the body as authored in the scene (eye height).</summary>
     Vector3 cameraOffset;
+
+    long currentSurface = 0;
     /// <summary>
     /// True for the local player, whose camera is top-level and out of physics interpolation, posed by
     /// <see cref="PoseCamera"/>. Interpolated, mouse look only showed up in full at the next 30 Hz physics tick.
@@ -257,6 +259,35 @@ public partial class FactoryPlayer : GMPOCharacter
 
     public override void _PhysicsProcess(double delta)
     {
+        RayHit hit = PhysicsWorld.Raycast(new Vector3(GlobalPosition.X, GlobalPosition.Y+2.0f, GlobalPosition.Z), new Vector3(GlobalPosition.X, GlobalPosition.Y-4.0f, GlobalPosition.Z), ~(1L << 2));
+        SurfaceTags tags = (SurfaceTags)hit.tags;
+
+        if(tags.HasFlag(SurfaceTags.METAL))
+        {
+            currentSurface = 0; //metal
+        }
+        else if(tags.HasFlag(SurfaceTags.CONCRETE))
+        {
+            currentSurface = 13; //concrete
+        }
+        else if(tags.HasFlag(SurfaceTags.GLASS))
+        {
+            currentSurface = 9; //tile
+        }
+        else if(tags.HasFlag(SurfaceTags.PLASTIC))
+        {
+            currentSurface = 12; //wood panel
+        }
+        else if(tags.HasFlag(SurfaceTags.ROCK))
+        {
+            currentSurface = 13; //concrete
+        }
+        else if(tags.HasFlag(SurfaceTags.RUBBER))
+        {
+            currentSurface = 9; //tile
+        }
+        GD.Print(tags.ToString());
+        
         if (!isLocal)
         {
             FollowRemote(delta);
@@ -268,6 +299,8 @@ public partial class FactoryPlayer : GMPOCharacter
         UpdatePickTarget();
         ApplyMovement((float)delta);
         PoseCamera(false);
+
+        
     }
 
     /// <summary>Remote copy: eases toward where its controller says it is now (the latest state carried on at its velocity).</summary>
@@ -375,18 +408,18 @@ public partial class FactoryPlayer : GMPOCharacter
             relative.Y = Mathf.Sqrt(2 * gravityMagnitude * jumpHeight);
             sinceJumpPressed = 10;
             sinceOnFloor = 10;
-            AudioManager.Instance.PlayOneShot("event:/Footsteps/FS_Jump", 1.0f, GlobalPosition, new Dictionary<string, float>{["Surfaces"] = 13});
+            AudioManager.Instance.PlayOneShot("event:/Footsteps/FS_Jump", 1.0f, GlobalPosition, new Dictionary<string, float>{["Surfaces"] = currentSurface});
         }
 
         velocity = Move(relative + ground, delta);
         Vector3 ground_velocity = new Vector3(velocity.X, 0, velocity.Z);
         if(sprinting && onFloor && ground_velocity.LengthSquared() > 3.0f)
         {
-            AudioManager.Instance.PlayOneShot("event:/Footsteps/FS_Run", 1.0f, GlobalPosition, new Dictionary<string, float>{["Surfaces"] = 13});
+            AudioManager.Instance.PlayOneShot("event:/Footsteps/FS_Run", 1.0f, GlobalPosition, new Dictionary<string, float>{["Surfaces"] = currentSurface});
         }
         else if(ground_velocity.Length() > walkSpeed-1.0f && onFloor)
         {
-            AudioManager.Instance.PlayOneShot("event:/Footsteps/FS_Walk", 1.0f, GlobalPosition, new Dictionary<string, float>{["Surfaces"] = 13});
+            AudioManager.Instance.PlayOneShot("event:/Footsteps/FS_Walk", 1.0f, GlobalPosition, new Dictionary<string, float>{["Surfaces"] = currentSurface});
         }
 
     }
