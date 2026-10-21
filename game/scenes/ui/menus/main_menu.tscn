@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://ckre0b3bwrbof"]
 
-[ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://gmp/ui/theme/menu_theme.tres" id="1_theme"]
-[ext_resource type="Script" uid="uid://dbhtqkipoluf" path="res://gmp/ui/MainMenu.cs" id="3_mm"]
-[ext_resource type="Shader" uid="uid://b7kcy5nv6urww" path="res://gmp/ui/theme/screen_overlay.gdshader" id="4_overlay"]
+[ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://game/scenes/ui/theme/menu_theme.tres" id="1_theme"]
+[ext_resource type="Script" uid="uid://dbhtqkipoluf" path="res://game/scripts/ui/MainMenu.cs" id="3_mm"]
+[ext_resource type="Shader" uid="uid://b7kcy5nv6urww" path="res://game/scenes/ui/theme/screen_overlay.gdshader" id="4_overlay"]
 
 [sub_resource type="StyleBoxFlat" id="bezel"]
 draw_center = false

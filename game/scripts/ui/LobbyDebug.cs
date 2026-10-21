@@ -79,7 +79,7 @@ public partial class LobbyDebug : Control
         _chatLog = GetNode<RichTextLabel>("Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox/ChatOutputPanel/ChatLog");
         _chatInput = GetNode<LineEdit>("Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox/ChatInputRow/ChatInput");
         _sendButton = GetNode<Button>("Margin/RootVBox/Body/CenterColumn/ChatSection/ChatPanel/ChatVBox/ChatInputRow/SendButton");
-        _rowScene = GD.Load<PackedScene>("res://gmp/ui/player_row.tscn");
+        _rowScene = GD.Load<PackedScene>("res://game/scenes/ui/menus/player_row.tscn");
 
         ApplyModeChrome();
 

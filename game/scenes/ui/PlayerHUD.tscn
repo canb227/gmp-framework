@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://crjakyoau28wj"]
 
-[ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://gmp/ui/theme/menu_theme.tres" id="2_theme"]
-[ext_resource type="Shader" uid="uid://b7kcy5nv6urww" path="res://gmp/ui/theme/screen_overlay.gdshader" id="3_overlay"]
+[ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://game/scenes/ui/theme/menu_theme.tres" id="2_theme"]
+[ext_resource type="Shader" uid="uid://b7kcy5nv6urww" path="res://game/scenes/ui/theme/screen_overlay.gdshader" id="3_overlay"]
 [ext_resource type="Script" uid="uid://c5mov8x8q3i6s" path="res://game/scripts/player/InventoryUI.cs" id="inv_ui_script"]
 [ext_resource type="Script" path="res://game/scripts/ui/CurrencyBar.cs" id="currency_bar_script"]
 

@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://c4wi7x65uwkcn"]
 
-[ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://gmp/ui/theme/menu_theme.tres" id="1_obikm"]
-[ext_resource type="Script" uid="uid://bptl0ywrqcw21" path="res://gmp/ui/LobbyDebug.cs" id="2_qsy4g"]
-[ext_resource type="Shader" uid="uid://b7kcy5nv6urww" path="res://gmp/ui/theme/screen_overlay.gdshader" id="3_overlay"]
+[ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://game/scenes/ui/theme/menu_theme.tres" id="1_obikm"]
+[ext_resource type="Script" uid="uid://bptl0ywrqcw21" path="res://game/scripts/ui/LobbyDebug.cs" id="2_qsy4g"]
+[ext_resource type="Shader" uid="uid://b7kcy5nv6urww" path="res://game/scenes/ui/theme/screen_overlay.gdshader" id="3_overlay"]
 
 [sub_resource type="ShaderMaterial" id="overlay_mat"]
 shader = ExtResource("3_overlay")

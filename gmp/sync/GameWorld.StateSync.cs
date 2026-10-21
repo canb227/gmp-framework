@@ -208,12 +208,9 @@ public partial class GameWorld
         }
     }
 
-    private static void OnMessageReceived(ulong from, Channel ch, byte[] msg)
+    /// <summary>From Lobby: a packet on <see cref="Channel.GAME_State"/> or <see cref="Channel.GAME_Items"/>.</summary>
+    internal static void OnStateMessage(ulong from, Channel ch, byte[] msg)
     {
-        if (ch != Channel.GAME_State && ch != Channel.GAME_Items)
-        {
-            return;
-        }
         // Paused (loading, or frozen for a resync): nothing is applied until the world moves again, and a restore
         // replaces everything anyway, so don't pile states up. Moving objects resend every tick; resting ones soon.
         if (!started || instance.GetTree().Paused)
@@ -274,7 +271,7 @@ public partial class GameWorld
         CheckKillPlane();
         StepNativeWorld(delta);
         HitStream.Update(GetViewport().GetCamera3D());
-        PhysicsStepped?.Invoke(delta);
+        ItemWorld.instance.OnPhysicsStepped(delta);
 
         // Nobody to send to (solo, or the last peer left): skip building updates, which costs per object per tick.
         if (Lobby.MemberCount <= 1)

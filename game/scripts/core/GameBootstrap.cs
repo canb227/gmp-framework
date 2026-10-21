@@ -53,7 +53,7 @@ public static class GameBootstrap
     public static void SpawnLocalPlayer()
     {
         string selfName = Lobby.members.TryGetValue(Lobby.selfPeerID, out PlayerInfo self) ? self.Name : "";
-        PlayerSave returning = SaveManager.TakeAbsent(Lobby.selfPeerID, selfName);
+        PlayerSave returning = GameWorld.TakeAbsent(Lobby.selfPeerID, selfName);
 
         PlayerSync init = new PlayerSync();
         init.controllingPeerID = Lobby.selfPeerID;
@@ -102,18 +102,17 @@ public static class GameBootstrap
         {
             if (player.controllingPeerID == peer)
             {
-                SaveManager.RememberAbsent(player);
+                GameWorld.RememberAbsent(player);
                 GameWorld.RemoveLocal(player.id);
             }
         }
     }
 
-    /// <summary>Clears the game's state that outlives a session (it is static): the shop, quests and absent players.</summary>
+    /// <summary>Clears the game's state that outlives a session (it is static): the shop and quests.</summary>
     public static void ResetSession()
     {
         Shop.ResetSession();
         ProgressManager.ResetSession();
-        SaveManager.ResetSession();
     }
 
     /// <summary>Group for spawn markers placed in level scenes (e.g. a Marker3D named PlayerStart).</summary>

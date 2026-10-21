@@ -1,9 +1,9 @@
 [gd_resource type="Theme" format=3 uid="uid://yr7rpeex6li5"]
 
-[ext_resource type="Texture2D" uid="uid://bbhufd5asngqe" path="res://gmp/ui/theme/toggle_on.svg" id="1_on"]
-[ext_resource type="Texture2D" uid="uid://6t6w8ma5o3rr" path="res://gmp/ui/theme/toggle_off.svg" id="2_off"]
-[ext_resource type="Texture2D" uid="uid://b1cj4ow33p4dw" path="res://gmp/ui/theme/slider_grabber.svg" id="3_grab"]
-[ext_resource type="Texture2D" uid="uid://cgvxct13xsiug" path="res://gmp/ui/theme/slider_grabber_hl.svg" id="4_grab_hl"]
+[ext_resource type="Texture2D" uid="uid://bbhufd5asngqe" path="res://game/scenes/ui/theme/toggle_on.svg" id="1_on"]
+[ext_resource type="Texture2D" uid="uid://6t6w8ma5o3rr" path="res://game/scenes/ui/theme/toggle_off.svg" id="2_off"]
+[ext_resource type="Texture2D" uid="uid://b1cj4ow33p4dw" path="res://game/scenes/ui/theme/slider_grabber.svg" id="3_grab"]
+[ext_resource type="Texture2D" uid="uid://cgvxct13xsiug" path="res://game/scenes/ui/theme/slider_grabber_hl.svg" id="4_grab_hl"]
 
 [sub_resource type="StyleBoxFlat" id="avatar"]
 bg_color = Color(0.1, 0.1, 0.11, 1)

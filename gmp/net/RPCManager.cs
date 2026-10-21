@@ -66,6 +66,7 @@ public sealed class RPCAttribute : Attribute
 /// </summary>
 public partial class RPCManager : Node
 {
+    public static RPCManager instance;
     public static MessagePackSerializer s;
 
     /// <summary>
@@ -95,12 +96,7 @@ public partial class RPCManager : Node
         ObjectConverterOptions opt = new ObjectConverterOptions();
         opt.PreserveIntegerTypes = true;
         s = new MessagePackSerializer().WithObjectConverter(opt);
-        Lobby.ConnectedToHostEvent += Instance_ConnectedToHostEvent;
-    }
-
-    private void Instance_ConnectedToHostEvent(ulong HostID)
-    {
-        Lobby.network.MessageReceivedEvent += OnMessageReceived;
+        instance = this;
     }
 
     // ---- sending ----------------------------------------------------------
@@ -197,9 +193,9 @@ public partial class RPCManager : Node
 
     // ---- receiving --------------------------------------------------------
 
-    private void OnMessageReceived(ulong from, Channel ch, byte[] msg)
+    /// <summary>From Lobby: a message on <see cref="Channel.RPC_Main"/>.</summary>
+    internal void OnRpcMessage(ulong from, byte[] msg)
     {
-        if (ch != Channel.RPC_Main) return;
         RPC rpc = s.Deserialize<RPC>(msg);
         HandleRPC(from, rpc, true);
     }

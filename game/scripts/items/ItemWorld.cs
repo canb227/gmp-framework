@@ -54,8 +54,6 @@ public partial class ItemWorld : Node
     public override void _Ready()
     {
         instance = this;
-        GameWorld.PhysicsStepped += OnPhysicsStepped;
-        GameWorld.WorldCleared += OnWorldCleared;
     }
 
     /// <summary>How many of <paramref name="itemID"/> there are in the world.</summary>
@@ -180,7 +178,8 @@ public partial class ItemWorld : Node
         ItemRemoved?.Invoke(record, reason);
     }
 
-    static void OnWorldCleared()
+    /// <summary>From GameWorld.ClearWorld, after it has emptied the world.</summary>
+    public static void OnWorldCleared()
     {
         // The physics world has dropped its items already (GameWorld.ClearWorld).
         items.Clear();
@@ -276,7 +275,8 @@ public partial class ItemWorld : Node
 
     // ---- each physics tick, after the step ----
 
-    void OnPhysicsStepped(double delta)
+    /// <summary>From GameWorld, each physics tick of a running game right after the step.</summary>
+    public void OnPhysicsStepped(double delta)
     {
         ticks++;
         if (!Lobby.isHost)

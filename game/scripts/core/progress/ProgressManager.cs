@@ -27,7 +27,7 @@ public partial struct ProgressData
 /// <para>
 /// Multiplayer: the lobby host owns quest state. Only the host turns items in and completes quests, broadcasting
 /// each change to every peer, itself included; it also puts unlocked blueprints on sale (the <see cref="Shop"/>
-/// shares that itself). A peer that joins a running game gets the whole state with the world (<see cref="SaveManager"/>).
+/// shares that itself). A peer that joins a running game gets the whole state with the world (<see cref="SaveGame"/>).
 /// </para>
 /// </summary>
 public partial class ProgressManager : Node
@@ -255,7 +255,7 @@ public partial class ProgressManager : Node
     // ---- saves -----------------------------------------------------------------
 
     /// <summary>
-    /// Replaces quest state with a restored save's (see <see cref="SaveManager"/>): the completed quests, and each quest in
+    /// Replaces quest state with a restored save's (see <see cref="SaveGame"/>): the completed quests, and each quest in
     /// progress with its turn-ins and currency earned (by currency name; unknown names are dropped). Runs on each
     /// restoring peer, all with the host's data.
     /// </summary>

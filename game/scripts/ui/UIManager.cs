@@ -21,11 +21,11 @@ using System.Collections.Generic;
 /// </summary>
 public partial class UIManager : Node
 {
-    public const string FrontEndScene = "res://gmp/ui/front_end.tscn";
-    const string LobbyScene = "res://gmp/ui/lobby_debug.tscn";
-    const string MainMenuScene = "res://gmp/ui/main_menu.tscn";
-    const string OptionsScene = "res://gmp/ui/options_menu.tscn";
-    const string PauseMenuScene = "res://gmp/ui/pause_menu.tscn";
+    public const string FrontEndScene = "res://game/scenes/ui/menus/front_end.tscn";
+    const string LobbyScene = "res://game/scenes/ui/menus/lobby_debug.tscn";
+    const string MainMenuScene = "res://game/scenes/ui/menus/main_menu.tscn";
+    const string OptionsScene = "res://game/scenes/ui/menus/options_menu.tscn";
+    const string PauseMenuScene = "res://game/scenes/ui/menus/pause_menu.tscn";
     const string ShopScene = "res://game/scenes/ui/shop/ShopUI.tscn";
 
     // Canvas layers, bottom to top. World markers sit under the HUD; notifications over everything.
@@ -53,14 +53,13 @@ public partial class UIManager : Node
         screenLayer = AddLayer("Screens", ScreenLayer);
         ReadyHud();
         ReadyNotifications();
-        GameWorld.FrozenChanged += OnFrozenChanged;
         CallDeferred(nameof(ShowFrontEndIfBooting));
     }
 
     static HudToast syncingToast;
 
-    /// <summary>A notice while the world is frozen for a join, resync or load (see GameWorld.Resync.cs).</summary>
-    static void OnFrozenChanged(bool frozen)
+    /// <summary>From GameWorld, on every peer: a freeze for a join, resync or load started (true) or ended. Shows a notice meanwhile.</summary>
+    public static void OnFrozenChanged(bool frozen)
     {
         if (IsInstanceValid(syncingToast)) syncingToast.Dismiss(true);
         syncingToast = frozen ? ShowText("Syncing world...", HudAnchor.Center, 0f) : null;

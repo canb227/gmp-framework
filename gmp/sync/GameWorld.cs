@@ -18,15 +18,6 @@ public partial class GameWorld : Node3D
     /// </summary>
     public static Node3D physics;
 
-    /// <summary>
-    /// After the physics world has stepped, each physics tick of a running game (paused: not at all). For game code that
-    /// handles what happened in the step, e.g. item touches.
-    /// </summary>
-    public static event System.Action<double> PhysicsStepped;
-
-    /// <summary>After <see cref="ClearWorld"/> has emptied the world (session end, or a restore about to rebuild it).</summary>
-    public static event System.Action WorldCleared;
-
     /// <summary>True once every peer has loaded and the game is running; false in the lobby and menus.</summary>
     public static bool started { get; private set; }
 
@@ -44,12 +35,6 @@ public partial class GameWorld : Node3D
     {
         ProcessMode = ProcessModeEnum.Always;
         instance = this;
-        Lobby.ConnectedToHostEvent += Instance_ConnectedToHostEvent;
-        Lobby.LobbyDoneLoadingEvent += Instance_LobbyDoneLoadingEvent;
-        Lobby.LobbyDonePreloadingEvent += Instance_LobbyDonePreloadingEvent;
-        Lobby.PeerConnectedEvent += OnPeerLinked;
-        Lobby.PeerDisconnectedEvent += OnPeerUnlinked;
-        Lobby.PeerRepairedEvent += OnPeerRepaired;
 
         // Full (gen2) collections then run in the background instead of stopping the game; gen0/gen1 collections
         // still pause it, so per-frame allocations should stay low. Needs background GC, which is on by default.
@@ -150,12 +135,8 @@ public partial class GameWorld : Node3D
     /// </summary>
     public const long QueryHiddenLayer = 1L << 30;
 
-    private static void Instance_LobbyDonePreloadingEvent()
-    {
-        Init();
-    }
-
-    private static void Instance_LobbyDoneLoadingEvent()
+    /// <summary>From Lobby, on every peer: all peers have loaded (or this joiner has been sent the world), so the game starts.</summary>
+    internal static void OnDoneLoading()
     {
         // Collect the loading garbage now, while the loading screen is still up, so play starts with a clean heap
         // instead of paying for it in the first collection mid-game.
@@ -170,11 +151,6 @@ public partial class GameWorld : Node3D
         }
     }
 
-    private static void Instance_ConnectedToHostEvent(ulong HostID)
-    {
-        Lobby.network.MessageReceivedEvent += OnMessageReceived;
-    }
-
     internal static void Preload(GameInfo gameInfo)
     {
         // Runs on every peer when the host starts the game: load what the game info says will be needed.
@@ -184,6 +160,7 @@ public partial class GameWorld : Node3D
         GameBootstrap.Preload(gameInfo);
     }
 
+    /// <summary>From Lobby, on every peer: all peers have preloaded.</summary>
     internal static void Init()
     {
         // Every peer has finished Preload and is on the loading screen.
@@ -202,6 +179,7 @@ public partial class GameWorld : Node3D
         ClearWorld();
         ResetResync();
         GameBootstrap.ResetSession();
+        absentPlayers = new();
         started = false;
         if (instance != null)
         {
@@ -233,7 +211,7 @@ public partial class GameWorld : Node3D
             PhysicsWorld.ClearItems();
         }
         BuildGrid.ResetSession();
+        ItemWorld.OnWorldCleared();
         ResetStateSync();
-        WorldCleared?.Invoke();
     }
 }

@@ -28,7 +28,7 @@ public record CurrencyInfo(string name, Texture2D icon);
 /// Multiplayer: the lobby host owns stock, banks and deposits. Only the host changes them, broadcasting each change to
 /// every peer, itself included. Other players can only request purchases, which are paid for on the host (so two
 /// players can't spend the same currency) and the items sent back to the buyer. A peer that joins a running game
-/// gets the whole state with the world (<see cref="SaveManager"/>). Everything is cleared when the session ends.
+/// gets the whole state with the world (<see cref="SaveGame"/>). Everything is cleared when the session ends.
 /// </para>
 /// <para>An autoload, so RPCs have a node to target; the API is static.</para>
 /// </summary>
@@ -66,9 +66,6 @@ public partial class Shop : Node
 
     /// <summary>How many of each item id have been turned in, currency value or not.</summary>
     public static IReadOnlyDictionary<string, int> Deposited => deposited;
-
-    /// <summary>Raised on the buyer's peer when a purchase arrives: (item id, quantity).</summary>
-    public static event Action<string, int> Purchased;
 
     public override void _Ready()
     {
@@ -262,7 +259,7 @@ public partial class Shop : Node
 
     /// <summary>
     /// Orders <paramref name="quantity"/> of <paramref name="itemID"/> for the local player, cut down to what fits in
-    /// <paramref name="inventory"/>. The host takes the payment and sends the items back (<see cref="Purchased"/>).
+    /// <paramref name="inventory"/>. The host takes the payment and sends the items back.
     /// False (and nothing is sent) if it isn't on sale or available, can't be afforded or nothing fits.
     /// </summary>
     public static bool TryPurchase(Inventory inventory, string itemID, int quantity)
@@ -307,14 +304,13 @@ public partial class Shop : Node
         if (bought > 0)
         {
             player.UpdateEquippedItem();
-            Purchased?.Invoke(itemID, bought);
         }
     }
 
     // ---- saves ------------------------------------------------------------------
 
     /// <summary>
-    /// Replaces banks and deposits with a restored save's (see <see cref="SaveManager"/>). The stock is every
+    /// Replaces banks and deposits with a restored save's (see <see cref="SaveGame"/>). The stock is every
     /// purchasable item again, plus anything else the save had on sale. Banks are saved by currency name, so
     /// reordering <see cref="Currency"/> doesn't scramble them; unknown names are dropped. Runs on each restoring
     /// peer, all with the host's data, so they stay in agreement.

@@ -139,7 +139,7 @@ public partial class FactoryPlayer : GMPOCharacter
     public override void _Ready()
     {
         base._Ready();
-        // Saved by SaveManager as players, not as part of the world.
+        // Saved as the save's players, not as one of its world roots.
         AddToGroup(GameWorld.UnsavedGroup);
         all.Add(this);
         gravity = gravityDirection * gravityMagnitude;

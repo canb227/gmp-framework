@@ -1,8 +1,8 @@
 [gd_scene format=3]
 
-[ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://gmp/ui/theme/menu_theme.tres" id="1_theme"]
-[ext_resource type="Script" path="res://gmp/ui/PauseMenu.cs" id="2_pm"]
-[ext_resource type="Shader" path="res://gmp/ui/theme/blur_overlay.gdshader" id="3_blur"]
+[ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://game/scenes/ui/theme/menu_theme.tres" id="1_theme"]
+[ext_resource type="Script" path="res://game/scripts/ui/PauseMenu.cs" id="2_pm"]
+[ext_resource type="Shader" path="res://game/scenes/ui/theme/blur_overlay.gdshader" id="3_blur"]
 
 [sub_resource type="ShaderMaterial" id="blur_mat"]
 shader = ExtResource("3_blur")

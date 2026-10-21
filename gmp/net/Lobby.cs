@@ -20,8 +20,12 @@ public enum LobbyControlCode : byte
 /// <para>
 /// Starting a game: the host's <see cref="SendStartGame"/> sends the <see cref="GameInfo"/>, then START to everyone. Each
 /// peer runs <c>GameWorld.Preload</c> (the host spawns the level) and says DonePreloading. Once every peer has,
-/// <see cref="LobbyDonePreloadingEvent"/> runs <c>GameWorld.Init</c> (each peer spawns its player) and each says
-/// DoneLoading. Once every peer has, <see cref="LobbyDoneLoadingEvent"/> starts the game (unpauses, drops the lobby UI).
+/// <c>GameWorld.Init</c> runs (each peer spawns its player) and each says
+/// DoneLoading. Once every peer has, <c>GameWorld.OnDoneLoading</c> starts the game (unpauses) and
+/// <see cref="LobbyDoneLoadingEvent"/> tells the UI (drops the lobby).
+/// <para>
+/// Every message comes in through <see cref="OnIncomingNetworkMessage"/>, which hands each channel to its handler.
+/// </para>
 /// A peer that joins a running game skips all that: the host sends it the world (GameWorld.Resync.cs).
 /// </para>
 /// </summary>
@@ -57,9 +61,7 @@ public partial class Lobby : Node
     public static event Action<ulong> PeerConnectedEvent;
     /// <summary>A peer has gone (left, or its link timed out); it is out of <see cref="members"/> already.</summary>
     public static event Action<ulong> PeerDisconnectedEvent;
-    /// <summary>A link to this peer dropped and was made again; it stayed a member, but messages in the gap were lost.</summary>
-    public static event Action<ulong> PeerRepairedEvent;
-    /// <summary>This peer is linked to the host (raised at once when hosting): the network can be listened to now.</summary>
+    /// <summary>This peer is linked to the host (raised at once when hosting).</summary>
     public static event Action<ulong> ConnectedToHostEvent;
     /// <summary>The host has gone.</summary>
     public static event Action<ulong> DisconnectedFromHostEvent;
@@ -69,8 +71,6 @@ public partial class Lobby : Node
     public static event Action LobbyGameInfoChangedEvent;
     /// <summary>Every peer has spawned its part of a new game, or a joiner has been sent the world: the game starts.</summary>
     public static event Action LobbyDoneLoadingEvent;
-    /// <summary>Every peer has preloaded a new game: time to spawn (GameWorld.Init).</summary>
-    public static event Action LobbyDonePreloadingEvent;
 
     /// <summary>How many members there are, this peer included.</summary>
     public static int MemberCount => members.Count;
@@ -194,6 +194,7 @@ public partial class Lobby : Node
         // brokered. From the host this is the full roster, so the newcomer can mesh.
         Send(peerID, Channel.LOBBY_Roster, RosterBytes());
 
+        GameWorld.OnPeerLinked(peerID);
         PeerConnectedEvent?.Invoke(peerID);
         if (discoveredHost)
             ConnectedToHostEvent?.Invoke(peerID);
@@ -205,6 +206,7 @@ public partial class Lobby : Node
         members.Remove(peerID);
         if (peerID == hostID)
             DisconnectedFromHostEvent?.Invoke(peerID);
+        GameWorld.OnPeerUnlinked(peerID);
         PeerDisconnectedEvent?.Invoke(peerID);
         LobbyMembersChangedEvent?.Invoke();
     }
@@ -212,13 +214,21 @@ public partial class Lobby : Node
     private static void OnPeerRepaired(ulong peerID)
     {
         Logging.Log($"link to {NameFor(peerID)} ({peerID}) repaired", "Lobby");
-        PeerRepairedEvent?.Invoke(peerID);
+        GameWorld.OnPeerRepaired(peerID);
     }
 
+    // Every message from the transport: each channel goes to its handler.
     private static void OnIncomingNetworkMessage(ulong from, Channel ch, byte[] msg)
     {
         switch (ch)
         {
+            case Channel.RPC_Main:
+                RPCManager.instance.OnRpcMessage(from, msg);
+                break;
+            case Channel.GAME_State:
+            case Channel.GAME_Items:
+                GameWorld.OnStateMessage(from, ch, msg);
+                break;
             case Channel.LOBBY_Roster:
                 OnIncomingRosterNetMessage(from, msg);
                 break;
@@ -275,6 +285,7 @@ public partial class Lobby : Node
             member.donePreloading = false;
             member.doneLoading = false;
         }
+        GameWorld.OnDoneLoading();
         LobbyDoneLoadingEvent?.Invoke();
     }
 
@@ -297,7 +308,7 @@ public partial class Lobby : Node
             }
         }
         Logging.Log($"All peers are preloaded", "Lobby");
-        LobbyDonePreloadingEvent?.Invoke();
+        GameWorld.Init();
     }
 
     private static void OnStartGame(ulong from, byte[] data)
@@ -333,6 +344,7 @@ public partial class Lobby : Node
     /// <summary>A peer that joined a running game has been sent the world (see GameWorld.Resync.cs): start it like a finished load.</summary>
     public static void FinishJoining()
     {
+        GameWorld.OnDoneLoading();
         LobbyDoneLoadingEvent?.Invoke();
     }
 

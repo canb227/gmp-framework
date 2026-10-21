@@ -48,7 +48,7 @@ public partial class InventoryUI : Control
         hoverInfoName = GetNode<Label>("%HoverInfoName");
         hoverInfoBelow = GetNode<Label>("%HoverInfoBelow");
 
-        // Terminal-style slot wells (see gmp/ui/theme/menu_theme.tres); the active hotbar slot gets the orange accent.
+        // Terminal-style slot wells (see game/scenes/ui/theme/menu_theme.tres); the active hotbar slot gets the orange accent.
         normalStyle = new StyleBoxFlat();
         normalStyle.BgColor = new Color(0.035f, 0.035f, 0.04f, 0.82f);
         normalStyle.BorderColor = new Color(0.24f, 0.24f, 0.26f, 0.9f);

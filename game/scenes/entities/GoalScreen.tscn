@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://1xxnu441im5p"]
 
 [ext_resource type="Script" uid="uid://dvqn0bq2fknsx" path="res://game/scripts/entities/GoalScreen.cs" id="1_goal"]
-[ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://gmp/ui/theme/menu_theme.tres" id="2_theme"]
-[ext_resource type="Shader" uid="uid://b7kcy5nv6urww" path="res://gmp/ui/theme/screen_overlay.gdshader" id="3_overlay"]
+[ext_resource type="Theme" uid="uid://yr7rpeex6li5" path="res://game/scenes/ui/theme/menu_theme.tres" id="2_theme"]
+[ext_resource type="Shader" uid="uid://b7kcy5nv6urww" path="res://game/scenes/ui/theme/screen_overlay.gdshader" id="3_overlay"]
 [ext_resource type="Texture2D" uid="uid://bcuuuj3u01vt5" path="res://game/assets/icons/items/coal.png" id="4_icon"]
 
 [sub_resource type="StandardMaterial3D" id="mat_frame"]

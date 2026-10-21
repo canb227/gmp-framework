@@ -22,7 +22,7 @@ public partial class GameWorld
     static readonly StringName applyBodyStatesName = "apply_body_states";
     static readonly StringName buildBodyStatesName = "build_body_states";
 
-    /// <summary>From <see cref="OnMessageReceived"/>: an item packet, kept for the next physics tick.</summary>
+    /// <summary>From <see cref="OnStateMessage"/>: an item packet, kept for the next physics tick.</summary>
     static void ReceiveItemPacket(ulong from, byte[] packet)
     {
         // Send time (8 bytes), then the sender's physics tick (8 bytes), then the states.

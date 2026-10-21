@@ -17,7 +17,7 @@ public enum HudAnchor { TopLeft, TopCenter, TopRight, CenterLeft, Center, Center
 /// </summary>
 public partial class UIManager
 {
-    const string ThemePath = "res://gmp/ui/theme/menu_theme.tres";
+    const string ThemePath = "res://game/scenes/ui/theme/menu_theme.tres";
     /// <summary>Gap between anchored notifications and the screen edge, in design units.</summary>
     const float EdgeMargin = 48f;
     /// <summary>Bottom-centre notifications start above the hotbar and held-item name.</summary>

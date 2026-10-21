@@ -31,9 +31,6 @@ public enum SyncMode : byte
 /// </summary>
 public partial class GameWorld
 {
-    /// <summary>Raised on every peer when a freeze starts (true) and ends (false).</summary>
-    public static event Action<bool> FrozenChanged;
-
     /// <summary>True on the host while a freeze it started is under way.</summary>
     public static bool syncing { get; private set; }
 
@@ -108,7 +105,7 @@ public partial class GameWorld
     /// <summary>Host: writes the current game to the file at <paramref name="path"/>. False if it couldn't.</summary>
     public static bool SaveToFile(string path)
     {
-        return Lobby.isHost && started && WriteSaveFile(path, SaveManager.Capture(false));
+        return Lobby.isHost && started && WriteSaveFile(path, CaptureSave(false));
     }
 
     static bool BeginFreeze(SyncMode mode, ulong joiner)
@@ -139,7 +136,7 @@ public partial class GameWorld
     {
         frozenSyncId = syncId;
         GetTree().Paused = true;
-        FrozenChanged?.Invoke(true);
+        UIManager.OnFrozenChanged(true);
         RPCManager.RPC(instance, nameof(_FrozenAck), [syncId]);
     }
 
@@ -196,7 +193,7 @@ public partial class GameWorld
     static void SendRestore()
     {
         restoreSent = true;
-        byte[] data = syncMode == SyncMode.Load ? SaveManager.PrepareLoaded(loadData) : SaveManager.Capture(syncMode == SyncMode.Resync);
+        byte[] data = syncMode == SyncMode.Load ? PrepareLoadedSave(loadData) : CaptureSave(syncMode == SyncMode.Resync);
         loadData = null;
         if (data == null)
         {
@@ -255,7 +252,7 @@ public partial class GameWorld
         pendingRestore = null;
         pendingRestorePeers = null;
         ulong start = Time.GetTicksMsec();
-        SaveManager.Apply(Decompress(blob), !started);
+        ApplySave(Decompress(blob), !started);
         Logging.Log($"Restored the world in {Time.GetTicksMsec() - start} ms", "GameWorld");
         RPCManager.RPCTo(Lobby.hostID, instance, nameof(_RestoreDone), []);
     }
@@ -284,8 +281,8 @@ public partial class GameWorld
         pendingRestorePeers = null;
         restoreParts = null;
         // Every restore is in, so a player spawned now reaches peers that have already rebuilt.
-        SaveManager.EnsureLocalPlayer();
-        FrozenChanged?.Invoke(false);
+        EnsureLocalPlayer();
+        UIManager.OnFrozenChanged(false);
         if (!started)
         {
             // A joiner: this is its game starting (drops the lobby UI, unpauses).
@@ -305,7 +302,8 @@ public partial class GameWorld
 
     // ---- links ----------------------------------------------------------------------
 
-    private static void OnPeerLinked(ulong peer)
+    /// <summary>From Lobby: a direct link to <paramref name="peer"/> is up.</summary>
+    internal static void OnPeerLinked(ulong peer)
     {
         linkedPeers.Add(peer);
         if (frozenSyncId != 0)
@@ -324,7 +322,7 @@ public partial class GameWorld
     /// A dropped link came back (the transport repaired it): whatever was sent across it in the gap, spawns and other
     /// reliable messages included, was lost, so the host has every peer rebuild from its world.
     /// </summary>
-    private static void OnPeerRepaired(ulong peer)
+    internal static void OnPeerRepaired(ulong peer)
     {
         if (!Lobby.isHost || !started)
         {
@@ -337,7 +335,8 @@ public partial class GameWorld
         }
     }
 
-    private static void OnPeerUnlinked(ulong peer)
+    /// <summary>From Lobby: <paramref name="peer"/> has gone (it is out of the members already).</summary>
+    internal static void OnPeerUnlinked(ulong peer)
     {
         linkedPeers.Remove(peer);
         if (started)
