@@ -6,14 +6,21 @@
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c5vbb"]
 albedo_texture = ExtResource("2_kiq66")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_offset = Vector3(0.24, 0.085, 0)
 
 [node name="robot_parts" type="GMPBody" unique_id=232515007]
+tags = 2
 
 [node name="Shape" type="GMPShape" parent="." unique_id=1268035417]
 shape = 1
-density = 6.0
+density = 1200.0
 friction = 0.55
+restitution = 0.4
+rolling_resistance = 0.7
+tags = 2
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1580855378]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0024814606, 0.0054813623, -0.00040870905)
 mesh = SubResource("SphereMesh_pet1e")
 surface_material_override/0 = SubResource("StandardMaterial3D_c5vbb")

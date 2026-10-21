@@ -13,6 +13,7 @@ density = 2000.0
 friction = 0.5
 restitution = 0.1
 rolling_resistance = 0.2
+tags = 2
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=32231142]
 mesh = SubResource("BoxMesh_pet1e")

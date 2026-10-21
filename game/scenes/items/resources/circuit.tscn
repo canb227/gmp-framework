@@ -11,6 +11,7 @@ uv1_scale = Vector3(2.035, 2.035, 2.035)
 uv1_offset = Vector3(0.6, 0.035, 0)
 
 [node name="circuit" type="GMPBody" unique_id=232515007]
+tags = 32
 
 [node name="Shape" type="GMPShape" parent="." unique_id=1904417623]
 size = Vector3(0.6, 0.07, 0.4)

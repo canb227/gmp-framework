@@ -87,8 +87,7 @@ public partial class AudioManager : Node
             }
             else
             {
-
-                PlayOneShot("event:/Impacts/Solid_Metal", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
+                PlayOneShot("event:/Impacts/Metal_Impact", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
             }
         }
     }

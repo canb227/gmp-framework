@@ -21,14 +21,15 @@ script = ExtResource("1_ryy4k")
 itemWeights = Dictionary[String, float]({
 "robot_parts": 1.0
 })
+spawnInterval = 8.0
 streamOutputs = Array[int]([0, 1, 2])
 upgradeCosts = Array[Dictionary]([Dictionary[int, int]({
 3: 100
 }), Dictionary[int, int]({
 3: 400
 }), Dictionary[int, int]({
-3: 2000,
-1: 8000
+1: 8000,
+3: 2000
 })])
 upgradeSpeedUps = Array[float]([4.0, 8.0, 16.0])
 maxNearby = 40

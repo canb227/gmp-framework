@@ -202,7 +202,7 @@ material = SubResource("StandardMaterial3D_7qi08")
 [node name="scrap_grabber" parent="decor" unique_id=582232449 instance=ExtResource("1_gmdp6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.7041893, 1.0586977, -2.1708968)
 
-[node name="CCDIK3D" type="CCDIK3D" parent="decor/scrap_grabber/Skeleton/Skeleton3D" parent_id_path=PackedInt32Array(582232449, 813942281) index="1" unique_id=472936444]
+[node name="CCDIK3D" type="CCDIK3D" parent="decor/scrap_grabber/Skeleton/Skeleton3D" parent_id_path=PackedInt32Array(582232449, 136500066) index="1" unique_id=472936444]
 setting_count = 1
 settings/0/target_node = NodePath("../../../iktarget")
 settings/0/root_bone_name = "Turret"
@@ -230,7 +230,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5719304, 1.2237682, 0)
 [node name="scrap_grabber2" parent="decor" unique_id=1432334222 instance=ExtResource("1_gmdp6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4541516, 1.0657701, -1.9688182)
 
-[node name="CCDIK3D" type="CCDIK3D" parent="decor/scrap_grabber2/Skeleton/Skeleton3D" parent_id_path=PackedInt32Array(1432334222, 813942281) index="1" unique_id=484097119]
+[node name="CCDIK3D" type="CCDIK3D" parent="decor/scrap_grabber2/Skeleton/Skeleton3D" parent_id_path=PackedInt32Array(1432334222, 136500066) index="1" unique_id=484097119]
 setting_count = 1
 settings/0/target_node = NodePath("../../../iktarget")
 settings/0/root_bone_name = "Turret"
