@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 using PolyType;
 
@@ -22,6 +23,13 @@ public partial class Recycler : ItemSpawner
     int points;
     /// <summary>A bonus item that's been paid for but not spawned yet (a limit was reached when its cycle finished).</summary>
     bool bonusOwed;
+
+    public override void AfterInit()
+    {
+        AudioManager.Instance.PlayOneShot("event:/Machines/Crusher/Constant_Hum", 1.0f, OutputPosition(0), new Dictionary<string, float> {});
+        animationPlayer.Play("process");
+        base.AfterInit();
+    }
 
     public override void _PhysicsProcess(double delta)
     {

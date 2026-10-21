@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://v3645dcjw5ni"]
 
 [ext_resource type="Script" uid="uid://xbybti81ybvs" path="res://game/scripts/inhand/MagnetRod.cs" id="1_mr"]
+[ext_resource type="Texture2D" uid="uid://cfwwipqdp45wf" path="res://game/assets/textures/particles/flare_01.png" id="4_yegih"]
 [ext_resource type="Shader" uid="uid://dt1utntk18esd" path="res://game/assets/shaders/MagnetField.gdshader" id="field"]
 [ext_resource type="PackedScene" uid="uid://bsfjyw4ai1rr8" path="res://game/assets/models/props/magnet_tool.glb" id="model"]
-
 
 [sub_resource type="SphereMesh" id="ball"]
 radius = 0.35
@@ -19,13 +19,48 @@ shader_parameter/rim_power = 2.4
 shader_parameter/line_count = 18.0
 shader_parameter/line_speed = 5.0
 
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_pet1e"]
+emission_shape_scale = Vector3(0.4, 0.4, 0.4)
+emission_shape = 1
+emission_sphere_radius = 1.0
+angle_min = 1.0728835e-05
+angle_max = 1.0728835e-05
+spread = 180.0
+flatness = 1.0
+initial_velocity_min = 0.099999994
+initial_velocity_max = 0.099999994
+gravity = Vector3(0, 0, 0)
+linear_accel_min = -0.10000224
+linear_accel_max = 0.99999774
+radial_accel_min = -2.2351742e-06
+radial_accel_max = 0.49999776
+tangential_accel_min = -2.2351742e-06
+tangential_accel_max = 0.99999774
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vchc8"]
+transparency = 1
+albedo_color = Color(0.9058072, 2.4061394, 2.396991, 1)
+albedo_texture = ExtResource("4_yegih")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_c5vbb"]
+material = SubResource("StandardMaterial3D_vchc8")
+
 [node name="MagnetRod" type="Node3D" unique_id=394440562]
 script = ExtResource("1_mr")
 
 [node name="Model" parent="." unique_id=720670214 instance=ExtResource("model")]
 
 [node name="BallMarker" type="MeshInstance3D" parent="." unique_id=536387176]
-visible = false
 cast_shadow = 0
 mesh = SubResource("ball")
 surface_material_override/0 = SubResource("ballmat")
+
+[node name="BallParticles" type="GPUParticles3D" parent="." unique_id=1038054165]
+transform = Transform3D(1, 0, 0, 0, -0.0031270175, -0.9999951, 0, 0.9999951, -0.0031270175, 0, 0, 0)
+amount = 5
+process_material = SubResource("ParticleProcessMaterial_pet1e")
+draw_pass_1 = SubResource("QuadMesh_c5vbb")

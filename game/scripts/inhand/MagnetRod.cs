@@ -2,6 +2,8 @@ using Godot;
 using Nerdbank.MessagePack;
 using PolyType;
 using System.Collections.Generic;
+using Fmod = FMOD;
+using FmodStudio = FMOD.Studio;
 
 /// <summary>What a magnet rod is doing.</summary>
 public enum MagnetMode : byte { Off, Single, Area }
@@ -84,8 +86,8 @@ public partial class MagnetRod : HeldItem
 
     [ExportGroup("Area")]
     /// <summary>Items within this distance of the hold point are caught.</summary>
-    [Export] public float captureRadius = 5f;
-    [Export] public int maxItems = 30;
+    [Export] public float captureRadius = 3f;
+    [Export] public int maxItems = 5;
     /// <summary>Seconds between searches for more items.</summary>
     [Export] public double rescanInterval = 0.25;
 
@@ -105,6 +107,9 @@ public partial class MagnetRod : HeldItem
     Vector3 lastTarget;
     float strainedFor;
     MeshInstance3D ballMarker;
+    GpuParticles3D particles;
+
+    FmodStudio.EventInstance hold_audio;
 
     static readonly Vector3 gravity = ProjectSettings.GetSetting("physics/3d/default_gravity_vector").AsVector3()
         * ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
@@ -114,8 +119,10 @@ public partial class MagnetRod : HeldItem
         base.Equip(item, player);
         if (!isLocal) return;
         ballMarker = GetNode<MeshInstance3D>("BallMarker");
+        particles = GetNode<GpuParticles3D>("BallParticles");
         ballMarker.TopLevel = true;
         ballMarker.Visible = false;
+        particles.Emitting = false;
     }
 
     // ---- input (holder's peer) ----------------------------------------------------
@@ -162,6 +169,11 @@ public partial class MagnetRod : HeldItem
         targetVelocity = Vector3.Zero;
         strainedFor = 0;
         untilRescan = 0;
+        
+        //audio
+        hold_audio = (FmodStudio.EventInstance)AudioManager.Instance.CreateInstance("event:/Items/GravGun_Hold");
+        hold_audio.setVolume(1.0f);
+        hold_audio.start();
     }
 
     Vector3 HoldPoint()
@@ -218,10 +230,14 @@ public partial class MagnetRod : HeldItem
         if (mode == MagnetMode.Off)
         {
             caught.Clear();
+            hold_audio.stop(FmodStudio.STOP_MODE.ALLOWFADEOUT);
             return;
         }
         if (mode == MagnetMode.Area)
         {
+            //audio position update
+            hold_audio.set3DAttributes(AudioManager.To3D(GlobalPosition));
+            
             untilRescan -= delta;
             if (untilRescan <= 0)
             {
@@ -250,8 +266,11 @@ public partial class MagnetRod : HeldItem
     {
         if (!isLocal) return;
         ballMarker.Visible = mode != MagnetMode.Off;
+        particles.Emitting = ballMarker.Visible;
         if (mode == MagnetMode.Off) return;
         ballMarker.GlobalPosition = HoldPoint();
+        particles.GlobalPosition = ballMarker.GlobalPosition;
+
     }
 
     /// <summary>Holder's peer: lets go when the button is up, moves the hold point, and breaks a single grab that's stuck.</summary>

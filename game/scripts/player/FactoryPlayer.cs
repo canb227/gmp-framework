@@ -375,18 +375,18 @@ public partial class FactoryPlayer : GMPOCharacter
             relative.Y = Mathf.Sqrt(2 * gravityMagnitude * jumpHeight);
             sinceJumpPressed = 10;
             sinceOnFloor = 10;
-            AudioManager.Instance.PlayOneShot("event:/Footsteps/FS_Jump", 1.0f, GlobalPosition, new Dictionary<string, float>{["Surfaces"] = 2});
+            AudioManager.Instance.PlayOneShot("event:/Footsteps/FS_Jump", 1.0f, GlobalPosition, new Dictionary<string, float>{["Surfaces"] = 13});
         }
 
         velocity = Move(relative + ground, delta);
         Vector3 ground_velocity = new Vector3(velocity.X, 0, velocity.Z);
-        if(sprinting && onFloor)
+        if(sprinting && onFloor && ground_velocity.LengthSquared() > 3.0f)
         {
-            AudioManager.Instance.PlayOneShot("event:/Footsteps/FS_Run", 1.0f, GlobalPosition, new Dictionary<string, float>{["Surfaces"] = 2});
+            AudioManager.Instance.PlayOneShot("event:/Footsteps/FS_Run", 1.0f, GlobalPosition, new Dictionary<string, float>{["Surfaces"] = 13});
         }
         else if(ground_velocity.Length() > walkSpeed-1.0f && onFloor)
         {
-            AudioManager.Instance.PlayOneShot("event:/Footsteps/FS_Walk", 1.0f, GlobalPosition, new Dictionary<string, float>{["Surfaces"] = 2});
+            AudioManager.Instance.PlayOneShot("event:/Footsteps/FS_Walk", 1.0f, GlobalPosition, new Dictionary<string, float>{["Surfaces"] = 13});
         }
 
     }
@@ -598,4 +598,3 @@ public partial record struct PlayerSync
     [Key(8)] public float height;
     // Keys 9 and 10 held impacts once (they go through the physics world's hits now): don't reuse them.
 }
-

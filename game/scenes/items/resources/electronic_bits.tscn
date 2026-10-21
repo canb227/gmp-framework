@@ -3,8 +3,8 @@
 [ext_resource type="Texture2D" uid="uid://b646400pws0lh" path="res://icon.svg" id="2_d7x8v"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_vchc8"]
-radius = 0.1
-height = 0.4
+radius = 0.05
+height = 0.2
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4x2dv"]
 albedo_texture = ExtResource("2_d7x8v")
@@ -17,6 +17,7 @@ radius = 0.1
 height = 0.4
 density = 6.0
 friction = 0.55
+tags = 16
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1940357077]
 mesh = SubResource("CapsuleMesh_vchc8")
