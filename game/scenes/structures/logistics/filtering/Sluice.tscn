@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dgigpl74ykttk"]
 
 [node name="Sluice" type="GMPBody" unique_id=1712912752]
+tags = 512
 
 [node name="Shape" type="GMPShape" parent="." unique_id=702240871]
 density = 1.0

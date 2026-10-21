@@ -28,10 +28,10 @@ public partial class DroppedTool : GMPOBody, Interactable
     public override void _Ready()
     {
         ItemInfo info = ItemInfo.Fetch(itemID);
-        // Its definition's tags are the whole tool's, as for a loose item; none leaves the body's own.
-        if (info != null && info.tags != ItemTags.None)
+        // Its definition's tags are the whole tool's, as for a loose item, on top of the body's own (TOOL, from its scene).
+        if (info != null && info.tags != SurfaceTags.None)
         {
-            tags = (ulong)info.tags;
+            tags = tags | (ulong)info.tags;
         }
         if (string.IsNullOrEmpty(hoverName))
         {

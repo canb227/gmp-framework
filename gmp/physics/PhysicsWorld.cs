@@ -14,15 +14,25 @@ public struct RayHit
     public ulong id;
     /// <summary>The shape's number in its body.</summary>
     public int shape;
-    /// <summary>The tags of the shape hit (its own plus its body's; see ItemTags in the game).</summary>
+    /// <summary>The tags of the shape hit (its own plus its body's; see SurfaceTags in the game).</summary>
     public ulong tags;
 }
 
 /// <summary>
-/// An impact (<see cref="HitStream"/>): a contact approaching at 2 m/s or more, the same on every peer. Nodes come
-/// first: if either side is a node body it is side A, a character first of all (its own landing or running into a
-/// wall, or something hitting it); two loose items are A and B either way. Read straight from the bytes the C++ world
-/// packs, so it must keep the fields and order of HitRecord (native/src/physics_world.h): 72 bytes.
+/// An impact (<see cref="HitStream"/>): a contact approaching at 2 m/s or more, the same on every peer. Side A is the
+/// side that comes first in this list (hit_side_rank in native/src/physics_world_events.cpp), so a reader only has to
+/// look at one side for what it cares about:
+/// <list type="number">
+/// <item>a player (PLAYER tag): its own landing or running into a wall, or something hitting it</item>
+/// <item>a dropped tool (TOOL tag)</item>
+/// <item>a loose item</item>
+/// <item>a structure (STRUCTURE tag)</item>
+/// <item>the level (LEVEL tag)</item>
+/// <item>any other body</item>
+/// <item>a side no peer can name (id 0, no tags)</item>
+/// </list>
+/// Two sides of the same rank (item on item) are A and B either way. Read straight from the bytes the C++ world packs,
+/// so it must keep the fields and order of HitRecord (native/src/physics_world.h): 72 bytes.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public struct ContactHit

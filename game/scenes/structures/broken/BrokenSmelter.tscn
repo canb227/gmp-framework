@@ -557,6 +557,7 @@ blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_bpyw3")
 
 [node name="BrokenSmelter" type="GMPBody" unique_id=560119559]
+tags = 512
 body_type = 0
 script = ExtResource("2_broken")
 repairedScene = ExtResource("2_3ad6h")

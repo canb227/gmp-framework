@@ -42,6 +42,7 @@ shader = SubResource("Shader_DevWhite")
 size = Vector3(1.885, 0.1, 1.0001)
 
 [node name="ConveyorShort" type="GMPBody" unique_id=1416023118 node_paths=PackedStringArray("beltSurfaces")]
+tags = 512
 body_type = 0
 script = ExtResource("1_r")
 beltSurfaces = []

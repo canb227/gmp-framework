@@ -16,6 +16,7 @@ _data = {
 }
 
 [node name="RobotDumper" type="GMPBody" unique_id=700023757 node_paths=PackedStringArray("outputLocations")]
+tags = 512
 body_type = 0
 script = ExtResource("1_ryy4k")
 itemWeights = Dictionary[String, float]({

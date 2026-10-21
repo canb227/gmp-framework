@@ -45,6 +45,7 @@ _surfaces = [{
 }]
 
 [node name="ConveyorSlopeDown" type="GMPBody" unique_id=1434477856 node_paths=PackedStringArray("beltSurfaces")]
+tags = 512
 body_type = 0
 script = ExtResource("2_r")
 beltSurfaces = []

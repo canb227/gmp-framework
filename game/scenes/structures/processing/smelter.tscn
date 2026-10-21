@@ -70,6 +70,7 @@ _data = {
 }
 
 [node name="Smelter" type="GMPBody" unique_id=1461321437 node_paths=PackedStringArray("inputVolumes", "outputLocations")]
+tags = 512
 body_type = 0
 script = ExtResource("1_qb6y1")
 inputVolumes = [NodePath("spatial/inputVolume")]

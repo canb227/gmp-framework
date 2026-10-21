@@ -117,6 +117,31 @@ PackedInt64Array GMPPhysicsWorld::get_touches() const {
 	return touches;
 }
 
+// Where one side of a hit ranks for being side A: lower comes first. body is the side's Body (nullptr if it has
+// none), id its shared id (0 when other peers can't name it, so it has no tags) and tags its shape's tags.
+static int hit_side_rank(const Body *body, uint64_t id, uint64_t tags) {
+	// No id first: it has no tags, so nothing below would tell it apart from an untagged body.
+	if (id == 0) {
+		return 6;
+	}
+	if ((tags & PlayerTag) != 0) {
+		return 0;
+	}
+	if ((tags & ToolTag) != 0) {
+		return 1;
+	}
+	if (body != nullptr && body->kind >= 0) {
+		return 2;
+	}
+	if ((tags & StructureTag) != 0) {
+		return 3;
+	}
+	if ((tags & LevelTag) != 0) {
+		return 4;
+	}
+	return 5;
+}
+
 // This tick's hits (get_hits) from Box3D's hit events: impacts at MinHitSpeed or more (the world's hit event
 // threshold). Box3D only sees impacts of what this peer simulates: followers are kinematic and don't collide
 // with each other or the level, so their hits come from their authority instead (play_received_hits).
@@ -157,8 +182,8 @@ void GMPPhysicsWorld::read_hits(const b3ContactEvents &contactEvents) {
 			hit.shapeB = shape_index(event.shapeIdB);
 			hit.tagsB = event.userMaterialIdB;
 		}
-		// A player in a hit is always side A, as in its own impacts.
-		if ((hit.tagsB & PlayerTag) != 0 && (hit.tagsA & PlayerTag) == 0) {
+		// Side A is whichever side ranks first: player, tool, item, structure, level.
+		if (hit_side_rank(b, hit.idB, hit.tagsB) < hit_side_rank(a, hit.idA, hit.tagsA)) {
 			std::swap(hit.idA, hit.idB);
 			std::swap(hit.shapeA, hit.shapeB);
 			std::swap(hit.tagsA, hit.tagsB);

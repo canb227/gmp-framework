@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://game/scripts/items/DroppedTool.cs" id="1_bwal6"]
 
 [node name="DroppedWrench" type="GMPBody" unique_id=1833110805]
+tags = 2048
 script = ExtResource("1_bwal6")
 itemID = "wrench"
 canBePickTarget = true

@@ -357,10 +357,7 @@ int64_t GMPBody::get_shared_id() const {
 }
 
 int64_t GMPBody::get_all_tags() {
-	if (tags != 0) {
-		return (int64_t)tags;
-	}
-	uint64_t all = 0;
+	uint64_t all = tags;
 	std::vector<GMPShape *> shapes;
 	collect_shapes(this, shapes);
 	for (GMPShape *shape : shapes) {

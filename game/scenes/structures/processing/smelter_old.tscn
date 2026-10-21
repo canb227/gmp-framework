@@ -226,6 +226,7 @@ _data = {
 }
 
 [node name="Smelter" type="GMPBody" unique_id=1461321437 node_paths=PackedStringArray("inputVolumes", "outputLocations", "animationPlayer")]
+tags = 512
 body_type = 0
 script = ExtResource("1_j57kp")
 recipes = Array[ExtResource("2_kj0j5")]([SubResource("Resource_h435h")])
@@ -686,6 +687,7 @@ transform = Transform3D(0.34202006, 0.9396924, 0, -0.9396924, 0.34202006, 0, 0, 
 surface_material_override/0 = SubResource("StandardMaterial3D_lqu6n")
 
 [node name="Box3DBody" type="GMPBody" parent="model/smelter_old/Door" index="0" unique_id=1179865656]
+tags = 512
 body_type = 1
 transform = Transform3D(1.0000001, -5.9604645e-08, 0, 5.9604645e-08, 1.0000001, 0, 0, 0, 1, -0.05089712, 0.6766901, 0)
 
@@ -699,6 +701,7 @@ surface_material_override/0 = ExtResource("3_kj0j5")
 surface_material_override/0 = ExtResource("3_kj0j5")
 
 [node name="Box3DBody" type="GMPBody" parent="model/smelter_old/Mold_Plate/Mold_Plate_001" index="0" unique_id=453685156]
+tags = 512
 body_type = 1
 transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, 0, 0, 0)
 
@@ -707,6 +710,7 @@ shape = 4
 mesh = SubResource("ArrayMesh_kd3jk")
 
 [node name="Box3DBody" type="GMPBody" parent="model/smelter_old/Mold_Plate" index="1" unique_id=436970234]
+tags = 512
 body_type = 1
 transform = Transform3D(1.0000001, 2.9802322e-08, 0, -2.9802322e-08, 1.0000001, 0, 0, 0, 1, 0, 0, 0)
 

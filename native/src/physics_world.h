@@ -90,8 +90,9 @@ const int32_t NoShapeIndex = -1;
 // One impact of the last step, as get_hits hands it over: C# reads the bytes straight into its ContactHit
 // struct (gmp/physics/PhysicsWorld.cs), so the two must keep the same fields in the same order. Each side is the
 // body's id and the shape's number in it, the same on every peer; a side with id 0 has no tags. The sides come in a
-// fixed order: side A is never further down this list than side B: a character (its own landings and wall bumps,
-// and things hitting it), another node body, a loose item.
+// fixed order: side A is never further down this list than side B: a player (its own landings and wall bumps, and
+// things hitting it), a tool, a loose item, a structure, the level, anything else, a side with no id
+// (hit_side_rank).
 struct HitRecord {
 	uint64_t idA;
 	uint64_t idB;

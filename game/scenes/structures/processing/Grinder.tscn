@@ -30,6 +30,7 @@ _surfaces = [{
 }]
 
 [node name="Grinder" type="GMPBody" unique_id=395325896 node_paths=PackedStringArray("inputVolumes", "outputLocations")]
+tags = 512
 body_type = 0
 script = ExtResource("1_j2mte")
 recipes = Array[ExtResource("2_rjx8u")]([SubResource("Resource_k0i4c")])

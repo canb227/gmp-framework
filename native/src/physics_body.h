@@ -39,8 +39,7 @@ public:
 	uint32_t collisionMask = 0xFFFFFFFF;
 	// Off: the node has no body in the world at all (placement previews and the like).
 	bool enabled = true;
-	// Tags the whole body has (see tags.h), on top of each shape's own. Left empty, the body's tags are what its
-	// shapes have between them (get_all_tags).
+	// Tags the whole body has (see tags.h), on top of each shape's own (get_all_tags gives both together).
 	uint64_t tags = 0;
 	// The id every peer knows this body by (given by C# when its scene spawns); 0 until then.
 	uint64_t sharedId = 0;
@@ -93,7 +92,7 @@ public:
 	int64_t get_tags() const;
 	void set_shared_id(int64_t value);
 	int64_t get_shared_id() const;
-	// The body's tags if it was given any, otherwise every tag its shapes have.
+	// The body's own tags plus every tag its shapes have.
 	int64_t get_all_tags();
 
 protected:

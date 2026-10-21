@@ -45,7 +45,7 @@ public partial class ItemWorld : Node
     /// <summary>The physics world's item kind for each item id, registered the first time one is spawned on this peer.</summary>
     static readonly Dictionary<string, int> kindByItem = new();
     /// <summary>What each item id's colliders have between them (<see cref="ItemRecord.colliderTags"/>).</summary>
-    static readonly Dictionary<string, ItemTags> colliderTagsByItem = new();
+    static readonly Dictionary<string, SurfaceTags> colliderTagsByItem = new();
 
     /// <summary>How often (physics ticks) the host looks for items that fell out of the world.</summary>
     const int KillPlaneInterval = 30;
@@ -178,7 +178,7 @@ public partial class ItemWorld : Node
             Logging.Error($"Can't make a physics kind for {itemID} ({scene.ResourcePath})", "ItemWorld");
         }
         kindByItem[itemID] = kind;
-        colliderTagsByItem[itemID] = (ItemTags)description["collider_tags"].AsInt64();
+        colliderTagsByItem[itemID] = (SurfaceTags)description["collider_tags"].AsInt64();
         return kind;
     }
 

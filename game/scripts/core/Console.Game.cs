@@ -406,13 +406,13 @@ public partial class Console
             if (hit.tagsB != 0)
                 taggedSides++;
             // A player landing or running into something (side A), or hit by an item.
-            ItemTags a = (ItemTags)hit.tagsA;
-            ItemTags b = (ItemTags)hit.tagsB;
+            SurfaceTags a = (SurfaceTags)hit.tagsA;
+            SurfaceTags b = (SurfaceTags)hit.tagsB;
             // A player is always side A: this should stay 0.
-            if ((b & ItemTags.PLAYER) != 0 && (a & ItemTags.PLAYER) == 0)
+            if ((b & SurfaceTags.PLAYER) != 0 && (a & SurfaceTags.PLAYER) == 0)
                 outOfOrder++;
             GMPOCharacter character = null;
-            if ((a & ItemTags.PLAYER) != 0)
+            if ((a & SurfaceTags.PLAYER) != 0)
                 character = PhysicsWorld.BodyNode(hit.idA) as GMPOCharacter;
             if (character != null && character.authority == Lobby.selfPeerID)
                 localCharacterHits++;

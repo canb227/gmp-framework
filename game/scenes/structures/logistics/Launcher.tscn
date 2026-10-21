@@ -15,6 +15,7 @@ _surfaces = [{
 }]
 
 [node name="Launcher" type="GMPBody" unique_id=2087195443]
+tags = 512
 script = ExtResource("1_r4dbf")
 
 [node name="Shape" type="GMPShape" parent="." unique_id=1651336279]

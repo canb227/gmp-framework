@@ -14,6 +14,7 @@ _surfaces = [{
 }]
 
 [node name="Target" type="GMPBody" unique_id=497503289]
+tags = 512
 body_type = 0
 script = ExtResource("1_8jfql")
 cells = Dictionary[Vector3i, int]({

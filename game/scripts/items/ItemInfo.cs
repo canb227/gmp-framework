@@ -31,9 +31,9 @@ public partial class ItemInfo : Resource
     // ---- as a loose item in the world (see ItemWorld) ----
 
     [ExportGroup("In the world")]
-    /// <summary>The whole item's tags (see <see cref="ItemTags"/>); none leaves it what its colliders have.</summary>
+    /// <summary>The whole item's tags (see <see cref="SurfaceTags"/>); none leaves it what its colliders have.</summary>
     [Export]
-    public ItemTags tags;
+    public SurfaceTags tags;
 
     /// <summary>What it is worth when turned in to the void, by currency (empty: nothing, though the deposit still counts).</summary>
     [Export]

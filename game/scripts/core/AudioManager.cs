@@ -75,11 +75,11 @@ public partial class AudioManager : Node
 
         foreach (ContactHit hit in HitStream.hits)
         {
-            // What met, by tags (ItemTags): a player is always side A. The normal points from A into B.
-            ItemTags a = (ItemTags)hit.tagsA;
-            ItemTags b = (ItemTags)hit.tagsB;
+            // What met, by tags (SurfaceTags): a player is always side A. The normal points from A into B.
+            SurfaceTags a = (SurfaceTags)hit.tagsA;
+            SurfaceTags b = (SurfaceTags)hit.tagsB;
 
-            if ((a & ItemTags.PLAYER) != 0)
+            if ((a & SurfaceTags.PLAYER) != 0)
             {
                 // A player landing, running into something, or hit by something; b is what it met.
                 if (hit.speed >= 7.5f)

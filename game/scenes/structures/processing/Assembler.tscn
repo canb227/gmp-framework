@@ -60,6 +60,7 @@ metallic = 0.75
 roughness_texture = SubResource("NoiseTexture2D_6sxjr")
 
 [node name="Assembler" type="GMPBody" unique_id=395325896 node_paths=PackedStringArray("inputVolumes", "outputLocations")]
+tags = 512
 body_type = 0
 script = ExtResource("1_pdesc")
 recipes = Array[ExtResource("2_7ve3q")]([SubResource("Resource_qs3ah")])

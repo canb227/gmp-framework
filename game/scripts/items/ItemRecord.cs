@@ -16,13 +16,13 @@ public class ItemRecord
     /// The tags the whole item was given: its definition's to begin with, and a reaction
     /// can change them (then call <see cref="ItemWorld.TagsChanged"/>). Each of its colliders also has its own.
     /// </summary>
-    public ItemTags ownTags;
+    public SurfaceTags ownTags;
     /// <summary>What its colliders have between them (from its kind).</summary>
-    public readonly ItemTags colliderTags;
+    public readonly SurfaceTags colliderTags;
     /// <summary>Set once a pickup has been granted, so later simultaneous requests lose.</summary>
     public bool taken;
 
-    public ItemRecord(ulong id, string itemID, ItemInfo info, ItemTags colliderTags)
+    public ItemRecord(ulong id, string itemID, ItemInfo info, SurfaceTags colliderTags)
     {
         this.id = id;
         this.itemID = itemID;
@@ -35,11 +35,11 @@ public class ItemRecord
     }
 
     /// <summary>The item's tags: the ones it was given, or what its colliders have between them if it was given none.</summary>
-    public ItemTags tags
+    public SurfaceTags tags
     {
         get
         {
-            if (ownTags != ItemTags.None)
+            if (ownTags != SurfaceTags.None)
             {
                 return ownTags;
             }

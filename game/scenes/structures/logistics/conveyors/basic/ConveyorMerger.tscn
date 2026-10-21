@@ -37,6 +37,7 @@ size = Vector3(0.12, 0.4, 1)
 size = Vector3(0.35, 0.4, 0.35)
 
 [node name="ConveyorMerger" type="GMPBody" unique_id=1739204562 node_paths=PackedStringArray("beltSurfaces")]
+tags = 512
 body_type = 0
 script = ExtResource("1_r")
 beltSurfaces = []

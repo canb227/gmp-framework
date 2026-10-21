@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://ciueileresd63" path="res://game/assets/models/props/item_void.glb" id="2_bti2d"]
 
 [node name="ItemVoid" type="GMPBody" unique_id=1650974929 node_paths=PackedStringArray("inputVolumes")]
+tags = 512
 body_type = 0
 script = ExtResource("1_ucbhb")
 inputVolumes = [NodePath("Trigger")]

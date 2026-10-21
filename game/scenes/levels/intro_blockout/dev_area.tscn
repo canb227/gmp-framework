@@ -753,6 +753,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.91199, 46.83092, -13.57275
 visible = false
 
 [node name="Button" type="GMPBody" parent="WorldStuff/RepairSmelterButton" unique_id=1401352437 node_paths=PackedStringArray("animator", "targets")]
+tags = 256
 body_type = 0
 script = ExtResource("30_priced")
 cost = Dictionary[int, int]({
@@ -774,6 +775,7 @@ libraries/ = SubResource("AnimationLibrary_is778")
 mesh = SubResource("SphereMesh_2k66h")
 
 [node name="ButtonBody" type="GMPBody" parent="WorldStuff/RepairSmelterButton" unique_id=1980672406]
+tags = 256
 body_type = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8737242, 0)
 
@@ -784,6 +786,7 @@ size = Vector3(0.5, 1.5, 0.5)
 mesh = SubResource("BoxMesh_r1731")
 
 [node name="Box3DBody19" type="GMPBody" parent="WorldStuff" unique_id=2017929695]
+tags = 256
 body_type = 0
 transform = Transform3D(1.0000002, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 30.58564, 47.25219, -6.5600157)
 visible = false
@@ -799,6 +802,7 @@ mesh = SubResource("BoxMesh_qiak6")
 surface_material_override/0 = ExtResource("8_kuy7m")
 
 [node name="Box3DBody22" type="GMPBody" parent="WorldStuff" unique_id=764305765]
+tags = 256
 body_type = 0
 transform = Transform3D(1.0000002, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 32.625404, 47.25219, -6.776924)
 visible = false
@@ -814,6 +818,7 @@ mesh = SubResource("BoxMesh_kcgea")
 surface_material_override/0 = ExtResource("8_kuy7m")
 
 [node name="Box3DBody20" type="GMPBody" parent="WorldStuff" unique_id=242956524]
+tags = 256
 body_type = 0
 transform = Transform3D(1.0000002, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 29.577599, 46.21869, -6.544813)
 visible = false
@@ -838,6 +843,7 @@ hoverText = "Repair this at the nearby button "
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47.554832, 5.6287026, 33.487843)
 
 [node name="Button" type="GMPBody" parent="WorldStuff/RepairRDButton" unique_id=34000237 node_paths=PackedStringArray("animator", "targets")]
+tags = 256
 body_type = 0
 script = ExtResource("30_priced")
 animator = NodePath("AnimationPlayer")
@@ -856,6 +862,7 @@ libraries/ = SubResource("AnimationLibrary_is778")
 mesh = SubResource("SphereMesh_2k66h")
 
 [node name="ButtonBody" type="GMPBody" parent="WorldStuff/RepairRDButton" unique_id=1966426229]
+tags = 256
 body_type = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8737242, 0)
 
@@ -866,6 +873,7 @@ size = Vector3(0.5, 1.5, 0.5)
 mesh = SubResource("BoxMesh_r1731")
 
 [node name="BROKERobotDumper" type="GMPBody" parent="WorldStuff" unique_id=703975338]
+tags = 512
 body_type = 0
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 49, 11, 43)
 script = ExtResource("12_is778")
@@ -879,6 +887,7 @@ transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 45, 
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36.388847, 1.6260744, -37.41516)
 
 [node name="Button" type="GMPBody" parent="WorldStuff/Repair Source Button" unique_id=502930267 node_paths=PackedStringArray("animator", "targets")]
+tags = 256
 body_type = 0
 script = ExtResource("30_priced")
 cost = Dictionary[int, int]({
@@ -898,6 +907,7 @@ libraries/ = SubResource("AnimationLibrary_is778")
 mesh = SubResource("SphereMesh_2k66h")
 
 [node name="ButtonBody" type="GMPBody" parent="WorldStuff/Repair Source Button" unique_id=2064060396]
+tags = 256
 body_type = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.026720047, -0.87636566, 0.028715134)
 
@@ -911,6 +921,7 @@ mesh = SubResource("BoxMesh_r1731")
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4, 0, -4)
 
 [node name="WorldBody" type="GMPBody" parent="." unique_id=1597530614]
+tags = 256
 body_type = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 
