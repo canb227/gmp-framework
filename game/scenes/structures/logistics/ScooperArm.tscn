@@ -1,0 +1,180 @@
+[gd_scene format=3 uid="uid://cf3cq8lerxao4"]
+
+[ext_resource type="Script" uid="uid://dfdoovd5qwrwn" path="res://game/scripts/structures/logistics/ScooperArm.cs" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cmcrxvglotdkt" path="res://game/assets/models/machines/logistics/scooper_arm.glb" id="2_model"]
+
+[node name="ScooperArm" type="GMPBody" unique_id=856970826 node_paths=PackedStringArray("ikTarget", "bucketTarget", "waypoints")]
+tags = 512
+body_type = 0
+script = ExtResource("1_script")
+ikTarget = NodePath("IKTarget")
+bucketTarget = NodePath("BucketTarget")
+waypoints = [NodePath("Waypoints/Ready"), NodePath("Waypoints/Dig"), NodePath("Waypoints/Drag"), NodePath("Waypoints/Curl"), NodePath("Waypoints/Lift"), NodePath("Waypoints/SwingFront"), NodePath("Waypoints/Right"), NodePath("Waypoints/Dump"), NodePath("Waypoints/DumpHold"), NodePath("Waypoints/SwingBack")]
+secondsPerWaypoint = 1.6
+cells = Dictionary[Vector3i, int]({
+Vector3i(0, 0, -1): 4,
+Vector3i(0, 0, 0): 4,
+Vector3i(0, 1, -1): 0,
+Vector3i(0, 1, 0): 0,
+Vector3i(0, 2, -1): 0,
+Vector3i(0, 2, 0): 0,
+Vector3i(0, 3, -1): 0,
+Vector3i(0, 3, 0): 0,
+Vector3i(1, 0, -1): 512,
+Vector3i(1, 0, 0): 512,
+Vector3i(1, 1, -1): 0,
+Vector3i(1, 1, 0): 0,
+Vector3i(1, 2, -1): 0,
+Vector3i(1, 2, 0): 0,
+Vector3i(1, 3, -1): 0,
+Vector3i(1, 3, 0): 0
+})
+blueprintItemID = "blueprint_scooper_arm"
+hoverName = "Scooper Arm"
+
+[node name="BaseShape" type="GMPShape" parent="." unique_id=1952538560]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.15, -1)
+size = Vector3(1.8, 0.3, 1.8)
+
+[node name="ColumnShape" type="GMPShape" parent="." unique_id=1752532535]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1.65, -1)
+size = Vector3(0.8, 2.7, 0.8)
+
+[node name="Model" parent="." unique_id=2054369762 instance=ExtResource("2_model")]
+
+[node name="Skeleton3D" parent="Model/Rig" index="0"]
+modifier_callback_mode_process = 0
+
+[node name="HubAim" type="LookAtModifier3D" parent="Model/Rig/Skeleton3D" unique_id=1475391637]
+target_node = NodePath("../../../../IKTarget")
+bone_name = "Hub"
+bone = 0
+forward_axis = 2
+primary_rotation_axis = 2
+use_secondary_rotation = false
+relative = false
+
+[node name="ArmIK" type="TwoBoneIK3D" parent="Model/Rig/Skeleton3D" unique_id=793545766]
+setting_count = 1
+settings/0/target_node = NodePath("../../../../IKTarget")
+settings/0/pole_node = NodePath("../HubAttachment/Pole")
+settings/0/root_bone_name = "Boom"
+settings/0/middle_bone_name = "Stick"
+settings/0/pole_direction = 5
+settings/0/end_bone_name = "Bucket"
+
+[node name="BucketAim" type="LookAtModifier3D" parent="Model/Rig/Skeleton3D" unique_id=174403298]
+target_node = NodePath("../../../../BucketTarget")
+bone_name = "Bucket"
+bone = 3
+forward_axis = 2
+primary_rotation_axis = 0
+use_secondary_rotation = false
+relative = false
+
+[node name="HubAttachment" type="BoneAttachment3D" parent="Model/Rig/Skeleton3D" unique_id=957494797]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1, 3.3, -1)
+bone_name = "Hub"
+bone_idx = 0
+
+[node name="Pole" type="Marker3D" parent="Model/Rig/Skeleton3D/HubAttachment" unique_id=1747910626]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+
+[node name="HubBody" type="GMPBody" parent="Model/Rig/Skeleton3D/HubAttachment" unique_id=519435107]
+tags = 512
+body_type = 1
+
+[node name="Shape" type="GMPShape" parent="Model/Rig/Skeleton3D/HubAttachment/HubBody" unique_id=1601968380]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+size = Vector3(1.2, 1.2, 0.6)
+
+[node name="BoomAttachment" type="BoneAttachment3D" parent="Model/Rig/Skeleton3D" unique_id=891641460]
+transform = Transform3D(1, 0, 0, 0, 0.573576, 0.819152, 0, -0.819152, 0.573576, 1, 3.75, -1)
+bone_name = "Boom"
+bone_idx = 1
+
+[node name="BoomBody" type="GMPBody" parent="Model/Rig/Skeleton3D/BoomAttachment" unique_id=883468117]
+tags = 512
+body_type = 1
+
+[node name="Shape" type="GMPShape" parent="Model/Rig/Skeleton3D/BoomAttachment/BoomBody" unique_id=73367540]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+size = Vector3(0.24, 2, 0.24)
+
+[node name="StickAttachment" type="BoneAttachment3D" parent="Model/Rig/Skeleton3D" unique_id=1622099106]
+transform = Transform3D(1, 0, 0, 0, -0.866025, 0.5, 0, -0.5, -0.866025, 1, 4.897152, -2.638304)
+bone_name = "Stick"
+bone_idx = 2
+
+[node name="StickBody" type="GMPBody" parent="Model/Rig/Skeleton3D/StickAttachment" unique_id=202207272]
+tags = 512
+body_type = 1
+
+[node name="Shape" type="GMPShape" parent="Model/Rig/Skeleton3D/StickAttachment/StickBody" unique_id=600216927]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+size = Vector3(0.18, 1.8, 0.18)
+
+[node name="BucketAttachment" type="BoneAttachment3D" parent="Model/Rig/Skeleton3D" unique_id=399878379]
+transform = Transform3D(1, 0, 0, 0, -1, 0, 0, 0, -1, 1, 3.338307, -3.538303)
+bone_name = "Bucket"
+bone_idx = 3
+
+[node name="BucketBody" type="GMPBody" parent="Model/Rig/Skeleton3D/BucketAttachment" unique_id=1440146906]
+tags = 512
+body_type = 1
+
+[node name="BackShape" type="GMPShape" parent="Model/Rig/Skeleton3D/BucketAttachment/BucketBody" unique_id=519737568]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0.05)
+size = Vector3(1.6, 0.8, 0.1)
+
+[node name="FloorShape" type="GMPShape" parent="Model/Rig/Skeleton3D/BucketAttachment/BucketBody" unique_id=153374718]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, -0.425)
+size = Vector3(1.6, 0.1, 0.95)
+
+[node name="SideLeftShape" type="GMPShape" parent="Model/Rig/Skeleton3D/BucketAttachment/BucketBody" unique_id=1808381246]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0.52, -0.425)
+size = Vector3(0.1, 0.56, 0.95)
+
+[node name="SideRightShape" type="GMPShape" parent="Model/Rig/Skeleton3D/BucketAttachment/BucketBody" unique_id=506760448]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 0.52, -0.425)
+size = Vector3(0.1, 0.56, 0.95)
+
+[node name="IKTarget" type="Marker3D" parent="." unique_id=1041523537]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 2, -1)
+
+[node name="BucketTarget" type="Marker3D" parent="." unique_id=1900290245]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 1, -1)
+
+[node name="Waypoints" type="Node3D" parent="." unique_id=2107753144]
+
+[node name="Ready" type="Marker3D" parent="Waypoints" unique_id=1542952355]
+transform = Transform3D(0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 0, 0, 1, -0.8, 2, -1)
+
+[node name="Dig" type="Marker3D" parent="Waypoints" unique_id=2012887949]
+transform = Transform3D(0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 0, 0, 1, -0.8, 1.2, -1)
+
+[node name="Drag" type="Marker3D" parent="Waypoints" unique_id=66281965]
+transform = Transform3D(0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 0, 0, 1, -0.3, 1.2, -1)
+
+[node name="Curl" type="Marker3D" parent="Waypoints" unique_id=519437897]
+transform = Transform3D(0.573576, -0.819152, 0, 0.819152, 0.573576, 0, 0, 0, 1, -0.75, 1.4, -1)
+
+[node name="Lift" type="Marker3D" parent="Waypoints" unique_id=1737562813]
+transform = Transform3D(0.573576, -0.819152, 0, 0.819152, 0.573576, 0, 0, 0, 1, -0.7, 2.9, -1)
+
+[node name="SwingFront" type="Marker3D" parent="Waypoints" unique_id=749788553]
+transform = Transform3D(1, 0, 0, 0, 0.573576, 0.819152, 0, -0.819152, 0.573576, 1, 3.3, -3.1)
+
+[node name="Right" type="Marker3D" parent="Waypoints" unique_id=775253085]
+transform = Transform3D(0.573576, 0.819152, 0, -0.819152, 0.573576, 0, 0, 0, 1, 2.7, 2.9, -1)
+
+[node name="Dump" type="Marker3D" parent="Waypoints" unique_id=1826875899]
+transform = Transform3D(0.34202, -0.939693, 0, 0.939693, 0.34202, 0, 0, 0, 1, 2.9, 2.5, -1)
+
+[node name="DumpHold" type="Marker3D" parent="Waypoints" unique_id=981396092]
+transform = Transform3D(0.34202, -0.939693, 0, 0.939693, 0.34202, 0, 0, 0, 1, 2.9, 2.5, -1)
+
+[node name="SwingBack" type="Marker3D" parent="Waypoints" unique_id=1420287671]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 3.3, 1.1)
+
+[editable path="Model"]

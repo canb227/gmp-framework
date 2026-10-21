@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="BlueprintItem" format=3 uid="uid://qnrv63rbkavq"]
+
+[ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://c5w8c7jkqb3a4" path="res://game/assets/icons/blueprints/blueprint_scooper_arm.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://e450hsdm0ju3" path="res://game/scenes/structures/BlueprintGhost.tscn" id="3_ghost"]
+[ext_resource type="PackedScene" uid="uid://cf3cq8lerxao4" path="res://game/scenes/structures/logistics/ScooperArm.tscn" id="4_scene"]
+[ext_resource type="PackedScene" uid="uid://b4e25phltyydc" path="res://game/scenes/structures/logistics/ScooperArmLong.tscn" id="5_alternate"]
+
+[resource]
+script = ExtResource("1_script")
+structureScene = ExtResource("4_scene")
+alternateStructureScene = ExtResource("5_alternate")
+cost = Dictionary[int, int]({
+1: 5
+})
+itemID = "blueprint_scooper_arm"
+displayName = "Scooper Arm"
+description = "Builds the Scooper Arm: an excavator arm that scoops loose items up beside it and tips them out on its other side. Its second form is a long frame that scoops from a front pit and dumps down a back chute."
+icon = ExtResource("2_icon")
+inHandScene = ExtResource("3_ghost")
+maxStackSize = 99
+metadata/_custom_type_script = "uid://blmd28f80x7rh"
