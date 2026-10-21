@@ -8,7 +8,9 @@ Run in Blender (MCP or the Text Editor): it empties the open file, then builds, 
                         above), lifts over the top and dumps down the back chute (-Y). The Hub drum pitches about X.
 
 Each has a static "Frame" mesh and a skinned "Arm" mesh on the "Rig" armature, bones Hub > Boom > Stick > Bucket,
-every vertex weighted fully to one bone. The bucket is a dustpan: its back wall runs down the Bucket bone, and its
+every vertex weighted fully to one bone. The boom's foot sits off the hub's turning axis (on the cab front, or the drum's
+mount), straight ahead of the hub's head: Godot's CCD IK turns each bone by swinging it toward the next, so a bone can't
+turn about the line to its child, and it takes each child to sit on its parent's own line. The bucket is a dustpan: its back wall runs down the Bucket bone, and its
 floor (at the bone's tail) reaches toward the machine (-Y in the rest pose), open on top and at the front.
 """
 import bpy, bmesh, math, os
@@ -168,11 +170,11 @@ def build_pedestal():
     frame.box((1, 1, 1.65), (0.8, 0.8, 2.7), "M_Frame")
     frame.box((1, 1, 2.95), (1.0, 1.0, 0.1), "M_Frame")
 
-    bones = arm_chain(hub_head=(1, 1, 3.3), boom_head=(1, 1, 3.75), boom_len=2.0, stick_len=1.8, bucket_len=0.8)
+    bones = arm_chain(hub_head=(1, 1, 3.65), boom_head=(1, 1.45, 3.65), boom_len=2.0, stick_len=1.8, bucket_len=0.8)
     arm = Mesh()
     arm.box((1, 1, 3.3), (1.2, 1.2, 0.6), "M_Hub", "Hub")
     arm.box((1, 0.55, 3.35), (0.9, 0.5, 0.5), "M_Frame", "Hub")
-    arm.box((1, 1, 3.7), (0.35, 0.35, 0.2), "M_Hub", "Hub")
+    arm.box((1, 1.45, 3.65), (0.35, 0.35, 0.15), "M_Hub", "Hub")
     arm.beam(bones[1][2], bones[1][3], 0.24, "M_Arm", "Boom")
     arm.beam(bones[2][2], bones[2][3], 0.18, "M_Arm", "Stick")
     arm.bucket(bones[3][2], 0.8, 0.9, 1.6, "M_Bucket", "Bucket")
@@ -204,7 +206,7 @@ def build_long():
     slope = math.atan2(1.1, 1.3)
     frame.box((1, 0.65, 0.65), (1.76, math.hypot(1.3, 1.1), 0.05), "M_Frame", rotation=Matrix.Rotation(slope, 3, 'X'))
 
-    bones = arm_chain(hub_head=(1, 2, 1.7), boom_head=(1, 2, 1.7), boom_len=1.25, stick_len=1.15, bucket_len=0.65)
+    bones = arm_chain(hub_head=(1, 2, 1.7), boom_head=(1, 2.3, 1.7), boom_len=1.25, stick_len=1.15, bucket_len=0.65)
     arm = Mesh()
     arm.cylinder_x(Vector((1, 2, 1.7)), 0.3, 0.5, "M_Hub", "Hub")
     arm.box((1, 2.3, 1.7), (0.3, 0.3, 0.3), "M_Hub", "Hub")
