@@ -2,6 +2,25 @@ using Godot;
 using PolyType;
 using System.Collections.Generic;
 
+
+
+
+
+
+
+
+
+//i let claude oneshot this entire crane
+
+
+
+
+
+
+
+
+
+
 /// <summary>Where a gantry crane's head is: everything its moving parts are posed from. Sent by its authority (the host).</summary>
 [GenerateShape]
 public partial record struct GantryCraneState

@@ -932,12 +932,29 @@ mesh = SubResource("ArrayMesh_ubgps")
 [node name="ItemCountMeter" parent="." unique_id=456310034 instance=ExtResource("25_r1731")]
 transform = Transform3D(0.00047738946, 0, -0.9999999, 0, 1, 0, 0.9999999, 0, 0.00047738946, -1.5736656, 0, -4.7461405)
 
-[node name="ItemCountMeter2" parent="." unique_id=265166717 instance=ExtResource("25_r1731")]
+[node name="ItemCountMeter2" parent="." unique_id=265166717 node_paths=PackedStringArray("targets") instance=ExtResource("25_r1731")]
 transform = Transform3D(0.00047738946, 0, -0.9999999, 0, 1, 0, 0.9999999, 0, 0.00047738946, -1.5736656, 0, -6.2617483)
 tag = 16
+max = 200
+targets = [null]
+
+[node name="CountLabel" parent="ItemCountMeter2" index="5"]
+text = "0 / 250"
 
 [node name="TagLabel" parent="ItemCountMeter2" index="6"]
 text = "PLASTIC"
+
+[node name="ItemCountMeter3" parent="." unique_id=1248947856 node_paths=PackedStringArray("targets") instance=ExtResource("25_r1731")]
+transform = Transform3D(0.00047738946, 0, -0.9999999, 0, 1, 0, 0.9999999, 0, 0.00047738946, -1.5736656, 0, -8.206223)
+tag = 4095
+max = 1000
+targets = [null]
+
+[node name="CountLabel" parent="ItemCountMeter3" index="5"]
+text = "0 / 1000"
+
+[node name="TagLabel" parent="ItemCountMeter3" index="6"]
+text = "ALL?"
 
 [node name="Node3D" type="Node3D" parent="." unique_id=2006237166]
 
@@ -1406,6 +1423,7 @@ launchSpeed = 2.665
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.5, 4.0744524, -12.933634)
 
 [editable path="ItemCountMeter2"]
+[editable path="ItemCountMeter3"]
 [editable path="GantryCrane"]
 [editable path="GantryCrane2"]
 [editable path="DevSpawner"]
