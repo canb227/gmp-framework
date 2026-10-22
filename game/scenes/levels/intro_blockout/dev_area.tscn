@@ -21,6 +21,7 @@
 [ext_resource type="Texture2D" uid="uid://dudbcdb7ex0qv" path="res://game/assets/textures/wall_white_brick/wall_white_brick_diffuseOriginal.png" id="18_jjh62"]
 [ext_resource type="Texture2D" uid="uid://dai3p48chnvni" path="res://game/assets/textures/wall_white_brick/wall_white_brick_normal.png" id="19_qiak6"]
 [ext_resource type="Texture2D" uid="uid://bnemfwnp757d1" path="res://game/assets/textures/wall_white_brick/wall_white_brick_smoothness.png" id="20_kcgea"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/special/GantryCrane.tscn" id="25_2k66h"]
 [ext_resource type="Script" uid="uid://c64akhdf23fdq" path="res://game/scripts/entities/PricedButton.cs" id="30_priced"]
 [ext_resource type="PackedScene" uid="uid://b3vrwosnvijj" path="res://game/scenes/structures/broken/BrokenSmelter.tscn" id="31_brokensmelter"]
 [ext_resource type="PackedScene" uid="uid://ci3gdnftondij" path="res://game/scenes/structures/broken/BrokenRecycler.tscn" id="32_brokenrecycler"]
@@ -1337,3 +1338,7 @@ size = Vector3(1, 5, 1)
 material = ExtResource("4_5cgpr")
 
 [node name="CSGMesh3D" type="CSGMesh3D" parent="." unique_id=1328661696]
+
+[node name="GantryCrane" parent="." unique_id=1269964542 instance=ExtResource("25_2k66h")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 20)
+size = Vector3(50, 25, 59)

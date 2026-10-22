@@ -224,6 +224,75 @@ public partial class Console
         LimboConsole.Info($"catapult: id={catapult.id} pos={catapult.GlobalPosition} strength={catapult.strength} throwing={catapult.throwing} arm={armDegrees:0.#} items={catapult.ItemsInBucket()}");
     }
 
+    GantryCrane NearestCrane()
+    {
+        Vector3 from = Vector3.Zero;
+        FactoryPlayer player = LocalPlayer();
+        if (player != null)
+        {
+            from = player.GlobalPosition;
+        }
+        GantryCrane nearest = null;
+        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
+        {
+            if (obj is GantryCrane crane && (nearest == null || crane.GlobalPosition.DistanceTo(from) < nearest.GlobalPosition.DistanceTo(from)))
+            {
+                nearest = crane;
+            }
+        }
+        return nearest;
+    }
+
+    /// <summary>The local player starts piloting the nearest crane (as interacting with its cockpit would), or leaves it.</summary>
+    public void crane_pilot()
+    {
+        GantryCrane crane = NearestCrane();
+        FactoryPlayer player = LocalPlayer();
+        if (crane == null || player == null)
+        {
+            LimboConsole.Error("crane_pilot: no crane or no local player.");
+            return;
+        }
+        if (player.piloting == crane)
+        {
+            crane.Leave();
+        }
+        else
+        {
+            RPCManager.RequestFromAuthority(crane, "_RequestPilot", [player.id]);
+        }
+    }
+
+    /// <summary>
+    /// The local pilot holds keys for seconds: x right / -1 left, y back / -1 forward (relative to its camera, as WASD),
+    /// lift +1 up / -1 down, jaw +1 opens / -1 shuts.
+    /// </summary>
+    public void crane_drive(int x, int y, int lift, int jaw, float seconds)
+    {
+        FactoryPlayer player = LocalPlayer();
+        if (player?.piloting == null)
+        {
+            LimboConsole.Error("crane_drive: the local player isn't piloting a crane.");
+            return;
+        }
+        player.piloting.testDrive = new Vector2I(x, y);
+        player.piloting.testLift = lift;
+        player.piloting.testJaw = jaw;
+        player.piloting.testDriveLeft = seconds;
+    }
+
+    /// <summary>The nearest crane as this peer shows it: its pose and pilot.</summary>
+    public void crane_info()
+    {
+        GantryCrane crane = NearestCrane();
+        if (crane == null)
+        {
+            LimboConsole.Error("crane_info: no crane.");
+            return;
+        }
+        LimboConsole.Info(crane.Describe());
+    }
+
     /// <summary>
     /// Host: spawns count items (loose items or tools) in a column above x y z, 0.5 m apart so they land one after another, each up to
     /// spread metres off to the side (else a column of balls stacks into a tower).

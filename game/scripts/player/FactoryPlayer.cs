@@ -89,7 +89,13 @@ public partial class FactoryPlayer : GMPOCharacter
     /// Radians of look per screen pixel of mouse movement. Look reads unscaled screen pixels, so this is the same at
     /// every window size; it matches the old canvas-scaled 0.002 at 3440x1440 (stretched from the 1152x648 base).
     /// </summary>
-    const float MouseSensitivity = 0.0009f;
+    public const float MouseSensitivity = 0.0009f;
+
+    /// <summary>
+    /// The crane this (local) player pilots, or null. While set the body stands still, input goes to the crane and the
+    /// crane poses the camera (<see cref="GantryCrane"/>).
+    /// </summary>
+    public GantryCrane piloting;
 
     public Inventory inventory = new();
 
@@ -200,6 +206,12 @@ public partial class FactoryPlayer : GMPOCharacter
 
         // Menus (pause, shop, ...) take every input while open; UIManager handles Escape and the inventory key.
         if (UIManager.BlocksGameplayInput) return;
+        if (piloting != null)
+        {
+            if (@event is InputEventMouseButton click && click.Pressed) UIManager.RefreshMouseMode();
+            piloting.HandlePilotInput(@event);
+            return;
+        }
         HandleMouseInput(@event);
         HandleScrollWheel(@event);
         if (!UIManager.IsInventoryOpen && heldItem != null && heldItem.HandleInput(@event)) return;
@@ -301,8 +313,11 @@ public partial class FactoryPlayer : GMPOCharacter
 
         // Gameplay rays and held tools use where the player actually is this tick, not where it's drawn.
         PoseCamera(false);
-        UpdatePickTarget();
-        UpdateDeconstruct((float)delta);
+        if (piloting == null)
+        {
+            UpdatePickTarget();
+            UpdateDeconstruct((float)delta);
+        }
         ApplyMovement((float)delta);
         PoseCamera(false);
     }
@@ -335,7 +350,8 @@ public partial class FactoryPlayer : GMPOCharacter
 
     void ApplyMovement(float delta)
     {
-        bool menu = UIManager.BlocksGameplayInput;
+        // Piloting a crane, the body stands still like with a menu open.
+        bool menu = UIManager.BlocksGameplayInput || piloting != null;
         bool onFloor = IsOnFloor();
         sinceOnFloor += delta;
         sinceJumpPressed += delta;
@@ -530,7 +546,7 @@ public partial class FactoryPlayer : GMPOCharacter
     /// </summary>
     void PoseCamera(bool interpolated)
     {
-        if (!cameraPosed) return;
+        if (!cameraPosed || piloting != null) return;
         Vector3 origin = interpolated ? GetGlobalTransformInterpolated().Origin : GlobalPosition;
         Basis yaw = GlobalBasis;
         Vector3 eye = cameraOffset - new Vector3(0, eyeDrop, 0);
