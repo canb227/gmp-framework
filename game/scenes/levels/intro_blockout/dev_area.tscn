@@ -946,7 +946,7 @@ text = "PLASTIC"
 
 [node name="ItemCountMeter3" parent="." unique_id=1248947856 node_paths=PackedStringArray("targets") instance=ExtResource("25_r1731")]
 transform = Transform3D(0.00047738946, 0, -0.9999999, 0, 1, 0, 0.9999999, 0, 0.00047738946, -1.5736656, 0, -8.206223)
-tag = 4095
+tag = 8
 max = 1000
 targets = [null]
 
@@ -954,7 +954,7 @@ targets = [null]
 text = "0 / 1000"
 
 [node name="TagLabel" parent="ItemCountMeter3" index="6"]
-text = "ALL?"
+text = "Concrete"
 
 [node name="Node3D" type="Node3D" parent="." unique_id=2006237166]
 

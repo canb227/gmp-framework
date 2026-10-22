@@ -4,6 +4,7 @@
 [ext_resource type="Shader" uid="uid://b7kcy5nv6urww" path="res://game/scenes/ui/theme/screen_overlay.gdshader" id="3_overlay"]
 [ext_resource type="Script" uid="uid://c5mov8x8q3i6s" path="res://game/scripts/player/InventoryUI.cs" id="inv_ui_script"]
 [ext_resource type="Script" path="res://game/scripts/ui/CurrencyBar.cs" id="currency_bar_script"]
+[ext_resource type="Script" path="res://game/scripts/ui/ControlHints.cs" id="control_hints_script"]
 
 [sub_resource type="ShaderMaterial" id="overlay_mat"]
 shader = ExtResource("3_overlay")
@@ -900,6 +901,23 @@ mouse_filter = 2
 theme_override_constants/separation = 40
 script = ExtResource("currency_bar_script")
 outlineSize = 8
+
+[node name="ControlHints" type="VBoxContainer" parent="." unique_id=1675403318]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -48.0
+offset_top = -44.0
+offset_right = -48.0
+offset_bottom = -44.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/separation = 8
+script = ExtResource("control_hints_script")
 
 [node name="ItemTooltip" type="PanelContainer" parent="." unique_id=1373239077]
 unique_name_in_owner = true

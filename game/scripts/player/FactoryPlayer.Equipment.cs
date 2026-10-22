@@ -23,10 +23,12 @@ public partial class FactoryPlayer
     /// <summary>Replaces the in-hand visual with the currently equipped item's (or clears it). Runs on every peer.</summary>
     public void UpdateEquippedItem()
     {
+        string equippedID = inventory.GetEquippedItem();
+        // A blueprint's ghost stays through a placement (its count changing) rather than blinking out and back.
+        if (heldItem is BlueprintGhost && equippedID != null && heldItem.item.itemID == equippedID) return;
+
         heldItem?.QueueFree();
         heldItem = null;
-
-        string equippedID = inventory.GetEquippedItem();
         if (equippedID == null) return;
 
         ItemInfo equipped = ItemInfo.Fetch(equippedID);

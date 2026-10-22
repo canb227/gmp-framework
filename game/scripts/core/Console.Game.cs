@@ -158,7 +158,10 @@ public partial class Console
             min = min.Min(cell);
             max = max.Max(cell);
         }
-        LimboConsole.Info($"ghost_info: target={anchor} turns={BlueprintGhost.quarterTurns} alternate={ghost.showingAlternate} canPlace={ghost.canPlace} connected={BlueprintGhost.connected} min={min} max={max} scene={ghost.previewStructure.SceneFilePath.GetFile()}");
+        // How far the drawn preview (eased each frame) is from its placement pose: 0 once it has settled.
+        Transform3D pose = Structure.PlacementTransform(anchor, BlueprintGhost.quarterTurns);
+        float drawnOff = ghost.previewStructure.GlobalPosition.DistanceTo(pose.Origin);
+        LimboConsole.Info($"ghost_info: target={anchor} turns={BlueprintGhost.quarterTurns} alternate={ghost.showingAlternate} canPlace={ghost.canPlace} connected={BlueprintGhost.connected} min={min} max={max} scene={ghost.previewStructure.SceneFilePath.GetFile()} drawnOff={drawnOff:0.000}");
     }
 
     /// <summary>Turns the held blueprint's ghost a quarter clockwise, as the rotate key does.</summary>

@@ -43,7 +43,7 @@ public partial class BlueprintGhost : HeldItem
     public Vector3I? targetCell { get; private set; }
     /// <summary>
     /// Rotation for the next structure, in quarter turns of positive yaw (0-3). Static so it survives
-    /// re-equipping (each placement re-creates the ghost); only the local player's ghost uses it.
+    /// re-equipping; only the local player's ghost uses it.
     /// </summary>
     public static int quarterTurns { get; private set; }
     /// <summary>
@@ -75,8 +75,8 @@ public partial class BlueprintGhost : HeldItem
     bool connects => Structure.SceneInputEnds(mainScene).Count > 0 || Structure.SceneOutputEnds(mainScene).Count > 0;
     ConveyorShape previewShape = ConveyorShape.Straight;
     /// <summary>
-    /// The placed structure's end the preview last snapped to. Static, because each placement re-creates the ghost: the
-    /// preview only turns to follow an end when it first snaps to a different one.
+    /// The placed structure's end the preview last snapped to. Static, so it survives re-equipping: the preview only
+    /// turns to follow an end when it first snaps to a different one.
     /// </summary>
     static CellEnd snappedTo;
     /// <summary>Whether <see cref="snappedTo"/> is an output (the preview takes its items) rather than an input.</summary>
@@ -102,8 +102,46 @@ public partial class BlueprintGhost : HeldItem
     /// into the preview, and how close the crosshair's ray passes to the posed footprint and how far along the ray that is.
     /// </summary>
     record Connection(Vector3I anchor, int turns, CellEnd end, bool endIsOutput, Vector3I normal, float distance, float along);
-    /// <summary>True while a placement re-creates the ghost, which mustn't reset the direction like a real equip does.</summary>
-    static bool placing;
+    /// <summary>The connection to the end the preview is snapped to counts this much (m) nearer, so it doesn't flick off at the edge.</summary>
+    const float ConnectStickiness = 0.3f;
+
+    /// <summary>
+    /// How fast (per second) the drawn preview eases toward its target pose: each frame it covers 1 - e^(-rate * delta)
+    /// of the way, so about 63% in 1/rate seconds. The target is worked out each physics tick; the drawing is per frame.
+    /// </summary>
+    [Export] public float easeRate = 30f;
+    /// <summary>How fast (per second) the tint eases between valid and invalid, the same way.</summary>
+    [Export] public float tintRate = 25f;
+    /// <summary>How long (s) the preview stays where it was while the crosshair finds nothing, before it hides.</summary>
+    const float HideDelay = 0.15f;
+    /// <summary>
+    /// How long (s) the crosshair must keep asking for the target the preview just moved off before it moves back: aimed
+    /// right on a boundary between two targets, it would otherwise flick between them every tick.
+    /// </summary>
+    const float BounceTime = 0.12f;
+
+    // The target as of the last physics tick, beside targetCell: what it's turned, the face it's against and what it's
+    // snapped to, so it can be kept when the crosshair bounces straight back to the previous one.
+    int targetTurns;
+    Vector3I targetNormal;
+    CellEnd targetEnd;
+    bool targetEndIsOutput;
+    // The target the preview last moved off, and how long the crosshair has asked to go back to it.
+    Vector3I? leftAnchor;
+    int leftTurns;
+    float backFor;
+    // How long the crosshair has found nothing to place at.
+    float sinceAimed;
+
+    // What's drawn, eased each frame toward the target pose: the footprint's centre and the rotation, so a turn spins
+    // about the middle. centreInRoot is that centre in the structure's own frame.
+    bool shown;
+    Vector3 shownCentre;
+    Quaternion shownRotation = Quaternion.Identity;
+    Vector3 targetCentre;
+    Quaternion targetRotation = Quaternion.Identity;
+    Vector3 centreInRoot;
+    Color targetTint;
 
     readonly StandardMaterial3D material = new()
     {
@@ -138,7 +176,7 @@ public partial class BlueprintGhost : HeldItem
             Logging.Warn($"Blueprint {blueprint?.itemID} has no structure scene", "BlueprintGhost");
             return;
         }
-        if (connects && !placing)
+        if (connects)
         {
             // Equipping a belt (or anything else with ends) points it the way the camera faces.
             Vector3 look = -player.camera.GlobalBasis.Z;
@@ -148,11 +186,11 @@ public partial class BlueprintGhost : HeldItem
         BuildPreview();
     }
 
-    // (Re)builds the translucent probe and its arrow for the selected form.
+    // (Re)builds the translucent probe and its arrow for the selected form. The new one is drawn where the old one was
+    // (shownCentre), so a belt changing shape carries on easing rather than starting over.
     void BuildPreview()
     {
         probe?.Free();
-        targetCell = null; // forces the new probe to be moved into place
         canPlace = false;
         PackedScene scene = mainScene;
         if (blueprint is ConveyorBlueprint conveyorBlueprint)
@@ -170,6 +208,9 @@ public partial class BlueprintGhost : HeldItem
         {
             return null;
         }
+        // A ghost jumps (it appears, swaps shape, is created parked far below); interpolating those as motion between
+        // physics ticks would streak it across the screen. The main preview eases itself each frame instead (_Process).
+        ghost.structure.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
         // Every kind of mesh: a grate's bars are a MultiMeshInstance3D.
         foreach (Node n in ghost.structure.FindChildren("*", nameof(GeometryInstance3D), true, false))
         {
@@ -240,17 +281,13 @@ public partial class BlueprintGhost : HeldItem
                 {
                     // The next belt carries on the line's way.
                     quarterTurns = lineTurns;
-                    placing = true;
                     BuildGrid.RequestPlace(player, blueprint, linePlan, lineTurns);
-                    placing = false;
                 }
                 ClearLine();
             }
             else if (blueprint is not ConveyorBlueprint && canPlace && targetCell is Vector3I cell)
             {
-                placing = true;
                 BuildGrid.RequestPlace(player, blueprint, new() { (cell, false) }, quarterTurns, showingAlternate);
-                placing = false;
             }
             return true;
         }
@@ -347,12 +384,49 @@ public partial class BlueprintGhost : HeldItem
         }
         if (!aimed)
         {
+            // A tick or two of finding nothing (the ray slipping off an edge) leaves the preview where it was.
+            sinceAimed += (float)delta;
+            if (targetCell != null && sinceAimed < HideDelay)
+            {
+                snappedTo = targetEnd;
+                return;
+            }
             targetCell = null;
             canPlace = false;
+            shown = false;
             probe.structure.Visible = false;
             BuildGrid.placementFocus = null;
             BuildGrid.placementFace = null;
             return;
+        }
+        sinceAimed = 0;
+        if (targetCell is Vector3I current && (anchor != current || quarterTurns != targetTurns))
+        {
+            bool goingBack = leftAnchor == anchor && leftTurns == quarterTurns;
+            if (goingBack)
+            {
+                backFor += (float)delta;
+            }
+            if (goingBack && backFor < BounceTime)
+            {
+                // Straight back to the target it just left: aimed on the boundary between them. Stay put until the
+                // crosshair has asked for it long enough to mean it.
+                anchor = current;
+                quarterTurns = targetTurns;
+                faceNormal = targetNormal;
+                snappedTo = targetEnd;
+                snappedToOutput = targetEndIsOutput;
+            }
+            else
+            {
+                leftAnchor = current;
+                leftTurns = targetTurns;
+                backFor = 0;
+            }
+        }
+        else
+        {
+            backFor = 0;
         }
         if (blueprint is ConveyorBlueprint conveyorBlueprint)
         {
@@ -373,13 +447,22 @@ public partial class BlueprintGhost : HeldItem
         BuildGrid.placementFloor = FootprintFloor(anchor);
         BuildGrid.placementFace = ContactFace(anchor, faceNormal);
 
-        // FindConnection moves the probe about to test connections, so it's compared with the probe's own pose.
         targetCell = anchor;
+        targetTurns = quarterTurns;
+        targetNormal = faceNormal;
+        targetEnd = snappedTo;
+        targetEndIsOutput = snappedToOutput;
+        // FindConnection moves the probe about to test connections, so it's compared with the probe's own pose.
         if (probe.anchor != anchor || probe.quarterTurns != quarterTurns || !probe.structure.Visible)
         {
             probe.MoveTo(anchor, quarterTurns);
             probe.structure.Visible = true;
         }
+        // Where _Process eases the drawn preview to.
+        Transform3D pose = Structure.PlacementTransform(anchor, quarterTurns);
+        targetCentre = FootprintBox(anchor, quarterTurns).GetCenter();
+        targetRotation = pose.Basis.GetRotationQuaternion();
+        centreInRoot = pose.AffineInverse() * targetCentre;
         // Until the probe settles its overlaps still describe the previous pose: keep the old tint, don't allow placing.
         if (!probe.settled)
         {
@@ -387,8 +470,35 @@ public partial class BlueprintGhost : HeldItem
             return;
         }
         canPlace = BuildGrid.IsPlacementAllowed(probe, aimedBelt != null, out _);
-        material.AlbedoColor = canPlace ? validColor : invalidColor;
-        BuildGrid.placementTint = material.AlbedoColor;
+        targetTint = invalidColor;
+        if (canPlace)
+        {
+            targetTint = validColor;
+        }
+        BuildGrid.placementTint = targetTint;
+        if (!shown)
+        {
+            // Just appeared: drawn straight at its target, rather than easing in from wherever it was last.
+            shown = true;
+            shownCentre = targetCentre;
+            shownRotation = targetRotation;
+            material.AlbedoColor = targetTint;
+        }
+    }
+
+    // Draws the preview every frame, eased toward the target the last physics tick worked out.
+    public override void _Process(double delta)
+    {
+        if (probe == null || !shown)
+        {
+            return;
+        }
+        float weight = 1f - Mathf.Exp(-easeRate * (float)delta);
+        shownCentre = shownCentre.Lerp(targetCentre, weight);
+        shownRotation = shownRotation.Slerp(targetRotation, weight);
+        Basis basis = new Basis(shownRotation);
+        probe.structure.GlobalTransform = new Transform3D(basis, shownCentre - basis * centreInRoot);
+        material.AlbedoColor = material.AlbedoColor.Lerp(targetTint, 1f - Mathf.Exp(-tintRate * (float)delta));
     }
 
     // Lays the line of belt ghosts from the footprint at corner toward the crosshair, along whichever horizontal axis
@@ -652,6 +762,10 @@ public partial class BlueprintGhost : HeldItem
         if (aimedBox is Aabb aimedAt && aimedAt.Intersects(box.Grow(BuildGrid.CellSize / 2f)))
         {
             distance = 0;
+        }
+        if (end == snappedTo)
+        {
+            distance = Mathf.Max(0f, distance - ConnectStickiness);
         }
         if (distance > connectRadius)
         {
