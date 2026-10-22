@@ -58,6 +58,19 @@ public partial class GantryCrane : Structure
         }
     }
 
+    Color _color = new Color(0.9f, 0.65f, 0.1f);
+    /// <summary>The paint on the bridge, trolley, head and every mesh of the cockpit (the rails and bucket are bare steel).</summary>
+    [Export]
+    public Color color
+    {
+        get { return _color; }
+        set
+        {
+            _color = value;
+            Rebuild();
+        }
+    }
+
     /// <summary>The cockpit body, placed by hand anywhere under the crane.</summary>
     [Export] public Node3D cockpit;
     /// <summary>How many build grid cells the cockpit fills (X, Y, and Z toward -Z), from its origin's corner.</summary>
@@ -192,7 +205,15 @@ public partial class GantryCrane : Structure
         made.Clear();
 
         StandardMaterial3D steel = new StandardMaterial3D { AlbedoColor = new Color(0.45f, 0.46f, 0.48f), Metallic = 0.7f, Roughness = 0.4f };
-        StandardMaterial3D paint = new StandardMaterial3D { AlbedoColor = new Color(0.9f, 0.65f, 0.1f), Roughness = 0.6f };
+        StandardMaterial3D paint = new StandardMaterial3D { AlbedoColor = color, Roughness = 0.6f };
+        // The hand-placed cockpit is painted to match, whatever meshes it's made of.
+        if (cockpit != null)
+        {
+            foreach (Node node in cockpit.FindChildren("*", "MeshInstance3D", true, false))
+            {
+                ((MeshInstance3D)node).MaterialOverride = paint;
+            }
+        }
         StandardMaterial3D dark = new StandardMaterial3D { AlbedoColor = new Color(0.15f, 0.15f, 0.16f), Roughness = 0.7f };
 
         // Rails: shapes of the crane's own (static) body.

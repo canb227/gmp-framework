@@ -66,6 +66,11 @@ public partial class FactoryPlayer : GMPOCharacter
     /// <summary>How fast the eye moves between standing and crouched heights (m/s).</summary>
     [Export] public float crouchEyeSpeed = 4f;
 
+    [ExportGroup("Noclip")]
+    /// <summary>Flying speed in noclip (m/s), and while "sprint" is held.</summary>
+    [Export] public float noclipSpeed = 10f;
+    [Export] public float noclipSprintSpeed = 30f;
+
     /// <summary>Velocity in the world (not relative to what it stands on), as of the last move.</summary>
     Vector3 velocity;
     /// <summary>Seconds since it was last on the floor, and since jump was last pressed (big: long ago).</summary>
@@ -280,6 +285,17 @@ public partial class FactoryPlayer : GMPOCharacter
         velocity = Vector3.Zero;
     }
 
+    /// <summary>Turns noclip (flying through everything) on or off; the other peers follow through the player's state.</summary>
+    public void SetNoclip(bool on)
+    {
+        noclip = on;
+        velocity = Vector3.Zero;
+        // Fly standing up.
+        crouching = false;
+        capsuleHeight = standHeight;
+        eyeDrop = 0;
+    }
+
     public override void _PhysicsProcess(double delta)
     {
         if (!isLocal)
@@ -358,6 +374,11 @@ public partial class FactoryPlayer : GMPOCharacter
     {
         // Piloting a crane, the body stands still like with a menu open.
         bool menu = UIManager.BlocksGameplayInput || piloting != null;
+        if (noclip)
+        {
+            Fly(menu, delta);
+            return;
+        }
         bool onFloor = IsOnFloor();
         sinceOnFloor += delta;
         sinceJumpPressed += delta;
@@ -454,6 +475,50 @@ public partial class FactoryPlayer : GMPOCharacter
             AudioManager.Instance.PlayOneShot("event:/Footsteps/FS_Walk", 1.0f, GlobalPosition, new Dictionary<string, float>{["Surfaces"] = currentSurface});
         }
 
+    }
+
+    /// <summary>
+    /// Noclip: no gravity, friction or floor. Forward is where the camera looks (pitch included), jump rises, crouch
+    /// sinks, sprint goes faster.
+    /// </summary>
+    void Fly(bool menu, float delta)
+    {
+        Vector2 input = Vector2.Zero;
+        float rise = 0;
+        bool sprinting = false;
+        if (!menu)
+        {
+            input = Input.GetVector(InputActions.left, InputActions.right, InputActions.forward, InputActions.backward);
+            if (Input.IsActionPressed(InputActions.jump))
+            {
+                rise += 1;
+            }
+            if (Input.IsActionPressed(InputActions.crouch))
+            {
+                rise -= 1;
+            }
+            sprinting = Input.IsActionPressed(InputActions.sprint);
+        }
+        if (testWalkLeft > 0)
+        {
+            testWalkLeft -= delta;
+            input = testWalk;
+            sprinting = testSprint;
+        }
+        Vector3 wishDirection = camera.GlobalBasis * new Vector3(input.X, 0, input.Y) + Vector3.Up * rise;
+        if (wishDirection.LengthSquared() > 1)
+        {
+            wishDirection = wishDirection.Normalized();
+        }
+        float speed = noclipSpeed;
+        if (sprinting)
+        {
+            speed = noclipSprintSpeed;
+        }
+
+        // Starts and stops at once, for placing yourself exactly.
+        velocity = wishDirection * speed;
+        velocity = Move(velocity, delta);
     }
 
     /// <summary>
@@ -573,6 +638,7 @@ public partial class FactoryPlayer : GMPOCharacter
             headRot = cameraPosed ? new Vector3(lookPitch, 0, 0) : this.camera.Rotation,
             vel = velocity,
             height = capsuleHeight,
+            noclip = noclip,
             equippedSlot = inventory.ActiveHotbarSlot,
             heldItemState = heldItem?.GenerateSyncState(),
         };
@@ -601,6 +667,11 @@ public partial class FactoryPlayer : GMPOCharacter
             if (msg.height > 0 && !Mathf.IsEqualApprox(msg.height, capsuleHeight))
             {
                 capsuleHeight = msg.height;
+            }
+            // A noclipping player's copies touch nothing either, so the host's copy doesn't shove items around.
+            if (msg.noclip != noclip)
+            {
+                noclip = msg.noclip;
             }
         }
         // Remote copies mirror the controlling peer's hotbar selection so the held item shows for everyone.
@@ -660,4 +731,6 @@ public partial record struct PlayerSync
     /// <summary>The capsule's height (crouched or standing).</summary>
     [Key(8)] public float height;
     // Keys 9 and 10 held impacts once (they go through the physics world's hits now): don't reuse them.
+    /// <summary>Flying through everything (<see cref="GMPOCharacter.noclip"/>).</summary>
+    [Key(11)] public bool noclip;
 }

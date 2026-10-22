@@ -34,6 +34,9 @@ public:
 	float groundSnap = 0.25f;
 	// How stiff the legs are (Hz): higher steps up quicker.
 	float legHertz = 10.0f;
+	// Flying through everything (the noclip console command): the capsule collides with nothing, sensors
+	// don't see it, queries don't hit it, and move() goes straight where it's told.
+	bool noclip = false;
 
 	GMPCharacter();
 
@@ -65,6 +68,8 @@ public:
 	float get_ground_snap() const;
 	void set_leg_hertz(float value);
 	float get_leg_hertz() const;
+	void set_noclip(bool value);
+	bool get_noclip() const;
 
 protected:
 	static void _bind_methods();

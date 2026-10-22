@@ -356,6 +356,24 @@ public partial class Console
         LimboConsole.Info($"count_kinds:{line}");
     }
 
+    /// <summary>Toggles flying through everything for the local player (jump rises, crouch sinks).</summary>
+    public void noclip()
+    {
+        FactoryPlayer player = LocalPlayer();
+        if (player == null)
+        {
+            LimboConsole.Error("No local player to fly (is the game running?).");
+            return;
+        }
+        player.SetNoclip(!player.noclip);
+        string state = "off";
+        if (player.noclip)
+        {
+            state = "on";
+        }
+        LimboConsole.Info($"noclip: {state}");
+    }
+
     /// <summary>Moves the local player to x y z.</summary>
     public void tp(float x, float y, float z)
     {

@@ -65,6 +65,7 @@ public partial class GMPOCharacter : Node3D, GMPObject
     static readonly StringName getFloorVelocityName = "get_floor_velocity";
     static readonly StringName canFitHeightName = "can_fit_height";
     static readonly StringName heightName = "height";
+    static readonly StringName noclipName = "noclip";
 
     /// <summary>
     /// Moves the character by <paramref name="velocity"/> over <paramref name="delta"/> seconds, sliding along what it
@@ -111,5 +112,15 @@ public partial class GMPOCharacter : Node3D, GMPObject
     {
         get => ClassDB.ClassGetProperty(this, heightName).AsSingle();
         set => ClassDB.ClassSetProperty(this, heightName, value);
+    }
+
+    /// <summary>
+    /// Flying through everything: the capsule touches nothing (items, players, sensors, queries) and
+    /// <see cref="Move"/> goes straight where it's told. Set it on every peer's copy, so no copy pushes things.
+    /// </summary>
+    public bool noclip
+    {
+        get => ClassDB.ClassGetProperty(this, noclipName).AsBool();
+        set => ClassDB.ClassSetProperty(this, noclipName, value);
     }
 }

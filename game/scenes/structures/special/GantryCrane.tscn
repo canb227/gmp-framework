@@ -2,12 +2,7 @@
 
 [ext_resource type="Script" path="res://game/scripts/structures/special/GantryCrane.cs" id="1_script"]
 
-[sub_resource type="StandardMaterial3D" id="Mat_cockpit"]
-albedo_color = Color(0.9, 0.65, 0.1, 1)
-roughness = 0.6
-
 [sub_resource type="BoxMesh" id="Mesh_cockpit"]
-material = SubResource("Mat_cockpit")
 size = Vector3(1, 2, 1)
 
 [node name="GantryCrane" type="GMPBody" node_paths=PackedStringArray("cockpit")]

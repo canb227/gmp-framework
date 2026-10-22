@@ -22,6 +22,7 @@
 [ext_resource type="Texture2D" uid="uid://dai3p48chnvni" path="res://game/assets/textures/wall_white_brick/wall_white_brick_normal.png" id="19_qiak6"]
 [ext_resource type="Texture2D" uid="uid://bnemfwnp757d1" path="res://game/assets/textures/wall_white_brick/wall_white_brick_smoothness.png" id="20_kcgea"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/special/GantryCrane.tscn" id="25_2k66h"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/special/DevSpawner.tscn" id="26_0nhbu"]
 [ext_resource type="Script" uid="uid://c64akhdf23fdq" path="res://game/scripts/entities/PricedButton.cs" id="30_priced"]
 [ext_resource type="PackedScene" uid="uid://b3vrwosnvijj" path="res://game/scenes/structures/broken/BrokenSmelter.tscn" id="31_brokensmelter"]
 [ext_resource type="PackedScene" uid="uid://ci3gdnftondij" path="res://game/scenes/structures/broken/BrokenRecycler.tscn" id="32_brokenrecycler"]
@@ -433,6 +434,14 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AADAvwAARsIAAAC/AADAvwAARsIAAAA/AAAAvwAARsIAAAC/AADAvwAARsIAAAC/AADAvwAAQsIAAAC/AADAvwAARsIAAAA/AADAvwAARsIAAAC/AAAAvwAARsIAAAC/AADAvwAAQsIAAAC/AADAvwAARsIAAAA/AADAvwAAQsIAAAC/AADAvwAAQsIAAAA/AADAvwAARsIAAAA/AADAvwAAQsIAAAA/AAAAvwAAQsIAAAA/AADAvwAAQsIAAAC/AAAAvwAAQsIAAAA/AADAvwAAQsIAAAA/AADAvwAARsIAAAA/AAAAvwAARsIAAAA/AAAAvwAARsIAAAC/AADAvwAARsIAAAA/AAAAvwAAQsIAAAA/AAAAvwAARsIAAAA/AAAAvwAARsIAAAC/AAAAvwAARsIAAAA/AAAAvwAAQsIAAAA/AADAvwAAQsIAAAC/AAAAvwAARsIAAAC/AAAAvwAAQsIAAAC/AAAAvwAARsIAAAC/AAAAvwAAQsIAAAA/AAAAvwAAQsIAAAC/AADAvwAAQsIAAAC/AAAAvwAAQsIAAAC/AAAAvwAAQsIAAAA//38AAP//AAD/fwAA//8AAP9/AAD//wAAAAD/f/9//n8AAP9//3/+fwAA/3//f/5//////wAA/z//////AAD/P/////8AAP8/AAD/f/9//n8AAP9//3/+fwAA/3//f/5//3//fwAA/z//f/9/AAD/P/9//38AAP8//3//////AAD/f/////8AAP9//////wAA/38AAP//AAD/fwAA//8AAP9/AAD//wAA/3//fwAA/z//f/9/AAD/P/9//38AAP8/////f/9//n////9//3/+f////3//f/5//////wAA/z//////AAD/P/////8AAP8/////f/9//n////9//3/+f////3//f/5//3//////AAD/f/////8AAP9//////wAA")
 }]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r1731"]
+albedo_color = Color(0.18234664, 0.2502215, 0.7347022, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5b7ql"]
+albedo_color = Color(0.13720876, 0.9015662, 0.17328078, 1)
+roughness = 0.6
+
 [node name="DevArea" type="Node3D" unique_id=393419204]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=958168580]
@@ -450,7 +459,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 103, 1, 15)
 gizmo_extents = 10.0
 
 [node name="spawn2" type="Marker3D" parent="WorldStuff" unique_id=592230237 groups=["player_spawn"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 103, 1, -14)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40.838863, 1, -14)
 gizmo_extents = 10.0
 
 [node name="StartingScrap" type="Node3D" parent="WorldStuff" unique_id=491458326]
@@ -899,7 +908,7 @@ size = Vector3(0.5, 1.5, 0.5)
 mesh = SubResource("BoxMesh_r1731")
 
 [node name="Trommel" parent="WorldStuff" unique_id=1100000000 instance=ExtResource("14_is778")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 12)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 0, 3)
 
 [node name="store" parent="." unique_id=1931553037 instance=ExtResource("7_ihq8k")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4, 0, -4)
@@ -1340,5 +1349,51 @@ material = ExtResource("4_5cgpr")
 [node name="CSGMesh3D" type="CSGMesh3D" parent="." unique_id=1328661696]
 
 [node name="GantryCrane" parent="." unique_id=1269964542 instance=ExtResource("25_2k66h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 20)
-size = Vector3(50, 25, 59)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48, 0, 49)
+size = Vector3(96.933, 26.29, 98.24)
+color = Color(0.18234664, 0.2502215, 0.7347022, 1)
+swingDamping = 0.3
+occupiedCells = Array[Vector3i]([])
+
+[node name="Cockpit" parent="GantryCrane" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.019003, 0, -48.79734)
+
+[node name="Mesh" parent="GantryCrane/Cockpit" index="1"]
+material_override = SubResource("StandardMaterial3D_r1731")
+
+[node name="GantryCrane2" parent="." unique_id=1557634791 instance=ExtResource("25_2k66h")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48, 0, 49)
+size = Vector3(96.533, 25.69, 98.07)
+color = Color(0.13720876, 0.9015662, 0.17328078, 1)
+swingDamping = 0.3
+occupiedCells = Array[Vector3i]([])
+
+[node name="Cockpit" parent="GantryCrane2" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40.876442, 0, -44.14395)
+
+[node name="Mesh" parent="GantryCrane2/Cockpit" index="1"]
+material_override = SubResource("StandardMaterial3D_5b7ql")
+
+[node name="DevSpawner" parent="." unique_id=2110969461 instance=ExtResource("26_0nhbu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37, 7, 23)
+itemWeights = Dictionary[String, float]({
+"sieve_ball_010": 1.0,
+"sieve_ball_025": 1.0,
+"sieve_ball_050": 1.0,
+"sieve_ball_075": 1.0,
+"sieve_cube_010": 1.0,
+"sieve_cube_025": 1.0,
+"sieve_cube_050": 1.0,
+"sieve_cube_075": 1.0
+})
+spawnInterval = 0.5
+spawning = true
+itemsPerSpawn = 5
+launchSpeed = 2.665
+
+[node name="Output" parent="DevSpawner" index="2"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.5, 4.0744524, -12.933634)
+
+[editable path="GantryCrane"]
+[editable path="GantryCrane2"]
+[editable path="DevSpawner"]

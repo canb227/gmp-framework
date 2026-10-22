@@ -57,6 +57,12 @@ void GMPCharacter::make_capsule_shape() {
 	def.filter.maskBits = collisionMask;
 	// Machines' sensors and the like can see characters.
 	def.enableSensorEvents = true;
+	if (noclip) {
+		// Still there (the body stays, with its id), but touching nothing.
+		def.filter.categoryBits = 0;
+		def.filter.maskBits = 0;
+		def.enableSensorEvents = false;
+	}
 	// The capsule is no GMPShape, so it has only the character's own tags.
 	def.baseMaterial.userMaterialId = tags;
 	b3Capsule shape = capsule();
@@ -203,6 +209,12 @@ void GMPCharacter::probe_floor(b3WorldId world, b3Pos feet, bool rising, float &
 Vector3 GMPCharacter::move(Vector3 velocity, float delta) {
 	Transform3D transform = get_global_transform();
 	if (!has_body() || delta <= 0) {
+		transform.origin += velocity * delta;
+		set_global_transform(transform);
+		return velocity;
+	}
+	if (noclip) {
+		// Straight there, through everything.
 		transform.origin += velocity * delta;
 		set_global_transform(transform);
 		return velocity;
@@ -408,6 +420,20 @@ float GMPCharacter::get_leg_hertz() const {
 	return legHertz;
 }
 
+void GMPCharacter::set_noclip(bool value) {
+	noclip = value;
+	// Whatever it stood on or ran into no longer counts.
+	legVelocity = 0;
+	onFloor = false;
+	againstWall = false;
+	floorVelocity = Vector3();
+	make_capsule_shape();
+}
+
+bool GMPCharacter::get_noclip() const {
+	return noclip;
+}
+
 void GMPCharacter::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("move", "velocity", "delta"), &GMPCharacter::move);
 	ClassDB::bind_method(D_METHOD("teleport_character", "transform"), &GMPCharacter::teleport_character);
@@ -428,6 +454,8 @@ void GMPCharacter::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_ground_snap"), &GMPCharacter::get_ground_snap);
 	ClassDB::bind_method(D_METHOD("set_leg_hertz", "value"), &GMPCharacter::set_leg_hertz);
 	ClassDB::bind_method(D_METHOD("get_leg_hertz"), &GMPCharacter::get_leg_hertz);
+	ClassDB::bind_method(D_METHOD("set_noclip", "value"), &GMPCharacter::set_noclip);
+	ClassDB::bind_method(D_METHOD("get_noclip"), &GMPCharacter::get_noclip);
 
 	ADD_GROUP("Character", "");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "radius", PROPERTY_HINT_RANGE, "0.05,2,0.01,suffix:m"), "set_radius", "get_radius");
@@ -436,4 +464,6 @@ void GMPCharacter::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "max_slope_degrees", PROPERTY_HINT_RANGE, "0,89,0.1,suffix:°"), "set_max_slope_degrees", "get_max_slope_degrees");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "ground_snap", PROPERTY_HINT_RANGE, "0,1,0.01,suffix:m"), "set_ground_snap", "get_ground_snap");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "leg_hertz", PROPERTY_HINT_RANGE, "1,30,0.1,suffix:Hz"), "set_leg_hertz", "get_leg_hertz");
+	// Set at run time only (not saved in scenes).
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "noclip", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_noclip", "get_noclip");
 }
