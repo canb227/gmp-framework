@@ -1,0 +1,75 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/scripts/entities/ItemCountMeter.cs" id="1_meter"]
+
+[sub_resource type="StandardMaterial3D" id="mat_frame"]
+albedo_color = Color(0.32, 0.3, 0.33, 1)
+metallic = 0.6
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="mat_track"]
+albedo_color = Color(0.02, 0.02, 0.025, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="mat_max"]
+albedo_color = Color(0.95, 0.15, 0.1, 1)
+emission_enabled = true
+emission = Color(0.95, 0.15, 0.1, 1)
+
+[sub_resource type="BoxMesh" id="back_mesh"]
+material = SubResource("mat_frame")
+size = Vector3(0.9, 2.8, 0.1)
+
+[sub_resource type="BoxMesh" id="track_mesh"]
+material = SubResource("mat_track")
+size = Vector3(0.5, 2, 0.02)
+
+[sub_resource type="BoxMesh" id="bar_mesh"]
+size = Vector3(0.44, 2, 0.02)
+
+[sub_resource type="BoxMesh" id="max_mesh"]
+material = SubResource("mat_max")
+size = Vector3(0.6, 0.03, 0.03)
+
+[node name="ItemCountMeter" type="GMPBody" node_paths=PackedStringArray("barPivot", "bar", "countLabel", "tagLabel")]
+body_type = 0
+script = ExtResource("1_meter")
+barPivot = NodePath("BarPivot")
+bar = NodePath("BarPivot/Bar")
+countLabel = NodePath("CountLabel")
+tagLabel = NodePath("TagLabel")
+
+[node name="Shape" type="GMPShape" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -0.02)
+size = Vector3(0.9, 2.8, 0.14)
+
+[node name="Back" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+mesh = SubResource("back_mesh")
+
+[node name="Track" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, -0.06)
+mesh = SubResource("track_mesh")
+
+[node name="BarPivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, -0.075)
+
+[node name="Bar" type="MeshInstance3D" parent="BarPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("bar_mesh")
+
+[node name="MaxLine" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, -0.08)
+mesh = SubResource("max_mesh")
+
+[node name="CountLabel" type="Label3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 2.5, -0.07)
+text = "0 / 50"
+font_size = 64
+outline_size = 8
+
+[node name="TagLabel" type="Label3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.12, -0.07)
+text = "METAL"
+font_size = 40
+outline_size = 6

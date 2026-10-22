@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://dev/sieve_test/materials/sieve_050.tres" id="1_mat"]
+
+[sub_resource type="BoxMesh" id="Mesh_1"]
+size = Vector3(0.22, 0.22, 0.22)
+
+[node name="sieve_cube_050" type="GMPBody"]
+
+[node name="Shape" type="GMPShape" parent="."]
+size = Vector3(0.22, 0.22, 0.22)
+friction = 0.6
+restitution = 0.1
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("Mesh_1")
+material_override = ExtResource("1_mat")

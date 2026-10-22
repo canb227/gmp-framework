@@ -51,6 +51,48 @@ public partial class Console
         LimboConsole.Info(line);
     }
 
+    /// <summary>Host: the running count of loose items with one tag, a fresh count of the records to check it against, and every item meter.</summary>
+    public void tag_count(string tagName)
+    {
+        if (!Enum.TryParse(tagName, true, out SurfaceTags tag))
+        {
+            LimboConsole.Error($"tag_count: no tag {tagName}.");
+            return;
+        }
+        int counted = 0;
+        foreach (ItemRecord item in ItemWorld.items.Values)
+        {
+            if ((item.tags & tag) != 0)
+                counted++;
+        }
+        string line = $"tag_count: {tag}={ItemWorld.CountWithTag(tag)}/{counted}";
+        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
+        {
+            if (obj is ItemCountMeter meter)
+                line += $" meter{meter.id}({meter.tag} {meter.count}/{meter.max} over={meter.over})";
+        }
+        LimboConsole.Info(line);
+    }
+
+    /// <summary>
+    /// Host, for testing: spawns an item meter at x y z counting tagName up to max. Only the host's copy gets that tag
+    /// and max (clients' show the scene's defaults); a real one is placed in a level.
+    /// </summary>
+    public void spawn_meter(string tagName, int max, float x, float y, float z)
+    {
+        if (!Lobby.isHost || !Enum.TryParse(tagName, true, out SurfaceTags tag))
+        {
+            LimboConsole.Error("spawn_meter: host only, and needs a tag name.");
+            return;
+        }
+        ulong id = GameWorld.SpawnScene(GD.Load<PackedScene>("res://game/scenes/entities/ItemCountMeter.tscn"), new Vector3(x, y, z), Vector3.Zero);
+        ItemCountMeter meter = (ItemCountMeter)GameWorld.syncedObjs[id];
+        meter.tag = tag;
+        meter.max = max;
+        meter.OverMaxChanged += (on) => LimboConsole.Info($"spawn_meter: meter{id} over={on}");
+        LimboConsole.Info($"spawn_meter: id={id} tag={tag} max={max}");
+    }
+
     /// <summary>
     /// Builds a blueprint's structure with its anchor at cell x y z, turned quarterTurns, in its T form if alternate is 1,
     /// through the host's normal placement check. Free: takes no blueprint from the inventory.
@@ -106,6 +148,27 @@ public partial class Console
             }
         }
         LimboConsole.Info($"count_items: inside={inside} total={ItemWorld.totalCount} first:{first}");
+    }
+
+    /// <summary>How many loose items of each kind are inside the world box from x1 y1 z1 to x2 y2 z2.</summary>
+    public void count_kinds(float x1, float y1, float z1, float x2, float y2, float z2)
+    {
+        Aabb box = new Aabb(new Vector3(x1, y1, z1), new Vector3(x2 - x1, y2 - y1, z2 - z1)).Abs();
+        var counts = new SortedDictionary<string, int>();
+        foreach (ItemRecord record in ItemWorld.items.Values)
+        {
+            if (box.HasPoint(PhysicsWorld.BodyPosition(record.id)))
+            {
+                counts.TryGetValue(record.itemID, out int count);
+                counts[record.itemID] = count + 1;
+            }
+        }
+        string line = "";
+        foreach (KeyValuePair<string, int> pair in counts)
+        {
+            line += $" {pair.Key}={pair.Value}";
+        }
+        LimboConsole.Info($"count_kinds:{line}");
     }
 
     /// <summary>Moves the local player to x y z.</summary>

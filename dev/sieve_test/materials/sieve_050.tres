@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://dev/sieve_test/sieve_test_item.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/bottom_color = Vector3(0.52, 0.83, 0.58)
+shader_parameter/top_color = Vector3(0.78, 0.95, 0.8)
+shader_parameter/size = 0.22

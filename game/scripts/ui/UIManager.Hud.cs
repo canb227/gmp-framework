@@ -2,14 +2,18 @@ using Godot;
 
 /// <summary>
 /// UIManager: the HUD. One <see cref="InventoryUI"/> (hotbar, held-item name, hover labels and the inventory
-/// screen), created when the local player spawns (<see cref="BindHud"/>) and freed when it leaves. Other players
-/// get no HUD at all.
+/// screen), created when the local player spawns (<see cref="BindHud"/>) and freed when it leaves, and with it the
+/// <see cref="QuestTracker"/> (on its own layer above the screens, so menus don't hide it). Other players get no
+/// HUD at all.
 /// </summary>
 public partial class UIManager
 {
     const string HudScene = "res://game/scenes/ui/PlayerHUD.tscn";
+    const string QuestTrackerScene = "res://game/scenes/ui/QuestTracker.tscn";
 
     static CanvasLayer hudLayer;
+    static CanvasLayer questLayer;
+    static QuestTracker questTracker;
 
     /// <summary>The local player's HUD, or null outside a game.</summary>
     public static InventoryUI Hud { get; private set; }
@@ -20,6 +24,7 @@ public partial class UIManager
     void ReadyHud()
     {
         hudLayer = AddLayer("Hud", HudLayer);
+        questLayer = AddLayer("Quests", QuestLayer);
     }
 
     /// <summary>Gives <paramref name="player"/> (the local player) the HUD and hands it the mouse.</summary>
@@ -29,6 +34,9 @@ public partial class UIManager
         Hud = ResourceLoader.Load<PackedScene>(HudScene).Instantiate<InventoryUI>();
         Hud.player = player;
         hudLayer.AddChild(Hud);
+        questTracker = ResourceLoader.Load<PackedScene>(QuestTrackerScene).Instantiate<QuestTracker>();
+        questLayer.AddChild(questTracker);
+        questTracker.SetUnderScreen(TopScreen != null);
         RefreshMouseMode();
     }
 
@@ -38,6 +46,8 @@ public partial class UIManager
         if (Hud == null || (player != null && Hud.player != player)) return;
         Hud.QueueFree();
         Hud = null;
+        questTracker.QueueFree();
+        questTracker = null;
         RefreshMouseMode();
     }
 

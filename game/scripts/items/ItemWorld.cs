@@ -38,6 +38,8 @@ public partial class ItemWorld : Node
     /// <summary>How many loose items there are in the world, of any kind.</summary>
     public static int totalCount => items.Count;
     static readonly Dictionary<string, int> countByItem = new();
+    /// <summary>Host only: how many loose items have each tag, by tag bit (<see cref="CountWithTag"/>).</summary>
+    static readonly int[] countByTag = new int[63];
 
     /// <summary>The scene an item without one of its own shows as: a box with its icon on the sides.</summary>
     const string DefaultScene = "res://game/scenes/items/DefaultDroppedBox.tscn";
@@ -60,6 +62,37 @@ public partial class ItemWorld : Node
     public static int CountOf(string itemID)
     {
         return countByItem.GetValueOrDefault(itemID, 0);
+    }
+
+    /// <summary>
+    /// Host only: how many loose items in the world have <paramref name="tag"/> (one tag, not a mask). Kept up to date on
+    /// spawn, removal and <see cref="TagsChanged"/>, so it costs nothing to ask every tick. Always 0 on other peers.
+    /// </summary>
+    public static int CountWithTag(SurfaceTags tag)
+    {
+        long bits = (long)tag;
+        if (bits <= 0 || (bits & (bits - 1)) != 0)
+        {
+            Logging.Error($"CountWithTag({tag}) takes exactly one tag", "ItemWorld");
+            return 0;
+        }
+        return countByTag[System.Numerics.BitOperations.TrailingZeroCount(bits)];
+    }
+
+    /// <summary>Adds <paramref name="delta"/> to the count of each of <paramref name="tags"/> (host only; does nothing elsewhere).</summary>
+    static void CountTags(SurfaceTags tags, int delta)
+    {
+        if (!Lobby.isHost)
+        {
+            return;
+        }
+        long bits = (long)tags;
+        while (bits > 0)
+        {
+            int bit = System.Numerics.BitOperations.TrailingZeroCount(bits);
+            countByTag[bit] += delta;
+            bits &= bits - 1; // clear the lowest set bit
+        }
     }
 
     public static ItemRecord Get(ulong id)
@@ -113,6 +146,8 @@ public partial class ItemWorld : Node
         ItemRecord record = new ItemRecord(id, itemID, ItemInfo.Fetch(itemID), colliderTagsByItem[itemID]);
         items[id] = record;
         countByItem[itemID] = CountOf(itemID) + 1;
+        record.countedTags = record.tags;
+        CountTags(record.countedTags, 1);
         return true;
     }
 
@@ -174,6 +209,7 @@ public partial class ItemWorld : Node
             return;
         }
         countByItem[record.itemID] = CountOf(record.itemID) - 1;
+        CountTags(record.countedTags, -1);
         PhysicsWorld.DespawnItem(id);
         ItemRemoved?.Invoke(record, reason);
     }
@@ -184,6 +220,7 @@ public partial class ItemWorld : Node
         // The physics world has dropped its items already (GameWorld.ClearWorld).
         items.Clear();
         countByItem.Clear();
+        Array.Clear(countByTag);
     }
 
     /// <summary>The physics world's kind for <paramref name="itemID"/>, registering it the first time; -1 if it can't be.</summary>
@@ -228,6 +265,9 @@ public partial class ItemWorld : Node
     public static void TagsChanged(ItemRecord record)
     {
         PhysicsWorld.SetBodyTags(record.id, (ulong)record.ownTags);
+        CountTags(record.countedTags, -1);
+        record.countedTags = record.tags;
+        CountTags(record.countedTags, 1);
     }
 
     // ---- pickups: the host decides, so two players can't both get one ----

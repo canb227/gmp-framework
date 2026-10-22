@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3]
+
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="1_fi"]
+[ext_resource type="PackedScene" path="res://dev/sieve_test/items/sieve_cube_200.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_fi")
+itemID = "sieve_cube_200"
+droppedScene = ExtResource("2_scene")
+displayName = "Sieve Test Cube 2.0x"
+description = "Dev item for testing sieves: 0.88 m edge, 2.0x a scrap ball. Same colour, same size across cubes and balls."
+maxStackSize = 999
+tags = 16
+canBePickTarget = true
+canBeGrabbed = true

@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://dev/sieve_test/materials/sieve_150.tres" id="1_mat"]
+
+[sub_resource type="SphereMesh" id="Mesh_1"]
+radius = 0.33
+height = 0.66
+radial_segments = 24
+rings = 12
+
+[node name="sieve_ball_150" type="GMPBody"]
+
+[node name="Shape" type="GMPShape" parent="."]
+shape = 1
+radius = 0.33
+friction = 0.5
+restitution = 0.1
+rolling_resistance = 0.02
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("Mesh_1")
+material_override = ExtResource("1_mat")

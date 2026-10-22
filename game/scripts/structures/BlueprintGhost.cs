@@ -136,7 +136,8 @@ public partial class BlueprintGhost : HeldItem
         {
             return null;
         }
-        foreach (Node n in ghost.structure.FindChildren("*", nameof(MeshInstance3D), true, false))
+        // Every kind of mesh: a grate's bars are a MultiMeshInstance3D.
+        foreach (Node n in ghost.structure.FindChildren("*", nameof(GeometryInstance3D), true, false))
         {
             // The structure's arrows keep their own colours.
             if (n.GetParent() is StructureArrow)

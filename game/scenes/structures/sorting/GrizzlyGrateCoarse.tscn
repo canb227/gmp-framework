@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://game/scenes/structures/sorting/GrizzlyGrate.tscn" id="1_base"]
+
+[node name="GrizzlyGrateCoarse" instance=ExtResource("1_base")]
+
+[node name="Bars" parent="." index="1"]
+gap = 0.5

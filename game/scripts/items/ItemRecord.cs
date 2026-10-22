@@ -21,6 +21,8 @@ public class ItemRecord
     public readonly SurfaceTags colliderTags;
     /// <summary>Set once a pickup has been granted, so later simultaneous requests lose.</summary>
     public bool taken;
+    /// <summary>Host only: the tags <see cref="ItemWorld.CountWithTag"/> counts it under, so a removal or retag takes off exactly what was added.</summary>
+    public SurfaceTags countedTags;
 
     public ItemRecord(ulong id, string itemID, ItemInfo info, SurfaceTags colliderTags)
     {

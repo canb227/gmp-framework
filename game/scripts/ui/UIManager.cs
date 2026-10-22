@@ -8,7 +8,7 @@ using System.Collections.Generic;
 /// <item>Screens (this file): a stack of <see cref="UIScreen"/>s, the menus that take the mouse (main menu, options,
 /// pause, shop). The top screen gets Escape; any open screen blocks gameplay input and frees the mouse.</item>
 /// <item>The HUD (UIManager.Hud.cs): the local player's hotbar, hover labels and inventory screen, bound when the
-/// local player spawns.</item>
+/// local player spawns, and the <see cref="QuestTracker"/>, on a layer of its own above the screens.</item>
 /// <item>Notifications (UIManager.Notifications.cs): timed text popups anchored on the HUD, and world markers that
 /// point at objects through walls.</item>
 /// </list>
@@ -28,8 +28,8 @@ public partial class UIManager : Node
     const string PauseMenuScene = "res://game/scenes/ui/menus/pause_menu.tscn";
     const string ShopScene = "res://game/scenes/ui/shop/ShopUI.tscn";
 
-    // Canvas layers, bottom to top. World markers sit under the HUD; notifications over everything.
-    const int MarkerLayer = 4, HudLayer = 5, ScreenLayer = 10, NotificationLayer = 20;
+    // Canvas layers, bottom to top. World markers sit under the HUD; the quest tracker over the screens; notifications over everything.
+    const int MarkerLayer = 4, HudLayer = 5, ScreenLayer = 10, QuestLayer = 15, NotificationLayer = 20;
 
     public static UIManager instance;
 
@@ -101,6 +101,7 @@ public partial class UIManager : Node
         screenLayer.AddChild(screen);
         covered?.OnCovered();
         screen.OnOpened();
+        questTracker?.SetUnderScreen(true);
         RefreshMouseMode();
     }
 
@@ -117,6 +118,7 @@ public partial class UIManager : Node
             top.QueueFree();
         }
         TopScreen?.OnRevealed();
+        questTracker?.SetUnderScreen(TopScreen != null);
         RefreshMouseMode();
     }
 
