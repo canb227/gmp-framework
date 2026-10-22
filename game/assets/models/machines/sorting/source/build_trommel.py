@@ -35,14 +35,16 @@ LENGTH = 8.0
 WALL = 0.06           # wall plate thickness
 TRIM = 0.04           # the yellow strip along wall tops
 TRAY_TOP = 0.5
-TRAY_END = 6.85       # the tray runs from the back to here; the oversize chute takes the rest
+TRAY_END = 6.5        # the tray runs from the back to here; the oversize chute takes the rest, starting under
+                      # the last half metre of the drum so nothing leaving its front end can drop back onto the tray
 WALL_TOP = 2.8        # side and back walls
 RIGHT_BOTTOM = 1.15   # the right wall stops here, leaving the side open above the tray for the fines
 LANE = 2.0            # feed and oversize use the left half (x 0..2)
 
 INLET_BACK = 2.08     # inlet chute surface at the back face, just under the feed belt's top (2.15)
 INLET_FRONT = 1.95    # and where it ends, inside the drum's back end
-INLET_END = 0.95
+INLET_END = 0.88     # just short of the drum's back end (0.9), clear of its lifters
+INLET_RIGHT = 2.5    # the chute covers the drum's whole open back end, so nothing falls out of it onto the tray
 
 CHUTE_TOP = 0.9       # oversize chute: under the drum's front hoop, down to a little above a belt's top (0.15)
 CHUTE_BOTTOM = 0.22
@@ -151,18 +153,21 @@ def build():
     frame.box((LANE, 0, INLET_BACK - 0.06), (WIDTH, WALL, WALL_TOP), "M_Panel")
 
     # Inlet chute from the feed belt into the drum's back end, with a guide wall angling the feed in from the left
-    # (the drum is narrower than the lane at this height) and a rail along its right edge.
+    # (the drum is narrower than the lane at this height) and a rail along its right edge, which is past the lane's
+    # so the chute covers the drum's whole open back end.
     frame.prism([(0, INLET_BACK - 0.06), (INLET_END, INLET_FRONT - 0.06), (INLET_END, INLET_FRONT), (0, INLET_BACK)],
-                WALL, LANE, "M_Frame")
-    frame.plate((WALL, 0.05), (0.55, INLET_END), (INLET_BACK, INLET_FRONT), (INLET_BACK + 0.5, INLET_FRONT + 0.5),
+                WALL, INLET_RIGHT, "M_Frame")
+    frame.plate((WALL, 0.05), (0.68, INLET_END), (INLET_BACK, INLET_FRONT), (INLET_BACK + 0.5, INLET_FRONT + 0.5),
                 -WALL, "M_Panel")
-    frame.box((LANE - WALL, 0, INLET_FRONT), (LANE, INLET_END, INLET_BACK + 0.4), "M_Panel")
+    frame.box((INLET_RIGHT - WALL, 0, INLET_FRONT), (INLET_RIGHT, INLET_END, WALL_TOP + 0.1), "M_Panel")
+    # A skirt hanging from the chute's tip to just above the drum's bottom bars, so nothing rolls back out under it.
+    frame.box((0.45, INLET_END - 0.05, 1.6), (INLET_RIGHT - 0.1, INLET_END, INLET_FRONT), "M_Frame")
 
     # Oversize chute: a solid ramp whose back face is the tray's front wall, from under the drum's front end down to
     # the front face, with a guide wall funnelling it into the lane. A block fills the corner beside it.
-    frame.prism([(TRAY_END, 0), (LENGTH, 0), (LENGTH, CHUTE_BOTTOM), (6.9, CHUTE_TOP), (TRAY_END, CHUTE_TOP)],
+    frame.prism([(TRAY_END, 0), (LENGTH, 0), (LENGTH, CHUTE_BOTTOM), (TRAY_END + 0.05, CHUTE_TOP), (TRAY_END, CHUTE_TOP)],
                 WALL, CHUTE_RIGHT, "M_Frame")
-    frame.plate((CHUTE_RIGHT, 6.9), (LANE, LENGTH), (CHUTE_TOP, CHUTE_BOTTOM), (CHUTE_TOP + 0.6, CHUTE_BOTTOM + 0.6),
+    frame.plate((CHUTE_RIGHT, TRAY_END + 0.05), (LANE, LENGTH), (CHUTE_TOP, CHUTE_BOTTOM), (CHUTE_TOP + 0.6, CHUTE_BOTTOM + 0.6),
                 -WALL, "M_Panel")
     frame.box((CHUTE_RIGHT, TRAY_END, 0), (WIDTH, LENGTH, CHUTE_TOP), "M_Frame")
     frame.box((CHUTE_RIGHT, LENGTH - 0.06, CHUTE_TOP - 0.1), (WIDTH, LENGTH + 0.005, CHUTE_TOP - 0.05), "M_Trim")

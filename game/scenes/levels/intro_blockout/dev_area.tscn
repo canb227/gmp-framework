@@ -16,6 +16,7 @@
 [ext_resource type="PackedScene" uid="uid://bgms0ctvqpcrv" path="res://game/scenes/structures/special/RobotDumper.tscn" id="11_ubgps"]
 [ext_resource type="Texture2D" uid="uid://dfssoii6t84gn" path="res://game/assets/textures/wall_basic_1/wall_basic_1_diffuseOriginal.png" id="12_ihq8k"]
 [ext_resource type="Script" uid="uid://x8l68nnxddi3" path="res://game/scripts/structures/BrokenStructure.cs" id="12_is778"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/sorting/Trommel.tscn" id="14_is778"]
 [ext_resource type="Texture2D" uid="uid://c8knlhvemp8jf" path="res://game/assets/textures/grass_1/grass_ao.png" id="15_ubgps"]
 [ext_resource type="Texture2D" uid="uid://dudbcdb7ex0qv" path="res://game/assets/textures/wall_white_brick/wall_white_brick_diffuseOriginal.png" id="18_jjh62"]
 [ext_resource type="Texture2D" uid="uid://dai3p48chnvni" path="res://game/assets/textures/wall_white_brick/wall_white_brick_normal.png" id="19_qiak6"]
@@ -895,6 +896,9 @@ size = Vector3(0.5, 1.5, 0.5)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WorldStuff/Repair Source Button/ButtonBody" unique_id=1180870346]
 mesh = SubResource("BoxMesh_r1731")
+
+[node name="Trommel" parent="WorldStuff" unique_id=1100000000 instance=ExtResource("14_is778")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 12)
 
 [node name="store" parent="." unique_id=1931553037 instance=ExtResource("7_ihq8k")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4, 0, -4)

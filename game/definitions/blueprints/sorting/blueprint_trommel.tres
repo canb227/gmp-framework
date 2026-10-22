@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="BlueprintItem" format=3]
+
+[ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_script"]
+[ext_resource type="Texture2D" path="res://game/assets/icons/blueprints/blueprint_filter_basic.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://e450hsdm0ju3" path="res://game/scenes/structures/BlueprintGhost.tscn" id="3_ghost"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/sorting/Trommel.tscn" id="4_scene"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/sorting/TrommelCoarse.tscn" id="5_alternate"]
+
+[resource]
+script = ExtResource("1_script")
+structureScene = ExtResource("4_scene")
+alternateStructureScene = ExtResource("5_alternate")
+cost = Dictionary[int, int]({
+1: 10
+})
+itemID = "blueprint_trommel"
+displayName = "Trommel"
+description = "Builds the Trommel: a big turning drum of bars, fed over the left half of its back from an up-slope conveyor. Pieces smaller than the gaps between the bars tumble out onto a belt tray that throws them out the right side; bigger ones work their way to the far end and slide down a chute onto a belt at the left half of the front. Its second form has wider gaps."
+icon = ExtResource("2_icon")
+inHandScene = ExtResource("3_ghost")
+maxStackSize = 99
+metadata/_custom_type_script = "uid://blmd28f80x7rh"
