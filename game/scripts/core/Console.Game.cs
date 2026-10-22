@@ -506,6 +506,75 @@ public partial class Console
         Logging.Log($"walk: moved {start.DistanceTo(end):0.00} m from {start} to {end}, speed now {player.cachedVel.Length():0.00} m/s, on floor {player.IsOnFloor()}", "Test");
     }
 
+    /// <summary>
+    /// Testing smoothness: samples the local camera once per drawn frame for a while (walk or turn meanwhile) and logs
+    /// how many frames it moved in and how even its steps were. A camera posed only per physics tick would sit still
+    /// in most frames above 60 fps.
+    /// </summary>
+    public async void frame_trace(float seconds)
+    {
+        FactoryPlayer player = LocalPlayer();
+        if (player == null)
+        {
+            LimboConsole.Error("frame_trace: no local player.");
+            return;
+        }
+        Camera3D camera = player.GetViewport().GetCamera3D();
+        ulong startTick = Engine.GetPhysicsFrames();
+        double end = Time.GetTicksMsec() + seconds * 1000.0;
+        Vector3 startPosition = camera.GlobalPosition;
+        Vector3 lastPosition = camera.GlobalPosition;
+        Vector3 lastStep = Vector3.Zero;
+        Basis lastBasis = camera.GlobalBasis;
+        int frames = 0;
+        int moved = 0;
+        // Frames whose step points against the frame before's: the camera jittering back.
+        int reversed = 0;
+        int turned = 0;
+        float smallest = float.MaxValue;
+        float largest = 0;
+        float total = 0;
+        while (Time.GetTicksMsec() < end)
+        {
+            // Just before drawing, after every _Process: what the frame shows. (process_frame comes before _Process, so on
+            // a frame with a physics tick it would catch the camera at its gameplay pose, not its drawn one.)
+            await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePreDraw);
+            frames++;
+            Vector3 stepVector = camera.GlobalPosition - lastPosition;
+            float step = stepVector.Length();
+            if (step > 0.0001f)
+            {
+                moved++;
+                if (stepVector.Dot(lastStep) < 0)
+                {
+                    reversed++;
+                }
+                lastStep = stepVector;
+                smallest = Mathf.Min(smallest, step);
+                largest = Mathf.Max(largest, step);
+                total += step;
+            }
+            if (!camera.GlobalBasis.IsEqualApprox(lastBasis))
+            {
+                turned++;
+            }
+            lastPosition = camera.GlobalPosition;
+            lastBasis = camera.GlobalBasis;
+        }
+        ulong ticks = Engine.GetPhysicsFrames() - startTick;
+        float average = 0;
+        if (moved > 0)
+        {
+            average = total / moved;
+        }
+        else
+        {
+            smallest = 0;
+        }
+        float net = camera.GlobalPosition.DistanceTo(startPosition);
+        Logging.Log($"frame_trace: frames={frames} ticks={ticks} moved={moved} reversed={reversed} turned={turned} path={total:0.00} net={net:0.00} step min={smallest:0.0000} avg={average:0.0000} max={largest:0.0000}", "Test");
+    }
+
     /// <summary>Testing: the local player jumps; the log reports how high its feet got.</summary>
     public async void jump()
     {
