@@ -39,8 +39,14 @@ public partial class UIManager : Node
     /// <summary>The top screen, or null when none is open.</summary>
     public static UIScreen TopScreen => screens.Count > 0 ? screens[^1] : null;
 
-    /// <summary>True while an open screen keeps the player from moving or acting.</summary>
-    public static bool BlocksGameplayInput => screens.Count > 0;
+    /// <summary>True while an open screen, or the developer console, keeps the player from moving or acting.</summary>
+    public static bool BlocksGameplayInput => screens.Count > 0 || IsConsoleOpen;
+
+    /// <summary>True while the developer console (LimboConsole) is open: keys typed into it must not move the player.</summary>
+    // The C# wrapper's IsVisible calls a function this addon version doesn't have, so ask the autoload itself.
+    public static bool IsConsoleOpen => limboConsole != null && limboConsole.Call("is_open").AsBool();
+
+    static Node limboConsole;
 
     /// <summary>True while the game should have the mouse: playing (a HUD is bound), no screen and no inventory open.</summary>
     public static bool GameplayHasMouse => Hud != null && screens.Count == 0 && !IsInventoryOpen;
@@ -50,6 +56,7 @@ public partial class UIManager : Node
         instance = this;
         // Menus must keep working while the tree is paused.
         ProcessMode = ProcessModeEnum.Always;
+        limboConsole = GetNode("/root/LimboConsole");
         screenLayer = AddLayer("Screens", ScreenLayer);
         ReadyHud();
         ReadyNotifications();

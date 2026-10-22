@@ -109,6 +109,75 @@ public partial class Console
         LimboConsole.Info($"build: requested {blueprintItemID} at ({x},{y},{z}) turns={quarterTurns} alternate={alternate}");
     }
 
+    /// <summary>The <see cref="DevSpawner"/> nearest the local player (or the camera), or null if there is none.</summary>
+    DevSpawner NearestDevSpawner()
+    {
+        Vector3 from = Vector3.Zero;
+        FactoryPlayer player = LocalPlayer();
+        if (player != null)
+        {
+            from = player.GlobalPosition;
+        }
+        DevSpawner nearest = null;
+        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
+        {
+            if (obj is DevSpawner spawner && (nearest == null || spawner.GlobalPosition.DistanceTo(from) < nearest.GlobalPosition.DistanceTo(from)))
+            {
+                nearest = spawner;
+            }
+        }
+        return nearest;
+    }
+
+    /// <summary>Opens the config menu of the dev spawner nearest the local player.</summary>
+    public void dev_spawner_open()
+    {
+        DevSpawner spawner = NearestDevSpawner();
+        if (spawner == null)
+        {
+            LimboConsole.Error("dev_spawner_open: no dev spawner.");
+            return;
+        }
+        spawner.OpenConfigMenu();
+        LimboConsole.Info($"dev_spawner_open: id={spawner.id}");
+    }
+
+    /// <summary>
+    /// Switches on the dev spawner nearest the local player with new settings, as its menu's Apply would: one item, its interval,
+    /// items per spawn and launch speed and spread. Then prints what this peer runs it with.
+    /// </summary>
+    public void dev_spawner_set(string itemID, float interval, int itemsPerSpawn, float launchSpeed, float launchSpreadDegrees)
+    {
+        DevSpawner spawner = NearestDevSpawner();
+        if (spawner == null)
+        {
+            LimboConsole.Error("dev_spawner_set: no dev spawner.");
+            return;
+        }
+        DevSpawnerSettings settings = spawner.CurrentSettings();
+        settings.spawning = true;
+        settings.itemWeights = new Dictionary<string, float> { { itemID, 1f } };
+        settings.spawnInterval = interval;
+        settings.itemsPerSpawn = itemsPerSpawn;
+        settings.launchSpeed = launchSpeed;
+        settings.launchSpreadDegrees = launchSpreadDegrees;
+        spawner.SendSettings(settings);
+        dev_spawner_info();
+    }
+
+    /// <summary>What this peer runs the dev spawner nearest the local player with.</summary>
+    public void dev_spawner_info()
+    {
+        DevSpawner spawner = NearestDevSpawner();
+        if (spawner == null)
+        {
+            LimboConsole.Error("dev_spawner_info: no dev spawner.");
+            return;
+        }
+        DevSpawnerSettings s = spawner.CurrentSettings();
+        LimboConsole.Info($"dev_spawner: id={spawner.id} authority={spawner.authority} spawning={s.spawning} items={string.Join(",", s.itemWeights.Keys)} interval={s.spawnInterval} perSpawn={s.itemsPerSpawn} speed={s.launchSpeed} spread={s.launchSpreadDegrees}");
+    }
+
     /// <summary>
     /// Host: spawns count items (loose items or tools) in a column above x y z, 0.5 m apart so they land one after another, each up to
     /// spread metres off to the side (else a column of balls stacks into a tower).

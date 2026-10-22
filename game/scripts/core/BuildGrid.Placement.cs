@@ -238,7 +238,7 @@ public partial class BuildGrid
         {
             return;
         }
-        if (!GameWorld.syncedObjs.TryGetValue(structureId, out GMPObject gmpo) || gmpo is not Structure structure)
+        if (!GameWorld.syncedObjs.TryGetValue(structureId, out GMPObject gmpo) || gmpo is not Structure structure || !structure.canBeDeconstructed)
         {
             return;
         }

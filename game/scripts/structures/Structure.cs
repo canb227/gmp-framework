@@ -62,13 +62,13 @@ public partial class Structure : GMPOBody, Interactable
     /// <summary>The directions of the six faces of a cell, in <see cref="CellTags"/> order: front, back, left, right, up, down.</summary>
     public static readonly Vector3I[] FaceDirections = [new(0, 0, -1), new(0, 0, 1), new(-1, 0, 0), new(1, 0, 0), new(0, 1, 0), new(0, -1, 0)];
 
-    /// <summary>The blueprint given back when this structure is deconstructed.</summary>
+    /// <summary>The blueprint given back when this structure is deconstructed (with the <see cref="Wrench"/>).</summary>
     [Export]
     public string blueprintItemID;
 
-    /// <summary>Off: interacting does nothing (it can't be deconstructed by hand).</summary>
+    /// <summary>Off: the wrench can't take it apart.</summary>
     [Export]
-    public bool interactable = true;
+    public bool deconstructable = true;
 
     /// <summary>Height of a conveyor belt's top above the floor of its cell.</summary>
     public const float BeltTopHeight = 0.15f;
@@ -86,22 +86,13 @@ public partial class Structure : GMPOBody, Interactable
     /// </summary>
     protected bool runsMachineLogic => id != 0 && authority == Lobby.selfPeerID;
 
+    /// <summary>Interact (F) does nothing on a plain structure; some (the store, spawners) do something of their own.</summary>
     public virtual void onInteract(ulong playerID)
     {
-        if (!interactable)
-        {
-            Logging.Log($"{Name} can't be interacted with (interactable is off)", "Structure");
-            return;
-        }
-        FactoryPlayer player = (FactoryPlayer)GameWorld.syncedObjs[playerID];
-        if (!player.inventory.HasRoomFor(blueprintItemID))
-        {
-            Logging.Log($"No room in the inventory for {blueprintItemID}: {Name} isn't deconstructed", "Structure");
-            return;
-        }
-        // Arbitrated by the item's authority so two players can't both pick it up.
-        BuildGrid.RequestDeconstruct(player, this);
     }
+
+    /// <summary>Whether the wrench can take it apart: it must have a blueprint to give back.</summary>
+    public virtual bool canBeDeconstructed => deconstructable && !string.IsNullOrEmpty(blueprintItemID);
 
     /// <summary>Where the root sits relative to its anchor cell's centre, before rotation: the cell's left-bottom-back corner.</summary>
     public static readonly Vector3 RootCorner = new Vector3(-0.5f, -0.5f, 0.5f) * BuildGrid.CellSize;
@@ -151,7 +142,6 @@ public partial class Structure : GMPOBody, Interactable
     {
         priority = -1; // never sends state updates
         if (string.IsNullOrEmpty(hoverName)) hoverName = ItemInfo.Fetch(blueprintItemID)?.displayName ?? Name;
-        if (string.IsNullOrEmpty(hoverText)) hoverText = "Press F to deconstruct!";
         if (!hasPlacement)
         {
             // Placed by hand in a level rather than built: derive the cell from where it stands.

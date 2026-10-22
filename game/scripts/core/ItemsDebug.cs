@@ -48,7 +48,8 @@ public static class ItemsDebug
 
     // ---- definitions -----------------------------------------------------------
 
-    private static List<(string, string)> ScanDefinitions()
+    /// <summary>Every item definition under res://game/definitions as (category folder, itemID), sorted.</summary>
+    public static List<(string category, string itemID)> ScanDefinitions()
     {
         List<(string, string)> found = new();
         ScanDir(DefinitionsRoot, found);

@@ -79,9 +79,11 @@ public static class GameBootstrap
         {
             case StarterItems.MagnetRod:
                 player.inventory.AddItem("magnet_rod", 1);
+                player.inventory.AddItem("wrench", 1);
                 break;
             case StarterItems.All:
                 player.inventory.AddItem("magnet_rod", 1);
+                player.inventory.AddItem("wrench", 1);
                 foreach (string blueprint in StartingBlueprints)
                 {
                     player.inventory.AddItem(blueprint, StartingBlueprintCount);

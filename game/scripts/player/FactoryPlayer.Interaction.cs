@@ -3,7 +3,7 @@ using Godot;
 /// <summary>
 /// FactoryPlayer: looks-at targeting. Raycasts from the camera each physics tick to find the item,
 /// activator (button, lever) or structure under the crosshair, shows the HUD hover labels, and handles the "interact" action
-/// (pick up an item / press a button / flip a lever / deconstruct a structure).
+/// (pick up an item / press a button / flip a lever / open the shop). Deconstructing is the <see cref="Wrench"/>'s.
 /// </summary>
 public partial class FactoryPlayer
 {

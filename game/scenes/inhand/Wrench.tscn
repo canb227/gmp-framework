@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b3k66hu13hfkn"]
 
-[ext_resource type="Script" uid="uid://d2hsuhdhxqhb7" path="res://game/scripts/inhand/HeldItem.cs" id="1_csuf4"]
+[ext_resource type="Script" path="res://game/scripts/inhand/Wrench.cs" id="1_csuf4"]
 
 [node name="Wrench" type="Node3D" unique_id=324593033]
 script = ExtResource("1_csuf4")

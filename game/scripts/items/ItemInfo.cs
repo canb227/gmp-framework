@@ -160,7 +160,7 @@ public partial class ItemInfo : Resource
                 return null;
             }
             string path = FindItemDefinition("res://game/definitions", itemID + ".tres");
-            // Some props (e.g. spawner test items, the wrench) have no definition.
+            // Some props (e.g. spawner test items) have no definition.
             if (path != null)
             {
                 item = ResourceLoader.Load<ItemInfo>(path);

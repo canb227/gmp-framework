@@ -95,316 +95,6 @@ theme_override_font_sizes/font_size = 26
 horizontal_alignment = 1
 uppercase = true
 
-[node name="HotbarAnchor" type="MarginContainer" parent="." unique_id=2026786899]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -190.0
-grow_horizontal = 2
-grow_vertical = 0
-mouse_filter = 2
-theme_override_constants/margin_bottom = 40
-
-[node name="HotbarCenter" type="CenterContainer" parent="HotbarAnchor" unique_id=701386744]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="HotbarSlots" type="HBoxContainer" parent="HotbarAnchor/HotbarCenter" unique_id=354378039]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 10
-
-[node name="Slot1" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=734919106]
-custom_minimum_size = Vector2(116, 116)
-layout_mode = 2
-
-[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot1" unique_id=581948708]
-layout_mode = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="SlotNumber1" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot1" unique_id=329036291]
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 18
-text = "1"
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot1" unique_id=1842430377]
-layout_mode = 2
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 24
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Slot2" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1478529561]
-custom_minimum_size = Vector2(116, 116)
-layout_mode = 2
-
-[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot2" unique_id=887912601]
-layout_mode = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="SlotNumber2" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot2" unique_id=1679033554]
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 18
-text = "2"
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot2" unique_id=2139039059]
-layout_mode = 2
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 24
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Slot3" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=722742212]
-custom_minimum_size = Vector2(116, 116)
-layout_mode = 2
-
-[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot3" unique_id=916369095]
-layout_mode = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="SlotNumber3" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot3" unique_id=278153960]
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 18
-text = "3"
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot3" unique_id=1923850793]
-layout_mode = 2
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 24
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Slot4" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=329841978]
-custom_minimum_size = Vector2(116, 116)
-layout_mode = 2
-
-[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot4" unique_id=1441766530]
-layout_mode = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="SlotNumber4" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot4" unique_id=1489243005]
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 18
-text = "4"
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot4" unique_id=2061599767]
-layout_mode = 2
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 24
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Slot5" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=554085347]
-custom_minimum_size = Vector2(116, 116)
-layout_mode = 2
-
-[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot5" unique_id=1569738583]
-layout_mode = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="SlotNumber5" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot5" unique_id=887181869]
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 18
-text = "5"
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot5" unique_id=1850996915]
-layout_mode = 2
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 24
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Slot6" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=715089705]
-custom_minimum_size = Vector2(116, 116)
-layout_mode = 2
-
-[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot6" unique_id=2059052949]
-layout_mode = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="SlotNumber6" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot6" unique_id=964429612]
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 18
-text = "6"
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot6" unique_id=167685992]
-layout_mode = 2
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 24
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Slot7" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=730795187]
-custom_minimum_size = Vector2(116, 116)
-layout_mode = 2
-
-[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot7" unique_id=1463368031]
-layout_mode = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="SlotNumber7" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot7" unique_id=2078545206]
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 18
-text = "7"
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot7" unique_id=269583437]
-layout_mode = 2
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 24
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Slot8" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1403703716]
-custom_minimum_size = Vector2(116, 116)
-layout_mode = 2
-
-[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot8" unique_id=557846072]
-layout_mode = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="SlotNumber8" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot8" unique_id=503819560]
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 18
-text = "8"
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot8" unique_id=1032233517]
-layout_mode = 2
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 24
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Slot9" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1826403536]
-custom_minimum_size = Vector2(116, 116)
-layout_mode = 2
-
-[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot9" unique_id=663446466]
-layout_mode = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="SlotNumber9" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot9" unique_id=687912917]
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 18
-text = "9"
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot9" unique_id=1973793326]
-layout_mode = 2
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 24
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Slot10" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1331623283]
-custom_minimum_size = Vector2(116, 116)
-layout_mode = 2
-
-[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot10" unique_id=1548469965]
-layout_mode = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="SlotNumber10" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot10" unique_id=18349372]
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 18
-text = "0"
-
-[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot10" unique_id=491427260]
-layout_mode = 2
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 24
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="HeldItemName" type="Label" parent="." unique_id=1540516408]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -250.0
-offset_bottom = -204.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
-theme_override_constants/outline_size = 8
-theme_override_font_sizes/font_size = 30
-horizontal_alignment = 1
-vertical_alignment = 1
-uppercase = true
-
-[node name="CurrencyBar" type="HBoxContainer" parent="." unique_id=1907245513]
-layout_mode = 0
-offset_left = 48.0
-offset_top = 40.0
-offset_right = 48.0
-offset_bottom = 88.0
-mouse_filter = 2
-theme_override_constants/separation = 40
-script = ExtResource("currency_bar_script")
-outlineSize = 8
-
 [node name="InventoryScreen" type="ColorRect" parent="." unique_id=310733976]
 unique_name_in_owner = true
 visible = false
@@ -900,6 +590,316 @@ theme_type_variation = &"DimLabel"
 material = SubResource("overlay_mat")
 layout_mode = 2
 mouse_filter = 2
+
+[node name="HotbarAnchor" type="MarginContainer" parent="." unique_id=2026786899]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -190.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/margin_bottom = 40
+
+[node name="HotbarCenter" type="CenterContainer" parent="HotbarAnchor" unique_id=701386744]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="HotbarSlots" type="HBoxContainer" parent="HotbarAnchor/HotbarCenter" unique_id=354378039]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="Slot1" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=734919106]
+custom_minimum_size = Vector2(116, 116)
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot1" unique_id=581948708]
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SlotNumber1" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot1" unique_id=329036291]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "1"
+
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot1" unique_id=1842430377]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot2" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1478529561]
+custom_minimum_size = Vector2(116, 116)
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot2" unique_id=887912601]
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SlotNumber2" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot2" unique_id=1679033554]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "2"
+
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot2" unique_id=2139039059]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot3" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=722742212]
+custom_minimum_size = Vector2(116, 116)
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot3" unique_id=916369095]
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SlotNumber3" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot3" unique_id=278153960]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "3"
+
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot3" unique_id=1923850793]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot4" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=329841978]
+custom_minimum_size = Vector2(116, 116)
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot4" unique_id=1441766530]
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SlotNumber4" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot4" unique_id=1489243005]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "4"
+
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot4" unique_id=2061599767]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot5" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=554085347]
+custom_minimum_size = Vector2(116, 116)
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot5" unique_id=1569738583]
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SlotNumber5" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot5" unique_id=887181869]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "5"
+
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot5" unique_id=1850996915]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot6" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=715089705]
+custom_minimum_size = Vector2(116, 116)
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot6" unique_id=2059052949]
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SlotNumber6" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot6" unique_id=964429612]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "6"
+
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot6" unique_id=167685992]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot7" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=730795187]
+custom_minimum_size = Vector2(116, 116)
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot7" unique_id=1463368031]
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SlotNumber7" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot7" unique_id=2078545206]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "7"
+
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot7" unique_id=269583437]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot8" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1403703716]
+custom_minimum_size = Vector2(116, 116)
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot8" unique_id=557846072]
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SlotNumber8" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot8" unique_id=503819560]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "8"
+
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot8" unique_id=1032233517]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot9" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1826403536]
+custom_minimum_size = Vector2(116, 116)
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot9" unique_id=663446466]
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SlotNumber9" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot9" unique_id=687912917]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "9"
+
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot9" unique_id=1973793326]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot10" type="PanelContainer" parent="HotbarAnchor/HotbarCenter/HotbarSlots" unique_id=1331623283]
+custom_minimum_size = Vector2(116, 116)
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot10" unique_id=1548469965]
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SlotNumber10" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot10" unique_id=18349372]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_colors/font_color = Color(0.5, 0.5, 0.53, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "0"
+
+[node name="StackCount" type="Label" parent="HotbarAnchor/HotbarCenter/HotbarSlots/Slot10" unique_id=491427260]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="HeldItemName" type="Label" parent="." unique_id=1540516408]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -250.0
+offset_bottom = -204.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
+
+[node name="CurrencyBar" type="HBoxContainer" parent="." unique_id=1907245513]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 40.0
+offset_right = 48.0
+offset_bottom = 88.0
+mouse_filter = 2
+theme_override_constants/separation = 40
+script = ExtResource("currency_bar_script")
+outlineSize = 8
 
 [node name="ItemTooltip" type="PanelContainer" parent="." unique_id=1373239077]
 unique_name_in_owner = true

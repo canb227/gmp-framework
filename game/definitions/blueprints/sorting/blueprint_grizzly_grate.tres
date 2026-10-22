@@ -15,7 +15,7 @@ cost = Dictionary[int, int]({
 })
 itemID = "blueprint_grizzly_grate"
 displayName = "Grizzly Grate"
-description = "Builds the Grizzly Grate: a sloped grate of bars, fed over the back from an up-slope conveyor. Pieces smaller than the gaps between the bars fall onto a belt tray that throws them out the right side; bigger ones ride off the front. Its second form has wider gaps."
+description = "Builds the Grizzly Grate: a sloped grate of bars, fed over the back from an up-slope conveyor. Pieces smaller than the gaps between the bars fall onto a belt tray that throws them out the right side; bigger ones ride down a chute onto a belt at the front. Its second form has wider gaps."
 icon = ExtResource("2_icon")
 inHandScene = ExtResource("3_ghost")
 maxStackSize = 99

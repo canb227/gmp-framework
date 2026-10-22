@@ -29,6 +29,7 @@ public partial class InventoryUI : Control
     Control inventoryCenter;
     Control inventoryPanel;
     GridContainer inventoryGrid;
+    Control hotbarSlots;
     Label heldItemName;
 
     /// <summary>Inventory grid widths: the square layout, and a wide one (as wide as the hotbar) for short screens.</summary>
@@ -61,7 +62,7 @@ public partial class InventoryUI : Control
         activeStyle.SetBorderWidthAll(3);
         activeStyle.SetContentMarginAll(12);
 
-        var hotbarSlots = GetNode("HotbarAnchor/HotbarCenter/HotbarSlots");
+        hotbarSlots = GetNode<Control>("HotbarAnchor/HotbarCenter/HotbarSlots");
         for (int i = 0; i < Inventory.HotbarSlots; i++)
         {
             string slotName = $"Slot{i + 1}";
@@ -239,12 +240,16 @@ public partial class InventoryUI : Control
 
     // --- Drag and Drop ---
 
+    // The slot being dragged, or -1. Kept here because Godot clears the drag data before it sends NotificationDragEnd.
+    int draggedSlot = -1;
+
     public override Variant _GetDragData(Vector2 atPosition)
     {
         int slotIndex = GetSlotIndexAtPosition(atPosition);
         if (slotIndex < 0) return default;
         var slot = inventory.GetSlot(slotIndex);
         if (slot.IsEmpty) return default;
+        draggedSlot = slotIndex;
 
         var preview = new TextureRect();
         preview.Texture = ItemInfo.Fetch(slot.itemID).icon;
@@ -286,21 +291,25 @@ public partial class InventoryUI : Control
 
     public override void _Notification(int what)
     {
-        // A slot dragged out of the inventory and released over nothing drops its whole stack.
-        if (what != NotificationDragEnd || IsDragSuccessful()) return;
-        var dragData = GetViewport().GuiGetDragData();
-        if (dragData.VariantType == Variant.Type.Int && isOpen)
-        {
-            DropEntireStack(dragData.AsInt32());
-        }
+        if (what != NotificationDragEnd) return;
+        int slotIndex = draggedSlot;
+        draggedSlot = -1;
+        // A slot released off the inventory panel and the hotbar (not just in a gap between slots) drops its whole stack.
+        if (slotIndex < 0 || IsDragSuccessful() || !isOpen) return;
+        if (IsOver(inventoryPanel) || IsOver(hotbarSlots)) return;
+        DropEntireStack(slotIndex);
+    }
+
+    /// <summary>Whether the mouse is over <paramref name="control"/>, compared in its own space (the HUD is scaled, see HiResUI).</summary>
+    static bool IsOver(Control control)
+    {
+        return new Rect2(Vector2.Zero, control.Size).HasPoint(control.GetLocalMousePosition());
     }
 
     void DropEntireStack(int slotIndex)
     {
         var slot = inventory.GetSlot(slotIndex);
         if (slot.IsEmpty) return;
-        PackedScene droppedScene = ItemInfo.Fetch(slot.itemID).droppedScene;
-        if (droppedScene == null) return;
 
         var camera = player.camera;
         Vector3 dropPos = camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * 2f;

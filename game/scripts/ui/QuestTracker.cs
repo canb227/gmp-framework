@@ -17,8 +17,18 @@ public partial class QuestTracker : MarginContainer
     // Below a screen's header row (the shop's EXIT button sits in the top right).
     const int TopMarginUnderScreen = 200;
 
-    static readonly Color AccentColor = new(1f, 0.55f, 0.05f);
-    static readonly Color DimColor = new(0.5f, 0.5f, 0.53f);
+    // Sizes are in the 2560x1440 design space (HiResUI), like the rest of the HUD.
+    const int QuestNameSize = 17;
+    const int ObjectiveSize = 19;
+    const int IconSize = 24;
+
+    static readonly Color AccentColor = new(1f, 0.55f, 0.05f, 0.9f);
+    static readonly Color TextColor = new(0.9f, 0.9f, 0.92f, 0.9f);
+    static readonly Color DimColor = new(0.6f, 0.6f, 0.63f, 0.8f);
+
+    // Thin, see-through progress bars, shared by every row.
+    static readonly StyleBoxFlat BarBackground = new() { BgColor = new Color(1f, 1f, 1f, 0.12f) };
+    static readonly StyleBoxFlat BarFill = new() { BgColor = new Color(1f, 0.55f, 0.05f, 0.85f) };
 
     /// <summary>Kept for the whole run, so a collapsed tracker stays collapsed in the next game.</summary>
     static bool collapsed;
@@ -30,6 +40,7 @@ public partial class QuestTracker : MarginContainer
 
     public override void _Ready()
     {
+        HiResUI.Fill(this);
         count = GetNode<Label>("%Count");
         collapseButton = GetNode<Button>("%CollapseButton");
         body = GetNode<Control>("%Body");
@@ -96,7 +107,7 @@ public partial class QuestTracker : MarginContainer
         count.Text = ProgressManager.currentQuests.Count.ToString();
         if (ProgressManager.currentQuests.Count == 0)
         {
-            Label empty = MakeLabel("No active quests", 22, DimColor);
+            Label empty = MakeLabel("No active quests", ObjectiveSize, DimColor);
             rows.AddChild(empty);
             return;
         }
@@ -104,9 +115,9 @@ public partial class QuestTracker : MarginContainer
         foreach (Quest quest in ProgressManager.currentQuests.Values)
         {
             VBoxContainer questBox = new() { MouseFilter = MouseFilterEnum.Ignore };
-            questBox.AddThemeConstantOverride("separation", 6);
+            questBox.AddThemeConstantOverride("separation", 4);
             string questName = quest.questName ?? quest.questID;
-            questBox.AddChild(MakeLabel(questName.ToUpperInvariant(), 22, AccentColor));
+            questBox.AddChild(MakeLabel(questName.ToUpperInvariant(), QuestNameSize, AccentColor));
 
             foreach (var (itemID, required) in quest.itemSubmissionObjectives)
             {
@@ -134,20 +145,20 @@ public partial class QuestTracker : MarginContainer
     static void AddObjective(VBoxContainer questBox, Texture2D icon, string name, int progress, int required)
     {
         HBoxContainer line = new() { MouseFilter = MouseFilterEnum.Ignore };
-        line.AddThemeConstantOverride("separation", 10);
+        line.AddThemeConstantOverride("separation", 8);
         line.AddChild(new TextureRect
         {
             Texture = icon,
-            CustomMinimumSize = new Vector2(32, 32),
+            CustomMinimumSize = new Vector2(IconSize, IconSize),
             ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
             StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
             SizeFlagsVertical = SizeFlags.ShrinkCenter,
             MouseFilter = MouseFilterEnum.Ignore,
         });
-        Label nameLabel = MakeLabel(name, 24, new Color(0.88f, 0.88f, 0.9f));
+        Label nameLabel = MakeLabel(name, ObjectiveSize, TextColor);
         nameLabel.SizeFlagsHorizontal = SizeFlags.ExpandFill;
         line.AddChild(nameLabel);
-        line.AddChild(MakeLabel($"{progress} / {required}", 24, new Color(0.88f, 0.88f, 0.9f)));
+        line.AddChild(MakeLabel($"{progress} / {required}", ObjectiveSize, TextColor));
         questBox.AddChild(line);
 
         double fraction = 0;
@@ -155,16 +166,19 @@ public partial class QuestTracker : MarginContainer
         {
             fraction = Math.Clamp((double)progress / required, 0, 1);
         }
-        questBox.AddChild(new ProgressBar
+        ProgressBar bar = new()
         {
             MinValue = 0,
             MaxValue = 1,
             Step = 0,
             Value = fraction,
             ShowPercentage = false,
-            CustomMinimumSize = new Vector2(0, 6),
+            CustomMinimumSize = new Vector2(0, 3),
             MouseFilter = MouseFilterEnum.Ignore,
-        });
+        };
+        bar.AddThemeStyleboxOverride("background", BarBackground);
+        bar.AddThemeStyleboxOverride("fill", BarFill);
+        questBox.AddChild(bar);
     }
 
     static Label MakeLabel(string text, int fontSize, Color color)
@@ -177,6 +191,9 @@ public partial class QuestTracker : MarginContainer
         };
         label.AddThemeFontSizeOverride("font_size", fontSize);
         label.AddThemeColorOverride("font_color", color);
+        // A soft outline keeps the text readable over bright parts of the world through the see-through panel.
+        label.AddThemeConstantOverride("outline_size", 4);
+        label.AddThemeColorOverride("font_outline_color", new Color(0, 0, 0, 0.5f));
         return label;
     }
 }

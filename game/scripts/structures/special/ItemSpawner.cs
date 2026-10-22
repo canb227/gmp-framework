@@ -37,6 +37,17 @@ public partial class ItemSpawner : IOMachine
     /// <summary>Shown above the upgrade line when looked at (e.g. what to feed it).</summary>
     [Export] public string description = "";
 
+    /// <summary>While false it spawns nothing (and its timer stands still).</summary>
+    [Export] public bool spawning = true;
+
+    /// <summary>How many items each spawn puts out at once (each picked from <see cref="itemWeights"/> on its own).</summary>
+    [Export] public int itemsPerSpawn = 1;
+
+    /// <summary>Metres per second items leave the output at, along its forward (-Z); 0 drops them in place.</summary>
+    [Export] public float launchSpeed = 0f;
+    /// <summary>Degrees each launched item may stray from the output's forward, at most.</summary>
+    [Export] public float launchSpreadDegrees = 0f;
+
     [ExportGroup("Upgrades")]
     /// <summary>What each upgrade costs, in order.</summary>
     [Export] public Godot.Collections.Array<Godot.Collections.Dictionary<Currency, int>> upgradeCosts = new();
@@ -66,7 +77,7 @@ public partial class ItemSpawner : IOMachine
 
     public override void _PhysicsProcess(double delta)
     {
-        if (runsMachineLogic && streamOutputs.Count > 0)
+        if (runsMachineLogic && spawning && streamOutputs.Count > 0)
         {
             // Held at 0 while a limit is reached, so it spawns the moment there's room (and no more than one at once).
             if (untilSpawn > 0)
@@ -75,16 +86,37 @@ public partial class ItemSpawner : IOMachine
             }
             if (untilSpawn <= 0)
             {
-                string itemID = PickWeighted(itemWeights);
-                int output = streamOutputs[nextStreamOutput % streamOutputs.Count];
-                if (TrySpawn(itemID, output))
+                if (SpawnBurst())
                 {
                     untilSpawn += spawnInterval;
-                    nextStreamOutput = (nextStreamOutput + 1) % streamOutputs.Count;
                 }
             }
         }
         base._PhysicsProcess(delta);
+    }
+
+    /// <summary>
+    /// Authority only: spawns <see cref="itemsPerSpawn"/> items at the next stream output. Returns whether any spawned
+    /// (a limit can stop a burst part way; the rest are skipped, not owed).
+    /// </summary>
+    protected bool SpawnBurst()
+    {
+        int output = streamOutputs[nextStreamOutput % streamOutputs.Count];
+        int spawned = 0;
+        for (int i = 0; i < Mathf.Max(1, itemsPerSpawn); i++)
+        {
+            if (!TrySpawn(PickWeighted(itemWeights), output))
+            {
+                break;
+            }
+            spawned++;
+        }
+        if (spawned == 0)
+        {
+            return false;
+        }
+        nextStreamOutput = (nextStreamOutput + 1) % streamOutputs.Count;
+        return true;
     }
 
     // A plain spawner takes nothing in; subclasses that do (the Recycler) override these.
@@ -132,8 +164,24 @@ public partial class ItemSpawner : IOMachine
             (float)GD.RandRange(0, Mathf.Pi * 2),
             (float)GD.RandRange(0, Mathf.Pi * 2)
         );
-        ItemInfo.SpawnInWorld(itemID, position, rotation);
+        ItemInfo.SpawnInWorld(itemID, position, rotation, LaunchVelocity(output));
         return true;
+    }
+
+    /// <summary>
+    /// The velocity an item leaves the output'th output with: <see cref="launchSpeed"/> along the output's forward
+    /// (-Z), turned a random angle of up to <see cref="launchSpreadDegrees"/> away from it.
+    /// </summary>
+    Vector3 LaunchVelocity(int output)
+    {
+        if (launchSpeed <= 0 || output >= outputLocations.Count)
+        {
+            return Vector3.Zero;
+        }
+        Basis basis = outputLocations[output].GlobalBasis.Orthonormalized();
+        Vector3 forward = -basis.Z;
+        // TODO(human): turn forward by a random angle of up to launchSpreadDegrees, then scale it by launchSpeed.
+        return forward * launchSpeed;
     }
 
     /// <summary>The limit it's holding for (null: not holding), so each hold is logged once, for tuning the limits.</summary>
@@ -221,7 +269,7 @@ public partial class ItemSpawner : IOMachine
         UpdateHoverText();
     }
 
-    void UpdateHoverText()
+    protected virtual void UpdateHoverText()
     {
         string upgradeLine;
         if (upgradeLevel < upgradeCosts.Count)

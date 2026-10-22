@@ -109,8 +109,9 @@ public partial class ItemCountMeter : GMPOBody
     /// <summary>Host only: whether <paramref name="newCount"/> puts the meter over max, given whether it is over now (<see cref="over"/>).</summary>
     bool IsOver(int newCount)
     {
-        // TODO(human)
-        return false;
+        // TODO: WIP, no hysteresis yet. A count sitting at max flickers the targets on and off as items come and go;
+        // coming back should wait for the count to drop some margin below max (which is why this is given over).
+        return newCount > max;
     }
 
     [RPC(requireAuthority = true)]

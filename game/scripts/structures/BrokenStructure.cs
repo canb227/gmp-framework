@@ -4,7 +4,7 @@ using Godot;
 /// A structure that has to be repaired before it works: switched by an <see cref="GMPOActivator"/> (usually a
 /// <see cref="PricedButton"/>), it replaces itself with <see cref="repairedScene"/> in the same cells. Activators
 /// switch it on every peer, but only its authority (the host, for a level structure) does the swap, through the
-/// usual despawn and spawn broadcasts. Interacting does nothing, so it can't be deconstructed for a free blueprint.
+/// usual despawn and spawn broadcasts. The wrench can't take it apart, so it can't be traded for a free blueprint.
 /// </summary>
 public partial class BrokenStructure : Structure, Triggerable
 {
@@ -20,7 +20,7 @@ public partial class BrokenStructure : Structure, Triggerable
     }
 
     // Never deconstructed: that would hand out the working structure's blueprint for free.
-    public override void onInteract(ulong playerID) { }
+    public override bool canBeDeconstructed => false;
 
     public void OnTrigger(bool active)
     {
