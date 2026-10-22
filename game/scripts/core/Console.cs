@@ -35,6 +35,10 @@ public partial class Console : Node
         LimboConsole.RegisterCommand(new Callable(this, "walk"));
         LimboConsole.RegisterCommand(new Callable(this, "jump"));
         LimboConsole.RegisterCommand(new Callable(this, "noclip"));
+        LimboConsole.RegisterCommand(new Callable(this, "ride_belts"));
+        LimboConsole.RegisterCommand(new Callable(this, "hold"));
+        LimboConsole.RegisterCommand(new Callable(this, "ghost_info"));
+        LimboConsole.RegisterCommand(new Callable(this, "ghost_rotate"));
         LimboConsole.RegisterCommand(new Callable(this, "build_cell"));
         LimboConsole.RegisterCommand(new Callable(this, "build_probe"));
         LimboConsole.RegisterCommand(new Callable(this, "spawn_bodies"));

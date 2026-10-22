@@ -196,12 +196,15 @@ void GMPCharacter::probe_floor(b3WorldId world, b3Pos feet, bool rising, float &
 	distance = context.hitFraction * length - restTravel;
 
 	// Standing still on something moving means moving with it: a body's own motion at that point, plus a
-	// belt's surface drive (in the body's axes).
+	// belt's surface drive (in the body's axes) while rideBelts is on.
 	b3BodyId ground = b3Shape_GetBody(context.hitShape);
 	b3Vec3 pointVelocity = b3Body_GetWorldPointVelocity(ground, context.hitPoint);
-	b3SurfaceMaterial material = b3Shape_GetSurfaceMaterial(context.hitShape);
-	b3Vec3 drive = b3RotateVector(b3Body_GetRotation(ground), material.tangentVelocity);
-	floorVelocity = to_godot(pointVelocity) + to_godot(drive);
+	floorVelocity = to_godot(pointVelocity);
+	if (rideBelts) {
+		b3SurfaceMaterial material = b3Shape_GetSurfaceMaterial(context.hitShape);
+		b3Vec3 drive = b3RotateVector(b3Body_GetRotation(ground), material.tangentVelocity);
+		floorVelocity += to_godot(drive);
+	}
 }
 
 // ---- moving ----
@@ -434,6 +437,14 @@ bool GMPCharacter::get_noclip() const {
 	return noclip;
 }
 
+void GMPCharacter::set_ride_belts(bool value) {
+	rideBelts = value;
+}
+
+bool GMPCharacter::get_ride_belts() const {
+	return rideBelts;
+}
+
 void GMPCharacter::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("move", "velocity", "delta"), &GMPCharacter::move);
 	ClassDB::bind_method(D_METHOD("teleport_character", "transform"), &GMPCharacter::teleport_character);
@@ -456,6 +467,8 @@ void GMPCharacter::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_leg_hertz"), &GMPCharacter::get_leg_hertz);
 	ClassDB::bind_method(D_METHOD("set_noclip", "value"), &GMPCharacter::set_noclip);
 	ClassDB::bind_method(D_METHOD("get_noclip"), &GMPCharacter::get_noclip);
+	ClassDB::bind_method(D_METHOD("set_ride_belts", "value"), &GMPCharacter::set_ride_belts);
+	ClassDB::bind_method(D_METHOD("get_ride_belts"), &GMPCharacter::get_ride_belts);
 
 	ADD_GROUP("Character", "");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "radius", PROPERTY_HINT_RANGE, "0.05,2,0.01,suffix:m"), "set_radius", "get_radius");
@@ -464,6 +477,7 @@ void GMPCharacter::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "max_slope_degrees", PROPERTY_HINT_RANGE, "0,89,0.1,suffix:°"), "set_max_slope_degrees", "get_max_slope_degrees");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "ground_snap", PROPERTY_HINT_RANGE, "0,1,0.01,suffix:m"), "set_ground_snap", "get_ground_snap");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "leg_hertz", PROPERTY_HINT_RANGE, "1,30,0.1,suffix:Hz"), "set_leg_hertz", "get_leg_hertz");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "ride_belts"), "set_ride_belts", "get_ride_belts");
 	// Set at run time only (not saved in scenes).
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "noclip", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_noclip", "get_noclip");
 }

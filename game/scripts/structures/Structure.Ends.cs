@@ -61,8 +61,11 @@ public partial class Structure
 {
     /// <summary>A placed structure's output ends, in world cells (set as it's placed). Null on previews and probes.</summary>
     public List<CellEnd> outputEnds { get; private set; }
+    /// <summary>A placed structure's input ends, in world cells (set as it's placed). Null on previews and probes.</summary>
+    public List<CellEnd> inputEnds { get; private set; }
 
     static readonly Dictionary<PackedScene, List<CellEnd>> sceneInputEnds = new();
+    static readonly Dictionary<PackedScene, List<CellEnd>> sceneOutputEnds = new();
 
     public static CellTags InputTag(int face)
     {
@@ -129,7 +132,18 @@ public partial class Structure
     /// <summary>The input ends of <paramref name="scene"/>'s structure, in its own frame. Read once per scene.</summary>
     public static List<CellEnd> SceneInputEnds(PackedScene scene)
     {
-        if (sceneInputEnds.TryGetValue(scene, out List<CellEnd> ends))
+        return SceneEnds(scene, false, sceneInputEnds);
+    }
+
+    /// <summary>The output ends of <paramref name="scene"/>'s structure, in its own frame. Read once per scene.</summary>
+    public static List<CellEnd> SceneOutputEnds(PackedScene scene)
+    {
+        return SceneEnds(scene, true, sceneOutputEnds);
+    }
+
+    static List<CellEnd> SceneEnds(PackedScene scene, bool outputs, Dictionary<PackedScene, List<CellEnd>> cache)
+    {
+        if (cache.TryGetValue(scene, out List<CellEnd> ends))
         {
             return ends;
         }
@@ -137,10 +151,10 @@ public partial class Structure
         Node node = scene.Instantiate();
         if (node is Structure structure)
         {
-            ends = FindEnds(structure.cells, false, Vector3I.Zero, 0);
+            ends = FindEnds(structure.cells, outputs, Vector3I.Zero, 0);
         }
         node.Free();
-        sceneInputEnds[scene] = ends;
+        cache[scene] = ends;
         return ends;
     }
 
@@ -162,65 +176,24 @@ public partial class Structure
     }
 
     /// <summary>
-    /// For the placement preview: the placed structure's output end nearest <paramref name="footprint"/> (its
-    /// delivered-into cells within a cell of it), or null. Only open ends count: nothing built where they deliver.
+    /// For the placement preview: whether nothing is built where a placed structure's end connects, the cells an
+    /// output (<paramref name="output"/>) delivers into or the cells an input takes items from.
     /// </summary>
-    public static CellEnd FindOpenEnd(List<Vector3I> footprint)
+    public static bool IsOpen(CellEnd end, bool output)
     {
-        Vector3I min = footprint[0];
-        Vector3I max = footprint[0];
-        foreach (Vector3I cell in footprint)
-        {
-            min = new Vector3I(Mathf.Min(min.X, cell.X), Mathf.Min(min.Y, cell.Y), Mathf.Min(min.Z, cell.Z));
-            max = new Vector3I(Mathf.Max(max.X, cell.X), Mathf.Max(max.Y, cell.Y), Mathf.Max(max.Z, cell.Z));
-        }
-        var checkedStructures = new HashSet<Structure>();
-        CellEnd best = null;
-        int bestDistance = 2;
-        for (int x = min.X - 2; x <= max.X + 2; x++)
-        {
-            for (int y = min.Y - 2; y <= max.Y + 2; y++)
-            {
-                for (int z = min.Z - 2; z <= max.Z + 2; z++)
-                {
-                    if (BuildGrid.GetStructureAt(new Vector3I(x, y, z)) is not Structure s || s.outputEnds == null || !checkedStructures.Add(s))
-                    {
-                        continue;
-                    }
-                    foreach (CellEnd end in s.outputEnds)
-                    {
-                        int distance = OpenEndDistance(end, footprint);
-                        if (distance < bestDistance)
-                        {
-                            best = end;
-                            bestDistance = distance;
-                        }
-                    }
-                }
-            }
-        }
-        return best;
-    }
-
-    // Cells between the nearest of an output end's delivered-into cells and the footprint (diagonal steps count as
-    // one), or int.MaxValue if anything is built on them.
-    static int OpenEndDistance(CellEnd end, List<Vector3I> footprint)
-    {
-        int nearest = int.MaxValue;
         foreach (Vector3I cell in end.cells)
         {
-            Vector3I target = cell + end.direction;
-            if (BuildGrid.GetStructureAt(target) != null)
+            Vector3I across = cell - end.direction;
+            if (output)
             {
-                return int.MaxValue;
+                across = cell + end.direction;
             }
-            foreach (Vector3I f in footprint)
+            if (BuildGrid.GetStructureAt(across) != null)
             {
-                Vector3I d = (target - f).Abs();
-                nearest = Mathf.Min(nearest, Mathf.Max(d.X, Mathf.Max(d.Y, d.Z)));
+                return false;
             }
         }
-        return nearest;
+        return true;
     }
 
     // The belts this structure's outputs deliver into re-check their shape at the end of the frame.

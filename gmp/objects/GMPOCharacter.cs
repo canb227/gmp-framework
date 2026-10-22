@@ -66,6 +66,7 @@ public partial class GMPOCharacter : Node3D, GMPObject
     static readonly StringName canFitHeightName = "can_fit_height";
     static readonly StringName heightName = "height";
     static readonly StringName noclipName = "noclip";
+    static readonly StringName rideBeltsName = "ride_belts";
 
     /// <summary>
     /// Moves the character by <paramref name="velocity"/> over <paramref name="delta"/> seconds, sliding along what it
@@ -122,5 +123,12 @@ public partial class GMPOCharacter : Node3D, GMPObject
     {
         get => ClassDB.ClassGetProperty(this, noclipName).AsBool();
         set => ClassDB.ClassSetProperty(this, noclipName, value);
+    }
+
+    /// <summary>Whether a belt's surface carries the character (<see cref="FloorVelocity"/> includes its drive). Off by default.</summary>
+    public bool rideBelts
+    {
+        get => ClassDB.ClassGetProperty(this, rideBeltsName).AsBool();
+        set => ClassDB.ClassSetProperty(this, rideBeltsName, value);
     }
 }

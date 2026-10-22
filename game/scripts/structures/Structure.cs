@@ -172,6 +172,7 @@ public partial class Structure : GMPOBody, Interactable
             this.occupiedCells = new Godot.Collections.Array<Vector3I>(placedIn);
         }
         outputEnds = FindEnds(cells, true, anchor, quarterTurns);
+        inputEnds = FindEnds(cells, false, anchor, quarterTurns);
         CheckReceiversLater();
     }
 

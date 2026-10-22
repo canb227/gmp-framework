@@ -299,7 +299,8 @@ public partial class BuildGrid : Node3D
     /// <item>If the ray ends inside the run, the face it entered through, like hitting a solid block.</item>
     /// <item>If it passes through and out the other side, the face it exits through. Aiming just past a structure
     /// (over a thin conveyor at the floor in front of it) then lands where the player looks, rather than on
-    /// whichever face the ray happened to clip on the way in.</item>
+    /// whichever face the ray happened to clip on the way in. Out through the bottom face it finds nothing (returns
+    /// false), so the surface the ray hits beyond is used rather than the cell under the run.</item>
     /// </list>
     /// The cell the ray starts in is skipped, so standing inside or on a structure's cell doesn't hide its
     /// neighbours, and so is any occupied cell the ray enters closer than <paramref name="minDistance"/>, so
@@ -344,7 +345,12 @@ public partial class BuildGrid : Node3D
 
             if (inRun && !occupied)
             {
-                // Passed through the run and out of it: the face it exits through.
+                // Passed through the run and out of it: the face it exits through. Out through the bottom, the ray is
+                // aimed at the floor beyond (a belt in the way), not under the run: the surface it hits counts instead.
+                if (axis == 1 && step.Y < 0)
+                {
+                    return false;
+                }
                 target = cell;
                 normal = default;
                 normal[axis] = step[axis];

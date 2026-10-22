@@ -37,6 +37,9 @@ public:
 	// Flying through everything (the noclip console command): the capsule collides with nothing, sensors
 	// don't see it, queries don't hit it, and move() goes straight where it's told.
 	bool noclip = false;
+	// Whether a belt's surface drive carries the character (the ride_belts console command). Off, belts are
+	// like any other floor to it; a moving body still carries it either way.
+	bool rideBelts = false;
 
 	GMPCharacter();
 
@@ -70,6 +73,8 @@ public:
 	float get_leg_hertz() const;
 	void set_noclip(bool value);
 	bool get_noclip() const;
+	void set_ride_belts(bool value);
+	bool get_ride_belts() const;
 
 protected:
 	static void _bind_methods();

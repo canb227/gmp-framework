@@ -10,6 +10,12 @@ using System.Collections.Generic;
 /// it handles its own input: "rotate" turns the preview, "alternate" switches a two-form blueprint (e.g. uphill/downhill
 /// slope) to its other form, and releasing primary builds it (host-arbitrated, see BuildGrid.Placement.cs). Deconstructing is the <see cref="Wrench"/>'s.
 /// <para>
+/// A structure with input or output ends snaps to connect to placed structures' open ends whenever the crosshair's ray
+/// passes near the connection (<see cref="connectRadius"/>), both ways round: taking an output's items or feeding an
+/// input. That wins over the grid's module alignment and over where the ray lands, or doesn't (aiming off the end of
+/// a belt into the air), but never over something the ray hits first. Connections that couldn't be built are passed over.
+/// </para>
+/// <para>
 /// A belt blueprint (<see cref="ConveyorBlueprint"/>) is dragged, like Factorio: holding primary lays a straight line of
 /// ghosts, end to end, from where it was pressed toward the crosshair, every belt facing away from the first, and releasing
 /// builds the line. Aimed at a belt of its own blueprint, it targets that belt's cells, and its ghosts may cover such
@@ -26,6 +32,11 @@ public partial class BlueprintGhost : HeldItem
     /// blocked ones skipped. A belt the line replaces doesn't block it; running out of blueprints only cuts the line short.
     /// </summary>
     [Export] public bool refuseBlockedLines = false;
+    /// <summary>
+    /// How close (m) the crosshair's ray must pass to where the structure would connect to a placed structure's open
+    /// end for the preview to snap there (<see cref="FindConnection"/>). Aim further off to place it unconnected.
+    /// </summary>
+    [Export] public float connectRadius = 1.0f;
 
     public BlueprintItem blueprint => item as BlueprintItem;
     /// <summary>The anchor cell the structure would be built at, or null when not looking at anything in range.</summary>
@@ -58,16 +69,39 @@ public partial class BlueprintGhost : HeldItem
     /// <summary>The scene of the selected form (a belt's straight scene, while the preview may show one of its turns).</summary>
     PackedScene mainScene => blueprint.StructureScene(showingAlternate);
     /// <summary>
-    /// Whether the structure has input ends (face tags, Structure.Ends.cs): its preview then snaps onto open output ends
-    /// of placed structures. A <see cref="ConveyorBlueprint"/>'s also takes the shape the belt would be built in.
+    /// Whether the structure has input or output ends (face tags, Structure.Ends.cs): its preview then snaps to connect
+    /// to open ends of placed structures. A <see cref="ConveyorBlueprint"/>'s also takes the shape the belt would be built in.
     /// </summary>
-    bool snaps => Structure.SceneInputEnds(mainScene).Count > 0;
+    bool connects => Structure.SceneInputEnds(mainScene).Count > 0 || Structure.SceneOutputEnds(mainScene).Count > 0;
     ConveyorShape previewShape = ConveyorShape.Straight;
     /// <summary>
-    /// The output end the preview last snapped to. Static, because each placement re-creates the ghost: the preview
-    /// only turns to follow an end when it first snaps to a different one.
+    /// The placed structure's end the preview last snapped to. Static, because each placement re-creates the ghost: the
+    /// preview only turns to follow an end when it first snaps to a different one.
     /// </summary>
     static CellEnd snappedTo;
+    /// <summary>Whether <see cref="snappedTo"/> is an output (the preview takes its items) rather than an input.</summary>
+    static bool snappedToOutput;
+    /// <summary>True while the preview is snapped to connect to a placed structure's end (for ghost_info).</summary>
+    public static bool connected => snappedTo != null;
+    /// <summary>How far apart (m) the crosshair's ray is sampled when measuring how close it passes to a connection.</summary>
+    const float RaySampleStep = 0.1f;
+    /// <summary>Further than this (m) past the ray's reach, a structure's root is too far for any of its ends to be in reach.</summary>
+    const float StructureReach = 12f;
+    /// <summary>
+    /// The first stretch of the crosshair's ray (m) doesn't count toward connecting: a connection right beside the
+    /// player would otherwise be near the ray whichever way they look.
+    /// </summary>
+    const float ConnectMinDistance = 1.5f;
+    /// <summary>A connection whose footprint, grown by this (m, the player's radius), holds the player's feet or eyes is skipped.</summary>
+    const float PlayerClearance = 0.35f;
+    /// <summary>A surface whose normal points at least this far up is a floor (for <see cref="FindConnection"/>).</summary>
+    const float FloorNormalY = 0.7f;
+
+    /// <summary>
+    /// A pose that connects the preview to a placed structure's open end, with the normal pointing from that structure
+    /// into the preview, and how close the crosshair's ray passes to the posed footprint and how far along the ray that is.
+    /// </summary>
+    record Connection(Vector3I anchor, int turns, CellEnd end, bool endIsOutput, Vector3I normal, float distance, float along);
     /// <summary>True while a placement re-creates the ghost, which mustn't reset the direction like a real equip does.</summary>
     static bool placing;
 
@@ -104,9 +138,9 @@ public partial class BlueprintGhost : HeldItem
             Logging.Warn($"Blueprint {blueprint?.itemID} has no structure scene", "BlueprintGhost");
             return;
         }
-        if (snaps && !placing)
+        if (connects && !placing)
         {
-            // Equipping a belt (or anything else with inputs) points it the way the camera faces.
+            // Equipping a belt (or anything else with ends) points it the way the camera faces.
             Vector3 look = -player.camera.GlobalBasis.Z;
             quarterTurns = Mathf.PosMod(Mathf.RoundToInt(Mathf.Atan2(-look.X, -look.Z) / (Mathf.Pi / 2)), 4);
             snappedTo = null;
@@ -178,8 +212,7 @@ public partial class BlueprintGhost : HeldItem
     {
         if (@event.IsActionPressed(InputActions.rotate))
         {
-            // Clockwise seen from above: a quarter turn of negative yaw.
-            quarterTurns = (quarterTurns + 3) % 4;
+            Rotate();
             return true;
         }
         if (@event.IsActionPressed(InputActions.alternate))
@@ -224,6 +257,24 @@ public partial class BlueprintGhost : HeldItem
         return false;
     }
 
+    /// <summary>
+    /// Turns the next structure a quarter clockwise seen from above (a quarter turn of negative yaw), as "rotate" does.
+    /// While the preview is snapped to an end, turns it can't connect at are skipped (a belt facing back into what
+    /// feeds it), so rotating a belt cycles it straight, turning one way and turning the other.
+    /// </summary>
+    public void Rotate()
+    {
+        quarterTurns = (quarterTurns + 3) % 4;
+        if (snappedTo == null || !smartPlacement)
+        {
+            return;
+        }
+        for (int i = 0; i < 3 && !ConnectPose(snappedTo, snappedToOutput, out _, out _); i++)
+        {
+            quarterTurns = (quarterTurns + 3) % 4;
+        }
+    }
+
     /// <summary>Selects the main or alternate form and rebuilds the preview (public for the headless multiplayer test).</summary>
     public void SetAlternate(bool on)
     {
@@ -249,20 +300,12 @@ public partial class BlueprintGhost : HeldItem
         Camera3D camera = player.camera;
         Vector3 from = camera.GlobalPosition;
         Vector3 direction = -camera.GlobalTransform.Basis.Z;
-        if (!BuildGrid.TryGetPlacementTarget(from, direction, placeRange,
-                probe.structure.cells.Keys, quarterTurns, smartPlacement, out Vector3I anchor, out _, out Vector3I faceNormal))
-        {
-            targetCell = null;
-            canPlace = false;
-            probe.structure.Visible = false;
-            BuildGrid.placementFocus = null;
-            BuildGrid.placementFace = null;
-            return;
-        }
+        bool aimed = BuildGrid.TryGetPlacementTarget(from, direction, placeRange,
+            probe.structure.cells.Keys, quarterTurns, smartPlacement, out Vector3I anchor, out _, out Vector3I faceNormal);
+        RayHit ray = BuildGrid.RaycastPastItems(from, from + direction * placeRange);
         // Aimed at a belt of its own blueprint, a belt blueprint targets that belt's cells, to turn it or start a line on it.
         Conveyor aimedBelt = null;
-        if (blueprint is ConveyorBlueprint && BuildGrid.FindStructure(BuildGrid.RaycastPastItems(from, from + direction * placeRange)) is Conveyor belt
-            && belt.blueprintItemID == blueprint.itemID)
+        if (aimed && blueprint is ConveyorBlueprint && BuildGrid.FindStructure(ray) is Conveyor belt && belt.blueprintItemID == blueprint.itemID)
         {
             aimedBelt = belt;
         }
@@ -270,10 +313,46 @@ public partial class BlueprintGhost : HeldItem
         {
             // The anchor that, at the preview's rotation, covers the same cells as the belt.
             anchor = FootprintMin(aimedBelt.anchor, aimedBelt.quarterTurns) - FootprintMin(Vector3I.Zero, quarterTurns);
+            snappedTo = null;
         }
-        else if (snaps && smartPlacement)
+        else if (connects && smartPlacement)
         {
-            anchor = SnapToOutput(anchor);
+            // Connecting to a placed structure wins over where the ray lands, even when it lands nowhere (aimed off a
+            // belt into the air), as long as the ray passes near the connection before it hits anything.
+            float reach = placeRange;
+            Vector3? floorHit = null;
+            if (ray.hit)
+            {
+                reach = from.DistanceTo(ray.position);
+                if (ray.normal.Y > FloorNormalY)
+                {
+                    floorHit = ray.position;
+                }
+            }
+            Aabb? aimedBox = null;
+            if (aimed)
+            {
+                aimedBox = FootprintBox(anchor, quarterTurns);
+            }
+            Connection connection = FindConnection(from, direction, reach, floorHit, aimedBox);
+            snappedTo = connection?.end;
+            if (connection != null)
+            {
+                snappedToOutput = connection.endIsOutput;
+                anchor = connection.anchor;
+                quarterTurns = connection.turns;
+                faceNormal = connection.normal;
+                aimed = true;
+            }
+        }
+        if (!aimed)
+        {
+            targetCell = null;
+            canPlace = false;
+            probe.structure.Visible = false;
+            BuildGrid.placementFocus = null;
+            BuildGrid.placementFace = null;
+            return;
         }
         if (blueprint is ConveyorBlueprint conveyorBlueprint)
         {
@@ -294,12 +373,12 @@ public partial class BlueprintGhost : HeldItem
         BuildGrid.placementFloor = FootprintFloor(anchor);
         BuildGrid.placementFace = ContactFace(anchor, faceNormal);
 
-        if (targetCell != anchor || probe.quarterTurns != quarterTurns || !probe.structure.Visible)
+        // FindConnection moves the probe about to test connections, so it's compared with the probe's own pose.
+        targetCell = anchor;
+        if (probe.anchor != anchor || probe.quarterTurns != quarterTurns || !probe.structure.Visible)
         {
-            targetCell = anchor;
             probe.MoveTo(anchor, quarterTurns);
             probe.structure.Visible = true;
-
         }
         // Until the probe settles its overlaps still describe the previous pose: keep the old tint, don't allow placing.
         if (!probe.settled)
@@ -491,24 +570,121 @@ public partial class BlueprintGhost : HeldItem
         targetCell = null;
     }
 
-    // Aimed within a cell of a placed structure's open output end, the preview is pulled so that one of its input ends
-    // takes that end's items, if one is the same size and shape. The first time it snaps to an end it turns to take
-    // it head on; turned a quarter from there, a belt takes it on a turn's side input instead.
-    Vector3I SnapToOutput(Vector3I anchor)
+    // The best way to connect the preview to an open end of a placed structure near the crosshair's ray (from along
+    // direction, up to reach), or null: one of its input ends taking an open output's items, or one of its output ends
+    // feeding an open input. The ray must pass within connectRadius of the connected footprint; the nearest to the ray
+    // wins, then the nearest along it. Where the ray lands on a floor (floorHit), a footprint standing on that same
+    // floor must be within connectRadius of where it lands instead: one the player could have aimed straight at on
+    // the floor they aimed at, but didn't, isn't wanted. Either way, one touching or overlapping the footprint where
+    // the ray would put it (aimedBox) counts too. A pose the structure couldn't be built in (its cells taken or
+    // blocked, or its colliders in the level, like a down slope sunk into the floor) is passed over, so the preview
+    // stays where it's aimed.
+    Connection FindConnection(Vector3 from, Vector3 direction, float reach, Vector3? floorHit, Aabb? aimedBox)
     {
-        CellEnd feeder = Structure.FindOpenEnd(new List<Vector3I>(BuildGrid.FootprintCells(anchor, probe.structure.cells.Keys, quarterTurns)));
-        if (feeder != snappedTo)
+        var connections = new List<Connection>();
+        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
         {
-            snappedTo = feeder;
-            if (feeder != null)
+            if (obj is not Structure structure || structure.outputEnds == null || structure.GlobalPosition.DistanceTo(from) > reach + StructureReach)
             {
-                TurnToTake(feeder);
+                continue;
+            }
+            foreach (CellEnd end in structure.outputEnds)
+            {
+                AddConnection(connections, end, true, from, direction, reach, floorHit, aimedBox);
+            }
+            foreach (CellEnd end in structure.inputEnds)
+            {
+                AddConnection(connections, end, false, from, direction, reach, floorHit, aimedBox);
             }
         }
-        if (feeder == null)
+        // Best first, until one can be built.
+        while (connections.Count > 0)
         {
-            return anchor;
+            Connection best = connections[0];
+            foreach (Connection c in connections)
+            {
+                if (c.distance < best.distance || (c.distance == best.distance && c.along < best.along))
+                {
+                    best = c;
+                }
+            }
+            if (CanBuildAt(best.anchor, best.turns))
+            {
+                return best;
+            }
+            connections.Remove(best);
         }
+        return null;
+    }
+
+    // Adds the pose connecting the preview to end (a placed structure's output if endIsOutput, else its input), if the
+    // end is open, the preview has an end that fits it, and the ray passes within connectRadius of the posed footprint
+    // (or lands that close to it, on the floor it stands on), or the footprint where the ray would put it touches or
+    // overlaps the posed one (see FindConnection).
+    void AddConnection(List<Connection> connections, CellEnd end, bool endIsOutput, Vector3 from, Vector3 direction, float reach,
+        Vector3? floorHit, Aabb? aimedBox)
+    {
+        if (!Structure.IsOpen(end, endIsOutput) || !ConnectPose(end, endIsOutput, out Vector3I anchor, out int turns))
+        {
+            return;
+        }
+        Aabb box = FootprintBox(anchor, turns);
+        Vector3 min = box.Position;
+        Vector3 max = box.End;
+        // Never around the player: standing where a connection would go and aiming past it means past it.
+        Aabb around = box.Grow(PlayerClearance);
+        if (around.HasPoint(player.GlobalPosition) || around.HasPoint(from))
+        {
+            return;
+        }
+        float distance;
+        float along;
+        if (floorHit is Vector3 hit && Mathf.Abs(min.Y - hit.Y) < BuildGrid.CellSize)
+        {
+            distance = hit.DistanceTo(hit.Clamp(min, max));
+            along = reach;
+        }
+        else
+        {
+            distance = RayToBox(from, direction, reach, min, max, out along);
+        }
+        // Touching where the ray would put it: as good as aimed at. Half a cell's growth makes boxes that only share a face meet.
+        if (aimedBox is Aabb aimedAt && aimedAt.Intersects(box.Grow(BuildGrid.CellSize / 2f)))
+        {
+            distance = 0;
+        }
+        if (distance > connectRadius)
+        {
+            return;
+        }
+        // From the placed structure into the preview: along an output's items, against an input's.
+        Vector3I normal = -end.direction;
+        if (endIsOutput)
+        {
+            normal = end.direction;
+        }
+        connections.Add(new Connection(anchor, turns, end, endIsOutput, normal, distance, along));
+    }
+
+    // Where the preview is anchored, and turned, for one of its ends to connect to end (a placed structure's output if
+    // endIsOutput, which the preview's inputs take, else its input, which the preview's outputs feed). The first time
+    // it snaps to an end it may turn to take it head on with its main scene; after that it keeps its turns, so turned a
+    // quarter from there a belt takes an output on a turn's side input instead.
+    bool ConnectPose(CellEnd end, bool endIsOutput, out Vector3I anchor, out int turns)
+    {
+        if (end != snappedTo)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                turns = (quarterTurns + i) % 4;
+                if (ConnectAnchor(end, endIsOutput, mainScene, turns) is Vector3I a)
+                {
+                    anchor = a;
+                    return true;
+                }
+            }
+        }
+        turns = quarterTurns;
         var scenes = new List<PackedScene> { mainScene };
         if (blueprint is ConveyorBlueprint conveyorBlueprint)
         {
@@ -517,35 +693,82 @@ public partial class BlueprintGhost : HeldItem
         }
         foreach (PackedScene scene in scenes)
         {
-            if (scene == null)
+            if (scene != null && ConnectAnchor(end, endIsOutput, scene, turns) is Vector3I a)
             {
-                continue;
-            }
-            foreach (CellEnd input in Structure.SceneInputEnds(scene))
-            {
-                if (feeder.OffsetToFeed(input.Placed(anchor, quarterTurns)) is Vector3I offset)
-                {
-                    return anchor + offset;
-                }
+                anchor = a;
+                return true;
             }
         }
-        return anchor;
+        anchor = default;
+        return false;
     }
 
-    // Turns the preview so one of the main scene's input ends can take the feeder's items; left alone if none can.
-    void TurnToTake(CellEnd feeder)
+    // The anchor at which one of scene's ends, turned turns, connects to end, or null if none fits it.
+    static Vector3I? ConnectAnchor(CellEnd end, bool endIsOutput, PackedScene scene, int turns)
     {
-        for (int turns = 0; turns < 4; turns++)
+        if (endIsOutput)
         {
-            foreach (CellEnd input in Structure.SceneInputEnds(mainScene))
+            foreach (CellEnd input in Structure.SceneInputEnds(scene))
             {
-                if (feeder.OffsetToFeed(input.Placed(Vector3I.Zero, turns)) != null)
+                if (end.OffsetToFeed(input.Placed(Vector3I.Zero, turns)) is Vector3I offset)
                 {
-                    quarterTurns = turns;
-                    return;
+                    return offset;
                 }
             }
+            return null;
         }
+        foreach (CellEnd output in Structure.SceneOutputEnds(scene))
+        {
+            // How far the input would have to move to take the output's items: the preview moves the other way instead.
+            if (output.Placed(Vector3I.Zero, turns).OffsetToFeed(end) is Vector3I offset)
+            {
+                return -offset;
+            }
+        }
+        return null;
+    }
+
+    // The world-space box around the footprint at anchor, turned turns.
+    Aabb FootprintBox(Vector3I anchor, int turns)
+    {
+        Vector3I min = new(int.MaxValue, int.MaxValue, int.MaxValue), max = new(int.MinValue, int.MinValue, int.MinValue);
+        foreach (Vector3I cell in BuildGrid.FootprintCells(anchor, probe.structure.cells.Keys, turns))
+        {
+            min = min.Min(cell);
+            max = max.Max(cell);
+        }
+        return new Aabb((Vector3)min * BuildGrid.CellSize, (Vector3)(max - min + Vector3I.One) * BuildGrid.CellSize);
+    }
+
+    // Whether the structure could be built at anchor with turns: its cells free and clear, and its colliders out of
+    // the level. Moves the probe there to ask.
+    bool CanBuildAt(Vector3I anchor, int turns)
+    {
+        if (!BuildGrid.FootprintClear(anchor, probe.structure.cells.Keys, turns))
+        {
+            return false;
+        }
+        probe.MoveTo(anchor, turns);
+        return probe.LevelOverlaps().Count == 0;
+    }
+
+    // How close the ray from `from` along direction (unit length), from ConnectMinDistance out to reach, passes to the
+    // box min..max, and how far along the ray that closest point is. Sampled every RaySampleStep.
+    static float RayToBox(Vector3 from, Vector3 direction, float reach, Vector3 min, Vector3 max, out float along)
+    {
+        float nearest = float.MaxValue;
+        along = 0;
+        for (float t = ConnectMinDistance; t <= reach; t += RaySampleStep)
+        {
+            Vector3 point = from + direction * t;
+            float distance = point.DistanceTo(point.Clamp(min, max));
+            if (distance < nearest)
+            {
+                nearest = distance;
+                along = t;
+            }
+        }
+        return nearest;
     }
 
     // World-space centre of the footprint's bounding box at anchor, where the grid reveal centres.

@@ -109,6 +109,70 @@ public partial class Console
         LimboConsole.Info($"build: requested {blueprintItemID} at ({x},{y},{z}) turns={quarterTurns} alternate={alternate}");
     }
 
+    /// <summary>
+    /// Gives the local player count of an item and equips it, e.g. a blueprint to see its ghost (ghost_info). For a
+    /// blueprint, alternate 1 selects its other form.
+    /// </summary>
+    public void hold(string itemID, int count, int alternate)
+    {
+        FactoryPlayer player = LocalPlayer();
+        if (player == null || ItemInfo.Fetch(itemID) == null)
+        {
+            LimboConsole.Error($"hold: needs a running game and an item id ({itemID}).");
+            return;
+        }
+        player.inventory.AddItem(itemID, count);
+        for (int i = 0; i < Inventory.HotbarSlots; i++)
+        {
+            if (player.inventory.GetSlot(i).itemID == itemID)
+            {
+                player.inventory.ActiveHotbarSlot = i;
+                break;
+            }
+        }
+        player.UpdateEquippedItem();
+        if (player.heldItem is BlueprintGhost ghost)
+        {
+            ghost.SetAlternate(alternate == 1);
+        }
+        LimboConsole.Info($"hold: {itemID} slot={player.inventory.ActiveHotbarSlot}");
+    }
+
+    /// <summary>Where the local player's blueprint ghost is: its anchor cell, turns, form, whether it can place, and its footprint's bounds.</summary>
+    public void ghost_info()
+    {
+        FactoryPlayer player = LocalPlayer();
+        if (player?.heldItem is not BlueprintGhost ghost)
+        {
+            LimboConsole.Error("ghost_info: the local player isn't holding a blueprint.");
+            return;
+        }
+        if (ghost.targetCell is not Vector3I anchor || ghost.previewStructure == null)
+        {
+            LimboConsole.Info("ghost_info: target=none");
+            return;
+        }
+        Vector3I min = new(int.MaxValue, int.MaxValue, int.MaxValue), max = new(int.MinValue, int.MinValue, int.MinValue);
+        foreach (Vector3I cell in BuildGrid.FootprintCells(anchor, ghost.previewStructure.cells.Keys, BlueprintGhost.quarterTurns))
+        {
+            min = min.Min(cell);
+            max = max.Max(cell);
+        }
+        LimboConsole.Info($"ghost_info: target={anchor} turns={BlueprintGhost.quarterTurns} alternate={ghost.showingAlternate} canPlace={ghost.canPlace} connected={BlueprintGhost.connected} min={min} max={max} scene={ghost.previewStructure.SceneFilePath.GetFile()}");
+    }
+
+    /// <summary>Turns the held blueprint's ghost a quarter clockwise, as the rotate key does.</summary>
+    public void ghost_rotate()
+    {
+        if (LocalPlayer()?.heldItem is not BlueprintGhost ghost)
+        {
+            LimboConsole.Error("ghost_rotate: the local player isn't holding a blueprint.");
+            return;
+        }
+        ghost.Rotate();
+        LimboConsole.Info($"ghost_rotate: turns={BlueprintGhost.quarterTurns}");
+    }
+
     /// <summary>The <see cref="DevSpawner"/> nearest the local player (or the camera), or null if there is none.</summary>
     DevSpawner NearestDevSpawner()
     {
@@ -372,6 +436,24 @@ public partial class Console
             state = "on";
         }
         LimboConsole.Info($"noclip: {state}");
+    }
+
+    /// <summary>Toggles whether belts carry the local player along (off by default).</summary>
+    public void ride_belts()
+    {
+        FactoryPlayer player = LocalPlayer();
+        if (player == null)
+        {
+            LimboConsole.Error("No local player (is the game running?).");
+            return;
+        }
+        player.rideBelts = !player.rideBelts;
+        string state = "off";
+        if (player.rideBelts)
+        {
+            state = "on";
+        }
+        LimboConsole.Info($"ride_belts: {state}");
     }
 
     /// <summary>Moves the local player to x y z.</summary>
