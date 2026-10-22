@@ -247,6 +247,14 @@ void GMPPhysicsWorld::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("overlap_box", "transform", "size", "mask"), &GMPPhysicsWorld::overlap_box, DEFVAL(0xFFFFFFFF));
 	ClassDB::bind_method(D_METHOD("overlap_shape", "shape", "transform", "mask", "margin"), &GMPPhysicsWorld::overlap_shape, DEFVAL(0xFFFFFFFF), DEFVAL(0.0f));
 
+	ClassDB::bind_method(D_METHOD("create_distance_joint", "id_a", "anchor_a", "id_b", "anchor_b", "min_length", "max_length"), &GMPPhysicsWorld::create_distance_joint);
+	ClassDB::bind_method(D_METHOD("set_distance_joint_range", "joint", "min_length", "max_length"), &GMPPhysicsWorld::set_distance_joint_range);
+	ClassDB::bind_method(D_METHOD("create_filter_joint", "id_a", "id_b"), &GMPPhysicsWorld::create_filter_joint);
+	ClassDB::bind_method(D_METHOD("create_revolute_joint", "id_a", "frame_a", "id_b", "frame_b", "lower_angle", "upper_angle"), &GMPPhysicsWorld::create_revolute_joint);
+	ClassDB::bind_method(D_METHOD("set_revolute_joint_motor", "joint", "speed", "max_torque"), &GMPPhysicsWorld::set_revolute_joint_motor);
+	ClassDB::bind_method(D_METHOD("get_revolute_joint_angle", "joint"), &GMPPhysicsWorld::get_revolute_joint_angle);
+	ClassDB::bind_method(D_METHOD("destroy_joint", "joint"), &GMPPhysicsWorld::destroy_joint);
+
 	ClassDB::bind_method(D_METHOD("set_self_peer", "peer"), &GMPPhysicsWorld::set_self_peer);
 	ClassDB::bind_method(D_METHOD("set_send_interval", "ticks"), &GMPPhysicsWorld::set_send_interval);
 	ClassDB::bind_method(D_METHOD("set_body_authority", "id", "peer"), &GMPPhysicsWorld::set_body_authority);

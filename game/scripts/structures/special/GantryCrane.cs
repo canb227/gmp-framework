@@ -20,19 +20,25 @@ public partial record struct GantryCraneState
 /// A gantry crane, placed by hand in a level (no blueprint; it can't be taken apart). It fills a box of
 /// <see cref="size"/>: x 0..size.X, y 0..size.Y, z -size.Z..0 in its own frame, like any structure. Two rails run
 /// along Z at the top; a bridge rides them, a trolley rides the bridge along X, and a clamshell bucket hangs from the
-/// trolley on a cable. Rails, bridge, trolley, head and bucket are plain boxes, made here when it enters the tree (and
+/// trolley on a cable: the head is a dynamic body on a rope joint to the trolley, so it swings when the trolley starts
+/// and stops, and knocks into things. Rails, bridge, trolley, head and bucket are plain boxes, made here when it enters the tree (and
 /// remade in the editor on every change), as children with no owner so they are never saved into the scene.
 /// <para>
-/// The cockpit is a GMPBody placed by hand under the crane, its origin on the left-bottom-back corner of its cells
-/// (<see cref="cockpitCells"/> of them). Only those cells are the crane's on the build grid. Interacting with the
+/// The cockpit is a GMPBody placed by hand anywhere under the crane (however far from its box: a control room
+/// elsewhere in the level works, with Editable Children on the crane's instance), its origin on the left-bottom-back
+/// corner of its cells (<see cref="cockpitCells"/> of them). Only those cells are the crane's on the build grid. A
+/// pilot counts as looking from the crane wherever their body is, for what the host sends them (<see cref="PilotView"/>). Interacting with the
 /// cockpit pilots the crane: the camera orbits the head, WASD moves it along the crane's axes (whichever is nearest to
-/// where the camera faces), jump and crouch raise and lower it, primary opens the bucket and secondary shuts it, and
+/// where the camera faces), jump and crouch raise and lower it (sprint makes both faster), primary opens the bucket and secondary shuts it, and
 /// interact leaves.
 /// </para>
 /// <para>
 /// The host runs it (it simulates every loose item, so only its bucket really moves anything). The pilot sends the
 /// keys it holds to the host whenever they change; the host moves the crane and sends its <see cref="GantryCraneState"/>,
-/// which the other peers play back on the host's playback clock, in step with the items. While the bucket is shut the
+/// which the other peers play back on the host's playback clock, in step with the items. The swinging head and the
+/// bucket halves are synced like loose items instead (the physics world's body sync, the host their authority): the
+/// halves are dynamic too, on motor-driven hinges with a torque limit, so they squeeze what they shut on and the load
+/// weighs on the head. While the bucket is shut the
 /// host pulls what is in it toward its middle, so a grab holds.
 /// </para>
 /// </summary>
@@ -52,7 +58,7 @@ public partial class GantryCrane : Structure
         }
     }
 
-    /// <summary>The cockpit body, placed by hand under the crane.</summary>
+    /// <summary>The cockpit body, placed by hand anywhere under the crane.</summary>
     [Export] public Node3D cockpit;
     /// <summary>How many build grid cells the cockpit fills (X, Y, and Z toward -Z), from its origin's corner.</summary>
     [Export] public Vector3I cockpitCells = new Vector3I(1, 2, 1);
@@ -66,14 +72,29 @@ public partial class GantryCrane : Structure
     [Export] public float liftSpeed = 1.5f;
     /// <summary>How fast the bucket opens and shuts: fractions of the way per second.</summary>
     [Export] public float jawSpeed = 1.2f;
+    /// <summary>Moving and lifting go this many times faster while sprint (Shift) is held.</summary>
+    [Export] public float fastMultiplier = 2f;
     /// <summary>How far the bucket halves swing open.</summary>
     [Export] public float jawOpenDegrees = 75f;
+    /// <summary>The most each bucket half's hinge motor turns with (N m): how hard the bucket squeezes, and how much it can lift open.</summary>
+    [Export] public float jawTorque = 4000f;
+
+    [ExportGroup("Swing")]
+    /// <summary>
+    /// How quickly the head's swinging dies away (1/s): it is pushed toward moving with the trolley, so it settles under
+    /// it without dragging behind while the crane travels.
+    /// </summary>
+    [Export] public float swingDamping = 2f;
+    /// <summary>How quickly the head stops spinning and wobbling about the rope (its angular damping, 1/s).</summary>
+    [Export] public float spinDamping = 2f;
 
     [ExportGroup("Grip")]
     /// <summary>The bucket pulls what is in it only while it's shut further than this (jawOpen below it).</summary>
     [Export] public float gripBelowOpen = 0.15f;
     /// <summary>How hard it pulls, (m/s²) per metre an item is from the middle of the bucket.</summary>
     [Export] public float gripStrength = 30f;
+    /// <summary>How quickly an item's motion relative to the bucket dies away (1/s), so it settles instead of bouncing.</summary>
+    [Export] public float gripDamping = 4f;
 
     [ExportGroup("Pilot camera")]
     [Export] public float cameraDistance = 5f;
@@ -84,11 +105,14 @@ public partial class GantryCrane : Structure
     const float RailThickness = 0.3f;
     /// <summary>From the rails' tops down to the trolley's underside, where the cable starts.</summary>
     const float TrolleyDrop = 0.6f;
-    const float HeadHeight = 0.3f;
-    const float BucketHalfWidth = 0.6f;
-    const float BucketHalfLength = 0.5f;
-    const float BucketDepth = 0.7f;
-    const float PlateThickness = 0.05f;
+    const float HeadWidth = 1.1f;
+    const float HeadHeight = 0.4f;
+    const float BucketHalfWidth = 0.8f;
+    const float BucketHalfLength = 0.65f;
+    const float BucketDepth = 0.9f;
+    const float PlateThickness = 0.06f;
+    /// <summary>How fast a bucket half's motor turns toward where it should be (1/s of angle off).</summary>
+    const float JawMotorGain = 8f;
     const float MinCable = 0.2f;
 
     /// <summary>Every peer: the pose shown now (on the host, the one being simulated).</summary>
@@ -100,10 +124,13 @@ public partial class GantryCrane : Structure
 
     /// <summary>The player object piloting it (0: none), on every peer.</summary>
     public ulong pilotID { get; private set; }
-    /// <summary>Host: what the pilot holds: move along X and Z (-1, 0, 1), lift (+1 up), jaw (+1 opens).</summary>
+    /// <summary>Host: what the pilot holds: move along X and Z (-1, 0, 1), lift (+1 up), jaw (+1 opens), fast (sprint).</summary>
     Vector2I pilotMove;
     int pilotLift;
     int pilotJaw;
+    bool pilotFast;
+    /// <summary>Host: where the middle of the bucket was last tick, for how fast it moves.</summary>
+    Vector3 lastBucketMiddle;
 
     /// <summary>The local player, while it pilots this crane.</summary>
     FactoryPlayer localPilot;
@@ -111,6 +138,7 @@ public partial class GantryCrane : Structure
     Vector2I sentMove;
     int sentLift;
     int sentJaw;
+    bool sentFast;
     float cameraYaw;
     float cameraPitch = Mathf.DegToRad(-30f);
 
@@ -127,7 +155,16 @@ public partial class GantryCrane : Structure
     Node3D gripSensor;
     MeshInstance3D cable;
 
+    /// <summary>The rope from the trolley to the head (a distance joint), and the cable length it was last set to.</summary>
+    long rope;
+    float ropeLength;
+    ulong headID;
+    /// <summary>The bucket halves' hinges on the head (revolute joints).</summary>
+    long leftHinge;
+    long rightHinge;
+
     static readonly StringName getOverlappingName = "get_overlapping";
+    static readonly StringName teleportName = "teleport";
 
     // ---- building the parts ----
 
@@ -174,12 +211,18 @@ public partial class GantryCrane : Structure
 
         // Cable: drawn only, from the trolley down to the head (scaled to its length).
         cable = new MeshInstance3D { Name = "Cable", Mesh = new CylinderMesh { TopRadius = 0.03f, BottomRadius = 0.03f, Height = 1f }, MaterialOverride = dark };
+        // Posed every frame from where the trolley and head are drawn (DrawCable).
+        cable.TopLevel = true;
+        cable.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
         AddChild(cable);
         made.Add(cable);
 
-        // Head: its node at the middle of its top, where the cable meets it. The bucket halves hinge on its underside.
+        // Head: its node at the middle of its top, where the rope holds it. The bucket halves hinge on its underside.
+        // Dynamic: it hangs and swings (its node follows its body).
         head = AddBody(this, "Head");
-        AddBox(head, "Block", new Vector3(0.8f, HeadHeight, 0.8f), new Vector3(0, -HeadHeight / 2f, 0), paint);
+        head.Set("body_type", (int)BodyTypeEnum.Dynamic);
+        head.Set("angular_damping", spinDamping);
+        AddBox(head, "Block", new Vector3(HeadWidth, HeadHeight, HeadWidth), new Vector3(0, -HeadHeight / 2f, 0), paint);
         leftJaw = AddJaw(head, "LeftJaw", -1, steel);
         rightJaw = AddJaw(head, "RightJaw", 1, steel);
         // What the shut bucket holds: a sensor of the head's, filling the bucket.
@@ -196,7 +239,11 @@ public partial class GantryCrane : Structure
 
         if (Engine.IsEditorHint())
         {
-            ApplyPose(StartState());
+            GantryCraneState start = StartState();
+            ApplyPose(start);
+            PoseJaws(start.jawOpen);
+            head.Position = HangingPoint(start);
+            DrawCable();
         }
     }
 
@@ -224,12 +271,13 @@ public partial class GantryCrane : Structure
     }
 
     /// <summary>
-    /// One half of the clamshell bucket (side -1: left, +1: right), a kinematic body hinged on the head's underside.
-    /// Shut, it fills x 0..side*BucketHalfWidth below its hinge: an outer side plate, half the floor and two end plates.
+    /// One half of the clamshell bucket (side -1: left, +1: right), a dynamic body hinged on the head's underside about
+    /// Z. Shut, it fills x 0..side*BucketHalfWidth below its hinge: an outer side plate, half the floor and two end plates.
     /// </summary>
     Node3D AddJaw(Node3D parent, string name, int side, Material material)
     {
         Node3D jaw = AddBody(parent, name);
+        jaw.Set("body_type", (int)BodyTypeEnum.Dynamic);
         jaw.Position = new Vector3(0, -HeadHeight, 0);
         float halfX = side * BucketHalfWidth / 2f;
         AddBox(jaw, "Side", new Vector3(PlateThickness, BucketDepth, 2 * BucketHalfLength),
@@ -257,26 +305,54 @@ public partial class GantryCrane : Structure
         return new GantryCraneState { bridgeZ = -size.Z / 2f, trolleyX = size.X / 2f, cableLength = MinCable, jawOpen = 0 };
     }
 
-    /// <summary>Poses every moving part from <paramref name="s"/>. Kinematic bodies follow their nodes, pushing what they meet.</summary>
+    /// <summary>
+    /// Poses the bridge and trolley from <paramref name="s"/>. Kinematic bodies follow their nodes, pushing what they meet.
+    /// The head and bucket halves aren't posed: they hang on their joints (or, on a follower, are played back by the body sync).
+    /// </summary>
     void ApplyPose(GantryCraneState s)
     {
-        float cableTop = size.Y - TrolleyDrop;
         bridge.Position = new Vector3(0, 0, s.bridgeZ);
-        trolley.Position = new Vector3(s.trolleyX, cableTop, s.bridgeZ);
-        head.Position = new Vector3(s.trolleyX, cableTop - s.cableLength, s.bridgeZ);
-        float jawAngle = Mathf.DegToRad(jawOpenDegrees) * s.jawOpen;
+        trolley.Position = new Vector3(s.trolleyX, size.Y - TrolleyDrop, s.bridgeZ);
+    }
+
+    /// <summary>Turns the bucket halves' nodes open by <paramref name="jawOpen"/> (0 shut, 1 open): where they start.</summary>
+    void PoseJaws(float jawOpen)
+    {
+        float jawAngle = Mathf.DegToRad(jawOpenDegrees) * jawOpen;
         leftJaw.Rotation = new Vector3(0, 0, -jawAngle);
         rightJaw.Rotation = new Vector3(0, 0, jawAngle);
-        cable.Position = new Vector3(s.trolleyX, cableTop - s.cableLength / 2f, s.bridgeZ);
-        cable.Scale = new Vector3(1, Mathf.Max(0.01f, s.cableLength), 1);
+    }
+
+    /// <summary>Where the head hangs at rest, straight below the trolley at the cable's length (crane frame).</summary>
+    Vector3 HangingPoint(GantryCraneState s)
+    {
+        return new Vector3(s.trolleyX, size.Y - TrolleyDrop - s.cableLength, s.bridgeZ);
+    }
+
+    /// <summary>Stretches the cable from the trolley's underside to the top of the head, as both are drawn.</summary>
+    void DrawCable()
+    {
+        Vector3 top = trolley.GetGlobalTransformInterpolated().Origin;
+        Vector3 bottom = head.GetGlobalTransformInterpolated().Origin;
+        Vector3 along = bottom - top;
+        float length = along.Length();
+        if (length < 0.01f)
+        {
+            cable.Visible = false;
+            return;
+        }
+        cable.Visible = true;
+        Basis turn = new Basis(new Quaternion(Vector3.Up, along / length));
+        cable.GlobalTransform = new Transform3D(turn * Basis.FromScale(new Vector3(1, length, 1)), (top + bottom) / 2f);
     }
 
     // ---- lifetime ----
 
     public override void AfterInit()
     {
-        // Only the cockpit's cells are the crane's on the build grid.
-        Vector3I corner = new Vector3I(Mathf.RoundToInt(cockpit.Position.X), Mathf.RoundToInt(cockpit.Position.Y), Mathf.RoundToInt(cockpit.Position.Z));
+        // Only the cockpit's cells are the crane's on the build grid, as offsets from the crane's anchor (in its frame).
+        Vector3 cockpitCorner = ToLocal(cockpit.GlobalPosition);
+        Vector3I corner = new Vector3I(Mathf.RoundToInt(cockpitCorner.X), Mathf.RoundToInt(cockpitCorner.Y), Mathf.RoundToInt(cockpitCorner.Z));
         cells = new();
         for (int x = 0; x < cockpitCells.X; x++)
         {
@@ -298,16 +374,40 @@ public partial class GantryCrane : Structure
             state = StartState();
         }
         ApplyPose(state);
+        PoseJaws(state.jawOpen);
+
+        // Hang the head below the trolley on a rope, and the bucket halves on hinges under it: simulated by the
+        // authority and followed everywhere else. The joints are made on every peer; they only act where the bodies are
+        // simulated.
+        head.Call(teleportName, new Transform3D(GlobalBasis, GlobalTransform * HangingPoint(state)));
+        // The moving parts' bodies were made where their nodes first stood: put them where they start at once, or the
+        // first step sweeps them there at hundreds of m/s, and the rope flings the head along with the trolley.
+        bridge.Call(teleportName, bridge.GlobalTransform);
+        trolley.Call(teleportName, trolley.GlobalTransform);
+        leftJaw.Call(teleportName, leftJaw.GlobalTransform);
+        rightJaw.Call(teleportName, rightJaw.GlobalTransform);
+        headID = PhysicsWorld.BodyIdOf(head);
+        ulong leftJawID = PhysicsWorld.BodyIdOf(leftJaw);
+        ulong rightJawID = PhysicsWorld.BodyIdOf(rightJaw);
+        PhysicsWorld.SetBodyAuthority(headID, authority);
+        PhysicsWorld.SetBodyAuthority(leftJawID, authority);
+        PhysicsWorld.SetBodyAuthority(rightJawID, authority);
+        ropeLength = state.cableLength;
+        rope = PhysicsWorld.CreateDistanceJoint(PhysicsWorld.BodyIdOf(trolley), Vector3.Zero, headID, Vector3.Zero, 0, ropeLength);
+        // A hinge's angle is its half's turn about Z relative to the head, 0 shut: the left half opens to negative angles.
+        Transform3D hinge = new Transform3D(Basis.Identity, new Vector3(0, -HeadHeight, 0));
+        float open = Mathf.DegToRad(jawOpenDegrees);
+        leftHinge = PhysicsWorld.CreateRevoluteJoint(headID, hinge, leftJawID, Transform3D.Identity, -open, 0);
+        rightHinge = PhysicsWorld.CreateRevoluteJoint(headID, hinge, rightJawID, Transform3D.Identity, 0, open);
+        // Shut, the two halves meet in the middle: they mustn't fight each other there.
+        PhysicsWorld.CreateFilterJoint(leftJawID, rightJawID);
+        lastBucketMiddle = gripSensor.GlobalPosition;
     }
 
     public override void _ExitTree()
     {
         if (Engine.IsEditorHint()) return;
-        if (localPilot != null)
-        {
-            localPilot.piloting = null;
-            localPilot = null;
-        }
+        ClearPilot();
         base._ExitTree();
     }
 
@@ -378,21 +478,39 @@ public partial class GantryCrane : Structure
                 RPCManager.RPC(id, nameof(_SetPilot), [0ul]);
             }
             Drive(dt);
-            Grip(dt);
+            if (state.cableLength != ropeLength)
+            {
+                ropeLength = state.cableLength;
+                PhysicsWorld.SetDistanceJointRange(rope, 0, ropeLength);
+            }
+            DriveJaws();
+            DampSwing();
         }
         else
         {
             PlayBack();
         }
         ApplyPose(state);
+        // After posing, so the grip pulls toward where the bucket is this tick.
+        if (authority == Lobby.selfPeerID)
+        {
+            Grip(dt);
+        }
     }
 
     /// <summary>Host: moves the head toward what the pilot holds, within the crane's box.</summary>
     void Drive(float dt)
     {
+        float speed = moveSpeed;
+        float lift = liftSpeed;
+        if (pilotFast)
+        {
+            speed *= fastMultiplier;
+            lift *= fastMultiplier;
+        }
         float step = moveAcceleration * dt;
-        velocity.X = Mathf.MoveToward(velocity.X, pilotMove.X * moveSpeed, step);
-        velocity.Z = Mathf.MoveToward(velocity.Z, pilotMove.Y * moveSpeed, step);
+        velocity.X = Mathf.MoveToward(velocity.X, pilotMove.X * speed, step);
+        velocity.Z = Mathf.MoveToward(velocity.Z, pilotMove.Y * speed, step);
         state.trolleyX += velocity.X * dt;
         state.bridgeZ += velocity.Z * dt;
         if (state.trolleyX < MinX || state.trolleyX > MaxX)
@@ -406,22 +524,59 @@ public partial class GantryCrane : Structure
             velocity.Z = 0;
         }
         // Lifting shortens the cable.
-        state.cableLength = Mathf.Clamp(state.cableLength - pilotLift * liftSpeed * dt, MinCable, MaxCable);
+        state.cableLength = Mathf.Clamp(state.cableLength - pilotLift * lift * dt, MinCable, MaxCable);
         state.jawOpen = Mathf.Clamp(state.jawOpen + pilotJaw * jawSpeed * dt, 0, 1);
     }
 
-    /// <summary>Host: while the bucket is shut, pulls the loose items inside it toward its middle so a grab holds.</summary>
+    /// <summary>
+    /// Host: turns each bucket half's hinge motor toward the opening the pilot has set, at most <see cref="jawTorque"/>,
+    /// so a half that shuts on something stops there and squeezes it.
+    /// </summary>
+    void DriveJaws()
+    {
+        float target = Mathf.DegToRad(jawOpenDegrees) * state.jawOpen;
+        float maxSpeed = 2 * jawSpeed * Mathf.DegToRad(jawOpenDegrees);
+        float leftSpeed = Mathf.Clamp((-target - PhysicsWorld.RevoluteJointAngle(leftHinge)) * JawMotorGain, -maxSpeed, maxSpeed);
+        float rightSpeed = Mathf.Clamp((target - PhysicsWorld.RevoluteJointAngle(rightHinge)) * JawMotorGain, -maxSpeed, maxSpeed);
+        PhysicsWorld.SetRevoluteJointMotor(leftHinge, leftSpeed, jawTorque);
+        PhysicsWorld.SetRevoluteJointMotor(rightHinge, rightSpeed, jawTorque);
+    }
+
+    /// <summary>
+    /// Host: pushes the head toward moving sideways with the trolley, so a swing dies away under it (anti-sway) without
+    /// the head lagging behind while the crane travels, as plain damping would make it. Sized for the whole hanging
+    /// head with its bucket halves; the load is left to swing it.
+    /// </summary>
+    void DampSwing()
+    {
+        Vector3 trolleyVelocity = GlobalBasis * new Vector3(velocity.X, 0, velocity.Z);
+        Vector3 relative = PhysicsWorld.BodyLinearVelocity(headID) - trolleyVelocity;
+        relative.Y = 0;
+        float mass = PhysicsWorld.BodyMass(headID) + PhysicsWorld.BodyMass(PhysicsWorld.BodyIdOf(leftJaw)) + PhysicsWorld.BodyMass(PhysicsWorld.BodyIdOf(rightJaw));
+        PhysicsWorld.ApplyBodyForce(headID, -relative * swingDamping * mass);
+    }
+
+    /// <summary>
+    /// Host: while the bucket is shut, pulls the loose items inside it toward its middle and damps how they move
+    /// relative to it, so a grab settles and holds. Gravity is left in: the bucket's floor does the lifting, and the pull
+    /// only keeps the load from rattling out, so an overfilled or swung bucket can still spill.
+    /// </summary>
     void Grip(float dt)
     {
-        if (state.jawOpen >= gripBelowOpen) return;
         Vector3 middle = gripSensor.GlobalPosition;
+        Vector3 bucketVelocity = (middle - lastBucketMiddle) / dt;
+        lastBucketMiddle = middle;
+        if (state.jawOpen >= gripBelowOpen) return;
         foreach (long found in gripSensor.Call(getOverlappingName).AsInt64Array())
         {
             ulong item = (ulong)found;
             if (ItemWorld.Get(item) == null) continue;
             // Held items sync ahead of everything but the players.
             PhysicsWorld.HoldBody(item);
-            // TODO(human): pull the item toward `middle`.
+            Vector3 offset = middle - PhysicsWorld.BodyPosition(item);
+            Vector3 relativeVelocity = PhysicsWorld.BodyLinearVelocity(item) - bucketVelocity;
+            Vector3 acceleration = offset * gripStrength - relativeVelocity * gripDamping;
+            PhysicsWorld.ApplyBodyForce(item, acceleration * PhysicsWorld.BodyMass(item));
         }
     }
 
@@ -464,19 +619,21 @@ public partial class GantryCrane : Structure
     [RPC(requireAuthority = true)]
     void _SetPilot(ulong playerID)
     {
+        // Every peer knows who pilots what (for where they count as looking from); only the pilot's own peer steers.
+        ClearPilot();
         pilotID = playerID;
         pilotMove = Vector2I.Zero;
         pilotLift = 0;
         pilotJaw = 0;
-        if (localPilot != null)
+        pilotFast = false;
+        if (!GameWorld.syncedObjs.TryGetValue(playerID, out GMPObject p) || p is not FactoryPlayer player)
         {
-            localPilot.piloting = null;
-            localPilot = null;
+            return;
         }
-        if (GameWorld.syncedObjs.TryGetValue(playerID, out GMPObject p) && p is FactoryPlayer player && player.isLocal)
+        player.piloting = this;
+        if (player.isLocal)
         {
             localPilot = player;
-            player.piloting = this;
             // Nothing in hand while piloting, so the mouse buttons only work the bucket.
             player.inventory.ActiveHotbarSlot = -1;
             player.UpdateEquippedItem();
@@ -485,7 +642,29 @@ public partial class GantryCrane : Structure
             sentMove = Vector2I.Zero;
             sentLift = 0;
             sentJaw = 0;
+            sentFast = false;
         }
+    }
+
+    /// <summary>The player piloting it (if it's still here) stops, on this peer.</summary>
+    void ClearPilot()
+    {
+        if (GameWorld.syncedObjs.TryGetValue(pilotID, out GMPObject p) && p is FactoryPlayer player && player.piloting == this)
+        {
+            player.piloting = null;
+        }
+        localPilot = null;
+    }
+
+    /// <summary>
+    /// Where the pilot counts as looking from, on peers that don't have their camera (for which loose items are sent
+    /// to them often, and which hits): above and behind the bucket, looking at it.
+    /// </summary>
+    public Transform3D PilotView()
+    {
+        Vector3 target = head.GlobalPosition + Vector3.Down * (HeadHeight + BucketDepth / 2f);
+        Vector3 eye = target + GlobalBasis * new Vector3(0, cameraDistance / 2f, cameraDistance);
+        return new Transform3D(Basis.LookingAt(target - eye), eye);
     }
 
     /// <summary>Pilot's peer: mouse orbits the camera, the wheel zooms, interact leaves. Called by the pilot's FactoryPlayer.</summary>
@@ -522,8 +701,10 @@ public partial class GantryCrane : Structure
         Vector2 input = Vector2.Zero;
         int lift = 0;
         int jaw = 0;
+        bool fast = false;
         if (!UIManager.BlocksGameplayInput)
         {
+            fast = Input.IsActionPressed(InputActions.sprint);
             input = Input.GetVector(InputActions.left, InputActions.right, InputActions.forward, InputActions.backward);
             if (Input.IsActionPressed(InputActions.jump)) lift += 1;
             if (Input.IsActionPressed(InputActions.crouch)) lift -= 1;
@@ -536,6 +717,7 @@ public partial class GantryCrane : Structure
             input = new Vector2(testDrive.X, testDrive.Y);
             lift = testLift;
             jaw = testJaw;
+            fast = testFast;
         }
 
         // The camera's flat facing in the crane's frame, snapped to the nearest axis.
@@ -552,28 +734,32 @@ public partial class GantryCrane : Structure
         Vector2I right = new Vector2I(-forward.Y, forward.X);
         Vector2I move = forward * -Mathf.RoundToInt(input.Y) + right * Mathf.RoundToInt(input.X);
 
-        if (move != sentMove || lift != sentLift || jaw != sentJaw)
+        if (move != sentMove || lift != sentLift || jaw != sentJaw || fast != sentFast)
         {
             sentMove = move;
             sentLift = lift;
             sentJaw = jaw;
-            RPCManager.RPCTo(authority, id, nameof(_PilotKeys), [move.X, move.Y, lift, jaw]);
+            sentFast = fast;
+            RPCManager.RPCTo(authority, id, nameof(_PilotKeys), [move.X, move.Y, lift, jaw, fast]);
         }
     }
 
     // Runs on the crane's authority, from the pilot's peer.
     [RPC]
-    void _PilotKeys(int moveX, int moveZ, int lift, int jaw)
+    void _PilotKeys(int moveX, int moveZ, int lift, int jaw, bool fast)
     {
         if (!GameWorld.syncedObjs.TryGetValue(pilotID, out GMPObject p) || p.authority != RPCManager.sender) return;
         pilotMove = new Vector2I(moveX, moveZ);
         pilotLift = lift;
         pilotJaw = jaw;
+        pilotFast = fast;
     }
 
-    /// <summary>Pilot's peer: the camera orbits the head as it's drawn (interpolated), every frame.</summary>
+    /// <summary>Every frame: the cable, and on the pilot's peer the camera, orbiting the head as it's drawn (interpolated).</summary>
     public override void _Process(double delta)
     {
+        if (Engine.IsEditorHint() || id == 0) return;
+        DrawCable();
         if (localPilot == null) return;
         Vector3 target = head.GetGlobalTransformInterpolated().Origin + Vector3.Down * (HeadHeight + BucketDepth / 2f);
         Basis look = Basis.FromEuler(new Vector3(cameraPitch, cameraYaw, 0));
@@ -586,11 +772,23 @@ public partial class GantryCrane : Structure
     public Vector2I testDrive;
     public int testLift;
     public int testJaw;
+    public bool testFast;
     public float testDriveLeft;
 
-    /// <summary>For the console: the pose shown on this peer and who pilots it.</summary>
+    /// <summary>For the console: the pose shown on this peer, who pilots it and how many loose items are in the bucket.</summary>
     public string Describe()
     {
-        return $"crane: id={id} pilot={pilotID} bridgeZ={state.bridgeZ:0.00} trolleyX={state.trolleyX:0.00} cable={state.cableLength:0.00} jaw={state.jawOpen:0.00} head={head.GlobalPosition}";
+        int items = 0;
+        foreach (long found in gripSensor.Call(getOverlappingName).AsInt64Array())
+        {
+            if (ItemWorld.Get((ulong)found) != null) items++;
+        }
+        // How far the rope leans from straight down, and how long it is now (shorter than the cable when slack).
+        Vector3 rope = head.GlobalPosition - trolley.GlobalPosition;
+        float swing = Mathf.RadToDeg(rope.AngleTo(Vector3.Down));
+        // How far each bucket half stands open from the head, as this peer shows it (degrees).
+        float left = Mathf.RadToDeg(leftJaw.GlobalBasis.Y.AngleTo(head.GlobalBasis.Y));
+        float right = Mathf.RadToDeg(rightJaw.GlobalBasis.Y.AngleTo(head.GlobalBasis.Y));
+        return $"crane: id={id} pilot={pilotID} bridgeZ={state.bridgeZ:0.00} trolleyX={state.trolleyX:0.00} cable={state.cableLength:0.00} jaw={state.jawOpen:0.00} jaws={left:0}/{right:0} head={head.GlobalPosition} swing={swing:0.0} rope={rope.Length():0.00} items={items}";
     }
 }

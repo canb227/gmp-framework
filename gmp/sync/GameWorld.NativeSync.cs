@@ -38,7 +38,11 @@ public partial class GameWorld
         receiveCost += Stopwatch.GetTimestamp() - receiveStart;
     }
 
-    /// <summary>Every character's position and view, for the bodies' sync priorities (what someone is near or looking at is sent more often).</summary>
+    /// <summary>
+    /// Every character's view, for the bodies' sync priorities (what someone is near or looking at is sent more often)
+    /// and which hits are sent. Where they look from, not where they stand: someone piloting a crane far away is near
+    /// what the crane does.
+    /// </summary>
     static void SendViewers()
     {
         viewerPositions.Clear();
@@ -49,7 +53,7 @@ public partial class GameWorld
             if (obj is GMPOCharacter character)
             {
                 Transform3D view = character.ViewTransform();
-                viewerPositions.Add(character.GlobalPosition);
+                viewerPositions.Add(view.Origin);
                 viewerEyes.Add(view.Origin);
                 viewerLooks.Add(-view.Basis.Z);
             }

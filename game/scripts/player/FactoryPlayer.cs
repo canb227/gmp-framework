@@ -92,8 +92,9 @@ public partial class FactoryPlayer : GMPOCharacter
     public const float MouseSensitivity = 0.0009f;
 
     /// <summary>
-    /// The crane this (local) player pilots, or null. While set the body stands still, input goes to the crane and the
-    /// crane poses the camera (<see cref="GantryCrane"/>).
+    /// The crane this player pilots, or null; set on every peer. On the local player the body stands still, input goes
+    /// to the crane and the crane poses the camera (<see cref="GantryCrane"/>); elsewhere it only moves where the player
+    /// counts as looking from (<see cref="ViewTransform"/>).
     /// </summary>
     public GantryCrane piloting;
 
@@ -108,8 +109,13 @@ public partial class FactoryPlayer : GMPOCharacter
 
     [Export] public Camera3D camera;
 
+    // The local pilot's camera is already at the crane; other peers don't have it, so ask the crane.
     public override Transform3D ViewTransform()
     {
+        if (piloting != null && !isLocal)
+        {
+            return piloting.PilotView();
+        }
         return camera.GlobalTransform;
     }
     [Export] Node3D head;

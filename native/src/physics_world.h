@@ -206,6 +206,7 @@ struct Body {
 //   physics_world_bodies.cpp   item kinds, spawning items, node bodies, one body by id
 //   physics_world_events.cpp   what happened in a step: moves, sensors, hits
 //   physics_world_queries.cpp  ray casts and overlap tests
+//   physics_world_joints.cpp   joints between two bodies
 //   physics_world_sync.cpp     networking: building, sending and following body states
 //   physics_world_render.cpp   filling the item multimeshes each tick
 class GMPPhysicsWorld : public godot::Node3D {
@@ -296,6 +297,25 @@ public:
 	// included), whether or not it is in the world, made margin metres smaller on every side (so a shape
 	// resting flush on a floor doesn't count as in it). For placement previews.
 	godot::PackedInt64Array overlap_shape(godot::Object *shape, godot::Transform3D transform, int64_t mask, float margin);
+
+	// ---- joints (physics_world_joints.cpp): handles are Box3D joint ids packed into an int, 0 for none ----
+	// Holds a point on body A (anchorA, in A's frame) and one on body B between minLength and maxLength apart, slack
+	// in between: a rope from 0 to its length, a rod when both are the same. The bodies don't collide with each other.
+	int64_t create_distance_joint(int64_t idA, godot::Vector3 anchorA, int64_t idB, godot::Vector3 anchorB, float minLength, float maxLength);
+	// A new range for a distance joint (a rope reeled in or out); wakes its bodies.
+	void set_distance_joint_range(int64_t joint, float minLength, float maxLength);
+	// Only stops the two bodies colliding with each other.
+	int64_t create_filter_joint(int64_t idA, int64_t idB);
+	// A hinge: frameA (in A's frame) and frameB (in B's) are held together, turning only about their shared Z axis,
+	// between lowerAngle and upperAngle (radians, B relative to A; no limit unless lower < upper). It has a motor,
+	// which does nothing until set_revolute_joint_motor. The bodies don't collide with each other.
+	int64_t create_revolute_joint(int64_t idA, godot::Transform3D frameA, int64_t idB, godot::Transform3D frameB, float lowerAngle, float upperAngle);
+	// Drives the hinge at speed (radians/s) with at most maxTorque (N m); a torque of 0 lets it swing free.
+	void set_revolute_joint_motor(int64_t joint, float speed, float maxTorque);
+	// How far the hinge has turned (radians, B relative to A); 0 if it's gone.
+	float get_revolute_joint_angle(int64_t joint);
+	// Does nothing if it's already gone (Box3D destroys a body's joints with it).
+	void destroy_joint(int64_t joint);
 
 	// ---- networking (physics_world_sync.cpp) ----
 	// This peer's id (Lobby.selfPeerID).

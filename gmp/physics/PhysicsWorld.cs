@@ -97,6 +97,14 @@ public static class PhysicsWorld
     static readonly StringName getStatsName = "get_stats";
     static readonly StringName getProfileName = "get_profile";
     static readonly StringName setSharedIdName = "set_shared_id";
+    static readonly StringName getSharedIdName = "get_shared_id";
+    static readonly StringName createDistanceJointName = "create_distance_joint";
+    static readonly StringName setDistanceJointRangeName = "set_distance_joint_range";
+    static readonly StringName createFilterJointName = "create_filter_joint";
+    static readonly StringName destroyJointName = "destroy_joint";
+    static readonly StringName createRevoluteJointName = "create_revolute_joint";
+    static readonly StringName setRevoluteJointMotorName = "set_revolute_joint_motor";
+    static readonly StringName getRevoluteJointAngleName = "get_revolute_joint_angle";
 
     static readonly Variant hitKey = "hit";
     static readonly Variant positionKey = "position";
@@ -277,6 +285,66 @@ public static class PhysicsWorld
     public static void ShowBodyNewest(ulong id)
     {
         world.Call(showBodyNewestName, id);
+    }
+
+    // ---- joints: a handle is a Box3D joint id packed into a long, 0 for none. Make them on every peer (a joint does
+    // nothing while neither body is simulated here). Box3D destroys a body's joints with it. ----
+
+    /// <summary>
+    /// Holds a point on body A (<paramref name="anchorA"/>, in A's frame) and one on body B between
+    /// <paramref name="minLength"/> and <paramref name="maxLength"/> apart, slack in between: a rope from 0 to its
+    /// length, a rod when both are the same. The two bodies stop colliding with each other.
+    /// </summary>
+    public static long CreateDistanceJoint(ulong idA, Vector3 anchorA, ulong idB, Vector3 anchorB, float minLength, float maxLength)
+    {
+        return world.Call(createDistanceJointName, idA, anchorA, idB, anchorB, minLength, maxLength).AsInt64();
+    }
+
+    /// <summary>A new range for a distance joint (a rope reeled in or out); wakes its bodies.</summary>
+    public static void SetDistanceJointRange(long joint, float minLength, float maxLength)
+    {
+        world.Call(setDistanceJointRangeName, joint, minLength, maxLength);
+    }
+
+    /// <summary>Only stops the two bodies colliding with each other.</summary>
+    public static long CreateFilterJoint(ulong idA, ulong idB)
+    {
+        return world.Call(createFilterJointName, idA, idB).AsInt64();
+    }
+
+    /// <summary>
+    /// A hinge: <paramref name="frameA"/> (in A's frame) and <paramref name="frameB"/> (in B's) are held together, turning
+    /// only about their shared Z axis, between <paramref name="lowerAngle"/> and <paramref name="upperAngle"/> (radians,
+    /// B relative to A; no limit unless lower &lt; upper). Its motor does nothing until <see cref="SetRevoluteJointMotor"/>.
+    /// The two bodies stop colliding with each other.
+    /// </summary>
+    public static long CreateRevoluteJoint(ulong idA, Transform3D frameA, ulong idB, Transform3D frameB, float lowerAngle, float upperAngle)
+    {
+        return world.Call(createRevoluteJointName, idA, frameA, idB, frameB, lowerAngle, upperAngle).AsInt64();
+    }
+
+    /// <summary>Drives the hinge at <paramref name="speed"/> (radians/s) with at most <paramref name="maxTorque"/> (N m); 0 torque lets it swing free.</summary>
+    public static void SetRevoluteJointMotor(long joint, float speed, float maxTorque)
+    {
+        world.Call(setRevoluteJointMotorName, joint, speed, maxTorque);
+    }
+
+    /// <summary>How far the hinge has turned (radians, B relative to A); 0 if it's gone.</summary>
+    public static float RevoluteJointAngle(long joint)
+    {
+        return world.Call(getRevoluteJointAngleName, joint).AsSingle();
+    }
+
+    /// <summary>Does nothing if the joint is already gone.</summary>
+    public static void DestroyJoint(long joint)
+    {
+        world.Call(destroyJointName, joint);
+    }
+
+    /// <summary>The id a GMPBody node's body is known by on every peer (given by <see cref="NameBodies"/>); 0 before that.</summary>
+    public static ulong BodyIdOf(Node3D body)
+    {
+        return (ulong)body.Call(getSharedIdName).AsInt64();
     }
 
     /// <summary>

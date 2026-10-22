@@ -265,9 +265,9 @@ public partial class Console
 
     /// <summary>
     /// The local pilot holds keys for seconds: x right / -1 left, y back / -1 forward (relative to its camera, as WASD),
-    /// lift +1 up / -1 down, jaw +1 opens / -1 shuts.
+    /// lift +1 up / -1 down, jaw +1 opens / -1 shuts, fast 1 as if holding sprint.
     /// </summary>
-    public void crane_drive(int x, int y, int lift, int jaw, float seconds)
+    public void crane_drive(int x, int y, int lift, int jaw, float seconds, int fast)
     {
         FactoryPlayer player = LocalPlayer();
         if (player?.piloting == null)
@@ -278,6 +278,7 @@ public partial class Console
         player.piloting.testDrive = new Vector2I(x, y);
         player.piloting.testLift = lift;
         player.piloting.testJaw = jaw;
+        player.piloting.testFast = fast == 1;
         player.piloting.testDriveLeft = seconds;
     }
 

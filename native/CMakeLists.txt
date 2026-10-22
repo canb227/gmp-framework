@@ -39,6 +39,7 @@ add_library(gmp_box3d SHARED
     src/physics_world_bodies.cpp
     src/physics_world_events.cpp
     src/physics_world_queries.cpp
+    src/physics_world_joints.cpp
     src/physics_world_sync.cpp
     src/physics_world_render.cpp
 )
