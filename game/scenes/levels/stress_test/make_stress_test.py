@@ -254,11 +254,12 @@ def build():
     c.run("S*7 D S*7 R R S*7 D S*7 L S*4 D D D S*2 U T S")
     c.end(DELETE_PER_SECOND / 2)
 
-    # D: a short, fast line south of the pit at three times the rate, into a trommel hanging over the pit's edge:
-    # what falls through the drum goes into voids beside it, the oversize pours out of its chute into the pit.
+    # D: a short, fast line south of the pit at 18 items a second (about what the trommel passes), into a trommel
+    # hanging over the pit's edge: what falls through the drum goes into voids beside it, the oversize pours out of
+    # its chute into the pit.
     d = Path(f, "D", (-1, 0, 23), N)
     d.fines_rate = 0.0
-    d.spawner(SPAWN_ITEMS, SPAWN_PER_SECOND * 3)
+    d.spawner(SPAWN_ITEMS, 18.0)
     d.run("S*2 U T")
 
     return f

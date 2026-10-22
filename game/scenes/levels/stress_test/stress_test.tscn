@@ -1762,7 +1762,7 @@ itemWeights = Dictionary[String, float]({
 "scrap_ingot": 1.0
 })
 spawning = true
-spawnInterval = 0.0417
+spawnInterval = 0.0556
 
 [node name="Output" parent="Machines/D_001_Spawner"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1, -1.5, -1)
