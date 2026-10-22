@@ -62,11 +62,11 @@ public partial class Structure : GMPOBody, Interactable
     /// <summary>The directions of the six faces of a cell, in <see cref="CellTags"/> order: front, back, left, right, up, down.</summary>
     public static readonly Vector3I[] FaceDirections = [new(0, 0, -1), new(0, 0, 1), new(-1, 0, 0), new(1, 0, 0), new(0, 1, 0), new(0, -1, 0)];
 
-    /// <summary>The blueprint given back when this structure is deconstructed (with the <see cref="Wrench"/>).</summary>
+    /// <summary>The blueprint given back when this structure is deconstructed (holding X, or left click with the <see cref="Wrench"/>).</summary>
     [Export]
     public string blueprintItemID;
 
-    /// <summary>Off: the wrench can't take it apart.</summary>
+    /// <summary>Off: it can't be taken apart.</summary>
     [Export]
     public bool deconstructable = true;
 
@@ -91,7 +91,7 @@ public partial class Structure : GMPOBody, Interactable
     {
     }
 
-    /// <summary>Whether the wrench can take it apart: it must have a blueprint to give back.</summary>
+    /// <summary>Whether it can be taken apart (<see cref="FactoryPlayer.UpdateDeconstruct"/>): it must have a blueprint to give back.</summary>
     public virtual bool canBeDeconstructed => deconstructable && !string.IsNullOrEmpty(blueprintItemID);
 
     /// <summary>Where the root sits relative to its anchor cell's centre, before rotation: the cell's left-bottom-back corner.</summary>

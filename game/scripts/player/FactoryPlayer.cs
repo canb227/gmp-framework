@@ -298,6 +298,7 @@ public partial class FactoryPlayer : GMPOCharacter
         // Gameplay rays and held tools use where the player actually is this tick, not where it's drawn.
         PoseCamera(false);
         UpdatePickTarget();
+        UpdateDeconstruct((float)delta);
         ApplyMovement((float)delta);
         PoseCamera(false);
     }

@@ -25,6 +25,8 @@ public static class InputActions
     public static readonly StringName alternate = "alternate";
     /// <summary>Held while placing to turn off smart placement (belt end snapping, turning to follow the last output).</summary>
     public static readonly StringName freePlace = "freePlace";
+    /// <summary>Held on a structure to take it apart, whatever is equipped (as left click does with the wrench).</summary>
+    public static readonly StringName deconstruct = "deconstruct";
 
     /// <summary>The hotbar slot actions slot0 to slot9, by slot index.</summary>
     public static readonly StringName[] slots =

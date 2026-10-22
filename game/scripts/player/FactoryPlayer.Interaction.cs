@@ -3,11 +3,19 @@ using Godot;
 /// <summary>
 /// FactoryPlayer: looks-at targeting. Raycasts from the camera each physics tick to find the item,
 /// activator (button, lever) or structure under the crosshair, shows the HUD hover labels, and handles the "interact" action
-/// (pick up an item / press a button / flip a lever / open the shop). Deconstructing is the <see cref="Wrench"/>'s.
+/// (pick up an item / press a button / flip a lever / open the shop), and taking structures apart by holding X, or
+/// left click with the <see cref="Wrench"/>.
 /// </summary>
 public partial class FactoryPlayer
 {
     [Export] public float pickRange = 5f;
+
+    /// <summary>How long (s) X (or left click with the wrench) has to be held on a structure to take it apart.</summary>
+    [Export] public float deconstructTime = 0.75f;
+
+    /// <summary>The structure being taken apart, and for how long (s) so far. Local player only.</summary>
+    Structure deconstructTarget;
+    float deconstructHeldFor;
 
     /// <summary>The body (activator, structure, dropped tool...) currently under the crosshair, or null.</summary>
     public GMPOBody pickTarget { get; private set; }
@@ -66,5 +74,65 @@ public partial class FactoryPlayer
         }
         pickTarget = target;
         UIManager.SetHoverInfo(target?.hoverName, target?.hoverText);
+    }
+
+    /// <summary>
+    /// Counts while X (or left click with the wrench) is held on the structure under the crosshair, and asks the host to
+    /// take it apart once it's been held <see cref="deconstructTime"/>. Letting go or looking at something else starts
+    /// over. Runs each physics tick on the local player, after <see cref="UpdatePickTarget"/>, whose hover text it replaces.
+    /// </summary>
+    void UpdateDeconstruct(float delta)
+    {
+        bool wrench = heldItem is Wrench;
+        bool holding = false;
+        if (!UIManager.BlocksGameplayInput)
+        {
+            holding = Input.IsActionPressed(InputActions.deconstruct) || (wrench && Input.IsActionPressed(InputActions.primary));
+        }
+
+        Structure looked = pickTarget as Structure;
+        if (looked == null || !looked.canBeDeconstructed)
+        {
+            deconstructTarget = null;
+            deconstructHeldFor = 0;
+            return;
+        }
+
+        if (!holding || looked != deconstructTarget)
+        {
+            deconstructHeldFor = 0;
+        }
+        deconstructTarget = null;
+        if (holding)
+        {
+            deconstructTarget = looked;
+            deconstructHeldFor += delta;
+            if (deconstructHeldFor >= deconstructTime)
+            {
+                // The host takes a round trip to remove it; starting over keeps it from being asked again meanwhile.
+                deconstructHeldFor = 0;
+                Deconstruct(looked);
+            }
+        }
+
+        if (deconstructTarget != null)
+        {
+            UIManager.SetHoverInfo(looked.hoverName, $"Deconstructing... {Mathf.RoundToInt(deconstructHeldFor / deconstructTime * 100)}%");
+        }
+        else if (wrench)
+        {
+            UIManager.SetHoverInfo(looked.hoverName, "Hold left click or X to deconstruct");
+        }
+    }
+
+    /// <summary>Asks the host to take <paramref name="structure"/> apart, if its blueprint fits in the inventory.</summary>
+    void Deconstruct(Structure structure)
+    {
+        if (!inventory.HasRoomFor(structure.blueprintItemID))
+        {
+            Logging.Log($"No room in the inventory for {structure.blueprintItemID}: {structure.Name} isn't deconstructed", "Player");
+            return;
+        }
+        BuildGrid.RequestDeconstruct(this, structure);
     }
 }
