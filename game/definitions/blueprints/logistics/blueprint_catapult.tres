@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="BlueprintItem" format=3]
+
+[ext_resource type="Script" uid="uid://blmd28f80x7rh" path="res://game/scripts/items/BlueprintItem.cs" id="1_script"]
+[ext_resource type="Texture2D" path="res://game/assets/icons/blueprints/blueprint_catapult.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://e450hsdm0ju3" path="res://game/scenes/structures/BlueprintGhost.tscn" id="3_ghost"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/logistics/Catapult.tscn" id="4_scene"]
+
+[resource]
+script = ExtResource("1_script")
+structureScene = ExtResource("4_scene")
+cost = Dictionary[int, int]({
+1: 5
+})
+itemID = "blueprint_catapult"
+displayName = "Catapult"
+description = "Builds the Catapult: feed items into its bucket from a belt on its left and it flings them forward. Look at it and scroll to set how hard it throws; the gauge on its right shows the strength."
+icon = ExtResource("2_icon")
+inHandScene = ExtResource("3_ghost")
+maxStackSize = 99
+metadata/_custom_type_script = "uid://blmd28f80x7rh"

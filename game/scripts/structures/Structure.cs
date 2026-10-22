@@ -91,6 +91,15 @@ public partial class Structure : GMPOBody, Interactable
     {
     }
 
+    /// <summary>
+    /// Called for each scroll step (+1 down, -1 up) while the local player looks at it, after the held item has passed
+    /// on it. Return true to take it (the hotbar doesn't change).
+    /// </summary>
+    public virtual bool HandleScroll(int step)
+    {
+        return false;
+    }
+
     /// <summary>Whether it can be taken apart (<see cref="FactoryPlayer.UpdateDeconstruct"/>): it must have a blueprint to give back.</summary>
     public virtual bool canBeDeconstructed => deconstructable && !string.IsNullOrEmpty(blueprintItemID);
 

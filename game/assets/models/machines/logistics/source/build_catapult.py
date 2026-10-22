@@ -34,6 +34,8 @@ STOP_ANGLE = math.radians(-90)   # the Arm's X rotation when the beam rests on t
 GAUGE = Vector((2.01, 3.7, 0.9))  # the dial's centre, on its face
 GAUGE_SWEEP = math.radians(100)   # the needle turns from +this (weakest) to -this (strongest)
 T = 0.05                          # bucket plate thickness
+BACK_FLARE = math.radians(30)     # how far the bucket's back wall leans back
+BACK_HEIGHT = 0.35
 
 
 class Mesh:
@@ -107,6 +109,15 @@ def save_and_export(name, coll):
     bpy.ops.wm.collection_export_all()
 
 
+def back_wall(thickness):
+    """Centre, size and rotation of the bucket's back wall. It leans back BACK_FLARE from its foot on the floor, so
+    items flying out of the bucket clear it while the arm turns on to the stop bar after letting them go."""
+    rotation = Matrix.Rotation(BACK_FLARE, 3, 'X')
+    foot = Vector((0.96, 0.25, 0.10))
+    center = foot + rotation @ Vector((0, -thickness / 2, BACK_HEIGHT / 2))
+    return center, (1.88, thickness, BACK_HEIGHT), rotation
+
+
 def build_catapult():
     clear_file()
     coll = bpy.data.collections.new("catapult")
@@ -149,7 +160,8 @@ def build_catapult():
     arm.beam(AXLE - rest_dir * 0.7, (1, 1.4, 0.45), 0.16, "M_Arm")
     arm.box(AXLE - rest_dir * 0.7, (0.6, 0.5, 0.5), "M_Weight")
     arm.box((0.96, 0.8, 0.075), (1.88, 1.2, T), "M_Bucket")                    # floor
-    arm.box((0.96, 0.225, 0.35), (1.88, T, 0.5), "M_Bucket")                   # back (outer) wall
+    center, size, rotation = back_wall(T)
+    arm.box(center, size, "M_Bucket", rotation)                                # back (outer) wall, flared
     arm.box((0.96, 1.375, 0.35), (1.88, T, 0.5), "M_Bucket")                   # front (inner) wall
     arm.box((1.875, 0.8, 0.35), (T, 1.1, 0.5), "M_Bucket")                     # right wall
     arm.box((0.045, 0.8, 0.125), (T, 1.1, T), "M_Bucket")                      # left lip, at belt height

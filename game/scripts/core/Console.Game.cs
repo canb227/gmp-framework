@@ -178,6 +178,52 @@ public partial class Console
         LimboConsole.Info($"dev_spawner: id={spawner.id} authority={spawner.authority} spawning={s.spawning} items={string.Join(",", s.itemWeights.Keys)} interval={s.spawnInterval} perSpawn={s.itemsPerSpawn} speed={s.launchSpeed} spread={s.launchSpreadDegrees}");
     }
 
+    /// <summary>The <see cref="Catapult"/> nearest the local player, or null if there is none.</summary>
+    Catapult NearestCatapult()
+    {
+        Vector3 from = Vector3.Zero;
+        FactoryPlayer player = LocalPlayer();
+        if (player != null)
+        {
+            from = player.GlobalPosition;
+        }
+        Catapult nearest = null;
+        foreach (GMPObject obj in GameWorld.syncedObjs.Values)
+        {
+            if (obj is Catapult catapult && (nearest == null || catapult.GlobalPosition.DistanceTo(from) < nearest.GlobalPosition.DistanceTo(from)))
+            {
+                nearest = catapult;
+            }
+        }
+        return nearest;
+    }
+
+    /// <summary>Sets the strength of the catapult nearest the local player, as scrolling on it would.</summary>
+    public void catapult_strength(int level)
+    {
+        Catapult catapult = NearestCatapult();
+        if (catapult == null)
+        {
+            LimboConsole.Error("catapult_strength: no catapult.");
+            return;
+        }
+        catapult.SendStrength(level);
+        catapult_info();
+    }
+
+    /// <summary>The catapult nearest the local player as this peer sees it: strength, whether it's throwing, its arm's angle, items in its bucket.</summary>
+    public void catapult_info()
+    {
+        Catapult catapult = NearestCatapult();
+        if (catapult == null)
+        {
+            LimboConsole.Error("catapult_info: no catapult.");
+            return;
+        }
+        float armDegrees = Mathf.RadToDeg(catapult.GetNode<Node3D>("Model/Arm").Rotation.X);
+        LimboConsole.Info($"catapult: id={catapult.id} pos={catapult.GlobalPosition} strength={catapult.strength} throwing={catapult.throwing} arm={armDegrees:0.#} items={catapult.ItemsInBucket()}");
+    }
+
     /// <summary>
     /// Host: spawns count items (loose items or tools) in a column above x y z, 0.5 m apart so they land one after another, each up to
     /// spread metres off to the side (else a column of balls stacks into a tower).

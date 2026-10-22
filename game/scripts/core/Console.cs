@@ -57,6 +57,8 @@ public partial class Console : Node
         LimboConsole.RegisterCommand(new Callable(this, "dev_spawner_open"));
         LimboConsole.RegisterCommand(new Callable(this, "dev_spawner_set"));
         LimboConsole.RegisterCommand(new Callable(this, "dev_spawner_info"));
+        LimboConsole.RegisterCommand(new Callable(this, "catapult_strength"));
+        LimboConsole.RegisterCommand(new Callable(this, "catapult_info"));
 
         // Keep debug windows (perf) drawing while the tree is paused, e.g. during world load.
         ProcessMode = ProcessModeEnum.Always;

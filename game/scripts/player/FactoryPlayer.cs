@@ -226,7 +226,10 @@ public partial class FactoryPlayer : GMPOCharacter
         }
     }
 
-    /// <summary>The scroll wheel goes to the held item first (e.g. the magnet rod's hold distance), otherwise cycles the hotbar.</summary>
+    /// <summary>
+    /// The scroll wheel goes to the held item first (e.g. the magnet rod's hold distance), then the structure looked at
+    /// (e.g. a catapult's strength), otherwise cycles the hotbar.
+    /// </summary>
     void HandleScrollWheel(InputEvent @event)
     {
         if (UIManager.IsInventoryOpen) return;
@@ -234,8 +237,9 @@ public partial class FactoryPlayer : GMPOCharacter
         int step = @event.IsActionPressed(InputActions.scrollDown) ? +1 : @event.IsActionPressed(InputActions.scrollUp) ? -1 : 0;
         if (step == 0) return;
 
-        if (heldItem == null || !heldItem.HandleScroll(step))
-            CycleHotbar(step);
+        if (heldItem != null && heldItem.HandleScroll(step)) return;
+        if (pickTarget is Structure structure && structure.HandleScroll(step)) return;
+        CycleHotbar(step);
     }
 
     // ---- movement ---------------------------------------------------------

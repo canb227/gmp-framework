@@ -5,6 +5,7 @@
 #include "physics_world.h"
 #include "tags.h"
 
+#include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/core/class_db.hpp>
 
 using namespace godot;
@@ -32,6 +33,10 @@ void GMPBody::_notification(int what) {
 void GMPBody::create_body() {
 	destroy_body();
 	if (!enabled) {
+		return;
+	}
+	// A scene open in the editor has no physics world; its shapes only draw gizmos.
+	if (Engine::get_singleton()->is_editor_hint()) {
 		return;
 	}
 	GMPPhysicsWorld *world = GMPPhysicsWorld::get_current();
