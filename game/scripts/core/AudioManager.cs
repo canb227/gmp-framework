@@ -73,36 +73,66 @@ public partial class AudioManager : Node
         if (camera == null)
             return; 
 
-        foreach (ContactHit hit in HitStream.hits)
+        // Our own copy, hardest hits first, so the cap keeps the loudest. HitStream.hits stays as it is for everyone else.
+        soundHits.Clear();
+        soundHits.AddRange(HitStream.hits);
+        soundHits.Sort(HarderFirst);
+
+        int played = 0;
+        foreach (ContactHit hit in soundHits)
         {
+            if (played >= MaxHitSoundsPerTick)
+                break;
             // What met, by tags (SurfaceTags): a player is always side A. The normal points from A into B.
-            HitSoundHelper((SurfaceTags)hit.tagsA, hit);
-            HitSoundHelper((SurfaceTags)hit.tagsB, hit);
+            if (HitSoundHelper((SurfaceTags)hit.tagsA, hit))
+                played++;
+            if (HitSoundHelper((SurfaceTags)hit.tagsB, hit))
+                played++;
         }
     }
 
-    private void HitSoundHelper(SurfaceTags tags, ContactHit hit)
+    /// <summary>
+    /// Impact sounds started per physics tick at most (360 a second). A stirred pile makes hundreds of hits a tick,
+    /// far more than anyone can hear apart; past a few a tick it is one clatter, and FMOD ran out of instances.
+    /// </summary>
+    const int MaxHitSoundsPerTick = 6;
+    static readonly List<ContactHit> soundHits = new();
+
+    static int HarderFirst(ContactHit a, ContactHit b)
+    {
+        return b.speed.CompareTo(a.speed);
+    }
+
+    /// <summary>Plays one side's impact sound, if its tags have one. True if it started a sound.</summary>
+    private bool HitSoundHelper(SurfaceTags tags, ContactHit hit)
     {
         if(!tags.HasFlag(SurfaceTags.STRUCTURE) && !tags.HasFlag(SurfaceTags.LEVEL))
         {
             if(tags.HasFlag(SurfaceTags.METAL))
             {
                 PlayOneShot("event:/Impacts/Metal_Impact", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
+                return true;
             }
             else if(tags.HasFlag(SurfaceTags.PLASTIC))
             {
                 PlayOneShot("event:/Impacts/Plastic_Impact", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
+                return true;
             }
             else if(tags.HasFlag(SurfaceTags.GLASS))
             {
                 PlayOneShot("event:/Impacts/Glass_Impact", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
+                return true;
             }
             else if(tags.HasFlag(SurfaceTags.PLAYER))
             {
                 if (hit.speed >= 7.5f)
+                {
                     PlayOneShot("event:/Impacts/Player_Impact", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 15.0f, ["Damage"] = 0.0f });
+                    return true;
+                }
             }
         }
+        return false;
     }
 
     public override void _Ready()
@@ -149,9 +179,28 @@ public partial class AudioManager : Node
 
 
 
+    // Failed FMOD calls while playing, reported as one error a second: a stirred pile makes thousands of hits a
+    // second, and an error each (every one captures a C# backtrace) stalled the game for most of a minute.
+    private int _failures;
+    private string _firstFailure = "";
+    private ulong _lastFailureReportMsec;
+
+    private void CountFailure(string what)
+    {
+        if (_failures == 0)
+            _firstFailure = what;
+        _failures++;
+    }
+
     public override void _Process(double delta)
     {
         if (!_audioOn) return;
+        if (_failures > 0 && Time.GetTicksMsec() - _lastFailureReportMsec >= 1000)
+        {
+            GD.PushError($"FMOD: {_failures} failed calls in the last second, first {_firstFailure}");
+            _failures = 0;
+            _lastFailureReportMsec = Time.GetTicksMsec();
+        }
         _studio.update(); // must be called every frame
         var cam = GetViewport().GetCamera3D();
         if (cam != null)
@@ -188,7 +237,12 @@ public partial class AudioManager : Node
             return;
         }
 
-        desc.createInstance(out FmodStudio.EventInstance inst);
+        Fmod.RESULT created = desc.createInstance(out FmodStudio.EventInstance inst);
+        if (created != Fmod.RESULT.OK)
+        {
+            CountFailure($"createInstance on {eventPath}: {created}");
+            return;
+        }
 
         if (position.HasValue)
         {
@@ -202,7 +256,7 @@ public partial class AudioManager : Node
                 var result = inst.setParameterByName(kvp.Key, kvp.Value);
                 if (result != Fmod.RESULT.OK)
                 {
-                    GD.PushWarning($"FMOD param '{kvp.Key}' failed on {eventPath}: {result}");
+                    CountFailure($"param '{kvp.Key}' on {eventPath}: {result}");
                 }
             }
         }

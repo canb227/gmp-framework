@@ -325,12 +325,23 @@ public partial class ItemWorld : Node
         }
         if (ticks % KillPlaneInterval == 0)
         {
+            // One summary line per pass: a warning per item (each captures a C# backtrace) cost several ms apiece and
+            // made a spike every pass while a flung pile fell out of the world.
+            int fallen = 0;
+            string firstFallen = "";
             foreach (long id in PhysicsWorld.ItemsBelow(GameWorld.KillPlaneY))
             {
-                ItemRecord record = Get((ulong)id);
-                // Where it is now (x and z tell where it fell out): an item that leaves the level in play points at a hole.
-                Logging.Warn($"Despawned {record?.itemID} {id}: it fell below the kill plane (y {GameWorld.KillPlaneY}), now at {PhysicsWorld.BodyPosition((ulong)id)}", "ItemWorld");
+                if (fallen == 0)
+                {
+                    // Where it is now (x and z tell where it fell out): an item that leaves the level in play points at a hole.
+                    firstFallen = $"{Get((ulong)id)?.itemID} at {PhysicsWorld.BodyPosition((ulong)id)}";
+                }
+                fallen++;
                 Despawn((ulong)id);
+            }
+            if (fallen > 0)
+            {
+                Logging.Log($"Despawned {fallen} items below the kill plane (y {GameWorld.KillPlaneY}), first {firstFallen}", "ItemWorld");
             }
         }
         // Every hit this tick, however far from the camera (HitStream only keeps the ones near it): the host's own,
