@@ -1,15 +1,15 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dba5fbyvuyuic"]
 
-[ext_resource type="PackedScene" path="res://game/scenes/structures/logistics/conveyors/basic/Conveyor.tscn" id="1"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/logistics/conveyors/basic/ConveyorTurnLeft.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/logistics/conveyors/basic/ConveyorTurnRight.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/logistics/conveyors/basic/ConveyorSlopeUp.tscn" id="4"]
-[ext_resource type="PackedScene" path="res://game/scenes/structures/logistics/conveyors/basic/ConveyorSlopeDown.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://bjrk1ic4be4k8" path="res://game/scenes/structures/logistics/conveyors/basic/Conveyor.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://kntxrimjqyhh" path="res://game/scenes/structures/logistics/conveyors/basic/ConveyorTurnLeft.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://dcm710gynders" path="res://game/scenes/structures/logistics/conveyors/basic/ConveyorTurnRight.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://c5f87qmrk35i6" path="res://game/scenes/structures/logistics/conveyors/basic/ConveyorSlopeUp.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://f84cilvcke1a" path="res://game/scenes/structures/logistics/conveyors/basic/ConveyorSlopeDown.tscn" id="5"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/sorting/Trommel.tscn" id="6"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/special/DevItemDeleter.tscn" id="7"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/special/DevSpawner.tscn" id="8"]
-[ext_resource type="Script" path="res://game/scripts/entities/Stirrer.cs" id="stirrer"]
-[ext_resource type="Script" path="res://game/scripts/entities/ItemSeeder.cs" id="seeder"]
+[ext_resource type="Script" uid="uid://dq4cj2glatd8j" path="res://game/scripts/entities/ItemSeeder.cs" id="seeder"]
+[ext_resource type="Script" uid="uid://c3tks7n4phhva" path="res://game/scripts/entities/Stirrer.cs" id="stirrer"]
 
 [sub_resource type="Environment" id="Env"]
 background_mode = 1
@@ -19,39 +19,11 @@ ambient_light_color = Color(0.55, 0.6, 0.7, 1)
 ambient_light_energy = 0.35
 tonemap_mode = 3
 ssao_enabled = true
-ssil_enabled = false
-ssr_enabled = false
-sdfgi_enabled = false
 glow_enabled = true
-volumetric_fog_enabled = false
-fog_enabled = false
 
 [sub_resource type="StandardMaterial3D" id="Mat_Floor"]
 albedo_color = Color(0.42, 0.42, 0.4, 1)
 roughness = 0.85
-
-[sub_resource type="StandardMaterial3D" id="Mat_Pit"]
-albedo_color = Color(0.3, 0.26, 0.2, 1)
-roughness = 0.9
-
-[sub_resource type="StandardMaterial3D" id="Mat_Wall"]
-albedo_color = Color(0.55, 0.56, 0.58, 1)
-roughness = 0.8
-
-[sub_resource type="StandardMaterial3D" id="Mat_Stirrer"]
-albedo_color = Color(0.95, 0.65, 0.1, 1)
-metallic = 0.7
-roughness = 0.4
-
-[sub_resource type="CylinderMesh" id="Mesh_Hub"]
-material = SubResource("Mat_Stirrer")
-top_radius = 0.5
-bottom_radius = 0.5
-height = 2.5
-
-[sub_resource type="BoxMesh" id="Mesh_Paddle"]
-material = SubResource("Mat_Stirrer")
-size = Vector3(5, 1, 0.3)
 
 [sub_resource type="BoxMesh" id="Mesh_FloorNorth"]
 material = SubResource("Mat_Floor")
@@ -68,6 +40,10 @@ size = Vector3(42, 1, 16)
 [sub_resource type="BoxMesh" id="Mesh_FloorEast"]
 material = SubResource("Mat_Floor")
 size = Vector3(42, 1, 16)
+
+[sub_resource type="StandardMaterial3D" id="Mat_Pit"]
+albedo_color = Color(0.3, 0.26, 0.2, 1)
+roughness = 0.9
 
 [sub_resource type="BoxMesh" id="Mesh_PitFloor"]
 material = SubResource("Mat_Pit")
@@ -89,6 +65,10 @@ size = Vector3(16, 4, 1)
 material = SubResource("Mat_Pit")
 size = Vector3(16, 4, 1)
 
+[sub_resource type="StandardMaterial3D" id="Mat_Wall"]
+albedo_color = Color(0.55, 0.56, 0.58, 1)
+roughness = 0.8
+
 [sub_resource type="BoxMesh" id="Mesh_WallWest"]
 material = SubResource("Mat_Wall")
 size = Vector3(1, 31, 102)
@@ -109,188 +89,33 @@ size = Vector3(100, 31, 1)
 material = SubResource("Mat_Wall")
 size = Vector3(102, 1, 102)
 
-[node name="StressTest" type="Node3D"]
+[sub_resource type="StandardMaterial3D" id="Mat_Stirrer"]
+albedo_color = Color(0.95, 0.65, 0.1, 1)
+metallic = 0.7
+roughness = 0.4
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Env")
-
-[node name="Spawn" type="Marker3D" parent="." groups=["player_spawn"]]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -20, 1, 6)
-
-[node name="Spawn2" type="Marker3D" parent="." groups=["player_spawn"]]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -24, 1, 6)
-
-[node name="Lights" type="Node3D" parent="."]
-
-
-[node name="Room" type="GMPBody" parent="."]
-body_type = 0
-tags = 264
-
-[node name="FloorNorthShape" type="GMPShape" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -29)
-size = Vector3(100, 1, 42)
-
-[node name="FloorNorth" type="MeshInstance3D" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -29)
-mesh = SubResource("Mesh_FloorNorth")
-
-[node name="FloorSouthShape" type="GMPShape" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 29)
-size = Vector3(100, 1, 42)
-
-[node name="FloorSouth" type="MeshInstance3D" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 29)
-mesh = SubResource("Mesh_FloorSouth")
-
-[node name="FloorWestShape" type="GMPShape" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, -0.5, 0)
-size = Vector3(42, 1, 16)
-
-[node name="FloorWest" type="MeshInstance3D" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, -0.5, 0)
-mesh = SubResource("Mesh_FloorWest")
-
-[node name="FloorEastShape" type="GMPShape" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29, -0.5, 0)
-size = Vector3(42, 1, 16)
-
-[node name="FloorEast" type="MeshInstance3D" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29, -0.5, 0)
-mesh = SubResource("Mesh_FloorEast")
-
-[node name="PitFloorShape" type="GMPShape" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.5, 0)
-size = Vector3(18, 1, 18)
-
-[node name="PitFloor" type="MeshInstance3D" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.5, 0)
-mesh = SubResource("Mesh_PitFloor")
-
-[node name="PitWallWestShape" type="GMPShape" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, -2, 0)
-size = Vector3(1, 4, 18)
-
-[node name="PitWallWest" type="MeshInstance3D" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, -2, 0)
-mesh = SubResource("Mesh_PitWallWest")
-
-[node name="PitWallEastShape" type="GMPShape" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, -2, 0)
-size = Vector3(1, 4, 18)
-
-[node name="PitWallEast" type="MeshInstance3D" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, -2, 0)
-mesh = SubResource("Mesh_PitWallEast")
-
-[node name="PitWallNorthShape" type="GMPShape" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, -8.5)
-size = Vector3(16, 4, 1)
-
-[node name="PitWallNorth" type="MeshInstance3D" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, -8.5)
-mesh = SubResource("Mesh_PitWallNorth")
-
-[node name="PitWallSouthShape" type="GMPShape" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 8.5)
-size = Vector3(16, 4, 1)
-
-[node name="PitWallSouth" type="MeshInstance3D" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 8.5)
-mesh = SubResource("Mesh_PitWallSouth")
-
-[node name="WallWestShape" type="GMPShape" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50.5, 15, 0)
-size = Vector3(1, 31, 102)
-
-[node name="WallWest" type="MeshInstance3D" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50.5, 15, 0)
-mesh = SubResource("Mesh_WallWest")
-
-[node name="WallEastShape" type="GMPShape" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50.5, 15, 0)
-size = Vector3(1, 31, 102)
-
-[node name="WallEast" type="MeshInstance3D" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50.5, 15, 0)
-mesh = SubResource("Mesh_WallEast")
-
-[node name="WallNorthShape" type="GMPShape" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15, -50.5)
-size = Vector3(100, 31, 1)
-
-[node name="WallNorth" type="MeshInstance3D" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15, -50.5)
-mesh = SubResource("Mesh_WallNorth")
-
-[node name="WallSouthShape" type="GMPShape" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15, 50.5)
-size = Vector3(100, 31, 1)
-
-[node name="WallSouth" type="MeshInstance3D" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15, 50.5)
-mesh = SubResource("Mesh_WallSouth")
-
-[node name="CeilingShape" type="GMPShape" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30.5, 0)
-size = Vector3(102, 1, 102)
-
-[node name="Ceiling" type="MeshInstance3D" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30.5, 0)
-mesh = SubResource("Mesh_Ceiling")
-
-[node name="Stirrer" type="GMPBody" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4, 0)
-body_type = 1
-tags = 514
-script = ExtResource("stirrer")
-rpm = 6.0
-
-[node name="HubShape" type="GMPShape" parent="Stirrer"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
-shape = 3
-radius = 0.5
+[sub_resource type="CylinderMesh" id="Mesh_Hub"]
+material = SubResource("Mat_Stirrer")
 height = 2.5
 
-[node name="Hub" type="MeshInstance3D" parent="Stirrer"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
-mesh = SubResource("Mesh_Hub")
-
-[node name="Paddle0Shape" type="GMPShape" parent="Stirrer"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.6, 0)
+[sub_resource type="BoxMesh" id="Mesh_Paddle"]
+material = SubResource("Mat_Stirrer")
 size = Vector3(5, 1, 0.3)
 
-[node name="Paddle0" type="MeshInstance3D" parent="Stirrer"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.6, 0)
-mesh = SubResource("Mesh_Paddle")
+[node name="StressTest" type="Node3D" unique_id=1125604695]
 
-[node name="Paddle1Shape" type="GMPShape" parent="Stirrer"]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0.6, -3)
-size = Vector3(5, 1, 0.3)
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=273641686]
+environment = SubResource("Env")
 
-[node name="Paddle1" type="MeshInstance3D" parent="Stirrer"]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0.6, -3)
-mesh = SubResource("Mesh_Paddle")
+[node name="Spawn" type="Marker3D" parent="." unique_id=1944938950 groups=["player_spawn"]]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -20, 1, 6)
 
-[node name="Paddle2Shape" type="GMPShape" parent="Stirrer"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3, 0.6, 0)
-size = Vector3(5, 1, 0.3)
+[node name="Spawn2" type="Marker3D" parent="." unique_id=838513820 groups=["player_spawn"]]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -24, 1, 6)
 
-[node name="Paddle2" type="MeshInstance3D" parent="Stirrer"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3, 0.6, 0)
-mesh = SubResource("Mesh_Paddle")
+[node name="Lights" type="Node3D" parent="." unique_id=1339846187]
 
-[node name="Paddle3Shape" type="GMPShape" parent="Stirrer"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.6, 3)
-size = Vector3(5, 1, 0.3)
-
-[node name="Paddle3" type="MeshInstance3D" parent="Stirrer"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.6, 3)
-mesh = SubResource("Mesh_Paddle")
-
-[node name="PitDrains" type="Node3D" parent="."]
-
-[node name="Spot0" type="SpotLight3D" parent="Lights"]
+[node name="Spot0" type="SpotLight3D" parent="Lights" unique_id=610180959]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -30, 28.5, -30)
 light_color = Color(1, 0.93, 0.85, 1)
 light_energy = 25.0
@@ -298,7 +123,7 @@ shadow_enabled = true
 spot_range = 45.0
 spot_angle = 55.0
 
-[node name="Spot1" type="SpotLight3D" parent="Lights"]
+[node name="Spot1" type="SpotLight3D" parent="Lights" unique_id=1036332091]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 30, 28.5, -30)
 light_color = Color(1, 0.93, 0.85, 1)
 light_energy = 25.0
@@ -306,7 +131,7 @@ shadow_enabled = true
 spot_range = 45.0
 spot_angle = 55.0
 
-[node name="Spot2" type="SpotLight3D" parent="Lights"]
+[node name="Spot2" type="SpotLight3D" parent="Lights" unique_id=102535764]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -30, 28.5, 30)
 light_color = Color(1, 0.93, 0.85, 1)
 light_energy = 25.0
@@ -314,7 +139,7 @@ shadow_enabled = true
 spot_range = 45.0
 spot_angle = 55.0
 
-[node name="Spot3" type="SpotLight3D" parent="Lights"]
+[node name="Spot3" type="SpotLight3D" parent="Lights" unique_id=1340924185]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 30, 28.5, 30)
 light_color = Color(1, 0.93, 0.85, 1)
 light_energy = 25.0
@@ -322,7 +147,7 @@ shadow_enabled = true
 spot_range = 45.0
 spot_angle = 55.0
 
-[node name="Spot4" type="SpotLight3D" parent="Lights"]
+[node name="Spot4" type="SpotLight3D" parent="Lights" unique_id=785999813]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 28.5, 0)
 light_color = Color(1, 0.93, 0.85, 1)
 light_energy = 25.0
@@ -330,7 +155,7 @@ shadow_enabled = true
 spot_range = 45.0
 spot_angle = 55.0
 
-[node name="Spot5" type="SpotLight3D" parent="Lights"]
+[node name="Spot5" type="SpotLight3D" parent="Lights" unique_id=602404428]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 28.5, 32)
 light_color = Color(1, 0.93, 0.85, 1)
 light_energy = 25.0
@@ -338,7 +163,7 @@ shadow_enabled = true
 spot_range = 45.0
 spot_angle = 55.0
 
-[node name="Spot6" type="SpotLight3D" parent="Lights"]
+[node name="Spot6" type="SpotLight3D" parent="Lights" unique_id=69483229]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 28.5, -32)
 light_color = Color(1, 0.93, 0.85, 1)
 light_energy = 25.0
@@ -346,1459 +171,1610 @@ shadow_enabled = true
 spot_range = 45.0
 spot_angle = 55.0
 
-[node name="Omni0" type="OmniLight3D" parent="Lights"]
+[node name="Omni0" type="OmniLight3D" parent="Lights" unique_id=1150553432]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 10, 0)
 light_color = Color(0.75, 0.85, 1, 1)
 light_energy = 4.0
 shadow_enabled = true
 omni_range = 30.0
 
-[node name="Omni1" type="OmniLight3D" parent="Lights"]
+[node name="Omni1" type="OmniLight3D" parent="Lights" unique_id=1356175900]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 8, 0)
 light_color = Color(0.75, 0.85, 1, 1)
 light_energy = 4.0
 shadow_enabled = true
 omni_range = 30.0
 
-[node name="Omni2" type="OmniLight3D" parent="Lights"]
+[node name="Omni2" type="OmniLight3D" parent="Lights" unique_id=2047261586]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 22)
 light_color = Color(0.75, 0.85, 1, 1)
 light_energy = 4.0
 shadow_enabled = true
 omni_range = 25.0
 
-[node name="Belts" type="Node3D" parent="."]
-
-[node name="Machines" type="Node3D" parent="."]
-
-[node name="A_001_Spawner" parent="Machines" instance=ExtResource("8")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -44, 3, 44)
-itemWeights = Dictionary[String, float]({
-"sieve_cube_010": 1.0,
-"sieve_cube_025": 1.0,
-"sieve_cube_050": 1.0,
-"sieve_cube_075": 1.0,
-"electronic_bits": 1.0,
-"scrap_ingot": 1.0
-})
-spawning = true
-spawnInterval = 0.1250
-
-[node name="Output" parent="Machines/A_001_Spawner"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1, -1.5, -1)
-
-[node name="A_002_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -44, 0, 44)
-
-[node name="A_003_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -42, 0, 44)
-
-[node name="A_004_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -40, 0, 44)
-
-[node name="A_005_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -38, 0, 44)
-
-[node name="A_006_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -36, 0, 44)
-
-[node name="A_007_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -34, 0, 44)
-
-[node name="A_008_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -32, 0, 44)
-
-[node name="A_009_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -30, 0, 44)
-
-[node name="A_010_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -28, 0, 44)
-
-[node name="A_011_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -26, 0, 44)
-
-[node name="A_012_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -24, 0, 44)
-
-[node name="A_013_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -22, 0, 44)
-
-[node name="A_014_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -20, 0, 44)
-
-[node name="A_015_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18, 0, 44)
-
-[node name="A_016_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -16, 0, 44)
-
-[node name="A_017_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14, 0, 44)
-
-[node name="A_018_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -12, 0, 44)
-
-[node name="A_019_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -10, 0, 44)
-
-[node name="A_020_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -8, 0, 44)
-
-[node name="A_021_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -6, 0, 44)
-
-[node name="A_022_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -4, 0, 44)
-
-[node name="A_023_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -2, 0, 44)
-
-[node name="A_024_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0, 44)
-
-[node name="A_025_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2, 0, 44)
-
-[node name="A_026_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 4, 0, 44)
-
-[node name="A_027_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 6, 0, 44)
-
-[node name="A_028_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 8, 0, 44)
-
-[node name="A_029_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10, 0, 44)
-
-[node name="A_030_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 12, 0, 44)
-
-[node name="A_031_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 14, 0, 44)
-
-[node name="A_032_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 46)
-
-[node name="A_033_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 44)
-
-[node name="A_034_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18, 0, 42)
-
-[node name="A_035_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16, 0, 42)
-
-[node name="A_036_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 14, 0, 42)
-
-[node name="A_037_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 12, 0, 42)
-
-[node name="A_038_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, 42)
-
-[node name="A_039_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 8, 0, 42)
-
-[node name="A_040_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 6, 0, 42)
-
-[node name="A_041_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4, 0, 42)
-
-[node name="A_042_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2, 0, 42)
-
-[node name="A_043_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0, 42)
-
-[node name="A_044_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -2, 0, 42)
-
-[node name="A_045_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4, 0, 42)
-
-[node name="A_046_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -6, 0, 42)
-
-[node name="A_047_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -8, 0, 42)
-
-[node name="A_048_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 0, 42)
-
-[node name="A_049_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -12, 0, 42)
-
-[node name="A_050_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -14, 0, 42)
-
-[node name="A_051_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -16, 0, 42)
-
-[node name="A_052_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -18, 0, 42)
-
-[node name="A_053_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -20, 0, 42)
-
-[node name="A_054_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, 42)
-
-[node name="A_055_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -24, 0, 42)
-
-[node name="A_056_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -26, 0, 42)
-
-[node name="A_057_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -28, 0, 42)
-
-[node name="A_058_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -30, 0, 42)
-
-[node name="A_059_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -32, 0, 42)
-
-[node name="A_060_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -34, 0, 42)
-
-[node name="A_061_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -36, 0, 42)
-
-[node name="A_062_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -38, 0, 42)
-
-[node name="A_063_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -40, 0, 42)
-
-[node name="A_064_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -42, 0, 42)
-
-[node name="A_065_R" parent="Belts" instance=ExtResource("3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46, 0, 42)
-
-[node name="A_066_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46, 0, 40)
-
-[node name="A_067_R" parent="Belts" instance=ExtResource("3")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -46, 0, 36)
-
-[node name="A_068_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -44, 0, 36)
-
-[node name="A_069_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -42, 0, 36)
-
-[node name="A_070_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -40, 0, 36)
-
-[node name="A_071_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -38, 0, 36)
-
-[node name="A_072_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -36, 0, 36)
-
-[node name="A_073_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -34, 0, 36)
-
-[node name="A_074_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -32, 0, 36)
-
-[node name="A_075_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -30, 0, 36)
-
-[node name="A_076_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -28, 0, 36)
-
-[node name="A_077_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -26, 0, 36)
-
-[node name="A_078_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -24, 0, 36)
-
-[node name="A_079_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -22, 0, 36)
-
-[node name="A_080_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -20, 0, 36)
-
-[node name="A_081_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18, 0, 36)
-
-[node name="A_082_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -16, 0, 36)
-
-[node name="A_083_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14, 0, 36)
-
-[node name="A_084_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -12, 0, 36)
-
-[node name="A_085_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -10, 0, 36)
-
-[node name="A_086_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -8, 0, 36)
-
-[node name="A_087_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -6, 0, 36)
-
-[node name="A_088_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -4, 0, 36)
-
-[node name="A_089_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -2, 0, 36)
-
-[node name="A_090_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0, 36)
-
-[node name="A_091_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2, 0, 36)
-
-[node name="A_092_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 4, 0, 36)
-
-[node name="A_093_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 6, 0, 36)
-
-[node name="A_094_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 8, 0, 36)
-
-[node name="A_095_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10, 0, 36)
-
-[node name="A_096_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 12, 0, 36)
-
-[node name="A_097_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 14, 0, 36)
-
-[node name="A_098_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 38)
-
-[node name="A_099_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 36)
-
-[node name="A_100_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18, 0, 34)
-
-[node name="A_101_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16, 0, 34)
-
-[node name="A_102_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 14, 0, 34)
-
-[node name="A_103_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 12, 0, 34)
-
-[node name="A_104_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, 34)
-
-[node name="A_105_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 8, 0, 34)
-
-[node name="A_106_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 6, 0, 34)
-
-[node name="A_107_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4, 0, 34)
-
-[node name="A_108_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2, 0, 34)
-
-[node name="A_109_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0, 34)
-
-[node name="A_110_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -2, 0, 34)
-
-[node name="A_111_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4, 0, 34)
-
-[node name="A_112_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -6, 0, 34)
-
-[node name="A_113_X" parent="Machines" instance=ExtResource("7")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -8, 0, 35)
-itemsPerSecond = 7.0
-
-[node name="A_114_Spawner" parent="Machines" instance=ExtResource("8")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -14, 3, 34)
-itemWeights = Dictionary[String, float]({
-"sieve_cube_010": 1.0,
-"sieve_cube_025": 1.0,
-"sieve_cube_050": 1.0,
-"sieve_cube_075": 1.0,
-"electronic_bits": 1.0,
-"scrap_ingot": 1.0
-})
-spawning = true
-spawnInterval = 0.1250
-
-[node name="Output" parent="Machines/A_114_Spawner"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1, -1.5, -1)
-
-[node name="A_115_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -14, 0, 34)
-
-[node name="A_116_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -16, 0, 34)
-
-[node name="A_117_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -18, 0, 34)
-
-[node name="A_118_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -20, 0, 34)
-
-[node name="A_119_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, 34)
-
-[node name="A_120_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -24, 0, 34)
-
-[node name="A_121_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -26, 0, 34)
-
-[node name="A_122_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -28, 0, 34)
-
-[node name="A_123_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -30, 0, 34)
-
-[node name="A_124_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -32, 0, 34)
-
-[node name="A_125_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -34, 0, 34)
-
-[node name="A_126_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -36, 0, 34)
-
-[node name="A_127_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -38, 0, 34)
-
-[node name="A_128_R" parent="Belts" instance=ExtResource("3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 0, 34)
-
-[node name="A_129_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 0, 32)
-
-[node name="A_130_R" parent="Belts" instance=ExtResource("3")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -42, 0, 28)
-
-[node name="A_131_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -40, 0, 28)
-
-[node name="A_132_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -38, 0, 28)
-
-[node name="A_133_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -36, 0, 28)
-
-[node name="A_134_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -34, 0, 28)
-
-[node name="A_135_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -32, 0, 28)
-
-[node name="A_136_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -30, 0, 28)
-
-[node name="A_137_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -28, 0, 28)
-
-[node name="A_138_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -26, 0, 28)
-
-[node name="A_139_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -24, 0, 28)
-
-[node name="A_140_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -22, 0, 28)
-
-[node name="A_141_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -20, 0, 28)
-
-[node name="A_142_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18, 0, 28)
-
-[node name="A_143_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -16, 0, 28)
-
-[node name="A_144_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14, 0, 28)
-
-[node name="A_145_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -12, 0, 28)
-
-[node name="A_146_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -10, 0, 28)
-
-[node name="A_147_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -8, 0, 28)
-
-[node name="A_148_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -6, 0, 28)
-
-[node name="A_149_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -4, 0, 28)
-
-[node name="A_150_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -2, 0, 28)
-
-[node name="A_151_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0, 28)
-
-[node name="A_152_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2, 0, 28)
-
-[node name="A_153_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 4, 0, 28)
-
-[node name="A_154_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 6, 0, 28)
-
-[node name="A_155_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 8, 0, 28)
-
-[node name="A_156_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10, 0, 28)
-
-[node name="A_157_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 12, 0, 28)
-
-[node name="A_158_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 14, 0, 28)
-
-[node name="A_159_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 16, 0, 28)
-
-[node name="A_160_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 18, 0, 28)
-
-[node name="A_161_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 30)
-
-[node name="A_162_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 28)
-
-[node name="A_163_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 22, 0, 26)
-
-[node name="A_164_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 20, 0, 26)
-
-[node name="A_165_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18, 0, 26)
-
-[node name="A_166_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16, 0, 26)
-
-[node name="A_167_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 14, 0, 26)
-
-[node name="A_168_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 12, 0, 26)
-
-[node name="A_169_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, 26)
-
-[node name="A_170_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 8, 0, 26)
-
-[node name="A_171_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 6, 0, 26)
-
-[node name="A_172_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4, 0, 26)
-
-[node name="A_173_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2, 0, 26)
-
-[node name="A_174_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0, 26)
-
-[node name="A_175_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -2, 0, 26)
-
-[node name="A_176_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4, 0, 26)
-
-[node name="A_177_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -6, 0, 26)
-
-[node name="A_178_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -8, 0, 26)
-
-[node name="A_179_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 0, 26)
-
-[node name="A_180_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -12, 0, 26)
-
-[node name="A_181_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -14, 0, 26)
-
-[node name="A_182_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -16, 0, 26)
-
-[node name="A_183_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -18, 0, 26)
-
-[node name="A_184_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -20, 0, 26)
-
-[node name="A_185_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, 26)
-
-[node name="A_186_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -24, 0, 26)
-
-[node name="A_187_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -26, 0, 26)
-
-[node name="A_188_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -28, 0, 26)
-
-[node name="A_189_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -30, 0, 26)
-
-[node name="A_190_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -32, 0, 26)
-
-[node name="A_191_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -34, 0, 26)
-
-[node name="A_192_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -36, 0, 26)
-
-[node name="A_193_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -38, 0, 26)
-
-[node name="A_194_X" parent="Machines" instance=ExtResource("7")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -40, 0, 27)
-itemsPerSecond = 7.0
-
-[node name="B_001_Spawner" parent="Machines" instance=ExtResource("8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 3, 1)
-itemWeights = Dictionary[String, float]({
-"sieve_cube_010": 1.0,
-"sieve_cube_025": 1.0,
-"sieve_cube_050": 1.0,
-"sieve_cube_075": 1.0,
-"electronic_bits": 1.0,
-"scrap_ingot": 1.0
-})
-spawning = true
-spawnInterval = 0.1250
-
-[node name="Output" parent="Machines/B_001_Spawner"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1, -1.5, -1)
-
-[node name="B_002_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 1)
-
-[node name="B_003_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, -1)
-
-[node name="B_004_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -38, 0, -3)
-
-[node name="B_005_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -40, 0, -3)
-
-[node name="B_006_U" parent="Belts" instance=ExtResource("4")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -42, 0, -3)
-
-[node name="B_007_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -46, 2, -3)
-
-[node name="B_008_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 2, -5)
-
-[node name="B_009_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 2, -3)
-
-[node name="B_010_U" parent="Belts" instance=ExtResource("4")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 2, -1)
-
-[node name="B_011_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 4, 3)
-
-[node name="B_012_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -50, 4, 5)
-
-[node name="B_013_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -48, 4, 5)
-
-[node name="B_014_U" parent="Belts" instance=ExtResource("4")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -46, 4, 5)
-
-[node name="B_015_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -42, 6, 5)
-
-[node name="B_016_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 6, 7)
-
-[node name="B_017_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 6, 5)
-
-[node name="B_018_U" parent="Belts" instance=ExtResource("4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 6, 3)
-
-[node name="B_019_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 8, -1)
-
-[node name="B_020_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -38, 8, -3)
-
-[node name="B_021_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -40, 8, -3)
-
-[node name="B_022_U" parent="Belts" instance=ExtResource("4")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -42, 8, -3)
-
-[node name="B_023_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -46, 10, -3)
-
-[node name="B_024_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 10, -5)
-
-[node name="B_025_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 10, -3)
-
-[node name="B_026_U" parent="Belts" instance=ExtResource("4")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 10, -1)
-
-[node name="B_027_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 12, 3)
-
-[node name="B_028_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -50, 12, 5)
-
-[node name="B_029_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -48, 12, 5)
-
-[node name="B_030_U" parent="Belts" instance=ExtResource("4")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -46, 12, 5)
-
-[node name="B_031_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -42, 14, 5)
-
-[node name="B_032_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 14, 7)
-
-[node name="B_033_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 14, 5)
-
-[node name="B_034_U" parent="Belts" instance=ExtResource("4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 14, 3)
-
-[node name="B_035_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 16, -1)
-
-[node name="B_036_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -38, 16, -3)
-
-[node name="B_037_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -40, 16, -3)
-
-[node name="B_038_U" parent="Belts" instance=ExtResource("4")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -42, 16, -3)
-
-[node name="B_039_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -46, 18, -3)
-
-[node name="B_040_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 18, -5)
-
-[node name="B_041_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 18, -3)
-
-[node name="B_042_U" parent="Belts" instance=ExtResource("4")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 18, -1)
-
-[node name="B_043_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 20, 3)
-
-[node name="B_044_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -50, 20, 5)
-
-[node name="B_045_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -48, 20, 5)
-
-[node name="B_046_U" parent="Belts" instance=ExtResource("4")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -46, 20, 5)
-
-[node name="B_047_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -42, 22, 5)
-
-[node name="B_048_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 22, 7)
-
-[node name="B_049_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 22, 5)
-
-[node name="B_050_U" parent="Belts" instance=ExtResource("4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 22, 3)
-
-[node name="B_051_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 24, -1)
-
-[node name="B_052_R" parent="Belts" instance=ExtResource("3")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -40, 24, -5)
-
-[node name="B_053_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -38, 24, -5)
-
-[node name="B_054_D" parent="Belts" instance=ExtResource("5")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -36, 22, -5)
-
-[node name="B_055_D" parent="Belts" instance=ExtResource("5")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -32, 20, -5)
-
-[node name="B_056_D" parent="Belts" instance=ExtResource("5")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -28, 18, -5)
-
-[node name="B_057_D" parent="Belts" instance=ExtResource("5")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -24, 16, -5)
-
-[node name="B_058_D" parent="Belts" instance=ExtResource("5")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -20, 14, -5)
-
-[node name="B_059_D" parent="Belts" instance=ExtResource("5")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -16, 12, -5)
-
-[node name="B_060_D" parent="Belts" instance=ExtResource("5")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -12, 10, -5)
-
-[node name="B_061_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -8, 10, -5)
-
-[node name="B_062_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -6, 10, -5)
-
-[node name="C_001_Spawner" parent="Machines" instance=ExtResource("8")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 45, 19, 46)
-itemWeights = Dictionary[String, float]({
-"sieve_cube_010": 1.0,
-"sieve_cube_025": 1.0,
-"sieve_cube_050": 1.0,
-"sieve_cube_075": 1.0,
-"electronic_bits": 1.0,
-"scrap_ingot": 1.0
-})
-spawning = true
-spawnInterval = 0.1250
-
-[node name="Output" parent="Machines/C_001_Spawner"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1, -1.5, -1)
-
-[node name="C_002_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 45, 16, 46)
-
-[node name="C_003_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 43, 16, 46)
-
-[node name="C_004_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 41, 16, 46)
-
-[node name="C_005_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 39, 16, 46)
-
-[node name="C_006_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 37, 16, 46)
-
-[node name="C_007_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 35, 16, 46)
-
-[node name="C_008_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 33, 16, 46)
-
-[node name="C_009_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31, 16, 46)
-
-[node name="C_010_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 16, 46)
-
-[node name="C_011_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 27, 16, 46)
-
-[node name="C_012_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 25, 16, 46)
-
-[node name="C_013_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 23, 16, 46)
-
-[node name="C_014_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21, 16, 46)
-
-[node name="C_015_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 19, 16, 46)
-
-[node name="C_016_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17, 16, 46)
-
-[node name="C_017_R" parent="Belts" instance=ExtResource("3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 16, 46)
-
-[node name="C_018_R" parent="Belts" instance=ExtResource("3")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13, 16, 42)
-
-[node name="C_019_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15, 16, 42)
-
-[node name="C_020_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 17, 16, 42)
-
-[node name="C_021_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 19, 16, 42)
-
-[node name="C_022_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 21, 16, 42)
-
-[node name="C_023_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 23, 16, 42)
-
-[node name="C_024_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 25, 16, 42)
-
-[node name="C_025_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 27, 16, 42)
-
-[node name="C_026_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 29, 16, 42)
-
-[node name="C_027_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 31, 16, 42)
-
-[node name="C_028_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 33, 16, 42)
-
-[node name="C_029_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 35, 16, 42)
-
-[node name="C_030_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 37, 16, 42)
-
-[node name="C_031_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 39, 16, 42)
-
-[node name="C_032_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 41, 16, 42)
-
-[node name="C_033_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 43, 16, 42)
-
-[node name="C_034_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 16, 44)
-
-[node name="C_035_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 47, 16, 42)
-
-[node name="C_036_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 45, 16, 42)
-
-[node name="C_037_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 43, 16, 42)
-
-[node name="C_038_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 41, 16, 42)
-
-[node name="C_039_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 39, 16, 42)
-
-[node name="C_040_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 37, 16, 42)
-
-[node name="C_041_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 35, 16, 42)
-
-[node name="C_042_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 33, 16, 42)
-
-[node name="C_043_D" parent="Belts" instance=ExtResource("5")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31, 14, 42)
-
-[node name="C_044_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 27, 14, 42)
-
-[node name="C_045_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 25, 14, 42)
-
-[node name="C_046_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 23, 14, 42)
-
-[node name="C_047_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21, 14, 42)
-
-[node name="C_048_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 19, 14, 42)
-
-[node name="C_049_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17, 14, 42)
-
-[node name="C_050_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 15, 14, 42)
-
-[node name="C_051_R" parent="Belts" instance=ExtResource("3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 14, 42)
-
-[node name="C_052_R" parent="Belts" instance=ExtResource("3")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 11, 14, 38)
-
-[node name="C_053_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13, 14, 38)
-
-[node name="C_054_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15, 14, 38)
-
-[node name="C_055_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 17, 14, 38)
-
-[node name="C_056_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 19, 14, 38)
-
-[node name="C_057_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 21, 14, 38)
-
-[node name="C_058_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 23, 14, 38)
-
-[node name="C_059_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 25, 14, 38)
-
-[node name="C_060_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 27, 14, 38)
-
-[node name="C_061_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 29, 14, 38)
-
-[node name="C_062_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 31, 14, 38)
-
-[node name="C_063_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 33, 14, 38)
-
-[node name="C_064_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 35, 14, 38)
-
-[node name="C_065_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 37, 14, 38)
-
-[node name="C_066_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 39, 14, 38)
-
-[node name="C_067_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 41, 14, 38)
-
-[node name="C_068_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 14, 40)
-
-[node name="C_069_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 45, 14, 38)
-
-[node name="C_070_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 43, 14, 38)
-
-[node name="C_071_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 41, 14, 38)
-
-[node name="C_072_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 39, 14, 38)
-
-[node name="C_073_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 37, 14, 38)
-
-[node name="C_074_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 35, 14, 38)
-
-[node name="C_075_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 33, 14, 38)
-
-[node name="C_076_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31, 14, 38)
-
-[node name="C_077_D" parent="Belts" instance=ExtResource("5")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 12, 38)
-
-[node name="C_078_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 25, 12, 38)
-
-[node name="C_079_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 23, 12, 38)
-
-[node name="C_080_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21, 12, 38)
-
-[node name="C_081_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 19, 12, 38)
-
-[node name="C_082_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17, 12, 38)
-
-[node name="C_083_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 15, 12, 38)
-
-[node name="C_084_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 13, 12, 38)
-
-[node name="C_085_R" parent="Belts" instance=ExtResource("3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 12, 38)
-
-[node name="C_086_R" parent="Belts" instance=ExtResource("3")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 9, 12, 34)
-
-[node name="C_087_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 11, 12, 34)
-
-[node name="C_088_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13, 12, 34)
-
-[node name="C_089_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15, 12, 34)
-
-[node name="C_090_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 17, 12, 34)
-
-[node name="C_091_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 19, 12, 34)
-
-[node name="C_092_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 21, 12, 34)
-
-[node name="C_093_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 23, 12, 34)
-
-[node name="C_094_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 25, 12, 34)
-
-[node name="C_095_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 27, 12, 34)
-
-[node name="C_096_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 29, 12, 34)
-
-[node name="C_097_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 31, 12, 34)
-
-[node name="C_098_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 33, 12, 34)
-
-[node name="C_099_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 35, 12, 34)
-
-[node name="C_100_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 37, 12, 34)
-
-[node name="C_101_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 39, 12, 34)
-
-[node name="C_102_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 41, 12, 36)
-
-[node name="C_103_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 43, 12, 34)
-
-[node name="C_104_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 41, 12, 34)
-
-[node name="C_105_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 39, 12, 34)
-
-[node name="C_106_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 37, 12, 34)
-
-[node name="C_107_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 35, 12, 34)
-
-[node name="C_108_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 33, 12, 34)
-
-[node name="C_109_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31, 12, 34)
-
-[node name="C_110_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 12, 34)
-
-[node name="C_111_D" parent="Belts" instance=ExtResource("5")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 27, 10, 34)
-
-[node name="C_112_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 23, 10, 34)
-
-[node name="C_113_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21, 10, 34)
-
-[node name="C_114_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 19, 10, 34)
-
-[node name="C_115_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17, 10, 34)
-
-[node name="C_116_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 15, 10, 34)
-
-[node name="C_117_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 13, 10, 34)
-
-[node name="C_118_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 11, 10, 34)
-
-[node name="C_119_R" parent="Belts" instance=ExtResource("3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 10, 34)
-
-[node name="C_120_R" parent="Belts" instance=ExtResource("3")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 7, 10, 30)
-
-[node name="C_121_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 9, 10, 30)
-
-[node name="C_122_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 11, 10, 30)
-
-[node name="C_123_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13, 10, 30)
-
-[node name="C_124_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15, 10, 30)
-
-[node name="C_125_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 17, 10, 30)
-
-[node name="C_126_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 19, 10, 30)
-
-[node name="C_127_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 21, 10, 30)
-
-[node name="C_128_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 23, 10, 30)
-
-[node name="C_129_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 25, 10, 30)
-
-[node name="C_130_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 27, 10, 30)
-
-[node name="C_131_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 29, 10, 30)
-
-[node name="C_132_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 31, 10, 30)
-
-[node name="C_133_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 33, 10, 30)
-
-[node name="C_134_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 35, 10, 30)
-
-[node name="C_135_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 37, 10, 30)
-
-[node name="C_136_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 10, 32)
-
-[node name="C_137_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 41, 10, 30)
-
-[node name="C_138_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 39, 10, 30)
-
-[node name="C_139_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 37, 10, 30)
-
-[node name="C_140_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 35, 10, 30)
-
-[node name="C_141_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 33, 10, 30)
-
-[node name="C_142_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31, 10, 30)
-
-[node name="C_143_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 10, 30)
-
-[node name="C_144_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 27, 10, 30)
-
-[node name="C_145_D" parent="Belts" instance=ExtResource("5")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 25, 8, 30)
-
-[node name="C_146_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21, 8, 30)
-
-[node name="C_147_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 19, 8, 30)
-
-[node name="C_148_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17, 8, 30)
-
-[node name="C_149_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 15, 8, 30)
-
-[node name="C_150_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 13, 8, 30)
-
-[node name="C_151_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 11, 8, 30)
-
-[node name="C_152_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 9, 8, 30)
-
-[node name="C_153_R" parent="Belts" instance=ExtResource("3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 8, 30)
-
-[node name="C_154_R" parent="Belts" instance=ExtResource("3")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 5, 8, 26)
-
-[node name="C_155_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 7, 8, 26)
-
-[node name="C_156_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 9, 8, 26)
-
-[node name="C_157_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 11, 8, 26)
-
-[node name="C_158_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13, 8, 26)
-
-[node name="C_159_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15, 8, 26)
-
-[node name="C_160_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 17, 8, 26)
-
-[node name="C_161_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 19, 8, 26)
-
-[node name="C_162_D" parent="Belts" instance=ExtResource("5")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 21, 6, 26)
-
-[node name="C_163_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 25, 6, 26)
-
-[node name="C_164_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 27, 6, 26)
-
-[node name="C_165_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 29, 6, 26)
-
-[node name="C_166_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 31, 6, 26)
-
-[node name="C_167_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 33, 6, 26)
-
-[node name="C_168_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 35, 6, 26)
-
-[node name="C_169_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 37, 6, 26)
-
-[node name="C_170_L" parent="Belts" instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 6, 28)
-
-[node name="C_171_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 6, 26)
-
-[node name="C_172_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 6, 24)
-
-[node name="C_173_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 6, 22)
-
-[node name="C_174_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 6, 20)
-
-[node name="C_175_D" parent="Belts" instance=ExtResource("5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 4, 18)
-
-[node name="C_176_D" parent="Belts" instance=ExtResource("5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 2, 14)
-
-[node name="C_177_D" parent="Belts" instance=ExtResource("5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 0, 10)
-
-[node name="C_178_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 0, 6)
-
-[node name="C_179_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 0, 4)
-
-[node name="C_180_U" parent="Belts" instance=ExtResource("4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 0, 2)
-
-[node name="C_181_T" parent="Machines" instance=ExtResource("6")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 0, -2)
-
-[node name="C_182_FinesDeleter" parent="Machines" instance=ExtResource("7")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 43, 0, -6)
-itemsPerSecond = 1.75
-
-[node name="C_183_FinesDeleter" parent="Machines" instance=ExtResource("7")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 43, 0, -10)
-itemsPerSecond = 1.75
-
-[node name="C_184_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 0, -10)
-
-[node name="C_185_X" parent="Machines" instance=ExtResource("7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, 0, -12)
-itemsPerSecond = 3.5
-
-[node name="D_001_Spawner" parent="Machines" instance=ExtResource("8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 3, 24)
-itemWeights = Dictionary[String, float]({
-"sieve_cube_010": 1.0,
-"sieve_cube_025": 1.0,
-"sieve_cube_050": 1.0,
-"sieve_cube_075": 1.0,
-"electronic_bits": 1.0,
-"scrap_ingot": 1.0
-})
-spawning = true
-spawnInterval = 0.0556
-
-[node name="Output" parent="Machines/D_001_Spawner"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1, -1.5, -1)
-
-[node name="D_002_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 24)
-
-[node name="D_003_S" parent="Belts" instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 22)
-
-[node name="D_004_U" parent="Belts" instance=ExtResource("4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 20)
-
-[node name="D_005_T" parent="Machines" instance=ExtResource("6")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 16)
-
-[node name="D_006_FinesDeleter" parent="Machines" instance=ExtResource("7")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 3, 0, 12)
-itemsPerSecond = 0.0
-
-[node name="D_007_FinesDeleter" parent="Machines" instance=ExtResource("7")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 3, 0, 8)
-itemsPerSecond = 0.0
-
-[node name="PitDrainNW" parent="PitDrains" instance=ExtResource("7")]
+[node name="Room" type="GMPBody" parent="." unique_id=409266141]
+body_type = 0
+tags = 264
+
+[node name="FloorNorthShape" type="GMPShape" parent="Room" unique_id=781336002]
+size = Vector3(100, 1, 42)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -29)
+
+[node name="FloorNorth" type="MeshInstance3D" parent="Room" unique_id=414416139]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -29)
+mesh = SubResource("Mesh_FloorNorth")
+
+[node name="FloorSouthShape" type="GMPShape" parent="Room" unique_id=99489164]
+size = Vector3(100, 1, 42)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 29)
+
+[node name="FloorSouth" type="MeshInstance3D" parent="Room" unique_id=1288928185]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 29)
+mesh = SubResource("Mesh_FloorSouth")
+
+[node name="FloorWestShape" type="GMPShape" parent="Room" unique_id=256394501]
+size = Vector3(42, 1, 16)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, -0.5, 0)
+
+[node name="FloorWest" type="MeshInstance3D" parent="Room" unique_id=567283079]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, -0.5, 0)
+mesh = SubResource("Mesh_FloorWest")
+
+[node name="FloorEastShape" type="GMPShape" parent="Room" unique_id=370997793]
+size = Vector3(42, 1, 16)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29, -0.5, 0)
+
+[node name="FloorEast" type="MeshInstance3D" parent="Room" unique_id=386119999]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29, -0.5, 0)
+mesh = SubResource("Mesh_FloorEast")
+
+[node name="PitFloorShape" type="GMPShape" parent="Room" unique_id=1901206073]
+size = Vector3(18, 1, 18)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.5, 0)
+
+[node name="PitFloor" type="MeshInstance3D" parent="Room" unique_id=1171506690]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.5, 0)
+mesh = SubResource("Mesh_PitFloor")
+
+[node name="PitWallWestShape" type="GMPShape" parent="Room" unique_id=1794855835]
+size = Vector3(1, 4, 18)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, -2, 0)
+
+[node name="PitWallWest" type="MeshInstance3D" parent="Room" unique_id=1450859862]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, -2, 0)
+mesh = SubResource("Mesh_PitWallWest")
+
+[node name="PitWallEastShape" type="GMPShape" parent="Room" unique_id=1654001231]
+size = Vector3(1, 4, 18)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, -2, 0)
+
+[node name="PitWallEast" type="MeshInstance3D" parent="Room" unique_id=2051800224]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, -2, 0)
+mesh = SubResource("Mesh_PitWallEast")
+
+[node name="PitWallNorthShape" type="GMPShape" parent="Room" unique_id=1962696576]
+size = Vector3(16, 4, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, -8.5)
+
+[node name="PitWallNorth" type="MeshInstance3D" parent="Room" unique_id=197965575]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, -8.5)
+mesh = SubResource("Mesh_PitWallNorth")
+
+[node name="PitWallSouthShape" type="GMPShape" parent="Room" unique_id=714219615]
+size = Vector3(16, 4, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 8.5)
+
+[node name="PitWallSouth" type="MeshInstance3D" parent="Room" unique_id=40164707]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 8.5)
+mesh = SubResource("Mesh_PitWallSouth")
+
+[node name="WallWestShape" type="GMPShape" parent="Room" unique_id=1432611773]
+size = Vector3(1, 31, 102)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50.5, 15, 0)
+
+[node name="WallWest" type="MeshInstance3D" parent="Room" unique_id=282170420]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50.5, 15, 0)
+mesh = SubResource("Mesh_WallWest")
+
+[node name="WallEastShape" type="GMPShape" parent="Room" unique_id=1258781413]
+size = Vector3(1, 31, 102)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50.5, 15, 0)
+
+[node name="WallEast" type="MeshInstance3D" parent="Room" unique_id=23922375]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50.5, 15, 0)
+mesh = SubResource("Mesh_WallEast")
+
+[node name="WallNorthShape" type="GMPShape" parent="Room" unique_id=755306761]
+size = Vector3(100, 31, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15, -50.5)
+
+[node name="WallNorth" type="MeshInstance3D" parent="Room" unique_id=1912636393]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15, -50.5)
+mesh = SubResource("Mesh_WallNorth")
+
+[node name="WallSouthShape" type="GMPShape" parent="Room" unique_id=633015564]
+size = Vector3(100, 31, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15, 50.5)
+
+[node name="WallSouth" type="MeshInstance3D" parent="Room" unique_id=1132599779]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15, 50.5)
+mesh = SubResource("Mesh_WallSouth")
+
+[node name="CeilingShape" type="GMPShape" parent="Room" unique_id=234063046]
+size = Vector3(102, 1, 102)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30.5, 0)
+
+[node name="Ceiling" type="MeshInstance3D" parent="Room" unique_id=510092736]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30.5, 0)
+mesh = SubResource("Mesh_Ceiling")
+
+[node name="Stirrer" type="GMPBody" parent="." unique_id=1888316214]
+body_type = 1
+tags = 514
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4, 0)
+script = ExtResource("stirrer")
+
+[node name="HubShape" type="GMPShape" parent="Stirrer" unique_id=1044846884]
+shape = 3
+height = 2.5
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+
+[node name="Hub" type="MeshInstance3D" parent="Stirrer" unique_id=625691942]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+mesh = SubResource("Mesh_Hub")
+
+[node name="Paddle0Shape" type="GMPShape" parent="Stirrer" unique_id=461171736]
+size = Vector3(5, 1, 0.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.6, 0)
+
+[node name="Paddle0" type="MeshInstance3D" parent="Stirrer" unique_id=999575562]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.6, 0)
+mesh = SubResource("Mesh_Paddle")
+
+[node name="Paddle1Shape" type="GMPShape" parent="Stirrer" unique_id=1532395400]
+size = Vector3(5, 1, 0.3)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0.6, -3)
+
+[node name="Paddle1" type="MeshInstance3D" parent="Stirrer" unique_id=518741581]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0.6, -3)
+mesh = SubResource("Mesh_Paddle")
+
+[node name="Paddle2Shape" type="GMPShape" parent="Stirrer" unique_id=223892742]
+size = Vector3(5, 1, 0.3)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3, 0.6, 0)
+
+[node name="Paddle2" type="MeshInstance3D" parent="Stirrer" unique_id=466246321]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3, 0.6, 0)
+mesh = SubResource("Mesh_Paddle")
+
+[node name="Paddle3Shape" type="GMPShape" parent="Stirrer" unique_id=1014108193]
+size = Vector3(5, 1, 0.3)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.6, 3)
+
+[node name="Paddle3" type="MeshInstance3D" parent="Stirrer" unique_id=1785883212]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.6, 3)
+mesh = SubResource("Mesh_Paddle")
+
+[node name="PitDrains" type="Node3D" parent="." unique_id=1073092224]
+
+[node name="PitDrainNW" parent="PitDrains" unique_id=1142791458 instance=ExtResource("7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, -4, -4)
 itemsPerSecond = 3.5
 
-[node name="PitDrainSE" parent="PitDrains" instance=ExtResource("7")]
+[node name="PitDrainSE" parent="PitDrains" unique_id=648456896 instance=ExtResource("7")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 8, -4, 4)
 itemsPerSecond = 3.5
 
-[node name="ItemSeeder" type="Node3D" parent="." node_paths=PackedStringArray("beltsRoot")]
+[node name="Belts" type="Node3D" parent="." unique_id=1102055731]
+
+[node name="A_002_S" parent="Belts" unique_id=1412709549 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -44, 0, 44)
+
+[node name="A_003_S" parent="Belts" unique_id=1471160437 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -42, 0, 44)
+
+[node name="A_004_S" parent="Belts" unique_id=1487208603 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -40, 0, 44)
+
+[node name="A_005_S" parent="Belts" unique_id=1229626122 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -38, 0, 44)
+
+[node name="A_006_S" parent="Belts" unique_id=937361136 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -36, 0, 44)
+
+[node name="A_007_S" parent="Belts" unique_id=1371493650 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -34, 0, 44)
+
+[node name="A_008_S" parent="Belts" unique_id=956714393 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -32, 0, 44)
+
+[node name="A_009_S" parent="Belts" unique_id=942159596 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -30, 0, 44)
+
+[node name="A_010_S" parent="Belts" unique_id=2054956324 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -28, 0, 44)
+
+[node name="A_011_S" parent="Belts" unique_id=2027351797 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -26, 0, 44)
+
+[node name="A_012_S" parent="Belts" unique_id=1270599640 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -24, 0, 44)
+
+[node name="A_013_S" parent="Belts" unique_id=1510134472 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -22, 0, 44)
+
+[node name="A_014_S" parent="Belts" unique_id=311343863 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -20, 0, 44)
+
+[node name="A_015_S" parent="Belts" unique_id=1949365891 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18, 0, 44)
+
+[node name="A_016_S" parent="Belts" unique_id=333562515 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -16, 0, 44)
+
+[node name="A_017_S" parent="Belts" unique_id=922070940 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14, 0, 44)
+
+[node name="A_018_S" parent="Belts" unique_id=2085985964 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -12, 0, 44)
+
+[node name="A_019_S" parent="Belts" unique_id=1913870262 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -10, 0, 44)
+
+[node name="A_020_S" parent="Belts" unique_id=257569400 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -8, 0, 44)
+
+[node name="A_021_S" parent="Belts" unique_id=1928124469 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -6, 0, 44)
+
+[node name="A_022_S" parent="Belts" unique_id=173571721 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -4, 0, 44)
+
+[node name="A_023_S" parent="Belts" unique_id=361311795 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -2, 0, 44)
+
+[node name="A_024_S" parent="Belts" unique_id=684096096 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0, 44)
+
+[node name="A_025_S" parent="Belts" unique_id=115321799 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2, 0, 44)
+
+[node name="A_026_S" parent="Belts" unique_id=1410482046 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 4, 0, 44)
+
+[node name="A_027_S" parent="Belts" unique_id=773115418 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 6, 0, 44)
+
+[node name="A_028_S" parent="Belts" unique_id=819160918 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 8, 0, 44)
+
+[node name="A_029_S" parent="Belts" unique_id=2123173468 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10, 0, 44)
+
+[node name="A_030_S" parent="Belts" unique_id=187744300 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 12, 0, 44)
+
+[node name="A_031_S" parent="Belts" unique_id=1274689028 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 14, 0, 44)
+
+[node name="A_032_L" parent="Belts" unique_id=1073305125 instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 46)
+
+[node name="A_033_S" parent="Belts" unique_id=1166519005 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 44)
+
+[node name="A_034_L" parent="Belts" unique_id=213336724 instance=ExtResource("2")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18, 0, 42)
+
+[node name="A_035_S" parent="Belts" unique_id=2033420014 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16, 0, 42)
+
+[node name="A_036_S" parent="Belts" unique_id=603645130 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 14, 0, 42)
+
+[node name="A_037_S" parent="Belts" unique_id=1431552751 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 12, 0, 42)
+
+[node name="A_038_S" parent="Belts" unique_id=1039244737 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, 42)
+
+[node name="A_039_S" parent="Belts" unique_id=1395824066 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 8, 0, 42)
+
+[node name="A_040_S" parent="Belts" unique_id=1655268821 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 6, 0, 42)
+
+[node name="A_041_S" parent="Belts" unique_id=612341941 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4, 0, 42)
+
+[node name="A_042_S" parent="Belts" unique_id=1493527685 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2, 0, 42)
+
+[node name="A_043_S" parent="Belts" unique_id=1419621597 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0, 42)
+
+[node name="A_044_S" parent="Belts" unique_id=1568923791 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -2, 0, 42)
+
+[node name="A_045_S" parent="Belts" unique_id=945363814 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4, 0, 42)
+
+[node name="A_046_S" parent="Belts" unique_id=254481324 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -6, 0, 42)
+
+[node name="A_047_S" parent="Belts" unique_id=219903254 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -8, 0, 42)
+
+[node name="A_048_S" parent="Belts" unique_id=2024213371 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 0, 42)
+
+[node name="A_049_S" parent="Belts" unique_id=954822365 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -12, 0, 42)
+
+[node name="A_050_S" parent="Belts" unique_id=729347680 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -14, 0, 42)
+
+[node name="A_051_S" parent="Belts" unique_id=260678308 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -16, 0, 42)
+
+[node name="A_052_S" parent="Belts" unique_id=1753013660 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -18, 0, 42)
+
+[node name="A_053_S" parent="Belts" unique_id=1607163648 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -20, 0, 42)
+
+[node name="A_054_S" parent="Belts" unique_id=1396899098 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, 42)
+
+[node name="A_055_S" parent="Belts" unique_id=1379537826 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -24, 0, 42)
+
+[node name="A_056_S" parent="Belts" unique_id=39478753 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -26, 0, 42)
+
+[node name="A_057_S" parent="Belts" unique_id=1324272310 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -28, 0, 42)
+
+[node name="A_058_S" parent="Belts" unique_id=362379081 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -30, 0, 42)
+
+[node name="A_059_S" parent="Belts" unique_id=1738623232 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -32, 0, 42)
+
+[node name="A_060_S" parent="Belts" unique_id=27351502 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -34, 0, 42)
+
+[node name="A_061_S" parent="Belts" unique_id=134999535 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -36, 0, 42)
+
+[node name="A_062_S" parent="Belts" unique_id=1802736744 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -38, 0, 42)
+
+[node name="A_063_S" parent="Belts" unique_id=1551499580 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -40, 0, 42)
+
+[node name="A_064_S" parent="Belts" unique_id=1473875305 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -42, 0, 42)
+
+[node name="A_065_R" parent="Belts" unique_id=384591580 instance=ExtResource("3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46, 0, 42)
+
+[node name="A_066_S" parent="Belts" unique_id=2071072411 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46, 0, 40)
+
+[node name="A_067_R" parent="Belts" unique_id=649065974 instance=ExtResource("3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -46, 0, 36)
+
+[node name="A_068_S" parent="Belts" unique_id=372108484 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -44, 0, 36)
+
+[node name="A_069_S" parent="Belts" unique_id=1875766202 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -42, 0, 36)
+
+[node name="A_070_S" parent="Belts" unique_id=1452034400 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -40, 0, 36)
+
+[node name="A_071_S" parent="Belts" unique_id=1428222614 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -38, 0, 36)
+
+[node name="A_072_S" parent="Belts" unique_id=918432026 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -36, 0, 36)
+
+[node name="A_073_S" parent="Belts" unique_id=1287877033 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -34, 0, 36)
+
+[node name="A_074_S" parent="Belts" unique_id=251939045 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -32, 0, 36)
+
+[node name="A_075_S" parent="Belts" unique_id=942614811 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -30, 0, 36)
+
+[node name="A_076_S" parent="Belts" unique_id=1243166474 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -28, 0, 36)
+
+[node name="A_077_S" parent="Belts" unique_id=1010878380 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -26, 0, 36)
+
+[node name="A_078_S" parent="Belts" unique_id=296286869 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -24, 0, 36)
+
+[node name="A_079_S" parent="Belts" unique_id=1717102102 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -22, 0, 36)
+
+[node name="A_080_S" parent="Belts" unique_id=984500495 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -20, 0, 36)
+
+[node name="A_081_S" parent="Belts" unique_id=110499118 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18, 0, 36)
+
+[node name="A_082_S" parent="Belts" unique_id=557092250 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -16, 0, 36)
+
+[node name="A_083_S" parent="Belts" unique_id=1487824719 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14, 0, 36)
+
+[node name="A_084_S" parent="Belts" unique_id=1941907596 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -12, 0, 36)
+
+[node name="A_085_S" parent="Belts" unique_id=1786889579 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -10, 0, 36)
+
+[node name="A_086_S" parent="Belts" unique_id=1054075842 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -8, 0, 36)
+
+[node name="A_087_S" parent="Belts" unique_id=1397133000 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -6, 0, 36)
+
+[node name="A_088_S" parent="Belts" unique_id=15631463 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -4, 0, 36)
+
+[node name="A_089_S" parent="Belts" unique_id=1489238983 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -2, 0, 36)
+
+[node name="A_090_S" parent="Belts" unique_id=1295914037 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0, 36)
+
+[node name="A_091_S" parent="Belts" unique_id=602419515 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2, 0, 36)
+
+[node name="A_092_S" parent="Belts" unique_id=1836626081 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 4, 0, 36)
+
+[node name="A_093_S" parent="Belts" unique_id=992764329 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 6, 0, 36)
+
+[node name="A_094_S" parent="Belts" unique_id=780220544 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 8, 0, 36)
+
+[node name="A_095_S" parent="Belts" unique_id=1416812919 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10, 0, 36)
+
+[node name="A_096_S" parent="Belts" unique_id=95119522 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 12, 0, 36)
+
+[node name="A_097_S" parent="Belts" unique_id=108506845 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 14, 0, 36)
+
+[node name="A_098_L" parent="Belts" unique_id=1617057924 instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 38)
+
+[node name="A_099_S" parent="Belts" unique_id=226616201 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 36)
+
+[node name="A_100_L" parent="Belts" unique_id=1881588095 instance=ExtResource("2")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18, 0, 34)
+
+[node name="A_101_S" parent="Belts" unique_id=914760509 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16, 0, 34)
+
+[node name="A_102_S" parent="Belts" unique_id=1801698924 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 14, 0, 34)
+
+[node name="A_103_S" parent="Belts" unique_id=1920394679 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 12, 0, 34)
+
+[node name="A_104_S" parent="Belts" unique_id=1165521117 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, 34)
+
+[node name="A_105_S" parent="Belts" unique_id=909194620 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 8, 0, 34)
+
+[node name="A_106_S" parent="Belts" unique_id=1043977063 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 6, 0, 34)
+
+[node name="A_107_S" parent="Belts" unique_id=1006283960 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4, 0, 34)
+
+[node name="A_108_S" parent="Belts" unique_id=1663692123 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2, 0, 34)
+
+[node name="A_109_S" parent="Belts" unique_id=1002516799 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0, 34)
+
+[node name="A_110_S" parent="Belts" unique_id=1209438979 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -2, 0, 34)
+
+[node name="A_111_S" parent="Belts" unique_id=403233186 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4, 0, 34)
+
+[node name="A_112_S" parent="Belts" unique_id=1910314937 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -6, 0, 34)
+
+[node name="A_115_S" parent="Belts" unique_id=1355287854 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -14, 0, 34)
+
+[node name="A_116_S" parent="Belts" unique_id=1488442546 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -16, 0, 34)
+
+[node name="A_117_S" parent="Belts" unique_id=607223050 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -18, 0, 34)
+
+[node name="A_118_S" parent="Belts" unique_id=956265703 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -20, 0, 34)
+
+[node name="A_119_S" parent="Belts" unique_id=595851427 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, 34)
+
+[node name="A_120_S" parent="Belts" unique_id=345182096 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -24, 0, 34)
+
+[node name="A_121_S" parent="Belts" unique_id=1341935582 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -26, 0, 34)
+
+[node name="A_122_S" parent="Belts" unique_id=445343244 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -28, 0, 34)
+
+[node name="A_123_S" parent="Belts" unique_id=357979178 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -30, 0, 34)
+
+[node name="A_124_S" parent="Belts" unique_id=71834790 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -32, 0, 34)
+
+[node name="A_125_S" parent="Belts" unique_id=1096141550 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -34, 0, 34)
+
+[node name="A_126_S" parent="Belts" unique_id=9221735 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -36, 0, 34)
+
+[node name="A_127_S" parent="Belts" unique_id=1074550124 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -38, 0, 34)
+
+[node name="A_128_R" parent="Belts" unique_id=1373416207 instance=ExtResource("3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 0, 34)
+
+[node name="A_129_S" parent="Belts" unique_id=297532300 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 0, 32)
+
+[node name="A_130_R" parent="Belts" unique_id=749076226 instance=ExtResource("3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -42, 0, 28)
+
+[node name="A_131_S" parent="Belts" unique_id=523065460 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -40, 0, 28)
+
+[node name="A_132_S" parent="Belts" unique_id=170335455 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -38, 0, 28)
+
+[node name="A_133_S" parent="Belts" unique_id=1376764677 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -36, 0, 28)
+
+[node name="A_134_S" parent="Belts" unique_id=1586481829 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -34, 0, 28)
+
+[node name="A_135_S" parent="Belts" unique_id=390844834 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -32, 0, 28)
+
+[node name="A_136_S" parent="Belts" unique_id=1819090136 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -30, 0, 28)
+
+[node name="A_137_S" parent="Belts" unique_id=107480478 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -28, 0, 28)
+
+[node name="A_138_S" parent="Belts" unique_id=517755255 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -26, 0, 28)
+
+[node name="A_139_S" parent="Belts" unique_id=2088792158 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -24, 0, 28)
+
+[node name="A_140_S" parent="Belts" unique_id=1033867197 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -22, 0, 28)
+
+[node name="A_141_S" parent="Belts" unique_id=1795407878 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -20, 0, 28)
+
+[node name="A_142_S" parent="Belts" unique_id=1208959490 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18, 0, 28)
+
+[node name="A_143_S" parent="Belts" unique_id=1859854467 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -16, 0, 28)
+
+[node name="A_144_S" parent="Belts" unique_id=190353464 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14, 0, 28)
+
+[node name="A_145_S" parent="Belts" unique_id=819565863 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -12, 0, 28)
+
+[node name="A_146_S" parent="Belts" unique_id=11080634 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -10, 0, 28)
+
+[node name="A_147_S" parent="Belts" unique_id=593377111 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -8, 0, 28)
+
+[node name="A_148_S" parent="Belts" unique_id=2140359933 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -6, 0, 28)
+
+[node name="A_149_S" parent="Belts" unique_id=576188497 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -4, 0, 28)
+
+[node name="A_150_S" parent="Belts" unique_id=1213039106 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -2, 0, 28)
+
+[node name="A_151_S" parent="Belts" unique_id=1894730608 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0, 28)
+
+[node name="A_152_S" parent="Belts" unique_id=1641639499 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2, 0, 28)
+
+[node name="A_153_S" parent="Belts" unique_id=1333295668 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 4, 0, 28)
+
+[node name="A_154_S" parent="Belts" unique_id=2077796806 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 6, 0, 28)
+
+[node name="A_155_S" parent="Belts" unique_id=1365424860 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 8, 0, 28)
+
+[node name="A_156_S" parent="Belts" unique_id=1447048232 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10, 0, 28)
+
+[node name="A_157_S" parent="Belts" unique_id=1248540164 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 12, 0, 28)
+
+[node name="A_158_S" parent="Belts" unique_id=1383244927 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 14, 0, 28)
+
+[node name="A_159_S" parent="Belts" unique_id=371025184 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 16, 0, 28)
+
+[node name="A_160_S" parent="Belts" unique_id=1551270875 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 18, 0, 28)
+
+[node name="A_161_L" parent="Belts" unique_id=1922407984 instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 30)
+
+[node name="A_162_S" parent="Belts" unique_id=226459859 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 28)
+
+[node name="A_163_L" parent="Belts" unique_id=1827983588 instance=ExtResource("2")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 22, 0, 26)
+
+[node name="A_164_S" parent="Belts" unique_id=1171768115 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 20, 0, 26)
+
+[node name="A_165_S" parent="Belts" unique_id=752405321 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18, 0, 26)
+
+[node name="A_166_S" parent="Belts" unique_id=1392976342 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16, 0, 26)
+
+[node name="A_167_S" parent="Belts" unique_id=1202562463 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 14, 0, 26)
+
+[node name="A_168_S" parent="Belts" unique_id=1387453763 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 12, 0, 26)
+
+[node name="A_169_S" parent="Belts" unique_id=1127506605 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, 26)
+
+[node name="A_170_S" parent="Belts" unique_id=797941045 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 8, 0, 26)
+
+[node name="A_171_S" parent="Belts" unique_id=1443512895 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 6, 0, 26)
+
+[node name="A_172_S" parent="Belts" unique_id=121322014 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4, 0, 26)
+
+[node name="A_173_S" parent="Belts" unique_id=247317908 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2, 0, 26)
+
+[node name="A_174_S" parent="Belts" unique_id=1318278202 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0, 26)
+
+[node name="A_175_S" parent="Belts" unique_id=288354576 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -2, 0, 26)
+
+[node name="A_176_S" parent="Belts" unique_id=597834989 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4, 0, 26)
+
+[node name="A_177_S" parent="Belts" unique_id=1643210454 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -6, 0, 26)
+
+[node name="A_178_S" parent="Belts" unique_id=1262635175 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -8, 0, 26)
+
+[node name="A_179_S" parent="Belts" unique_id=2048418346 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 0, 26)
+
+[node name="A_180_S" parent="Belts" unique_id=1425944637 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -12, 0, 26)
+
+[node name="A_181_S" parent="Belts" unique_id=1945465322 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -14, 0, 26)
+
+[node name="A_182_S" parent="Belts" unique_id=236031911 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -16, 0, 26)
+
+[node name="A_183_S" parent="Belts" unique_id=1277407622 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -18, 0, 26)
+
+[node name="A_184_S" parent="Belts" unique_id=567381710 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -20, 0, 26)
+
+[node name="A_185_S" parent="Belts" unique_id=1234675391 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, 26)
+
+[node name="A_186_S" parent="Belts" unique_id=274112987 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -24, 0, 26)
+
+[node name="A_187_S" parent="Belts" unique_id=742723003 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -26, 0, 26)
+
+[node name="A_188_S" parent="Belts" unique_id=1351989274 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -28, 0, 26)
+
+[node name="A_189_S" parent="Belts" unique_id=2085328350 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -30, 0, 26)
+
+[node name="A_190_S" parent="Belts" unique_id=1873415095 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -32, 0, 26)
+
+[node name="A_191_S" parent="Belts" unique_id=1167743313 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -34, 0, 26)
+
+[node name="A_192_S" parent="Belts" unique_id=188917851 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -36, 0, 26)
+
+[node name="A_193_S" parent="Belts" unique_id=878842074 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -38, 0, 26)
+
+[node name="B_002_S" parent="Belts" unique_id=1434305126 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 1)
+
+[node name="B_003_S" parent="Belts" unique_id=821537636 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, -1)
+
+[node name="B_004_L" parent="Belts" unique_id=136428095 instance=ExtResource("2")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -38, 0, -3)
+
+[node name="B_005_S" parent="Belts" unique_id=2100637468 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -40, 0, -3)
+
+[node name="B_006_U" parent="Belts" unique_id=259311770 instance=ExtResource("4")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -42, 0, -3)
+
+[node name="B_007_S" parent="Belts" unique_id=1177668136 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -46, 2, -3)
+
+[node name="B_008_L" parent="Belts" unique_id=911400271 instance=ExtResource("2")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 2, -5)
+
+[node name="B_009_S" parent="Belts" unique_id=1653305832 instance=ExtResource("1")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 2, -3)
+
+[node name="B_010_U" parent="Belts" unique_id=1809108387 instance=ExtResource("4")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 2, -1)
+
+[node name="B_011_S" parent="Belts" unique_id=1453680613 instance=ExtResource("1")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 4, 3)
+
+[node name="B_012_L" parent="Belts" unique_id=1118610649 instance=ExtResource("2")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -50, 4, 5)
+
+[node name="B_013_S" parent="Belts" unique_id=1240751451 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -48, 4, 5)
+
+[node name="B_014_U" parent="Belts" unique_id=1361875597 instance=ExtResource("4")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -46, 4, 5)
+
+[node name="B_015_S" parent="Belts" unique_id=1928517755 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -42, 6, 5)
+
+[node name="B_016_L" parent="Belts" unique_id=1363519997 instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 6, 7)
+
+[node name="B_017_S" parent="Belts" unique_id=2129936458 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 6, 5)
+
+[node name="B_018_U" parent="Belts" unique_id=2017316835 instance=ExtResource("4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 6, 3)
+
+[node name="B_019_S" parent="Belts" unique_id=1528004984 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 8, -1)
+
+[node name="B_020_L" parent="Belts" unique_id=449770704 instance=ExtResource("2")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -38, 8, -3)
+
+[node name="B_021_S" parent="Belts" unique_id=207290563 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -40, 8, -3)
+
+[node name="B_022_U" parent="Belts" unique_id=2085542331 instance=ExtResource("4")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -42, 8, -3)
+
+[node name="B_023_S" parent="Belts" unique_id=77449915 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -46, 10, -3)
+
+[node name="B_024_L" parent="Belts" unique_id=1756487519 instance=ExtResource("2")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 10, -5)
+
+[node name="B_025_S" parent="Belts" unique_id=2063828652 instance=ExtResource("1")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 10, -3)
+
+[node name="B_026_U" parent="Belts" unique_id=1623747751 instance=ExtResource("4")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 10, -1)
+
+[node name="B_027_S" parent="Belts" unique_id=2111023323 instance=ExtResource("1")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 12, 3)
+
+[node name="B_028_L" parent="Belts" unique_id=1261247644 instance=ExtResource("2")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -50, 12, 5)
+
+[node name="B_029_S" parent="Belts" unique_id=508037907 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -48, 12, 5)
+
+[node name="B_030_U" parent="Belts" unique_id=1653772404 instance=ExtResource("4")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -46, 12, 5)
+
+[node name="B_031_S" parent="Belts" unique_id=2005038861 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -42, 14, 5)
+
+[node name="B_032_L" parent="Belts" unique_id=278984556 instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 14, 7)
+
+[node name="B_033_S" parent="Belts" unique_id=334782051 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 14, 5)
+
+[node name="B_034_U" parent="Belts" unique_id=1355078287 instance=ExtResource("4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 14, 3)
+
+[node name="B_035_S" parent="Belts" unique_id=2007122865 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 16, -1)
+
+[node name="B_036_L" parent="Belts" unique_id=40580469 instance=ExtResource("2")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -38, 16, -3)
+
+[node name="B_037_S" parent="Belts" unique_id=1013747488 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -40, 16, -3)
+
+[node name="B_038_U" parent="Belts" unique_id=261540292 instance=ExtResource("4")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -42, 16, -3)
+
+[node name="B_039_S" parent="Belts" unique_id=770076415 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -46, 18, -3)
+
+[node name="B_040_L" parent="Belts" unique_id=744503312 instance=ExtResource("2")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 18, -5)
+
+[node name="B_041_S" parent="Belts" unique_id=1452785804 instance=ExtResource("1")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 18, -3)
+
+[node name="B_042_U" parent="Belts" unique_id=677038762 instance=ExtResource("4")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 18, -1)
+
+[node name="B_043_S" parent="Belts" unique_id=920652370 instance=ExtResource("1")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48, 20, 3)
+
+[node name="B_044_L" parent="Belts" unique_id=158566560 instance=ExtResource("2")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -50, 20, 5)
+
+[node name="B_045_S" parent="Belts" unique_id=308026259 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -48, 20, 5)
+
+[node name="B_046_U" parent="Belts" unique_id=1086216454 instance=ExtResource("4")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -46, 20, 5)
+
+[node name="B_047_S" parent="Belts" unique_id=1080869226 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -42, 22, 5)
+
+[node name="B_048_L" parent="Belts" unique_id=1131242718 instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 22, 7)
+
+[node name="B_049_S" parent="Belts" unique_id=1128525587 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 22, 5)
+
+[node name="B_050_U" parent="Belts" unique_id=1201584469 instance=ExtResource("4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 22, 3)
+
+[node name="B_051_S" parent="Belts" unique_id=1626054445 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 24, -1)
+
+[node name="B_052_R" parent="Belts" unique_id=1161198658 instance=ExtResource("3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -40, 24, -5)
+
+[node name="B_053_S" parent="Belts" unique_id=1243296759 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -38, 24, -5)
+
+[node name="B_054_D" parent="Belts" unique_id=1707961471 instance=ExtResource("5")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -36, 22, -5)
+
+[node name="B_055_D" parent="Belts" unique_id=917976573 instance=ExtResource("5")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -32, 20, -5)
+
+[node name="B_056_D" parent="Belts" unique_id=1763976665 instance=ExtResource("5")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -28, 18, -5)
+
+[node name="B_057_D" parent="Belts" unique_id=888221435 instance=ExtResource("5")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -24, 16, -5)
+
+[node name="B_058_D" parent="Belts" unique_id=718515386 instance=ExtResource("5")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -20, 14, -5)
+
+[node name="B_059_D" parent="Belts" unique_id=1802269382 instance=ExtResource("5")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -16, 12, -5)
+
+[node name="B_060_D" parent="Belts" unique_id=1099848264 instance=ExtResource("5")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -12, 10, -5)
+
+[node name="B_061_S" parent="Belts" unique_id=267794888 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -8, 10, -5)
+
+[node name="B_062_S" parent="Belts" unique_id=552497610 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -6, 10, -5)
+
+[node name="C_002_S" parent="Belts" unique_id=2065476719 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 45, 16, 46)
+
+[node name="C_003_S" parent="Belts" unique_id=125583487 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 43, 16, 46)
+
+[node name="C_004_S" parent="Belts" unique_id=1048603208 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 41, 16, 46)
+
+[node name="C_005_S" parent="Belts" unique_id=151065974 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 39, 16, 46)
+
+[node name="C_006_S" parent="Belts" unique_id=201994262 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 37, 16, 46)
+
+[node name="C_007_S" parent="Belts" unique_id=1135063650 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 35, 16, 46)
+
+[node name="C_008_S" parent="Belts" unique_id=1922884921 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 33, 16, 46)
+
+[node name="C_009_S" parent="Belts" unique_id=1454848082 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31, 16, 46)
+
+[node name="C_010_S" parent="Belts" unique_id=1148172607 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 16, 46)
+
+[node name="C_011_S" parent="Belts" unique_id=605227825 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 27, 16, 46)
+
+[node name="C_012_S" parent="Belts" unique_id=465693739 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 25, 16, 46)
+
+[node name="C_013_S" parent="Belts" unique_id=434517087 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 23, 16, 46)
+
+[node name="C_014_S" parent="Belts" unique_id=759736339 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21, 16, 46)
+
+[node name="C_015_S" parent="Belts" unique_id=1916471408 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 19, 16, 46)
+
+[node name="C_016_S" parent="Belts" unique_id=231066905 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17, 16, 46)
+
+[node name="C_017_R" parent="Belts" unique_id=1158484462 instance=ExtResource("3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 16, 46)
+
+[node name="C_018_R" parent="Belts" unique_id=575278241 instance=ExtResource("3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13, 16, 42)
+
+[node name="C_019_S" parent="Belts" unique_id=509791706 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15, 16, 42)
+
+[node name="C_020_S" parent="Belts" unique_id=2101145949 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 17, 16, 42)
+
+[node name="C_021_S" parent="Belts" unique_id=1591040847 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 19, 16, 42)
+
+[node name="C_022_S" parent="Belts" unique_id=828672634 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 21, 16, 42)
+
+[node name="C_023_S" parent="Belts" unique_id=888261134 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 23, 16, 42)
+
+[node name="C_024_S" parent="Belts" unique_id=758471896 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 25, 16, 42)
+
+[node name="C_025_S" parent="Belts" unique_id=1947394588 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 27, 16, 42)
+
+[node name="C_026_S" parent="Belts" unique_id=783988049 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 29, 16, 42)
+
+[node name="C_027_S" parent="Belts" unique_id=1785388480 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 31, 16, 42)
+
+[node name="C_028_S" parent="Belts" unique_id=1703603589 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 33, 16, 42)
+
+[node name="C_029_S" parent="Belts" unique_id=1579226629 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 35, 16, 42)
+
+[node name="C_030_S" parent="Belts" unique_id=122508644 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 37, 16, 42)
+
+[node name="C_031_S" parent="Belts" unique_id=2018417734 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 39, 16, 42)
+
+[node name="C_032_S" parent="Belts" unique_id=1775986600 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 41, 16, 42)
+
+[node name="C_033_S" parent="Belts" unique_id=1076808015 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 43, 16, 42)
+
+[node name="C_034_L" parent="Belts" unique_id=1045912210 instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 16, 44)
+
+[node name="C_035_L" parent="Belts" unique_id=589987076 instance=ExtResource("2")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 47, 16, 42)
+
+[node name="C_036_S" parent="Belts" unique_id=916681571 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 45, 16, 42)
+
+[node name="C_037_S" parent="Belts" unique_id=753059304 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 43, 16, 42)
+
+[node name="C_038_S" parent="Belts" unique_id=924096267 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 41, 16, 42)
+
+[node name="C_039_S" parent="Belts" unique_id=594887306 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 39, 16, 42)
+
+[node name="C_040_S" parent="Belts" unique_id=2043418879 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 37, 16, 42)
+
+[node name="C_041_S" parent="Belts" unique_id=1606385291 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 35, 16, 42)
+
+[node name="C_042_S" parent="Belts" unique_id=523384867 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 33, 16, 42)
+
+[node name="C_043_D" parent="Belts" unique_id=1366153344 instance=ExtResource("5")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31, 14, 42)
+
+[node name="C_044_S" parent="Belts" unique_id=61209053 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 27, 14, 42)
+
+[node name="C_045_S" parent="Belts" unique_id=1467494223 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 25, 14, 42)
+
+[node name="C_046_S" parent="Belts" unique_id=1577595415 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 23, 14, 42)
+
+[node name="C_047_S" parent="Belts" unique_id=990488161 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21, 14, 42)
+
+[node name="C_048_S" parent="Belts" unique_id=1901873080 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 19, 14, 42)
+
+[node name="C_049_S" parent="Belts" unique_id=1953880727 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17, 14, 42)
+
+[node name="C_050_S" parent="Belts" unique_id=446811402 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 15, 14, 42)
+
+[node name="C_051_R" parent="Belts" unique_id=1777041910 instance=ExtResource("3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 14, 42)
+
+[node name="C_052_R" parent="Belts" unique_id=43863565 instance=ExtResource("3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 11, 14, 38)
+
+[node name="C_053_S" parent="Belts" unique_id=819971428 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13, 14, 38)
+
+[node name="C_054_S" parent="Belts" unique_id=1810487506 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15, 14, 38)
+
+[node name="C_055_S" parent="Belts" unique_id=542901619 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 17, 14, 38)
+
+[node name="C_056_S" parent="Belts" unique_id=1675837512 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 19, 14, 38)
+
+[node name="C_057_S" parent="Belts" unique_id=177996362 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 21, 14, 38)
+
+[node name="C_058_S" parent="Belts" unique_id=1033169328 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 23, 14, 38)
+
+[node name="C_059_S" parent="Belts" unique_id=227693433 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 25, 14, 38)
+
+[node name="C_060_S" parent="Belts" unique_id=712974907 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 27, 14, 38)
+
+[node name="C_061_S" parent="Belts" unique_id=1690990779 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 29, 14, 38)
+
+[node name="C_062_S" parent="Belts" unique_id=981375697 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 31, 14, 38)
+
+[node name="C_063_S" parent="Belts" unique_id=1490907734 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 33, 14, 38)
+
+[node name="C_064_S" parent="Belts" unique_id=30547135 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 35, 14, 38)
+
+[node name="C_065_S" parent="Belts" unique_id=690727816 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 37, 14, 38)
+
+[node name="C_066_S" parent="Belts" unique_id=467521683 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 39, 14, 38)
+
+[node name="C_067_S" parent="Belts" unique_id=1950086743 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 41, 14, 38)
+
+[node name="C_068_L" parent="Belts" unique_id=1044328577 instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 14, 40)
+
+[node name="C_069_L" parent="Belts" unique_id=1764994093 instance=ExtResource("2")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 45, 14, 38)
+
+[node name="C_070_S" parent="Belts" unique_id=1829388510 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 43, 14, 38)
+
+[node name="C_071_S" parent="Belts" unique_id=295840674 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 41, 14, 38)
+
+[node name="C_072_S" parent="Belts" unique_id=1173973548 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 39, 14, 38)
+
+[node name="C_073_S" parent="Belts" unique_id=145383115 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 37, 14, 38)
+
+[node name="C_074_S" parent="Belts" unique_id=1605443518 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 35, 14, 38)
+
+[node name="C_075_S" parent="Belts" unique_id=1884506372 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 33, 14, 38)
+
+[node name="C_076_S" parent="Belts" unique_id=2083571588 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31, 14, 38)
+
+[node name="C_077_D" parent="Belts" unique_id=76100990 instance=ExtResource("5")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 12, 38)
+
+[node name="C_078_S" parent="Belts" unique_id=1175341771 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 25, 12, 38)
+
+[node name="C_079_S" parent="Belts" unique_id=302969901 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 23, 12, 38)
+
+[node name="C_080_S" parent="Belts" unique_id=994465405 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21, 12, 38)
+
+[node name="C_081_S" parent="Belts" unique_id=880814746 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 19, 12, 38)
+
+[node name="C_082_S" parent="Belts" unique_id=1907150486 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17, 12, 38)
+
+[node name="C_083_S" parent="Belts" unique_id=1189604519 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 15, 12, 38)
+
+[node name="C_084_S" parent="Belts" unique_id=1940607395 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 13, 12, 38)
+
+[node name="C_085_R" parent="Belts" unique_id=1670218487 instance=ExtResource("3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 12, 38)
+
+[node name="C_086_R" parent="Belts" unique_id=469922263 instance=ExtResource("3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 9, 12, 34)
+
+[node name="C_087_S" parent="Belts" unique_id=1270970577 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 11, 12, 34)
+
+[node name="C_088_S" parent="Belts" unique_id=1342056200 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13, 12, 34)
+
+[node name="C_089_S" parent="Belts" unique_id=27300353 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15, 12, 34)
+
+[node name="C_090_S" parent="Belts" unique_id=181711797 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 17, 12, 34)
+
+[node name="C_091_S" parent="Belts" unique_id=1838622770 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 19, 12, 34)
+
+[node name="C_092_S" parent="Belts" unique_id=493870505 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 21, 12, 34)
+
+[node name="C_093_S" parent="Belts" unique_id=1762943440 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 23, 12, 34)
+
+[node name="C_094_S" parent="Belts" unique_id=1237177091 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 25, 12, 34)
+
+[node name="C_095_S" parent="Belts" unique_id=817064000 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 27, 12, 34)
+
+[node name="C_096_S" parent="Belts" unique_id=610764539 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 29, 12, 34)
+
+[node name="C_097_S" parent="Belts" unique_id=1601182503 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 31, 12, 34)
+
+[node name="C_098_S" parent="Belts" unique_id=603604897 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 33, 12, 34)
+
+[node name="C_099_S" parent="Belts" unique_id=452796661 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 35, 12, 34)
+
+[node name="C_100_S" parent="Belts" unique_id=1791430681 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 37, 12, 34)
+
+[node name="C_101_S" parent="Belts" unique_id=976473799 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 39, 12, 34)
+
+[node name="C_102_L" parent="Belts" unique_id=441402150 instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 41, 12, 36)
+
+[node name="C_103_L" parent="Belts" unique_id=87020960 instance=ExtResource("2")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 43, 12, 34)
+
+[node name="C_104_S" parent="Belts" unique_id=1246701769 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 41, 12, 34)
+
+[node name="C_105_S" parent="Belts" unique_id=58585082 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 39, 12, 34)
+
+[node name="C_106_S" parent="Belts" unique_id=309203956 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 37, 12, 34)
+
+[node name="C_107_S" parent="Belts" unique_id=1031894386 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 35, 12, 34)
+
+[node name="C_108_S" parent="Belts" unique_id=499070837 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 33, 12, 34)
+
+[node name="C_109_S" parent="Belts" unique_id=1871836891 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31, 12, 34)
+
+[node name="C_110_S" parent="Belts" unique_id=174821192 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 12, 34)
+
+[node name="C_111_D" parent="Belts" unique_id=1066068503 instance=ExtResource("5")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 27, 10, 34)
+
+[node name="C_112_S" parent="Belts" unique_id=1971769598 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 23, 10, 34)
+
+[node name="C_113_S" parent="Belts" unique_id=1403065218 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21, 10, 34)
+
+[node name="C_114_S" parent="Belts" unique_id=426485872 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 19, 10, 34)
+
+[node name="C_115_S" parent="Belts" unique_id=1431984703 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17, 10, 34)
+
+[node name="C_116_S" parent="Belts" unique_id=1338334043 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 15, 10, 34)
+
+[node name="C_117_S" parent="Belts" unique_id=380143405 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 13, 10, 34)
+
+[node name="C_118_S" parent="Belts" unique_id=1652397935 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 11, 10, 34)
+
+[node name="C_119_R" parent="Belts" unique_id=1467782089 instance=ExtResource("3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 10, 34)
+
+[node name="C_120_R" parent="Belts" unique_id=1898638864 instance=ExtResource("3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 7, 10, 30)
+
+[node name="C_121_S" parent="Belts" unique_id=814420633 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 9, 10, 30)
+
+[node name="C_122_S" parent="Belts" unique_id=300643640 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 11, 10, 30)
+
+[node name="C_123_S" parent="Belts" unique_id=505085511 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13, 10, 30)
+
+[node name="C_124_S" parent="Belts" unique_id=845414916 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15, 10, 30)
+
+[node name="C_125_S" parent="Belts" unique_id=1362800618 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 17, 10, 30)
+
+[node name="C_126_S" parent="Belts" unique_id=804675014 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 19, 10, 30)
+
+[node name="C_127_S" parent="Belts" unique_id=774791559 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 21, 10, 30)
+
+[node name="C_128_S" parent="Belts" unique_id=123761943 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 23, 10, 30)
+
+[node name="C_129_S" parent="Belts" unique_id=1739350675 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 25, 10, 30)
+
+[node name="C_130_S" parent="Belts" unique_id=1564511136 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 27, 10, 30)
+
+[node name="C_131_S" parent="Belts" unique_id=1984213316 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 29, 10, 30)
+
+[node name="C_132_S" parent="Belts" unique_id=931326948 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 31, 10, 30)
+
+[node name="C_133_S" parent="Belts" unique_id=1747830418 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 33, 10, 30)
+
+[node name="C_134_S" parent="Belts" unique_id=1213506463 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 35, 10, 30)
+
+[node name="C_135_S" parent="Belts" unique_id=1427957070 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 37, 10, 30)
+
+[node name="C_136_L" parent="Belts" unique_id=546127606 instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 10, 32)
+
+[node name="C_137_L" parent="Belts" unique_id=755747636 instance=ExtResource("2")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 41, 10, 30)
+
+[node name="C_138_S" parent="Belts" unique_id=1244907576 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 39, 10, 30)
+
+[node name="C_139_S" parent="Belts" unique_id=1967365879 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 37, 10, 30)
+
+[node name="C_140_S" parent="Belts" unique_id=496134342 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 35, 10, 30)
+
+[node name="C_141_S" parent="Belts" unique_id=1638888143 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 33, 10, 30)
+
+[node name="C_142_S" parent="Belts" unique_id=255521282 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 31, 10, 30)
+
+[node name="C_143_S" parent="Belts" unique_id=664813413 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 29, 10, 30)
+
+[node name="C_144_S" parent="Belts" unique_id=288227051 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 27, 10, 30)
+
+[node name="C_145_D" parent="Belts" unique_id=1428391694 instance=ExtResource("5")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 25, 8, 30)
+
+[node name="C_146_S" parent="Belts" unique_id=1821428783 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21, 8, 30)
+
+[node name="C_147_S" parent="Belts" unique_id=1025904666 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 19, 8, 30)
+
+[node name="C_148_S" parent="Belts" unique_id=1099323510 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17, 8, 30)
+
+[node name="C_149_S" parent="Belts" unique_id=1674652483 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 15, 8, 30)
+
+[node name="C_150_S" parent="Belts" unique_id=1602813267 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 13, 8, 30)
+
+[node name="C_151_S" parent="Belts" unique_id=2019118198 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 11, 8, 30)
+
+[node name="C_152_S" parent="Belts" unique_id=1084117556 instance=ExtResource("1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 9, 8, 30)
+
+[node name="C_153_R" parent="Belts" unique_id=784325455 instance=ExtResource("3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 8, 30)
+
+[node name="C_154_R" parent="Belts" unique_id=214301321 instance=ExtResource("3")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 5, 8, 26)
+
+[node name="C_155_S" parent="Belts" unique_id=1027232034 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 7, 8, 26)
+
+[node name="C_156_S" parent="Belts" unique_id=129642718 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 9, 8, 26)
+
+[node name="C_157_S" parent="Belts" unique_id=684549931 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 11, 8, 26)
+
+[node name="C_158_S" parent="Belts" unique_id=1762499455 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13, 8, 26)
+
+[node name="C_159_S" parent="Belts" unique_id=1960547990 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15, 8, 26)
+
+[node name="C_160_S" parent="Belts" unique_id=1677863994 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 17, 8, 26)
+
+[node name="C_161_S" parent="Belts" unique_id=1534776394 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 19, 8, 26)
+
+[node name="C_162_D" parent="Belts" unique_id=1809565696 instance=ExtResource("5")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 21, 6, 26)
+
+[node name="C_163_S" parent="Belts" unique_id=241342692 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 25, 6, 26)
+
+[node name="C_164_S" parent="Belts" unique_id=1424273006 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 27, 6, 26)
+
+[node name="C_165_S" parent="Belts" unique_id=1396589929 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 29, 6, 26)
+
+[node name="C_166_S" parent="Belts" unique_id=1067517863 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 31, 6, 26)
+
+[node name="C_167_S" parent="Belts" unique_id=1739633721 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 33, 6, 26)
+
+[node name="C_168_S" parent="Belts" unique_id=529905651 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 35, 6, 26)
+
+[node name="C_169_S" parent="Belts" unique_id=632300603 instance=ExtResource("1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 37, 6, 26)
+
+[node name="C_170_L" parent="Belts" unique_id=1785656866 instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 6, 28)
+
+[node name="C_171_S" parent="Belts" unique_id=24133106 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 6, 26)
+
+[node name="C_172_S" parent="Belts" unique_id=1241860726 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 6, 24)
+
+[node name="C_173_S" parent="Belts" unique_id=352844091 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 6, 22)
+
+[node name="C_174_S" parent="Belts" unique_id=626791844 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 6, 20)
+
+[node name="C_175_D" parent="Belts" unique_id=1272656588 instance=ExtResource("5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 4, 18)
+
+[node name="C_176_D" parent="Belts" unique_id=346192769 instance=ExtResource("5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 2, 14)
+
+[node name="C_177_D" parent="Belts" unique_id=1288407818 instance=ExtResource("5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 0, 10)
+
+[node name="C_178_S" parent="Belts" unique_id=1527984087 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 0, 6)
+
+[node name="C_179_S" parent="Belts" unique_id=1632127448 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 0, 4)
+
+[node name="C_180_U" parent="Belts" unique_id=138588267 instance=ExtResource("4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 0, 2)
+
+[node name="C_184_S" parent="Belts" unique_id=876173411 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 0, -10)
+
+[node name="D_002_S" parent="Belts" unique_id=1160818282 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 24)
+
+[node name="D_003_S" parent="Belts" unique_id=1822696084 instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 22)
+
+[node name="D_004_U" parent="Belts" unique_id=639726812 instance=ExtResource("4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 20)
+
+[node name="Machines" type="Node3D" parent="." unique_id=1651741191]
+
+[node name="A_001_Spawner" parent="Machines" unique_id=1730852854 instance=ExtResource("8")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -44, 3, 44)
+itemWeights = Dictionary[String, float]({
+"electronic_bits": 1.0,
+"scrap_ingot": 1.0,
+"sieve_cube_010": 1.0,
+"sieve_cube_025": 1.0,
+"sieve_cube_050": 1.0,
+"sieve_cube_075": 1.0
+})
+spawnInterval = 0.125
+spawning = true
+
+[node name="A_113_X" parent="Machines" unique_id=1720824256 instance=ExtResource("7")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -8, 0, 35)
+itemsPerSecond = 7.0
+
+[node name="A_114_Spawner" parent="Machines" unique_id=537825806 instance=ExtResource("8")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -14, 3, 34)
+itemWeights = Dictionary[String, float]({
+"electronic_bits": 1.0,
+"scrap_ingot": 1.0,
+"sieve_cube_010": 1.0,
+"sieve_cube_025": 1.0,
+"sieve_cube_050": 1.0,
+"sieve_cube_075": 1.0
+})
+spawnInterval = 0.125
+spawning = true
+
+[node name="A_194_X" parent="Machines" unique_id=1011722087 instance=ExtResource("7")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -40, 0, 27)
+itemsPerSecond = 7.0
+
+[node name="B_001_Spawner" parent="Machines" unique_id=1269377718 instance=ExtResource("8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 3, 1)
+itemWeights = Dictionary[String, float]({
+"electronic_bits": 1.0,
+"scrap_ingot": 1.0,
+"sieve_cube_010": 1.0,
+"sieve_cube_025": 1.0,
+"sieve_cube_050": 1.0,
+"sieve_cube_075": 1.0
+})
+spawnInterval = 0.125
+spawning = true
+
+[node name="C_001_Spawner" parent="Machines" unique_id=1449335327 instance=ExtResource("8")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 45, 19, 46)
+itemWeights = Dictionary[String, float]({
+"electronic_bits": 1.0,
+"scrap_ingot": 1.0,
+"sieve_cube_010": 1.0,
+"sieve_cube_025": 1.0,
+"sieve_cube_050": 1.0,
+"sieve_cube_075": 1.0
+})
+spawnInterval = 0.125
+spawning = true
+
+[node name="C_181_T" parent="Machines" unique_id=1573851806 instance=ExtResource("6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 0, -2)
+
+[node name="C_182_FinesDeleter" parent="Machines" unique_id=1627966521 instance=ExtResource("7")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 43, 0, -6)
+itemsPerSecond = 1.75
+
+[node name="C_183_FinesDeleter" parent="Machines" unique_id=1659733998 instance=ExtResource("7")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 43, 0, -10)
+itemsPerSecond = 1.75
+
+[node name="C_185_X" parent="Machines" unique_id=1150026483 instance=ExtResource("7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, 0, -12)
+itemsPerSecond = 3.5
+
+[node name="D_001_Spawner" parent="Machines" unique_id=1864301782 instance=ExtResource("8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 3, 24)
+itemWeights = Dictionary[String, float]({
+"electronic_bits": 1.0,
+"scrap_ingot": 1.0,
+"sieve_cube_010": 1.0,
+"sieve_cube_025": 1.0,
+"sieve_cube_050": 1.0,
+"sieve_cube_075": 1.0
+})
+spawnInterval = 0.0556
+spawning = true
+
+[node name="D_005_T" parent="Machines" unique_id=1627703162 instance=ExtResource("6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 16)
+
+[node name="D_006_FinesDeleter" parent="Machines" unique_id=1861372422 instance=ExtResource("7")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 3, 0, 12)
+
+[node name="D_007_FinesDeleter" parent="Machines" unique_id=962608248 instance=ExtResource("7")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 3, 0, 8)
+
+[node name="ItemSeeder" type="Node3D" parent="." unique_id=1674211167 node_paths=PackedStringArray("beltsRoot")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.5, 0)
 script = ExtResource("seeder")
 itemWeights = Dictionary[String, float]({
+"electronic_bits": 1.0,
+"scrap_ball": 1.0,
+"scrap_ingot": 1.0,
 "sieve_ball_010": 1.0,
 "sieve_ball_025": 1.0,
 "sieve_ball_050": 1.0,
@@ -1806,10 +1782,7 @@ itemWeights = Dictionary[String, float]({
 "sieve_cube_010": 1.0,
 "sieve_cube_025": 1.0,
 "sieve_cube_050": 1.0,
-"sieve_cube_075": 1.0,
-"scrap_ball": 1.0,
-"electronic_bits": 1.0,
-"scrap_ingot": 1.0
+"sieve_cube_075": 1.0
 })
 beltsRoot = NodePath("../Belts")
 itemsOnBelts = 1700
