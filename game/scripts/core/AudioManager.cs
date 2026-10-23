@@ -65,43 +65,51 @@ public partial class AudioManager : Node
             : IntPtr.Zero; // falls back to default probing
     }
 
-
-
+    const int MaxHitSoundsPerTick = 6;
+    const int MaxCandidates = MaxHitSoundsPerTick;
+    static readonly ContactHit[] top = new ContactHit[MaxCandidates];
+    const float MaxHitSoundDistance = 40f;
+    const float MaxHitSoundDistanceSq = MaxHitSoundDistance * MaxHitSoundDistance;
     private void OnHitstreamUpdated()
     {
-        Camera3D camera = GetViewport().GetCamera3D();
-        if (camera == null)
+        if (cam == null)
             return; 
 
-        // Our own copy, hardest hits first, so the cap keeps the loudest. HitStream.hits stays as it is for everyone else.
-        soundHits.Clear();
-        soundHits.AddRange(HitStream.hits);
-        soundHits.Sort(HarderFirst);
+        Vector3 camPos = cam.GlobalPosition;
+        int count = 0;
+
+        foreach (ContactHit hit in HitStream.hits)
+        {
+            // Cheapest reject first: list is full and this hit is no harder than our weakest keeper.
+            // Once we have a few loud hits, most of the pile dies on this one float compare
+            // and never gets a distance check.
+            if (count == MaxCandidates && hit.speed <= top[MaxCandidates - 1].speed)
+                continue;
+
+            if (camPos.DistanceSquaredTo(hit.position) > MaxHitSoundDistanceSq)
+                continue;
+
+            // Insertion into a tiny array kept hardest-first (overwrites the weakest when full).
+            int i = count < MaxCandidates ? count++ : MaxCandidates - 1;
+            while (i > 0 && top[i - 1].speed < hit.speed)
+            {
+                top[i] = top[i - 1];
+                i--;
+            }
+            top[i] = hit;
+        }
 
         int played = 0;
-        foreach (ContactHit hit in soundHits)
+        for (int n = 0; n < count && played < MaxHitSoundsPerTick; n++)
         {
-            if (played >= MaxHitSoundsPerTick)
-                break;
-            // What met, by tags (SurfaceTags): a player is always side A. The normal points from A into B.
+            ContactHit hit = top[n];
             if (HitSoundHelper((SurfaceTags)hit.tagsA, hit))
                 played++;
             if (HitSoundHelper((SurfaceTags)hit.tagsB, hit))
                 played++;
         }
     }
-
-    /// <summary>
-    /// Impact sounds started per physics tick at most (360 a second). A stirred pile makes hundreds of hits a tick,
-    /// far more than anyone can hear apart; past a few a tick it is one clatter, and FMOD ran out of instances.
-    /// </summary>
-    const int MaxHitSoundsPerTick = 6;
-    static readonly List<ContactHit> soundHits = new();
-
-    static int HarderFirst(ContactHit a, ContactHit b)
-    {
-        return b.speed.CompareTo(a.speed);
-    }
+    
 
     /// <summary>Plays one side's impact sound, if its tags have one. True if it started a sound.</summary>
     private bool HitSoundHelper(SurfaceTags tags, ContactHit hit)
@@ -110,24 +118,24 @@ public partial class AudioManager : Node
         {
             if(tags.HasFlag(SurfaceTags.METAL))
             {
-                PlayOneShot("event:/Impacts/Metal_Impact", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
+                PlayOneShot("event:/Impacts/Metal_Impact", hit.speed / 15.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
                 return true;
             }
             else if(tags.HasFlag(SurfaceTags.PLASTIC))
             {
-                PlayOneShot("event:/Impacts/Plastic_Impact", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
+                PlayOneShot("event:/Impacts/Plastic_Impact", hit.speed / 15.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
                 return true;
             }
             else if(tags.HasFlag(SurfaceTags.GLASS))
             {
-                PlayOneShot("event:/Impacts/Glass_Impact", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
+                PlayOneShot("event:/Impacts/Glass_Impact", hit.speed / 15.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
                 return true;
             }
             else if(tags.HasFlag(SurfaceTags.PLAYER))
             {
                 if (hit.speed >= 7.5f)
                 {
-                    PlayOneShot("event:/Impacts/Player_Impact", 1.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 15.0f, ["Damage"] = 0.0f });
+                    PlayOneShot("event:/Impacts/Player_Impact", hit.speed / 15.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 15.0f, ["Damage"] = 0.0f });
                     return true;
                 }
             }
@@ -192,6 +200,7 @@ public partial class AudioManager : Node
         _failures++;
     }
 
+    Camera3D cam;
     public override void _Process(double delta)
     {
         if (!_audioOn) return;
@@ -202,7 +211,7 @@ public partial class AudioManager : Node
             _lastFailureReportMsec = Time.GetTicksMsec();
         }
         _studio.update(); // must be called every frame
-        var cam = GetViewport().GetCamera3D();
+        cam = GetViewport().GetCamera3D();
         if (cam != null)
         {
             var t = cam.GlobalTransform;

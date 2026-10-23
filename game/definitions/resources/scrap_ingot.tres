@@ -14,7 +14,7 @@ icon = ExtResource("2_icon")
 maxStackSize = 999
 tags = 2
 currencyValue = Dictionary[int, int]({
-1: 1
+1: 2
 })
 canBePickTarget = true
 canBeGrabbed = true
