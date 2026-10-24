@@ -160,6 +160,19 @@ public partial class GameWorld : Node3D
         GameBootstrap.Preload(gameInfo);
     }
 
+    /// <summary>
+    /// Starts a world on this peer alone, with no level, players, shop or quests: for the main menu's backdrop
+    /// (<see cref="MenuBackdrop"/>), which spawns its own scenes. The lobby must already be hosted (over a
+    /// <see cref="LocalNetwork"/>); <see cref="Lobby.LeaveLobby"/> ends it like any session.
+    /// </summary>
+    public static void StartLocal()
+    {
+        physics.Call(setSelfPeerName, Lobby.selfPeerID);
+        physics.Call(setSendIntervalName, SendInterval);
+        started = true;
+        instance.GetTree().Paused = false;
+    }
+
     /// <summary>From Lobby, on every peer: all peers have preloaded.</summary>
     internal static void Init()
     {

@@ -20,6 +20,8 @@ public partial class Witness { }
 /// A player's items (<see cref="FactoryPlayer.inventory"/>): <see cref="TotalSlots"/> slots, the first
 /// <see cref="HotbarSlots"/> of them the hotbar. Plain data on each peer; the player syncs its own changes.
 /// Every method that changes it raises <see cref="InventoryChanged"/>; out-of-range slot indices are ignored.
+/// The first slot always holds the player's gravity gun (<see cref="EnsureGun"/>): nothing moves, merges into or
+/// empties it, and nothing else is added to it.
 /// </summary>
 public class Inventory
 {
@@ -28,6 +30,10 @@ public class Inventory
     public const int HotbarSlots = 10;
 
     public InventorySlot[] slots = new InventorySlot[TotalSlots];
+    /// <summary>The slot that always holds the gravity gun, and its item id.</summary>
+    public const int GunSlot = 0;
+    public const string GunItemID = "gravity_gun";
+
     /// <summary>The hotbar slot whose item is in hand; -1 for none.</summary>
     public int ActiveHotbarSlot { get; set; } = 0;
 
@@ -41,6 +47,31 @@ public class Inventory
         return slots[index];
     }
 
+    /// <summary>True for the gravity gun's slot, which nothing may change.</summary>
+    public static bool IsPinned(int index)
+    {
+        return index == GunSlot;
+    }
+
+    /// <summary>
+    /// Puts the gravity gun in its slot. Anything else found there (an older save) moves to a free slot, or is lost if
+    /// none is free. Doesn't raise <see cref="InventoryChanged"/>: call it before the inventory is synced or shown.
+    /// </summary>
+    public void EnsureGun()
+    {
+        InventorySlot old = slots[GunSlot];
+        slots[GunSlot] = new InventorySlot { itemID = GunItemID, Count = 1 };
+        if (old.IsEmpty || old.itemID == GunItemID) return;
+        for (int i = 0; i < TotalSlots; i++)
+        {
+            if (slots[i].IsEmpty)
+            {
+                slots[i] = old;
+                return;
+            }
+        }
+    }
+
     /// <summary>Raises <see cref="InventoryChanged"/>, for code that changed <see cref="slots"/> directly.</summary>
     public void InventoryUpdated()
     {
@@ -50,7 +81,7 @@ public class Inventory
     /// <summary>Empties the slot.</summary>
     public void ClearSlot(int index)
     {
-        if (index < 0 || index >= TotalSlots) return;
+        if (index < 0 || index >= TotalSlots || IsPinned(index)) return;
         slots[index].itemID = null;
         slots[index].Count = 0;
         InventoryChanged?.Invoke();
@@ -60,7 +91,7 @@ public class Inventory
     public void SwapSlots(int a, int b)
     {
         if (a < 0 || a >= TotalSlots || b < 0 || b >= TotalSlots) return;
-        if (a == b) return;
+        if (a == b || IsPinned(a) || IsPinned(b)) return;
         (slots[a], slots[b]) = (slots[b], slots[a]);
         InventoryChanged?.Invoke();
     }
@@ -72,7 +103,7 @@ public class Inventory
     public int MergeSlots(int source, int target)
     {
         if (source < 0 || source >= TotalSlots || target < 0 || target >= TotalSlots) return 0;
-        if (slots[source].IsEmpty || slots[target].IsEmpty) return 0;
+        if (slots[source].IsEmpty || slots[target].IsEmpty || IsPinned(source) || IsPinned(target)) return 0;
         if (slots[source].itemID != slots[target].itemID) return 0;
 
         int maxStack = ItemInfo.Fetch(slots[target].itemID).maxStackSize;
@@ -101,7 +132,7 @@ public class Inventory
         {
             for (int i = 0; i < TotalSlots && remaining > 0; i++)
             {
-                if (!slots[i].IsEmpty && slots[i].itemID == item.itemID)
+                if (!slots[i].IsEmpty && slots[i].itemID == item.itemID && !IsPinned(i))
                 {
                     int space = item.maxStackSize - slots[i].Count;
                     int toAdd = Math.Min(remaining, space);
@@ -113,7 +144,7 @@ public class Inventory
 
         for (int i = 0; i < TotalSlots && remaining > 0; i++)
         {
-            if (slots[i].IsEmpty)
+            if (slots[i].IsEmpty && !IsPinned(i))
             {
                 int toAdd = Math.Min(remaining, item.maxStackSize);
                 slots[i].itemID = itemID;
@@ -129,7 +160,7 @@ public class Inventory
     /// <summary>Takes up to <paramref name="count"/> from the slot; returns how many were taken.</summary>
     public int RemoveFromSlot(int index, int count = 1)
     {
-        if (index < 0 || index >= TotalSlots || slots[index].IsEmpty) return 0;
+        if (index < 0 || index >= TotalSlots || slots[index].IsEmpty || IsPinned(index)) return 0;
         int toRemove = Math.Min(count, slots[index].Count);
         slots[index].Count -= toRemove;
         if (slots[index].Count <= 0)
@@ -147,8 +178,11 @@ public class Inventory
         ItemInfo item = ItemInfo.Fetch(itemID);
         if (item == null) return 0;
         int room = 0;
-        foreach (InventorySlot slot in slots)
+        for (int i = 0; i < TotalSlots; i++)
         {
+            InventorySlot slot = slots[i];
+            if (IsPinned(i))
+                continue;
             if (slot.IsEmpty)
                 room += item.maxStackSize;
             else if (slot.itemID == itemID)

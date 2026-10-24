@@ -111,7 +111,7 @@ public partial class GMPOCharacter : Node3D, GMPObject
     }
 
     /// <summary>
-    /// The bodies the character holds (its magnet rod's catch), every tick on every peer's copy, empty once it holds
+    /// The bodies the character holds (its gravity gun's catch), every tick on every peer's copy, empty once it holds
     /// none: the character and they pass through each other (other characters still bump them), until a moment after
     /// they leave the list.
     /// </summary>

@@ -72,8 +72,9 @@ public partial class AudioManager : Node
     const float MaxHitSoundDistanceSq = MaxHitSoundDistance * MaxHitSoundDistance;
     private void OnHitstreamUpdated()
     {
-        if (cam == null)
-            return; 
+        // Taken last frame: it may have been freed since (leaving a game for the menu's backdrop).
+        if (cam == null || !IsInstanceValid(cam))
+            return;
 
         Vector3 camPos = cam.GlobalPosition;
         int count = 0;
@@ -111,31 +112,35 @@ public partial class AudioManager : Node
     }
     
 
+    /// <summary>Scales every impact sound's volume (1 in game; the main menu's backdrop turns it down, <see cref="MenuBackdrop"/>).</summary>
+    public static float hitVolumeScale = 1f;
+
     /// <summary>Plays one side's impact sound, if its tags have one. True if it started a sound.</summary>
     private bool HitSoundHelper(SurfaceTags tags, ContactHit hit)
     {
+        float volume = hit.speed / 15.0f * hitVolumeScale;
         if(!tags.HasFlag(SurfaceTags.STRUCTURE) && !tags.HasFlag(SurfaceTags.LEVEL))
         {
             if(tags.HasFlag(SurfaceTags.METAL))
             {
-                PlayOneShot("event:/Impacts/Metal_Impact", hit.speed / 15.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
+                PlayOneShot("event:/Impacts/Metal_Impact", volume, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
                 return true;
             }
             else if(tags.HasFlag(SurfaceTags.PLASTIC))
             {
-                PlayOneShot("event:/Impacts/Plastic_Impact", hit.speed / 15.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
+                PlayOneShot("event:/Impacts/Plastic_Impact", volume, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
                 return true;
             }
             else if(tags.HasFlag(SurfaceTags.GLASS))
             {
-                PlayOneShot("event:/Impacts/Glass_Impact", hit.speed / 15.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
+                PlayOneShot("event:/Impacts/Glass_Impact", volume, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 10.0f });
                 return true;
             }
             else if(tags.HasFlag(SurfaceTags.PLAYER))
             {
                 if (hit.speed >= 7.5f)
                 {
-                    PlayOneShot("event:/Impacts/Player_Impact", hit.speed / 15.0f, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 15.0f, ["Damage"] = 0.0f });
+                    PlayOneShot("event:/Impacts/Player_Impact", volume, hit.position, new Dictionary<string, float> { ["Force"] = hit.speed / 15.0f, ["Damage"] = 0.0f });
                     return true;
                 }
             }
@@ -181,6 +186,8 @@ public partial class AudioManager : Node
         {
             Check(_studio.getBus("bus:/", out FmodStudio.Bus masterBus));
             Check(masterBus.setVolume(0));
+            // And Godot's own audio (the main menu's music).
+            AudioServer.SetBusMute(0, true);
             GD.Print("Test copy: sound muted");
         }
     }

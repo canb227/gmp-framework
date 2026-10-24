@@ -20,6 +20,7 @@ public partial class Console : Node
         LimboConsole.RegisterCommand(new Callable(this, "load"));
         LimboConsole.RegisterCommand(new Callable(this, "send_budget"));
         LimboConsole.RegisterCommand(new Callable(this, "status"));
+        LimboConsole.RegisterCommand(new Callable(this, "main_menu"));
         LimboConsole.RegisterCommand(new Callable(this, "start_game"));
         LimboConsole.RegisterCommand(new Callable(this, "screenshot"));
         LimboConsole.RegisterCommand(new Callable(this, "perf"));
@@ -38,6 +39,12 @@ public partial class Console : Node
         LimboConsole.RegisterCommand(new Callable(this, "noclip"));
         LimboConsole.RegisterCommand(new Callable(this, "ride_belts"));
         LimboConsole.RegisterCommand(new Callable(this, "hold"));
+        LimboConsole.RegisterCommand(new Callable(this, "press"));
+        LimboConsole.RegisterCommand(new Callable(this, "gun_mode"));
+        LimboConsole.RegisterCommand(new Callable(this, "gun_info"));
+        LimboConsole.RegisterCommand(new Callable(this, "gun_fire"));
+        LimboConsole.RegisterCommand(new Callable(this, "gun_upgrade"));
+        LimboConsole.RegisterCommand(new Callable(this, "add_currency"));
         LimboConsole.RegisterCommand(new Callable(this, "ghost_info"));
         LimboConsole.RegisterCommand(new Callable(this, "ghost_rotate"));
         LimboConsole.RegisterCommand(new Callable(this, "frame_trace"));
@@ -286,13 +293,25 @@ public partial class Console : Node
     public void status()
     {
         string role = "none";
-        if (Lobby.network != null)
+        if (Lobby.network is LocalNetwork)
+        {
+            // The main menu's backdrop (MenuBackdrop), not a lobby anyone can join.
+            role = "menu";
+        }
+        else if (Lobby.network != null)
         {
             if (Lobby.isHost) role = "host";
             else role = "client";
         }
         LimboConsole.Info($"status: role={role} peers={Lobby.MemberCount} ingame={GameWorld.started} paused={GetTree().Paused} " +
             $"objects={GameWorld.syncedObjs.Count} fps={Engine.GetFramesPerSecond()} level={Lobby.gameInfo.levelIdx}");
+    }
+
+    /// <summary>Leaves the lobby or game for the main menu, as the pause menu's quit does.</summary>
+    public void main_menu()
+    {
+        UIManager.QuitToMainMenu();
+        LimboConsole.Info("main_menu: done");
     }
 
     /// <summary>Host, in the lobby: starts GameResources.LevelsList[level] for everyone connected.</summary>

@@ -309,7 +309,7 @@ public partial class InventoryUI : Control
     void DropEntireStack(int slotIndex)
     {
         var slot = inventory.GetSlot(slotIndex);
-        if (slot.IsEmpty) return;
+        if (slot.IsEmpty || Inventory.IsPinned(slotIndex)) return;
 
         var camera = player.camera;
         Vector3 dropPos = camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * 2f;

@@ -285,7 +285,7 @@ public static class PhysicsWorld
         world.Call(setBodyAuthorityName, id, peer);
     }
 
-    /// <summary>A magnet rod holds the body this tick: it is sent often while held and for a second after.</summary>
+    /// <summary>A gravity gun holds the body this tick: it is sent often while held and for a second after.</summary>
     public static void HoldBody(ulong id)
     {
         world.Call(holdBodyName, id);

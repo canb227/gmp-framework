@@ -1,6 +1,6 @@
 [gd_scene format=4 uid="uid://v3645dcjw5ni"]
 
-[ext_resource type="Script" uid="uid://xbybti81ybvs" path="res://game/scripts/inhand/MagnetRod.cs" id="1_mr"]
+[ext_resource type="Script" uid="uid://xbybti81ybvs" path="res://game/scripts/inhand/GravityGun.cs" id="1_mr"]
 [ext_resource type="PackedScene" uid="uid://bddk0esc14oqt" path="res://game/assets/models/tools/gravgun.blend" id="3_g7rjs"]
 [ext_resource type="Texture2D" uid="uid://cfwwipqdp45wf" path="res://game/assets/textures/particles/flare_01.png" id="4_yegih"]
 [ext_resource type="Shader" uid="uid://dt1utntk18esd" path="res://game/assets/shaders/MagnetField.gdshader" id="field"]
@@ -124,7 +124,7 @@ material = SubResource("StandardMaterial3D_vchc8")
 length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
-tracks/0/enabled = true
+tracks/0/enabled = false
 tracks/0/path = NodePath("gravgun/Body:mesh:surface_0/material:albedo_color")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
@@ -177,7 +177,7 @@ length = 9.0
 loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
-tracks/0/enabled = true
+tracks/0/enabled = false
 tracks/0/path = NodePath("gravgun/Body:mesh:surface_0/material:albedo_color")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
@@ -280,7 +280,7 @@ _data = {
 &"walk": SubResource("Animation_cilxm")
 }
 
-[node name="MagnetRod" type="Node3D" unique_id=394440562 node_paths=PackedStringArray("animationPlayer")]
+[node name="GravityGun" type="Node3D" unique_id=394440562 node_paths=PackedStringArray("animationPlayer")]
 script = ExtResource("1_mr")
 animationPlayer = NodePath("AnimationPlayer")
 

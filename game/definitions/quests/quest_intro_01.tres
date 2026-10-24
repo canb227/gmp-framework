@@ -9,4 +9,7 @@ questName = "Weclome Again!"
 itemSubmissionObjectives = Dictionary[String, int]({
 "scrap_ball": 100
 })
+onCompleteCurrency = Dictionary[int, int]({
+4: 5
+})
 metadata/_custom_type_script = "uid://crybn2gwdne7r"

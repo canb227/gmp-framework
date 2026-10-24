@@ -77,7 +77,7 @@ void GMPCharacter::make_capsule_shape() {
 
 struct MoverContext {
 	b3BodyId self = b3_nullBodyId;
-	// The character moving: what its magnet rod holds is skipped.
+	// The character moving: what its gravity gun holds is skipped.
 	const GMPCharacter *character = nullptr;
 	b3CollisionPlane planes[MaxMoverPlanes];
 	// The shape each plane is on.
@@ -460,7 +460,7 @@ bool GMPCharacter::can_fit_height(float newHeight) const {
 	return !context.hit;
 }
 
-// ---- what its magnet rod holds ----
+// ---- what its gravity gun holds ----
 
 void GMPCharacter::ignore_bodies(PackedInt64Array ids) {
 	GMPPhysicsWorld *world = GMPPhysicsWorld::get_current();

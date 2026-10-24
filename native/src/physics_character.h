@@ -70,7 +70,7 @@ public:
 	// Whether a capsule of this height would fit where the character is (standing up from a crouch).
 	bool can_fit_height(float newHeight) const;
 
-	// The bodies this character's magnet rod holds, every tick on every peer's copy: the character and they don't
+	// The bodies this character's gravity gun holds, every tick on every peer's copy: the character and they don't
 	// touch (a filter joint each, and its own moves skip them) until ignoreGrace after they leave the list.
 	void ignore_bodies(godot::PackedInt64Array ids);
 	// Touches everything again at once (the rod is put away).

@@ -1,16 +1,23 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 /// <summary>
-/// FactoryPlayer: hotbar selection, the in-hand item visual, and dropping items.
+/// FactoryPlayer: hotbar selection, the in-hand item visual, dropping items, and the player's gravity gun
+/// (its upgrades and selected mode, kept here as the gun itself is rebuilt each time it's equipped).
 /// Hotbar scrolling is routed here from <c>HandleScrollWheel</c>.
 /// </summary>
 public partial class FactoryPlayer
 {
     const string DefaultHeldScene = "res://game/scenes/inhand/DefaultHeldBox.tscn";
 
-    /// <summary>The held item's in-hand scene (a blueprint's ghost, the magnet rod, ...), or null.</summary>
+    /// <summary>The held item's in-hand scene (a blueprint's ghost, the gravity gun, ...), or null.</summary>
     public HeldItem heldItem { get; private set; }
+
+    /// <summary>The gravity gun upgrades this player owns, by id (<see cref="GravityGunUpgrades"/>); the same on every peer.</summary>
+    public List<string> gunUpgrades = new();
+    /// <summary>Holder's peer: the gravity gun's selected mode (<see cref="GravityGun.modes"/>), kept while it's put away.</summary>
+    public int gunMode;
 
     void HandleEquipmentInput(InputEvent @event)
     {
@@ -49,7 +56,7 @@ public partial class FactoryPlayer
     public void DropFromActiveSlot(int count)
     {
         var slot = inventory.GetSlot(inventory.ActiveHotbarSlot);
-        if (slot.IsEmpty) return;
+        if (slot.IsEmpty || Inventory.IsPinned(inventory.ActiveHotbarSlot)) return;
 
         int toDrop = Math.Min(count, slot.Count);
         Vector3 dropPos = camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * 2f;
@@ -87,6 +94,35 @@ public partial class FactoryPlayer
             inventory.InventoryUpdated();
             UpdateEquippedItem();
         }
+    }
+
+    // ---- gravity gun ----------------------------------------------------------
+
+    public bool HasGunUpgrade(GravityGunUpgrade upgrade)
+    {
+        return gunUpgrades.Contains(upgrade.id);
+    }
+
+    /// <summary>Local player: gains an upgrade (bought in <see cref="Shop.TryBuyGunUpgrade"/>) and tells every peer.</summary>
+    public void AddGunUpgrade(string upgradeID)
+    {
+        if (gunUpgrades.Contains(upgradeID)) return;
+        List<string> upgrades = new(gunUpgrades);
+        upgrades.Add(upgradeID);
+        RPCManager.RPC(this, nameof(_SyncGunUpgrades), [upgrades.ToArray()]);
+    }
+
+    [RPC(requireAuthority = true)]
+    private void _SyncGunUpgrades(string[] upgradeIDs)
+    {
+        gunUpgrades = new List<string>(upgradeIDs);
+    }
+
+    /// <summary>Every peer: this player's gravity gun fired (<see cref="GravityGun.ApplyPushes"/>).</summary>
+    [RPC(requireAuthority = true)]
+    public void _GunPush(GunPush[] pushes)
+    {
+        GravityGun.ApplyPushes(this, pushes);
     }
 
     /// <summary>Moves the active hotbar slot by <paramref name="step"/> (+1 / -1), wrapping around.</summary>

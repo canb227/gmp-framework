@@ -57,7 +57,7 @@ public partial class ItemInfo : Resource
     [Export]
     public bool canBePickTarget;
 
-    /// <summary>A magnet rod can hold it.</summary>
+    /// <summary>A gravity gun can hold it.</summary>
     [Export]
     public bool canBeGrabbed;
 

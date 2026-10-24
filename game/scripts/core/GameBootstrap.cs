@@ -49,7 +49,8 @@ public static class GameBootstrap
 
     /// <summary>
     /// Spawns this peer's player for everyone. A player coming back to this game (one that left, matched by peer id
-    /// or name) picks up where it was with its inventory; anyone else gets the starter items from the game settings.
+    /// or name) picks up where it was with its inventory and gravity gun upgrades; anyone else gets the starter items
+    /// from the game settings. Everyone has a gravity gun in the first slot.
     /// </summary>
     public static void SpawnLocalPlayer()
     {
@@ -82,19 +83,23 @@ public static class GameBootstrap
         if (returning != null)
         {
             player.inventory.slots = returning.slots ?? new InventorySlot[Inventory.TotalSlots];
+            player.inventory.EnsureGun();
             player.inventory.ActiveHotbarSlot = returning.equippedSlot;
             player.inventory.InventoryUpdated();
             player.UpdateEquippedItem();
+            foreach (string upgradeID in returning.gunUpgrades ?? new())
+            {
+                player.AddGunUpgrade(upgradeID);
+            }
             return;
         }
+        player.inventory.EnsureGun();
         switch (Lobby.gameInfo.starterItems)
         {
-            case StarterItems.MagnetRod:
-                player.inventory.AddItem("magnet_rod", 1);
+            case StarterItems.Tools:
                 player.inventory.AddItem("wrench", 1);
                 break;
             case StarterItems.All:
-                player.inventory.AddItem("magnet_rod", 1);
                 player.inventory.AddItem("wrench", 1);
                 foreach (string blueprint in StartingBlueprints)
                 {

@@ -193,7 +193,7 @@ def build_magnet():
     B.pipe([Vector((0.02, 0.04, 0.09)), Vector((0.035, 0.12, 0.075)), Vector((0.035, 0.16, 0.05))], 0.006, 5)
     B.pipe([Vector((-0.02, -0.07, 0.07)), Vector((-0.045, 0.02, 0.0)), Vector((-0.04, 0.12, -0.02)), Vector((-0.03, 0.16, 0.0))], 0.006, 5)
     finish(B, "Body", coll)
-    # the coil's glow shell, shown only while the magnet is pulling (MagnetRod.activeIndicator)
+    # the coil's glow shell, shown only while the magnet is pulling (GravityGun.activeIndicator)
     G = Builder()
     G.cyl(Vector((0, 0.166, 0.02)), Vector((0, 0.354, 0.02)), 0.0465, 16, "cyan", C_CYAN, 0.05, cap=False)
     G.cyl(Vector((0, 0.4605, 0.02)), Vector((0, 0.462, 0.02)), 0.045, 16, "cyan", C_CYAN, 0.05)

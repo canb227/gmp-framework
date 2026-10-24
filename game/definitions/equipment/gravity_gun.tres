@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EquipmentItem" format=3 uid="uid://cimg4oitt1qyn"]
+
+[ext_resource type="Script" uid="uid://cf1ym7rj6gg0c" path="res://game/scripts/items/EquipmentItem.cs" id="1_tool"]
+[ext_resource type="Texture2D" uid="uid://dngfpu0vsb2" path="res://game/assets/icons/items/gravity_gun.png" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://v3645dcjw5ni" path="res://game/scenes/inhand/GravityGun.tscn" id="3_hand"]
+
+[resource]
+script = ExtResource("1_tool")
+itemID = "gravity_gun"
+displayName = "Gravity Gun"
+description = "Hold right click to lift what you aim at (Single) or pull nearby objects into a ball (Area). Hold left click to charge a shot and let go to launch what you hold, or to punt or blast with nothing held. Hold Q to change mode."
+icon = ExtResource("2_icon")
+inHandScene = ExtResource("3_hand")

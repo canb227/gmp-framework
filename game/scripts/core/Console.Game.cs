@@ -138,6 +138,107 @@ public partial class Console
         LimboConsole.Info($"hold: {itemID} slot={player.inventory.ActiveHotbarSlot}");
     }
 
+    /// <summary>Presses (1) or lets go of (0) an input action, as the key would: it goes through the game's input handling (e.g. press secondary 1 to hold with the gravity gun).</summary>
+    public void press(string action, int down)
+    {
+        if (!InputMap.HasAction(action))
+        {
+            LimboConsole.Error($"press: no input action {action}.");
+            return;
+        }
+        InputEventAction input = new InputEventAction { Action = action, Pressed = down == 1 };
+        Input.ParseInputEvent(input);
+        LimboConsole.Info($"press: {action}={down == 1}");
+    }
+
+    /// <summary>What the local player's gravity gun holds: mode, holding, how many items, the hold point.</summary>
+    public void gun_info()
+    {
+        FactoryPlayer player = LocalPlayer();
+        if (player?.heldItem is not GravityGun gun)
+        {
+            LimboConsole.Error("gun_info: the local player isn't holding the gravity gun.");
+            return;
+        }
+        LimboConsole.Info($"gun_info: mode={gun.mode.name} holding={gun.holding} caught={gun.caught.Count} target={gun.target} radial={gun.CapturesMouse()}");
+    }
+
+    /// <summary>Equips the local player's gravity gun and selects a mode by name (single, area); no name lists them.</summary>
+    public void gun_mode(string modeName = "")
+    {
+        FactoryPlayer player = LocalPlayer();
+        if (player == null)
+        {
+            LimboConsole.Error("gun_mode: needs a running game.");
+            return;
+        }
+        player.inventory.ActiveHotbarSlot = Inventory.GunSlot;
+        player.UpdateEquippedItem();
+        GravityGun gun = player.heldItem as GravityGun;
+        for (int i = 0; i < GravityGun.modes.Length; i++)
+        {
+            GravityGunMode mode = GravityGun.modes[i];
+            if (mode.name.ToLower() == modeName.ToLower() && mode.IsUnlocked(player))
+            {
+                gun.SelectMode(i);
+            }
+        }
+        string list = "";
+        foreach (GravityGunMode mode in GravityGun.modes)
+        {
+            list += $" {mode.name}(unlocked={mode.IsUnlocked(player)})";
+        }
+        LimboConsole.Info($"gun_mode: selected={gun.mode.name} modes:{list}");
+    }
+
+    /// <summary>The local player's gravity gun fires at once with this charge (0 to 1), as letting go of left click does.</summary>
+    public void gun_fire(float charge)
+    {
+        FactoryPlayer player = LocalPlayer();
+        if (player?.heldItem is not GravityGun gun)
+        {
+            LimboConsole.Error("gun_fire: the local player isn't holding the gravity gun (gun_mode equips it).");
+            return;
+        }
+        bool wasHolding = gun.holding && gun.caught.Count > 0;
+        int pushed = gun.FireCharged(charge);
+        LimboConsole.Info($"gun_fire: mode={gun.mode.name} charge={charge} force_scale={gun.ForceScale()} launched={wasHolding} pushed={pushed}");
+    }
+
+    /// <summary>Buys a gravity gun upgrade for the local player by id; no id lists them, with what this player owns.</summary>
+    public void gun_upgrade(string upgradeID = "")
+    {
+        FactoryPlayer player = LocalPlayer();
+        if (player == null)
+        {
+            LimboConsole.Error("gun_upgrade: needs a running game.");
+            return;
+        }
+        if (!string.IsNullOrEmpty(upgradeID))
+        {
+            bool sent = Shop.TryBuyGunUpgrade(player, upgradeID);
+            LimboConsole.Info($"gun_upgrade: buy {upgradeID} sent={sent}");
+        }
+        string list = "";
+        foreach (GravityGunUpgrade upgrade in GravityGunUpgrades.all)
+        {
+            list += $" {upgrade.id}(cost={upgrade.cost} owned={player.HasGunUpgrade(upgrade)})";
+        }
+        LimboConsole.Info($"gun_upgrade: {Shop.Currencies[GravityGunUpgrades.currency].name}={Shop.Balance(GravityGunUpgrades.currency)}{list}");
+    }
+
+    /// <summary>Host: adds amount of a currency (by enum name, e.g. GravityCores) to the banks.</summary>
+    public void add_currency(string currencyName, int amount)
+    {
+        if (!Lobby.isHost || !Enum.TryParse(currencyName, true, out Currency currency))
+        {
+            LimboConsole.Error($"add_currency: host only, and a currency name ({string.Join(", ", Enum.GetNames<Currency>())}).");
+            return;
+        }
+        Shop.AddCurrency(currency, amount);
+        LimboConsole.Info($"add_currency: {currency}={Shop.Balance(currency)}");
+    }
+
     /// <summary>Where the local player's blueprint ghost is: its anchor cell, turns, form, whether it can place, and its footprint's bounds.</summary>
     public void ghost_info()
     {

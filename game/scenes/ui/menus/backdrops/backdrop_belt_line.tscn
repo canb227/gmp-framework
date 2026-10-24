@@ -1,0 +1,150 @@
+[gd_scene format=3 uid="uid://b75cclpuqg2vl"]
+
+[ext_resource type="PackedScene" uid="uid://bjrk1ic4be4k8" path="res://game/scenes/structures/logistics/conveyors/basic/Conveyor.tscn" id="1_belt"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/special/DevSpawner.tscn" id="2_spawner"]
+[ext_resource type="PackedScene" path="res://game/scenes/structures/special/DevItemDeleter.tscn" id="3_deleter"]
+[ext_resource type="PackedScene" uid="uid://c5f87qmrk35i6" path="res://game/scenes/structures/logistics/conveyors/basic/ConveyorSlopeUp.tscn" id="4_fo3q4"]
+[ext_resource type="PackedScene" uid="uid://dcm710gynders" path="res://game/scenes/structures/logistics/conveyors/basic/ConveyorTurnRight.tscn" id="5_7dy0c"]
+[ext_resource type="PackedScene" uid="uid://kntxrimjqyhh" path="res://game/scenes/structures/logistics/conveyors/basic/ConveyorTurnLeft.tscn" id="6_tt6r4"]
+
+[sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("Sky_mat")
+
+[sub_resource type="Environment" id="Env"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 3
+tonemap_mode = 3
+ssao_enabled = true
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="Mat_Floor"]
+albedo_color = Color(0.42, 0.42, 0.4, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="Mesh_Floor"]
+material = SubResource("Mat_Floor")
+size = Vector3(24, 1, 24)
+
+[node name="BackdropBeltLine" type="Node3D" unique_id=41367911]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2112903512]
+environment = SubResource("Env")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=324514659]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 10, 0)
+light_color = Color(1, 0.94, 0.86, 1)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1421059254]
+transform = Transform3D(0.63059, -0.33321, 0.70095, 0, 0.90315, 0.42933, -0.77611, -0.27073, 0.56952, 9, 5.5, 3)
+fov = 50.0
+
+[node name="Floor" type="GMPBody" parent="." unique_id=601629919]
+body_type = 0
+tags = 264
+
+[node name="FloorShape" type="GMPShape" parent="Floor" unique_id=585737366]
+size = Vector3(24, 1, 24)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.5, -3)
+
+[node name="FloorMesh" type="MeshInstance3D" parent="Floor" unique_id=1923956151]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.5, -3)
+mesh = SubResource("Mesh_Floor")
+
+[node name="Spawner" parent="." unique_id=823734416 instance=ExtResource("2_spawner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.616505, 3, 8)
+itemWeights = Dictionary[String, float]({
+"sieve_cube_010": 1.0,
+"sieve_cube_025": 1.0,
+"sieve_cube_050": 1.0,
+"sieve_cube_075": 1.0
+})
+spawnInterval = 0.25
+spawning = true
+
+[node name="Model" parent="Spawner" index="1"]
+visible = false
+
+[node name="Output" parent="Spawner" index="2"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.5, -0.72007513, -0.5)
+
+[node name="Spawner2" parent="." unique_id=1140832741 instance=ExtResource("2_spawner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 3, -4)
+itemWeights = Dictionary[String, float]({
+"sieve_ball_010": 1.0,
+"sieve_ball_025": 1.0,
+"sieve_ball_050": 1.0,
+"sieve_ball_075": 1.0
+})
+spawnInterval = 0.25
+spawning = true
+
+[node name="Model" parent="Spawner2" index="1"]
+visible = false
+
+[node name="Output" parent="Spawner2" index="2"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.5, -0.72007513, -0.5)
+
+[node name="Belt1" parent="." unique_id=497583662 instance=ExtResource("1_belt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 9)
+
+[node name="Belt2" parent="." unique_id=1378569607 instance=ExtResource("1_belt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7)
+
+[node name="Belt3" parent="." unique_id=680729440 instance=ExtResource("1_belt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+
+[node name="Belt4" parent="." unique_id=2048346597 instance=ExtResource("1_belt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
+
+[node name="Deleter" parent="." unique_id=2008697979 instance=ExtResource("3_deleter")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -7)
+itemsPerSecond = 7.0
+
+[node name="ConveyorSlopeUp" parent="." unique_id=721862988 instance=ExtResource("4_fo3q4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+
+[node name="Conveyor" parent="." unique_id=1852099020 instance=ExtResource("1_belt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -3)
+
+[node name="ConveyorTurnRight" parent="." unique_id=1232208056 instance=ExtResource("5_7dy0c")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 0, 2, -5)
+
+[node name="Conveyor2" parent="." unique_id=410639648 instance=ExtResource("1_belt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -1)
+
+[node name="ConveyorTurnLeft" parent="." unique_id=1324107816 instance=ExtResource("6_tt6r4")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 4, 0, -5)
+
+[node name="ConveyorTurnRight2" parent="." unique_id=340094309 instance=ExtResource("5_7dy0c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+
+[node name="Conveyor3" parent="." unique_id=970793128 instance=ExtResource("1_belt")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 14, 0, -3)
+
+[node name="Conveyor4" parent="." unique_id=81696284 instance=ExtResource("1_belt")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 12, 0, -3)
+
+[node name="Conveyor5" parent="." unique_id=193419088 instance=ExtResource("1_belt")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 10, 0, -3)
+
+[node name="ConveyorTurnLeft2" parent="." unique_id=153631698 instance=ExtResource("6_tt6r4")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 8, 0, -5)
+
+[node name="Conveyor6" parent="." unique_id=1042007505 instance=ExtResource("1_belt")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 8, 0, -3)
+
+[node name="ConveyorTurnRight3" parent="." unique_id=2064498882 instance=ExtResource("5_7dy0c")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 8, 0, 1)
+
+[node name="ConveyorTurnRight4" parent="." unique_id=1000216881 instance=ExtResource("5_7dy0c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1)
+
+[node name="Conveyor7" parent="." unique_id=1159395695 instance=ExtResource("1_belt")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 6, 0, 1)
+
+[editable path="Spawner"]
+[editable path="Spawner2"]

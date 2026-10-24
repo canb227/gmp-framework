@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>What the shop takes as payment. Names and icons are in <see cref="Shop.Currencies"/>.</summary>
-public enum Currency { Scrap, MetalBar, RobotParts, Circuits }
+public enum Currency { Scrap, MetalBar, RobotParts, Circuits, GravityCores }
 
 /// <summary>How a <see cref="Currency"/> is shown in the UI.</summary>
 public record CurrencyInfo(string name, Texture2D icon);
@@ -43,6 +43,7 @@ public partial class Shop : Node
         [Currency.MetalBar] = new("Metal Bar", GD.Load<Texture2D>("res://game/assets/icons/items/iron_ingot.png")),
         [Currency.RobotParts] = new("Robot Parts", GD.Load<Texture2D>("res://game/assets/icons/blueprints/robot_parts_icon.png")),
         [Currency.Circuits] = new("Circuits", GD.Load<Texture2D>("res://game/assets/icons/blueprints/circuit_icon.png")),
+        [Currency.GravityCores] = new("Gravity Cores", GD.Load<Texture2D>("res://game/assets/icons/items/magnet_core.png")),
     };
 
     static readonly List<string> stock = new();
@@ -305,6 +306,45 @@ public partial class Shop : Node
         {
             player.UpdateEquippedItem();
         }
+    }
+
+    // ---- gravity gun upgrades ---------------------------------------------------
+
+    /// <summary>
+    /// Buys <paramref name="upgradeID"/> for the local <paramref name="player"/>: the host takes the payment from the
+    /// banks and sends it back. False (and nothing is sent) for an unknown upgrade, one already owned, or one the banks
+    /// can't pay for.
+    /// </summary>
+    public static bool TryBuyGunUpgrade(FactoryPlayer player, string upgradeID)
+    {
+        GravityGunUpgrade upgrade = GravityGunUpgrades.Find(upgradeID);
+        if (upgrade == null || player.gunUpgrades.Contains(upgradeID)) return false;
+        if (Balance(GravityGunUpgrades.currency) < upgrade.cost) return false;
+        RPCManager.RPCTo(Lobby.hostID, instance, nameof(_RequestGunUpgrade), [upgradeID]);
+        return true;
+    }
+
+    // Host (only ever sent there): checks the price against its own banks (first request wins), takes it, sends the upgrade.
+    [RPC]
+    private void _RequestGunUpgrade(string upgradeID)
+    {
+        GravityGunUpgrade upgrade = GravityGunUpgrades.Find(upgradeID);
+        if (upgrade == null || Balance(GravityGunUpgrades.currency) < upgrade.cost)
+        {
+            Logging.Log($"gun upgrade {upgradeID} for {RPCManager.sender} refused: unknown or can't afford it", "Shop");
+            return;
+        }
+        AddCurrency(GravityGunUpgrades.currency, -upgrade.cost);
+        RPCManager.RPCTo(RPCManager.sender, this, nameof(_ReceiveGunUpgrade), [upgradeID]);
+    }
+
+    // Buyer: the local player gets it.
+    [RPC(requireAuthority = true)]
+    private void _ReceiveGunUpgrade(string upgradeID)
+    {
+        FactoryPlayer player = GameWorld.syncedObjs.Values.OfType<FactoryPlayer>().FirstOrDefault(p => p.isLocal);
+        if (player == null) return;
+        player.AddGunUpgrade(upgradeID);
     }
 
     // ---- saves ------------------------------------------------------------------

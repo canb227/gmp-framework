@@ -9,7 +9,7 @@ using Stopwatch = System.Diagnostics.Stopwatch;
 /// <summary>
 /// One packet of state updates.
 /// <para>
-/// This and the other per-tick sync states (<see cref="PlayerSync"/>, <see cref="MagnetSync"/>) are sent as arrays of
+/// This and the other per-tick sync states (<see cref="PlayerSync"/>, <see cref="GravityGunSync"/>) are sent as arrays of
 /// values rather than maps of field names, which is about a quarter smaller. The [Key] number is each field's place in
 /// the array: give a new field the next number, and never renumber or reuse one, or peers on different builds (and
 /// anything saved) read into the wrong fields. A reader from before a field was added reads it as its default.

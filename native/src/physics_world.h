@@ -172,7 +172,7 @@ struct Body {
 	int basePriority = 1;
 	// Grows by the body's priority each send and goes back to 0 when it is sent: highest goes first.
 	int priorityAccumulator = 0;
-	// Until this tick (the world's) a magnet rod holds it, or let go of it a moment ago.
+	// Until this tick (the world's) a gravity gun holds it, or let go of it a moment ago.
 	uint64_t heldUntilTick = 0;
 	// As of the last state built: the pose, whether it was at rest, and the send tick (C#'s physics frame).
 	godot::Vector3 lastBuiltPosition;
@@ -271,7 +271,7 @@ public:
 	// A shape's number in its body: an item collider's index in its kind, or a GMPShape's place in its body.
 	int32_t shape_index(b3ShapeId shapeId);
 
-	// One body by id, for game code that works on a few at a time (magnet rods, machines, placement).
+	// One body by id, for game code that works on a few at a time (gravity guns, machines, placement).
 	bool has_body(int64_t id) const;
 	godot::Object *get_body_node(int64_t id) const;
 	godot::Transform3D get_body_transform(int64_t id) const;
@@ -335,10 +335,10 @@ public:
 	void set_body_authority(int64_t id, int64_t peer);
 	// Every player's position and view (eye and look direction), each send, for the bodies' priorities.
 	void set_viewers(godot::PackedVector3Array positions, godot::PackedVector3Array eyes, godot::PackedVector3Array looks);
-	// A magnet rod holds the body this tick: it is sent often while held and for a second after.
+	// A gravity gun holds the body this tick: it is sent often while held and for a second after.
 	void hold_body(int64_t id);
 	// Show this follower at its authority's newest state this tick, instead of two sends behind (what the
-	// local magnet rod holds).
+	// local gravity gun holds).
 	void show_body_newest(int64_t id);
 	// Which tick of peer's states followers show now (GameWorld.PlaybackTick, about two sends behind).
 	void set_playback_tick(int64_t peer, double playbackTick);

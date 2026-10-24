@@ -1,3 +1,17 @@
 [gd_scene format=3 uid="uid://c4qhtr6e240b2"]
 
+[ext_resource type="Script" path="res://game/scripts/ui/MenuBackdrop.cs" id="1_backdrop"]
+[ext_resource type="PackedScene" path="res://game/scenes/ui/menus/backdrops/backdrop_belt_line.tscn" id="2_beltline"]
+[ext_resource type="AudioStream" uid="uid://bf0gl5ohmckp" path="res://game/assets/audio/music/leberch_dark_sci_fi.mp3" id="3_music"]
+
 [node name="FrontEnd" type="Node" unique_id=100751046]
+
+[node name="MenuBackdrop" type="Node" parent="."]
+script = ExtResource("1_backdrop")
+scenes = [ExtResource("2_beltline")]
+
+[node name="MenuMusic" type="AudioStreamPlayer" parent="."]
+process_mode = 3
+stream = ExtResource("3_music")
+volume_db = -18.0
+autoplay = true

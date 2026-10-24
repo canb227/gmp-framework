@@ -47,6 +47,14 @@ void GMPPhysicsWorld::update_rendering() {
 void GMPPhysicsWorld::update_part_rendering(ItemKind &kind, ItemPart &part) {
 	RenderingServer *rs = RenderingServer::get_singleton();
 
+	int count = (int)kind.slots.size();
+	// Nothing to draw and no room made yet (its items went before it was ever drawn, e.g. a world cleared at once):
+	// leave it be. Godot's multimesh interpolation divides by the per-instance size, which is 0 until data is
+	// allocated, so handing it a buffer before then crashes the engine.
+	if (count == 0 && part.capacity == 0) {
+		return;
+	}
+
 	if (!part.multimesh.is_valid()) {
 		RID mesh = part.mesh->get_rid();
 		if (!part.surfaceMaterials.empty()) {
@@ -80,7 +88,6 @@ void GMPPhysicsWorld::update_part_rendering(ItemKind &kind, ItemPart &part) {
 		}
 	}
 
-	int count = (int)kind.slots.size();
 	if (count > part.capacity) {
 		// Room for twice as many, so a growing pile doesn't reallocate every tick.
 		int capacity = 64;

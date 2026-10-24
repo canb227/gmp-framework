@@ -191,7 +191,7 @@ const float ProximityRange = 30.0f;
 // look), so what someone looks at is updated more often than what's behind them.
 const float ViewMultiplier = 2.5f;
 const float ViewConeCos = 0.55f;
-// Priority of a body a magnet rod holds: above any nearness bonus, below the players.
+// Priority of a body a gravity gun holds: above any nearness bonus, below the players.
 const int HeldPriority = 100;
 // Times a resting pose is sent before the body goes quiet (each is unreliable), and how often a quiet
 // body still sends its pose, in case every copy of it was lost.

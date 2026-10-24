@@ -15,8 +15,8 @@ public record LevelInfo
     }
 }
 
-/// <summary>What each player starts with (chosen in the debug lobby).</summary>
-public enum StarterItems { None, MagnetRod, All }
+/// <summary>What each player starts with besides the gravity gun, which everyone has (chosen in the debug lobby).</summary>
+public enum StarterItems { None, Tools, All }
 
 /// <summary>
 /// The settings a game starts from, chosen by the host in the lobby and sent to every peer (<see cref="Lobby.gameInfo"/>).

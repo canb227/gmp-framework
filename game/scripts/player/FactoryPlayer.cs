@@ -8,8 +8,8 @@ using PolyType;
 /// The networked player character. This file holds identity, movement, mouse look, input dispatch
 /// and state sync; features live in partial-class files alongside it:
 /// FactoryPlayer.Interaction.cs (looks-at target + interact) and FactoryPlayer.Equipment.cs (hotbar, in-hand
-/// item, dropping) and FactoryPlayer.Health.cs (damage from hits, regen, downed as a ball). A held <see cref="HeldItem"/> (magnet
-/// rod, blueprint preview, ...) gets first refusal on input. The HUD and every menu belong to
+/// item, dropping) and FactoryPlayer.Health.cs (damage from hits, regen, downed as a ball). A held <see cref="HeldItem"/> (gravity
+/// gun, blueprint preview, ...) gets first refusal on input. The HUD and every menu belong to
 /// <see cref="UIManager"/>, which binds the HUD to the local player when it spawns.
 /// </summary>
 public partial class FactoryPlayer : GMPOCharacter
@@ -78,6 +78,8 @@ public partial class FactoryPlayer : GMPOCharacter
 
     /// <summary>Velocity in the world (not relative to what it stands on), as of the last move.</summary>
     Vector3 velocity;
+    /// <summary>Speed to add at the next move (a gravity gun's shot), after the floor's grip, so it can lift the player off it.</summary>
+    Vector3 pendingKnockback;
     /// <summary>Seconds since it was last on the floor, and since jump was last pressed (big: long ago).</summary>
     float sinceOnFloor = 10;
     float sinceJumpPressed = 10;
@@ -251,6 +253,12 @@ public partial class FactoryPlayer : GMPOCharacter
 
         if (@event is InputEventMouseMotion motion && Input.MouseMode == Input.MouseModeEnum.Captured)
         {
+            // The gravity gun's radial menu takes the mouse while it's open; the view holds still.
+            if (heldItem is GravityGun gun && gun.CapturesMouse())
+            {
+                gun.RadialMouse(motion.ScreenRelative);
+                return;
+            }
             // ScreenRelative, not Relative: Relative is scaled by the canvas stretch, so look speed changed with window size.
             float sensitivity = MouseSensitivity * GameSettings.mouseSensitivity;
             RotateY(-motion.ScreenRelative.X * sensitivity);
@@ -261,7 +269,7 @@ public partial class FactoryPlayer : GMPOCharacter
     }
 
     /// <summary>
-    /// The scroll wheel goes to the held item first (e.g. the magnet rod's hold distance), then the structure looked at
+    /// The scroll wheel goes to the held item first (e.g. the gravity gun's hold distance), then the structure looked at
     /// (e.g. a catapult's strength), otherwise cycles the hotbar.
     /// </summary>
     void HandleScrollWheel(InputEvent @event)
@@ -287,6 +295,15 @@ public partial class FactoryPlayer : GMPOCharacter
         float flat = new Vector2(direction.X, direction.Z).Length();
         lookPitch = Mathf.Clamp(Mathf.Atan2(direction.Y, flat), Mathf.DegToRad(-89f), Mathf.DegToRad(89f));
         PoseCamera(false);
+    }
+
+    /// <summary>Local player: shoved by <paramref name="speed"/> (m/s) at the next move. Not while downed or flying.</summary>
+    public void Knockback(Vector3 speed)
+    {
+        if (!isLocal || downed || noclip || piloting != null) return;
+        // A little lift, so a push along the floor carries them instead of being eaten by friction at once.
+        speed.Y = Mathf.Max(speed.Y, speed.Length() * 0.3f);
+        pendingKnockback += speed;
     }
 
     /// <summary>Puts the player at a spot at once, stopped (the console's tp command).</summary>
@@ -476,6 +493,16 @@ public partial class FactoryPlayer : GMPOCharacter
             Accelerate(ref relative, wishDirection, Mathf.Min(wishSpeed, airSpeedCap), airAcceleration, delta);
             SteerInAir(ref relative, wishDirection, wishSpeed, delta);
             relative += gravity * delta;
+        }
+
+        if (pendingKnockback != Vector3.Zero)
+        {
+            relative += pendingKnockback;
+            pendingKnockback = Vector3.Zero;
+            if (relative.Y > 0)
+            {
+                sinceOnFloor = 10;
+            }
         }
 
         bool canJump = onFloor || sinceOnFloor <= coyoteTime;
@@ -705,7 +732,7 @@ public partial class FactoryPlayer : GMPOCharacter
             inventory.ActiveHotbarSlot = msg.equippedSlot;
             UpdateEquippedItem();
         }
-        // The held tool's own state (e.g. what the magnet rod is pulling), after the slot above so it reaches the right tool.
+        // The held tool's own state (e.g. what the gravity gun is pulling), after the slot above so it reaches the right tool.
         if (!isLocal && heldItem != null)
         {
             heldItem.ApplySyncState(msg.heldItemState);

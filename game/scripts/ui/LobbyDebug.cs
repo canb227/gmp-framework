@@ -116,7 +116,7 @@ public partial class LobbyDebug : Control
         _levelSelect_ItemSelected(1);
         // Item order matches the StarterItems enum.
         _starterItemsSelect.AddItem("None");
-        _starterItemsSelect.AddItem("Only magnet rod");
+        _starterItemsSelect.AddItem("Only tools");
         _starterItemsSelect.AddItem("All");
         _starterItemsSelect.Select((int)Lobby.gameInfo.starterItems);
         ProcessMode = ProcessModeEnum.Always;

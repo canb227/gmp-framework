@@ -1,7 +1,7 @@
 using Godot;
 
 /// <summary>
-/// A tool lying in the world (a dropped magnet rod, a wrench): unlike loose items it stays a node, as there are few of
+/// A tool lying in the world (a dropped wrench): unlike loose items it stays a node, as there are few of
 /// them and they may carry more than a mesh. Attach it to the root GMPBody of the tool's dropped scene (its ItemInfo's
 /// droppedScene; <see cref="ItemInfo.SpawnInWorld"/> spawns such scenes as nodes).
 /// <para>

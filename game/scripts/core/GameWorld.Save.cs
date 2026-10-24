@@ -35,6 +35,8 @@ public partial record PlayerSave
     public InventorySlot[] slots;
     public int equippedSlot;
     public int spawnIndex;
+    /// <summary>Gravity gun upgrades owned, by id (<see cref="GravityGunUpgrades"/>).</summary>
+    public List<string> gunUpgrades = new();
 }
 
 /// <summary>Everything a save file holds, and what a joiner or a resync is sent.</summary>
@@ -79,8 +81,8 @@ public partial record SaveGame
 /// </summary>
 public partial class GameWorld
 {
-    /// <summary>4: one flat record (the world's roots and states no longer nested in their own).</summary>
-    public const int SaveVersion = 4;
+    /// <summary>5: the magnet rod became the gravity gun (pinned to the first slot), and players keep its upgrades.</summary>
+    public const int SaveVersion = 5;
 
     /// <summary>Roots in this group are left out of the world's roots (players, which are saved on their own).</summary>
     public const string UnsavedGroup = "unsaved";
@@ -208,6 +210,7 @@ public partial class GameWorld
             slots = (InventorySlot[])p.inventory.slots.Clone(),
             equippedSlot = p.inventory.ActiveHotbarSlot,
             spawnIndex = p.spawnIndex,
+            gunUpgrades = new(p.gunUpgrades),
         };
     }
 
@@ -378,6 +381,8 @@ public partial class GameWorld
             player.SetPlayerName(p.name); // a player who has left: the lobby no longer knows the name
         }
         player.inventory.slots = p.slots ?? new InventorySlot[Inventory.TotalSlots];
+        player.inventory.EnsureGun();
+        player.gunUpgrades = p.gunUpgrades ?? new();
         player.inventory.ActiveHotbarSlot = p.equippedSlot;
         player.inventory.InventoryUpdated();
         player.UpdateEquippedItem();

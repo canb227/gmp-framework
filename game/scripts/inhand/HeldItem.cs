@@ -34,7 +34,7 @@ public partial class HeldItem : Node3D
 
     /// <summary>
     /// The holder's peer, each time its player sends its state: what the other peers' copies of this tool need to
-    /// know (e.g. what the magnet rod is pulling). Null for nothing.
+    /// know (e.g. what the gravity gun is pulling). Null for nothing.
     /// </summary>
     public virtual byte[] GenerateSyncState() => null;
 
