@@ -24,7 +24,7 @@ itemHolder = NodePath("Camera3D/ItemHolder")
 priority = 1000
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=962695158]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.62, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9758302, 0)
 current = true
 
 [node name="head" type="MeshInstance3D" parent="Camera3D" unique_id=1992194214]

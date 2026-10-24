@@ -37,7 +37,29 @@ public partial class UIManager
         questTracker = ResourceLoader.Load<PackedScene>(QuestTrackerScene).Instantiate<QuestTracker>();
         questLayer.AddChild(questTracker);
         questTracker.SetUnderScreen(TopScreen != null);
+        // Temporary diagnostic health bar, bottom left (to be replaced by a less intrusive effect).
+        healthBar = new ProgressBar();
+        healthBar.ShowPercentage = false;
+        healthBar.AnchorTop = 1;
+        healthBar.AnchorBottom = 1;
+        healthBar.OffsetLeft = 24;
+        healthBar.OffsetRight = 264;
+        healthBar.OffsetTop = -44;
+        healthBar.OffsetBottom = -24;
+        healthBar.MouseFilter = Control.MouseFilterEnum.Ignore;
+        healthBar.Modulate = new Color(1f, 0.35f, 0.35f);
+        hudLayer.AddChild(healthBar);
         RefreshMouseMode();
+    }
+
+    static ProgressBar healthBar;
+
+    /// <summary>The local player's health on the HUD's diagnostic bar.</summary>
+    public static void SetHealth(float health, float maxHealth)
+    {
+        if (healthBar == null) return;
+        healthBar.MaxValue = maxHealth;
+        healthBar.Value = health;
     }
 
     /// <summary>Removes the HUD, if it belongs to <paramref name="player"/> (any player when null).</summary>
@@ -48,6 +70,8 @@ public partial class UIManager
         Hud = null;
         questTracker.QueueFree();
         questTracker = null;
+        healthBar.QueueFree();
+        healthBar = null;
         RefreshMouseMode();
     }
 

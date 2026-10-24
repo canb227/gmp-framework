@@ -17,7 +17,6 @@
 [ext_resource type="Texture2D" uid="uid://dfssoii6t84gn" path="res://game/assets/textures/wall_basic_1/wall_basic_1_diffuseOriginal.png" id="12_ihq8k"]
 [ext_resource type="Script" uid="uid://x8l68nnxddi3" path="res://game/scripts/structures/BrokenStructure.cs" id="12_is778"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/sorting/Trommel.tscn" id="14_is778"]
-[ext_resource type="Script" uid="uid://gnoh6xfnqkwq" path="res://game/scripts/structures/special/ItemSpammer.cs" id="15_br3rc"]
 [ext_resource type="Texture2D" uid="uid://c8knlhvemp8jf" path="res://game/assets/textures/grass_1/grass_ao.png" id="15_ubgps"]
 [ext_resource type="Texture2D" uid="uid://dudbcdb7ex0qv" path="res://game/assets/textures/wall_white_brick/wall_white_brick_diffuseOriginal.png" id="18_jjh62"]
 [ext_resource type="Texture2D" uid="uid://dai3p48chnvni" path="res://game/assets/textures/wall_white_brick/wall_white_brick_normal.png" id="19_qiak6"]
@@ -28,6 +27,12 @@
 [ext_resource type="Script" uid="uid://c64akhdf23fdq" path="res://game/scripts/entities/PricedButton.cs" id="30_priced"]
 [ext_resource type="PackedScene" uid="uid://b3vrwosnvijj" path="res://game/scenes/structures/broken/BrokenSmelter.tscn" id="31_brokensmelter"]
 [ext_resource type="PackedScene" uid="uid://ci3gdnftondij" path="res://game/scenes/structures/broken/BrokenRecycler.tscn" id="32_brokenrecycler"]
+[ext_resource type="Script" uid="uid://b36dqopg7hge1" path="res://game/scripts/entities/ItemDropper.cs" id="dropper"]
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="iteminfo"]
+[ext_resource type="Resource" uid="uid://da286bgkite2l" path="res://game/definitions/resources/scrap_piece1.tres" id="item_scrap_piece1"]
+[ext_resource type="Resource" uid="uid://b2m5l24vbjiqb" path="res://game/definitions/resources/scrap_piece2.tres" id="item_scrap_piece2"]
+[ext_resource type="Resource" uid="uid://calpxv51e46rb" path="res://game/definitions/resources/scrap_piece3.tres" id="item_scrap_piece3"]
+[ext_resource type="Resource" uid="uid://dqduwj7ocqjxy" path="res://game/definitions/resources/scrap_piece4.tres" id="item_scrap_piece4"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vchc8"]
 
@@ -549,13 +554,16 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AADAvwAARsIAAAC/AADAvwAARsIAAAA/AAAAvwAARsIAAAC/AADAvwAARsIAAAC/AADAvwAAQsIAAAC/AADAvwAARsIAAAA/AADAvwAARsIAAAC/AAAAvwAARsIAAAC/AADAvwAAQsIAAAC/AADAvwAAQsIAAAA/AADAvwAARsIAAAA/AADAvwAAQsIAAAA/AAAAvwAAQsIAAAA/AADAvwAAQsIAAAC/AAAAvwAAQsIAAAA/AADAvwAAQsIAAAA/AAAAvwAARsIAAAA/AAAAvwAARsIAAAA/AAAAvwAARsIAAAC/AAAAvwAARsIAAAA/AAAAvwAAQsIAAAA/AAAAvwAAQsIAAAC/AAAAvwAAQsIAAAC/AAAAvwAAQsIAAAC/AIAAAP//AAAAgAAA//8AAACAAAD//wAAAAAAgP9//n8AAACA/3/+fwAAAID/f/5//////wAA/z//////AAD/P/////8AAP8/AAAAgP9//n//f/9/AAD/P/9//38AAP8//3//fwAA/z8AgP////8AAACA/////wAAAID/////AAAAgAAA//8AAP9//38AAP8///8AgP9//n///wCA/3/+f///AID/f/5//////wAA/z///wCA/3/+fwCA/////wAA")
 }]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5b7ql"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b6v13"]
 albedo_color = Color(0.18234664, 0.2502215, 0.7347022, 1)
 roughness = 0.6
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_khgg0"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_31qeu"]
 albedo_color = Color(0.13720876, 0.9015662, 0.17328078, 1)
 roughness = 0.6
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7qi08"]
+size = Vector3(49.156067, 1, 94.90576)
 
 [node name="DevArea" type="Node3D" unique_id=393419204]
 
@@ -857,7 +865,6 @@ metadata/_custom_type_script = "uid://cltf2fbu2l28o"
 
 [node name="RepairSmelterButton" type="Node3D" parent="WorldStuff" unique_id=681842689]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.91199, 46.83092, -13.572759)
-visible = false
 
 [node name="Button" type="GMPBody" parent="WorldStuff/RepairSmelterButton" unique_id=1401352437 node_paths=PackedStringArray("animator", "targets")]
 body_type = 0
@@ -896,7 +903,6 @@ mesh = SubResource("BoxMesh_r1731")
 body_type = 0
 tags = 256
 transform = Transform3D(1.0000002, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 30.58564, 47.25219, -6.5600157)
-visible = false
 
 [node name="Shape" type="GMPShape" parent="WorldStuff/Box3DBody19" unique_id=1700000107]
 shape = 5
@@ -912,7 +918,6 @@ surface_material_override/0 = ExtResource("8_kuy7m")
 body_type = 0
 tags = 256
 transform = Transform3D(1.0000002, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 32.625404, 47.25219, -6.776924)
-visible = false
 
 [node name="Shape" type="GMPShape" parent="WorldStuff/Box3DBody22" unique_id=1700000108]
 shape = 5
@@ -928,7 +933,6 @@ surface_material_override/0 = ExtResource("8_kuy7m")
 body_type = 0
 tags = 256
 transform = Transform3D(1.0000002, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 29.577599, 46.21869, -6.544813)
-visible = false
 
 [node name="Shape" type="GMPShape" parent="WorldStuff/Box3DBody20" unique_id=1700000109]
 shape = 5
@@ -942,7 +946,6 @@ surface_material_override/0 = ExtResource("8_kuy7m")
 
 [node name="BrokenSmelter" parent="WorldStuff" unique_id=1738204615 instance=ExtResource("31_brokensmelter")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 45, -7)
-visible = false
 hoverName = "Broken Smelter"
 hoverText = "Repair this at the nearby button "
 
@@ -1026,158 +1029,6 @@ mesh = SubResource("BoxMesh_r1731")
 
 [node name="Trommel" parent="WorldStuff" unique_id=1100000000 instance=ExtResource("14_is778")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 0, 3)
-
-[node name="SpawnShittenator" type="Node3D" parent="WorldStuff" unique_id=1677055647 node_paths=PackedStringArray("outputLocations")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34, 2, 23)
-script = ExtResource("15_br3rc")
-itemWeights = Dictionary[String, float]({
-"scrap_piece1": 1.0,
-"scrap_piece2": 1.0,
-"scrap_piece3": 1.0,
-"scrap_piece4": 1.0
-})
-spawnInterval = 0.0
-spawning = false
-itemsPerSpawn = 100
-launchSpeed = 5.0
-outputLocations = [NodePath(".")]
-
-[node name="SpawnShittenator9" type="Node3D" parent="WorldStuff" unique_id=857899838 node_paths=PackedStringArray("outputLocations")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 87, 4, 5)
-script = ExtResource("15_br3rc")
-delay = 0.5
-itemWeights = Dictionary[String, float]({
-"scrap_piece1": 1.0,
-"scrap_piece2": 1.0,
-"scrap_piece3": 1.0,
-"scrap_piece4": 1.0
-})
-spawnInterval = 0.0
-spawning = false
-itemsPerSpawn = 100
-launchSpeed = 5.0
-outputLocations = [NodePath(".")]
-
-[node name="SpawnShittenator10" type="Node3D" parent="WorldStuff" unique_id=1431730046 node_paths=PackedStringArray("outputLocations")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 87, 4, -5)
-script = ExtResource("15_br3rc")
-delay = 0.5
-itemWeights = Dictionary[String, float]({
-"scrap_piece1": 1.0,
-"scrap_piece2": 1.0,
-"scrap_piece3": 1.0,
-"scrap_piece4": 1.0
-})
-spawnInterval = 0.0
-spawning = false
-itemsPerSpawn = 100
-launchSpeed = 5.0
-outputLocations = [NodePath(".")]
-
-[node name="SpawnShittenator2" type="Node3D" parent="WorldStuff" unique_id=1172120545 node_paths=PackedStringArray("outputLocations")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27, 2, 9)
-script = ExtResource("15_br3rc")
-itemWeights = Dictionary[String, float]({
-"scrap_piece1": 1.0,
-"scrap_piece2": 1.0,
-"scrap_piece3": 1.0,
-"scrap_piece4": 1.0
-})
-spawnInterval = 0.0
-spawning = false
-itemsPerSpawn = 100
-launchSpeed = 5.0
-outputLocations = [NodePath(".")]
-
-[node name="SpawnShittenator3" type="Node3D" parent="WorldStuff" unique_id=1782305705 node_paths=PackedStringArray("outputLocations")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 2, -11)
-script = ExtResource("15_br3rc")
-itemWeights = Dictionary[String, float]({
-"scrap_piece1": 1.0,
-"scrap_piece2": 1.0,
-"scrap_piece3": 1.0,
-"scrap_piece4": 1.0
-})
-spawnInterval = 0.0
-spawning = false
-itemsPerSpawn = 100
-launchSpeed = 5.0
-outputLocations = [NodePath(".")]
-
-[node name="SpawnShittenator4" type="Node3D" parent="WorldStuff" unique_id=381327166 node_paths=PackedStringArray("outputLocations")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 2, -17)
-script = ExtResource("15_br3rc")
-itemWeights = Dictionary[String, float]({
-"scrap_piece1": 1.0,
-"scrap_piece2": 1.0,
-"scrap_piece3": 1.0,
-"scrap_piece4": 1.0
-})
-spawnInterval = 0.0
-spawning = false
-itemsPerSpawn = 100
-launchSpeed = 5.0
-outputLocations = [NodePath(".")]
-
-[node name="SpawnShittenator5" type="Node3D" parent="WorldStuff" unique_id=1536537208 node_paths=PackedStringArray("outputLocations")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 2, -27)
-script = ExtResource("15_br3rc")
-itemWeights = Dictionary[String, float]({
-"scrap_piece1": 1.0,
-"scrap_piece2": 1.0,
-"scrap_piece3": 1.0,
-"scrap_piece4": 1.0
-})
-spawnInterval = 0.0
-spawning = false
-itemsPerSpawn = 100
-launchSpeed = 5.0
-outputLocations = [NodePath(".")]
-
-[node name="SpawnShittenator6" type="Node3D" parent="WorldStuff" unique_id=380217186 node_paths=PackedStringArray("outputLocations")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 2, -21)
-script = ExtResource("15_br3rc")
-itemWeights = Dictionary[String, float]({
-"scrap_piece1": 1.0,
-"scrap_piece2": 1.0,
-"scrap_piece3": 1.0,
-"scrap_piece4": 1.0
-})
-spawnInterval = 0.0
-spawning = false
-itemsPerSpawn = 100
-launchSpeed = 5.0
-outputLocations = [NodePath(".")]
-
-[node name="SpawnShittenator7" type="Node3D" parent="WorldStuff" unique_id=651986351 node_paths=PackedStringArray("outputLocations")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 2, -3)
-script = ExtResource("15_br3rc")
-itemWeights = Dictionary[String, float]({
-"scrap_piece1": 1.0,
-"scrap_piece2": 1.0,
-"scrap_piece3": 1.0,
-"scrap_piece4": 1.0
-})
-spawnInterval = 0.0
-spawning = false
-itemsPerSpawn = 100
-launchSpeed = 5.0
-outputLocations = [NodePath(".")]
-
-[node name="SpawnShittenator8" type="Node3D" parent="WorldStuff" unique_id=1754070168 node_paths=PackedStringArray("outputLocations")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 2, 22)
-script = ExtResource("15_br3rc")
-itemWeights = Dictionary[String, float]({
-"scrap_piece1": 1.0,
-"scrap_piece2": 1.0,
-"scrap_piece3": 1.0,
-"scrap_piece4": 1.0
-})
-spawnInterval = 0.0
-spawning = false
-itemsPerSpawn = 100
-launchSpeed = 5.0
-outputLocations = [NodePath(".")]
 
 [node name="store" parent="." unique_id=1931553037 instance=ExtResource("7_ihq8k")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2, 0, -4)
@@ -1672,7 +1523,7 @@ occupiedCells = Array[Vector3i]([])
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.019003, 0, -48.79734)
 
 [node name="Mesh" parent="GantryCrane/Cockpit" index="1"]
-material_override = SubResource("StandardMaterial3D_5b7ql")
+material_override = SubResource("StandardMaterial3D_b6v13")
 
 [node name="GantryCrane2" parent="." unique_id=1557634791 instance=ExtResource("25_2k66h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48, 0, 49)
@@ -1686,7 +1537,7 @@ occupiedCells = Array[Vector3i]([])
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40.876442, 0, -44.14395)
 
 [node name="Mesh" parent="GantryCrane2/Cockpit" index="1"]
-material_override = SubResource("StandardMaterial3D_khgg0")
+material_override = SubResource("StandardMaterial3D_31qeu")
 
 [node name="DevSpawner" parent="." unique_id=2110969461 instance=ExtResource("26_0nhbu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37, 7, 23)
@@ -1707,6 +1558,24 @@ launchSpeed = 2.665
 
 [node name="Output" parent="DevSpawner" index="2"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.5, 4.0744524, -12.933634)
+
+[node name="ItemDropper" type="Node3D" parent="." unique_id=1758103759 node_paths=PackedStringArray("spawnVolume")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7246857, 6.9536605, 0)
+script = ExtResource("dropper")
+itemWeights = Dictionary[ExtResource("iteminfo"), float]({
+ExtResource("item_scrap_piece1"): 1.0,
+ExtResource("item_scrap_piece2"): 1.0,
+ExtResource("item_scrap_piece3"): 1.0,
+ExtResource("item_scrap_piece4"): 1.0
+})
+count = 1000
+spawnVolume = NodePath("CollisionShape3D")
+expectPile = true
+metadata/_custom_type_script = "uid://b36dqopg7hge1"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ItemDropper" unique_id=1692203996]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.262604, 0, 1.9812012)
+shape = SubResource("BoxShape3D_7qi08")
 
 [editable path="ItemCountMeter2"]
 [editable path="ItemCountMeter3"]

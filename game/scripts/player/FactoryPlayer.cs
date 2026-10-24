@@ -8,7 +8,7 @@ using PolyType;
 /// The networked player character. This file holds identity, movement, mouse look, input dispatch
 /// and state sync; features live in partial-class files alongside it:
 /// FactoryPlayer.Interaction.cs (looks-at target + interact) and FactoryPlayer.Equipment.cs (hotbar, in-hand
-/// item, dropping). A held <see cref="HeldItem"/> (magnet
+/// item, dropping) and FactoryPlayer.Health.cs (damage from hits, regen, downed as a ball). A held <see cref="HeldItem"/> (magnet
 /// rod, blueprint preview, ...) gets first refusal on input. The HUD and every menu belong to
 /// <see cref="UIManager"/>, which binds the HUD to the local player when it spawns.
 /// </summary>
@@ -19,6 +19,11 @@ public partial class FactoryPlayer : GMPOCharacter
     public static readonly List<FactoryPlayer> all = new();
     /// <summary>The peer whose input drives this player (its authority, unless it has left).</summary>
     public ulong controllingPeerID;
+    /// <summary>
+    /// Which of the level's spawn points (<see cref="GameBootstrap.SpawnPoints"/>) is this player's: picked when they
+    /// first join, kept in saves, and where <see cref="Respawn"/> sends them.
+    /// </summary>
+    public int spawnIndex;
     /// <summary>How quickly remote copies close the gap to where their controller says they are (1/s); 0 snaps.</summary>
     [Export] public float syncLerpRate = 10f;
     float gravityMagnitude = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
@@ -193,6 +198,7 @@ public partial class FactoryPlayer : GMPOCharacter
             camera.Current = false;
         }
         UpdateEquippedItem();
+        InitHealth();
     }
 
     public override void _ExitTree()
@@ -217,6 +223,11 @@ public partial class FactoryPlayer : GMPOCharacter
 
         // Menus (pause, shop, ...) take every input while open; UIManager handles Escape and the inventory key.
         if (UIManager.BlocksGameplayInput) return;
+        if (downed)
+        {
+            HandleDownedInput(@event);
+            return;
+        }
         if (piloting != null)
         {
             if (@event is InputEventMouseButton click && click.Pressed) UIManager.RefreshMouseMode();
@@ -301,6 +312,18 @@ public partial class FactoryPlayer : GMPOCharacter
         if (!isLocal)
         {
             FollowRemote(delta);
+            return;
+        }
+        UpdateHealth((float)delta);
+        // Fell out of the world (through a floor, off an edge): back to their spawn point. Noclip flies where it likes.
+        if (!noclip && GlobalPosition.Y < GameWorld.KillPlaneY)
+        {
+            Logging.Log($"{playerName} fell below the kill plane at {GlobalPosition}, respawning", "FactoryPlayer");
+            Respawn();
+        }
+        if (downed)
+        {
+            UpdateDowned((float)delta);
             return;
         }
 
@@ -617,7 +640,7 @@ public partial class FactoryPlayer : GMPOCharacter
     /// </summary>
     void PoseCamera(bool interpolated)
     {
-        if (!cameraPosed || piloting != null) return;
+        if (!cameraPosed || piloting != null || downed) return;
         Vector3 origin = interpolated ? GetGlobalTransformInterpolated().Origin : GlobalPosition;
         Basis yaw = GlobalBasis;
         Vector3 eye = cameraOffset - new Vector3(0, eyeDrop, 0);
@@ -639,6 +662,7 @@ public partial class FactoryPlayer : GMPOCharacter
             vel = velocity,
             height = capsuleHeight,
             noclip = noclip,
+            spawnIndex = spawnIndex,
             equippedSlot = inventory.ActiveHotbarSlot,
             heldItemState = heldItem?.GenerateSyncState(),
         };
@@ -650,6 +674,7 @@ public partial class FactoryPlayer : GMPOCharacter
         if (update == null || update.Length == 0) return;
         PlayerSync msg = GMPObject.serializer.Deserialize<PlayerSync>(update);
         controllingPeerID = msg.controllingPeerID;
+        spawnIndex = msg.spawnIndex;
         if (isLocal)
         {
             // Only a spawn-time state reaches the local player: put it there.
@@ -692,6 +717,7 @@ public partial class FactoryPlayer : GMPOCharacter
     public override void _Process(double delta)
     {
         PoseCamera(true);
+        PoseBallCamera();
         if (displayPlayerDebugInfo && isLocal)
         {
             UpdateDebugUI();
@@ -733,4 +759,6 @@ public partial record struct PlayerSync
     // Keys 9 and 10 held impacts once (they go through the physics world's hits now): don't reuse them.
     /// <summary>Flying through everything (<see cref="GMPOCharacter.noclip"/>).</summary>
     [Key(11)] public bool noclip;
+    /// <summary>Which of the level's spawn points is this player's (<see cref="FactoryPlayer.spawnIndex"/>).</summary>
+    [Key(12)] public int spawnIndex;
 }

@@ -128,7 +128,8 @@ static int hit_side_rank(const Body *body, uint64_t id, uint64_t tags) {
 // with each other or the level, so their hits come from their authority instead (play_received_hits).
 void GMPPhysicsWorld::read_hits(const b3ContactEvents &contactEvents) {
 	hits.clear();
-	for (const HitRecord &hit : characterHits) {
+	for (HitRecord hit : characterHits) {
+		hit.source = HitFromMover;
 		report_hit(hit);
 	}
 	characterHits.clear();
@@ -240,7 +241,9 @@ void GMPPhysicsWorld::play_received_hits() {
 		if (waiting && (received.hit.tagsA & PlayerTag) == 0) {
 			continue;
 		}
-		hits.push_back(received.hit);
+		HitRecord hit = received.hit;
+		hit.source = HitHeard;
+		hits.push_back(hit);
 		hitsReceived[i] = hitsReceived.back();
 		hitsReceived.pop_back();
 	}

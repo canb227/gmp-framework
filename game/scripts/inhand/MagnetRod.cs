@@ -113,7 +113,9 @@ public partial class MagnetRod : HeldItem
     FmodStudio.EventInstance hold_audio;
     [Export] AnimationPlayer animationPlayer;
 
-    static readonly Vector3 gravity = ProjectSettings.GetSetting("physics/3d/default_gravity_vector").AsVector3()
+    static readonly long[] none = new long[0];
+
+    static readonly Vector3 gravity =ProjectSettings.GetSetting("physics/3d/default_gravity_vector").AsVector3()
         * ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
 
     public override void Equip(ItemInfo item, FactoryPlayer player)
@@ -125,6 +127,15 @@ public partial class MagnetRod : HeldItem
         ballMarker.TopLevel = true;
         ballMarker.Visible = false;
         particles.Emitting = false;
+    }
+
+    /// <summary>Put away (or its player gone): whatever it held touches the player again at once.</summary>
+    public override void _ExitTree()
+    {
+        if (IsInstanceValid(player))
+        {
+            player.ForgetIgnoredBodies();
+        }
     }
 
     // ---- input (holder's peer) ----------------------------------------------------
@@ -235,6 +246,8 @@ public partial class MagnetRod : HeldItem
         if (mode == MagnetMode.Off)
         {
             caught.Clear();
+            // Still every tick, so what it let go of starts touching the player again after a moment.
+            player.IgnoreBodies(none);
             hold_audio.stop(FmodStudio.STOP_MODE.ALLOWFADEOUT);
             if(animationPlayer.AssignedAnimation != "idle")
             {
@@ -257,6 +270,13 @@ public partial class MagnetRod : HeldItem
                 CatchNearbyItems();
             }
         }
+        // What the rod holds passes through its own player (not the others), so it can't be stood on or shoved by them.
+        long[] held = new long[caught.Count];
+        for (int i = 0; i < caught.Count; i++)
+        {
+            held[i] = (long)caught[i];
+        }
+        player.IgnoreBodies(held);
         foreach (ulong item in caught)
         {
             // Held items sync ahead of everything but the players (counts on the item's authority, the host).

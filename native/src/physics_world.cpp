@@ -221,7 +221,7 @@ void GMPPhysicsWorld::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_stats"), &GMPPhysicsWorld::get_stats);
 
 	ClassDB::bind_method(D_METHOD("register_item_kind", "description"), &GMPPhysicsWorld::register_item_kind);
-	ClassDB::bind_method(D_METHOD("spawn_item", "id", "kind", "authority", "transform", "linear_velocity", "angular_velocity"), &GMPPhysicsWorld::spawn_item);
+	ClassDB::bind_method(D_METHOD("spawn_item", "id", "kind", "authority", "transform", "linear_velocity", "angular_velocity", "awake"), &GMPPhysicsWorld::spawn_item, DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("despawn_item", "id"), &GMPPhysicsWorld::despawn_item);
 	ClassDB::bind_method(D_METHOD("clear_items"), &GMPPhysicsWorld::clear_items);
 	ClassDB::bind_method(D_METHOD("get_item_count"), &GMPPhysicsWorld::get_item_count);

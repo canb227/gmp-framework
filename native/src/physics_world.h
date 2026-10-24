@@ -106,8 +106,17 @@ struct HitRecord {
 	float normal[3];
 	// How fast the two sides were approaching (m/s).
 	float speed;
+	// Where this peer got it (HitFromContact, HitFromMover or HitHeard), for game code that must count each hit once.
+	// Not sent: a receiver marks its copy heard.
+	int32_t source;
 };
 static_assert(sizeof(HitRecord) == 72, "HitRecord must match ContactHit in C#");
+
+// HitRecord.source: Box3D saw two bodies this peer simulates meet, a character this peer moves ran into something,
+// or another peer sent it.
+const int32_t HitFromContact = 0;
+const int32_t HitFromMover = 1;
+const int32_t HitHeard = 2;
 
 // Impacts slower than this (m/s) make no hit at all (Box3D's hit event threshold, and characters' own impacts).
 const float MinHitSpeed = 2.0f;
@@ -244,7 +253,7 @@ public:
 	// ---- bodies (physics_world_bodies.cpp) ----
 	int register_item_kind(godot::Dictionary description);
 	// The authority simulates it; on every other peer it follows the authority's states.
-	void spawn_item(int64_t id, int kind, int64_t authority, godot::Transform3D transform, godot::Vector3 linearVelocity, godot::Vector3 angularVelocity);
+	void spawn_item(int64_t id, int kind, int64_t authority, godot::Transform3D transform, godot::Vector3 linearVelocity, godot::Vector3 angularVelocity, bool awake);
 	void despawn_item(int64_t id);
 	void clear_items();
 	int get_item_count() const;

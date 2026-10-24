@@ -361,6 +361,65 @@ public partial class Console
         LimboConsole.Info(crane.Describe());
     }
 
+    /// <summary>Lists the level's item droppers: mode, seed, items still around, pile file.</summary>
+    public void droppers()
+    {
+        foreach (ItemDropper dropper in ItemDropper.all)
+        {
+            int alive = 0;
+            foreach (ulong id in dropper.ownedItems)
+            {
+                if (ItemWorld.Get(id) != null)
+                {
+                    alive++;
+                }
+            }
+            LimboConsole.Info($"{dropper.Name}: mode={dropper.mode} running={dropper.running} left={dropper.itemsLeft} seed={dropper.seed} items={alive} pile={dropper.PilePath()}");
+        }
+        LimboConsole.Info($"droppers: count={ItemDropper.all.Count}");
+    }
+
+    /// <summary>Host: the debug window's buttons for the dropper named name. action: spawn, clear, save, capture (save what's in its capture volume), keep_seed.</summary>
+    public void dropper(string name, string action)
+    {
+        if (!Lobby.isHost)
+        {
+            LimboConsole.Error("dropper: host only.");
+            return;
+        }
+        foreach (ItemDropper found in ItemDropper.all)
+        {
+            if (found.Name != name)
+            {
+                continue;
+            }
+            switch (action)
+            {
+                case "spawn":
+                    found.Start();
+                    break;
+                case "clear":
+                    found.ClearItems();
+                    break;
+                case "save":
+                    found.SavePile(false);
+                    break;
+                case "capture":
+                    found.SavePile(true);
+                    break;
+                case "keep_seed":
+                    found.KeepSeed();
+                    break;
+                default:
+                    LimboConsole.Error($"dropper: no action {action} (spawn, clear, save, capture, keep_seed).");
+                    return;
+            }
+            LimboConsole.Info($"dropper: {name} {action} done");
+            return;
+        }
+        LimboConsole.Error($"dropper: no dropper named {name}.");
+    }
+
     /// <summary>
     /// Host: spawns count items (loose items or tools) in a column above x y z, 0.5 m apart so they land one after another, each up to
     /// spread metres off to the side (else a column of balls stacks into a tower).
@@ -470,6 +529,24 @@ public partial class Console
         }
         player.Teleport(new Vector3(x, y, z));
         LimboConsole.Info($"tp: {player.playerName} to ({x},{y},{z})");
+    }
+
+    /// <summary>Sends the local player back to their spawn point (when stuck).</summary>
+    public void respawn()
+    {
+        FactoryPlayer player = LocalPlayer();
+        if (player == null)
+        {
+            LimboConsole.Error("No local player to respawn (is the game running?).");
+            return;
+        }
+        if (player.piloting != null)
+        {
+            LimboConsole.Error("Stop piloting first.");
+            return;
+        }
+        player.Respawn();
+        LimboConsole.Info($"respawn: {player.playerName} at spawn point {player.spawnIndex}, ({player.GlobalPosition.X:0.0},{player.GlobalPosition.Y:0.0},{player.GlobalPosition.Z:0.0})");
     }
 
     /// <summary>Turns the local player to look at x y z.</summary>
@@ -768,6 +845,33 @@ public partial class Console
         }
         Vector3 spot = ArenaPosition + new Vector3(0, 1.5f, -13);
         LimboConsole.Info($"test_arena: at {ArenaPosition}; stand at tp {spot.X} {spot.Y} {spot.Z}");
+    }
+
+    // ---- health ----
+
+    /// <summary>Damages the local player by amount, as a hit would (0 health downs them into a ball).</summary>
+    public void hurt(float amount)
+    {
+        FactoryPlayer player = LocalPlayer();
+        if (player == null)
+        {
+            LimboConsole.Error("hurt: needs a running game.");
+            return;
+        }
+        player.TakeDamage(amount, new Vector3(0, 3, -3));
+        LimboConsole.Info($"hurt: health={player.health:0.0} downed={player.downed}");
+    }
+
+    /// <summary>The local player's health and whether they are downed.</summary>
+    public void hp()
+    {
+        FactoryPlayer player = LocalPlayer();
+        if (player == null)
+        {
+            LimboConsole.Error("hp: needs a running game.");
+            return;
+        }
+        LimboConsole.Info($"hp: health={player.health:0.0}/{player.maxHealth:0} downed={player.downed} pos={player.GlobalPosition}");
     }
 
     // ---- hitstats: the physics world's impacts here, to compare host and client ----

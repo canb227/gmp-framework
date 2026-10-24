@@ -129,8 +129,43 @@ public partial class ItemWorld : Node
         }
     }
 
-    /// <summary>Spawns an item on this peer only, with a known id (spawn RPCs and restores). False if it couldn't (logged).</summary>
-    public static bool SpawnLocal(ulong id, string itemID, Transform3D transform, Vector3 linearVelocity, Vector3 angularVelocity)
+    /// <summary>
+    /// Spawns many loose items for every peer in one message (an <see cref="ItemDropper"/>'s spawns for a tick). Each
+    /// save's id must be new; the host gives each a small nudge unless <paramref name="nudge"/> is false (items placed
+    /// on the ground).
+    /// </summary>
+    public static void SpawnBatch(ItemSave[] spawns, bool nudge)
+    {
+        if (insideImpactHook)
+        {
+            Logging.Error("SpawnBatch inside OnBreakingImpact, which runs on every peer: use SpawnLocal there", "ItemWorld");
+            return;
+        }
+        RPCManager.RPC(instance, nameof(_SpawnBatch), [spawns, nudge]);
+    }
+
+    [RPC]
+    private void _SpawnBatch(ItemSave[] spawns, bool nudge)
+    {
+        foreach (ItemSave spawn in spawns)
+        {
+            Transform3D transform = new Transform3D(new Basis(spawn.rotation), spawn.position);
+            if (!SpawnLocal(spawn.id, spawn.itemID, transform, spawn.linearVelocity, spawn.angularVelocity))
+            {
+                continue;
+            }
+            if (nudge && Lobby.isHost)
+            {
+                PhysicsWorld.ApplyBodyForce(spawn.id, new Vector3(Random.Shared.Next(-5, 5), Random.Shared.Next(-5, 5), Random.Shared.Next(-5, 5)));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Spawns an item on this peer only, with a known id (spawn RPCs, restores and baked piles). False if it couldn't
+    /// (logged). An item spawned asleep stays put until something touches it.
+    /// </summary>
+    public static bool SpawnLocal(ulong id, string itemID, Transform3D transform, Vector3 linearVelocity, Vector3 angularVelocity, bool awake = true)
     {
         if (items.ContainsKey(id))
         {
@@ -142,7 +177,7 @@ public partial class ItemWorld : Node
             return false;
         }
         // The physics world gives it its definition's tags itself (its kind's), the same as the record starts with.
-        PhysicsWorld.SpawnItem(id, kind, Lobby.hostID, transform, linearVelocity, angularVelocity);
+        PhysicsWorld.SpawnItem(id, kind, Lobby.hostID, transform, linearVelocity, angularVelocity, awake);
         ItemRecord record = new ItemRecord(id, itemID, ItemInfo.Fetch(itemID), colliderTagsByItem[itemID]);
         items[id] = record;
         countByItem[itemID] = CountOf(itemID) + 1;
@@ -405,7 +440,7 @@ public partial class ItemWorld : Node
     /// part for every visible MeshInstance3D. Also sets "collider_tags" (not used by the physics world): what the item's
     /// colliders have between them, which are the item's tags when its definition gives it none.
     /// </summary>
-    static Godot.Collections.Dictionary DescribeKind(PackedScene scene, ItemInfo info)
+    public static Godot.Collections.Dictionary DescribeKind(PackedScene scene, ItemInfo info)
     {
         // Instanced outside the tree only to read it: no body is made.
         Node root = scene.Instantiate();

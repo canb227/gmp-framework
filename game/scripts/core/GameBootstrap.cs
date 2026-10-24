@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
@@ -57,13 +58,24 @@ public static class GameBootstrap
 
         PlayerSync init = new PlayerSync();
         init.controllingPeerID = Lobby.selfPeerID;
-        Vector3 spawnPos = PickSpawnPosition();
-        Vector3 spawnRot = default;
+        if (returning != null)
+        {
+            init.spawnIndex = returning.spawnIndex;
+        }
+        else
+        {
+            init.spawnIndex = PickSpawnIndex();
+        }
+        Transform3D spawn = SpawnTransform(init.spawnIndex);
+        Vector3 spawnPos = spawn.Origin;
+        Vector3 spawnRot = spawn.Basis.GetEuler();
         if (returning != null)
         {
             spawnPos = returning.pos;
             spawnRot = returning.rot;
         }
+        init.pos = spawnPos;
+        init.rot = spawnRot;
         ulong pid = GameWorld.SpawnScene(PlayerScene, spawnPos, spawnRot, default, GMPObject.serializer.Serialize(init));
         FactoryPlayer player = GameWorld.syncedObjs[pid] as FactoryPlayer;
 
@@ -120,17 +132,102 @@ public static class GameBootstrap
     /// <summary>Group for spawn markers placed in level scenes (e.g. a Marker3D named PlayerStart).</summary>
     public const string PlayerSpawnGroup = "player_spawn";
 
-    /// <summary>
-    /// A spot near the level's <see cref="PlayerSpawnGroup"/> marker, jittered so peers don't spawn inside each
-    /// other. Falls back to the old random spot near the origin for levels without a marker.
-    /// </summary>
-    static Vector3 PickSpawnPosition()
+    /// <summary>The level's spawn markers, in tree order: a player's <see cref="FactoryPlayer.spawnIndex"/> is an index into these.</summary>
+    public static List<Node3D> SpawnPoints()
     {
-        Vector3 jitter = new Vector3((float)(Random.Shared.NextDouble() * 3.0 - 1.5), 0f, (float)(Random.Shared.NextDouble() * 3.0 - 1.5));
-        if (GameWorld.instance?.GetTree().GetFirstNodeInGroup(PlayerSpawnGroup) is Node3D marker)
+        List<Node3D> points = new();
+        if (GameWorld.instance == null)
         {
-            return marker.GlobalPosition + jitter + Vector3.Up;
+            return points;
         }
-        return new Vector3(Random.Shared.Next(5), Random.Shared.Next(2, 5), Random.Shared.Next(5));
+        foreach (Node node in GameWorld.instance.GetTree().GetNodesInGroup(PlayerSpawnGroup))
+        {
+            if (node is Node3D marker)
+            {
+                points.Add(marker);
+            }
+        }
+        return points;
+    }
+
+    /// <summary>
+    /// Where a player with this spawn index appears: beside its marker (jittered, as several players may share one),
+    /// facing the way the marker faces. An index past the level's markers wraps around (a save from a level that had
+    /// more); a level with no markers falls back to a random spot near the origin.
+    /// </summary>
+    public static Transform3D SpawnTransform(int spawnIndex)
+    {
+        List<Node3D> points = SpawnPoints();
+        if (points.Count == 0)
+        {
+            return new Transform3D(Basis.Identity, new Vector3(Random.Shared.Next(5), Random.Shared.Next(2, 5), Random.Shared.Next(5)));
+        }
+        Node3D marker = points[spawnIndex % points.Count];
+        Vector3 jitter = new Vector3((float)(Random.Shared.NextDouble() * 3.0 - 1.5), 0f, (float)(Random.Shared.NextDouble() * 3.0 - 1.5));
+        Basis yaw = new Basis(Vector3.Up, marker.GlobalRotation.Y);
+        return new Transform3D(yaw, marker.GlobalPosition + jitter + Vector3.Up);
+    }
+
+    /// <summary>
+    /// A first-time player's spawn point: the one fewest players hold (lowest index on a tie), so points fill up in
+    /// order and then double up. Players who left still hold theirs, so they get it back.
+    /// <para>
+    /// At the start of a session every peer picks at once, before it has seen anyone else's player, so each one
+    /// also counts the peers ahead of it (by peer id) who haven't spawned yet: every peer works the same answer out
+    /// for each of them, so nobody needs to ask the host.
+    /// </para>
+    /// </summary>
+    static int PickSpawnIndex()
+    {
+        int pointCount = SpawnPoints().Count;
+        if (pointCount == 0)
+        {
+            return 0;
+        }
+        // How many players hold each point already: those here and those who left.
+        int[] uses = new int[pointCount];
+        foreach (FactoryPlayer player in FactoryPlayer.all)
+        {
+            uses[player.spawnIndex % pointCount]++;
+        }
+        foreach (PlayerSave absent in GameWorld.absentPlayers)
+        {
+            uses[absent.spawnIndex % pointCount]++;
+        }
+        // The peers still to spawn, in an order every peer agrees on; this peer's place among them.
+        List<ulong> waiting = new();
+        foreach (ulong peer in Lobby.members.Keys)
+        {
+            bool hasPlayer = false;
+            foreach (FactoryPlayer player in FactoryPlayer.all)
+            {
+                if (player.controllingPeerID == peer)
+                {
+                    hasPlayer = true;
+                }
+            }
+            if (!hasPlayer)
+            {
+                waiting.Add(peer);
+            }
+        }
+        waiting.Sort();
+        int place = Mathf.Max(0, waiting.IndexOf(Lobby.selfPeerID));
+
+        // The waiting peers take a point each in turn, the least held one; this peer takes the one it gets at its turn.
+        int picked = 0;
+        for (int turn = 0; turn <= place; turn++)
+        {
+            picked = 0;
+            for (int i = 1; i < pointCount; i++)
+            {
+                if (uses[i] < uses[picked])
+                {
+                    picked = i;
+                }
+            }
+            uses[picked]++;
+        }
+        return picked;
     }
 }

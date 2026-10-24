@@ -51,6 +51,16 @@ public struct ContactHit
     public Vector3 normal;
     /// <summary>How fast the two sides were approaching (m/s).</summary>
     public float speed;
+    /// <summary>
+    /// Where this peer got it: <see cref="FromContact"/> (two bodies this peer simulates met), <see cref="FromMover"/>
+    /// (a character this peer moves ran or landed into something) or <see cref="Heard"/> (another peer sent it).
+    /// Game code that must count each hit once (damage) leaves out the heard ones: their sender counts them.
+    /// </summary>
+    public int source;
+
+    public const int FromContact = 0;
+    public const int FromMover = 1;
+    public const int Heard = 2;
 }
 
 /// <summary>
@@ -169,9 +179,9 @@ public static class PhysicsWorld
     }
 
     /// <summary>Adds a loose item of <paramref name="kind"/> on this peer only, simulated by <paramref name="authority"/>. Use ItemWorld.Spawn, which keeps the game's record too.</summary>
-    public static void SpawnItem(ulong id, int kind, ulong authority, Transform3D transform, Vector3 linearVelocity, Vector3 angularVelocity)
+    public static void SpawnItem(ulong id, int kind, ulong authority, Transform3D transform, Vector3 linearVelocity, Vector3 angularVelocity, bool awake = true)
     {
-        world.Call(spawnItemName, id, kind, authority, transform, linearVelocity, angularVelocity);
+        world.Call(spawnItemName, id, kind, authority, transform, linearVelocity, angularVelocity, awake);
     }
 
     /// <summary>Removes a loose item on this peer only. Use ItemWorld.Despawn or RemoveLocal, which keep the game's record too.</summary>

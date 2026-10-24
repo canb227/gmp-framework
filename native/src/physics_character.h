@@ -40,6 +40,17 @@ public:
 	// Whether a belt's surface drive carries the character (the ride_belts console command). Off, belts are
 	// like any other floor to it; a moving body still carries it either way.
 	bool rideBelts = false;
+	// How long (s) the character still counts as standing after the loose items under it stop holding it up
+	// (it slipped between two, or onto the side of one, or the pile shifted), so a pile doesn't flicker it into the air.
+	float softGroundGrace = 0.15f;
+	// How quickly (Hz) the ground speed it takes from loose items under it follows them, so one item tumbling
+	// underfoot doesn't yank it about while a pile flowing steadily still carries it.
+	float softFloorHertz = 4.0f;
+	// The most ground speed (m/s) loose items under it lend it.
+	float softFloorMaxSpeed = 1.5f;
+	// How long (s) a body it held still passes through it after letting go, so an item dropped inside it falls
+	// out rather than being shoved out.
+	float ignoreGrace = 0.3f;
 
 	GMPCharacter();
 
@@ -59,6 +70,14 @@ public:
 	// Whether a capsule of this height would fit where the character is (standing up from a crouch).
 	bool can_fit_height(float newHeight) const;
 
+	// The bodies this character's magnet rod holds, every tick on every peer's copy: the character and they don't
+	// touch (a filter joint each, and its own moves skip them) until ignoreGrace after they leave the list.
+	void ignore_bodies(godot::PackedInt64Array ids);
+	// Touches everything again at once (the rod is put away).
+	void forget_ignored_bodies();
+	bool ignores(uint64_t id) const;
+	bool ignores_any() const;
+
 	void set_radius(float value);
 	float get_radius() const;
 	void set_height(float value);
@@ -75,6 +94,14 @@ public:
 	bool get_noclip() const;
 	void set_ride_belts(bool value);
 	bool get_ride_belts() const;
+	void set_soft_ground_grace(float value);
+	float get_soft_ground_grace() const;
+	void set_soft_floor_hertz(float value);
+	float get_soft_floor_hertz() const;
+	void set_soft_floor_max_speed(float value);
+	float get_soft_floor_max_speed() const;
+	void set_ignore_grace(float value);
+	float get_ignore_grace() const;
 
 protected:
 	static void _bind_methods();
@@ -89,6 +116,18 @@ private:
 	// Where the legs found the floor, and on what.
 	godot::Vector3 floorPoint;
 	b3ShapeId floorShape = b3_nullShapeId;
+	// The floor is loose items (or other soft bodies), and how much of softGroundGrace is left since it last was.
+	bool floorSoft = false;
+	float softGraceLeft = 0;
+	// The ground speed loose items under it lend it, smoothed over the last moves.
+	godot::Vector3 softFloorVelocity;
+	// A body it doesn't touch: until which physics frame, and the filter joint that keeps Box3D from colliding them.
+	struct IgnoredBody {
+		uint64_t id = 0;
+		uint64_t untilFrame = 0;
+		int64_t joint = 0;
+	};
+	std::vector<IgnoredBody> ignoredBodies;
 	// The last move ended against a solid wall or ceiling: running along it doesn't count as running into it.
 	bool againstWall = false;
 
@@ -99,6 +138,8 @@ private:
 	// Casts the legs down from the capsule and sets the floor fields. distance: how far below standing
 	// height the ground is (negative: above it).
 	void probe_floor(b3WorldId world, b3Pos feet, bool rising, float &distance);
+	// Steps softFloorVelocity toward raw (the loose items' average speed under it this move) and returns it.
+	godot::Vector3 smooth_soft_floor_velocity(godot::Vector3 raw, float delta);
 	// Something the move ran into: landing on the floor, or coming up against a wall or ceiling it wasn't against
 	// before. It goes into the world's hits, with this character as side A. Soft things (items, dynamic bodies)
 	// aren't reported here: Box3D's own hits are. normal: out of what it hit, toward the character.

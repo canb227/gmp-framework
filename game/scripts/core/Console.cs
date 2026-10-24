@@ -31,6 +31,7 @@ public partial class Console : Node
         // Game-specific commands, in game/scripts/core/Console.Game.cs.
         LimboConsole.RegisterCommand(new Callable(this, "players"));
         LimboConsole.RegisterCommand(new Callable(this, "tp"));
+        LimboConsole.RegisterCommand(new Callable(this, "respawn"));
         LimboConsole.RegisterCommand(new Callable(this, "look_at"));
         LimboConsole.RegisterCommand(new Callable(this, "walk"));
         LimboConsole.RegisterCommand(new Callable(this, "jump"));
@@ -49,6 +50,8 @@ public partial class Console : Node
         LimboConsole.RegisterCommand(new Callable(this, "interp"));
         LimboConsole.RegisterCommand(new Callable(this, "lightshadows"));
         LimboConsole.RegisterCommand(new Callable(this, "hitstats"));
+        LimboConsole.RegisterCommand(new Callable(this, "hurt"));
+        LimboConsole.RegisterCommand(new Callable(this, "hp"));
         LimboConsole.RegisterCommand(new Callable(this, "objects"));
         LimboConsole.RegisterCommand(new Callable(this, "spawn_scene"));
         LimboConsole.RegisterCommand(new Callable(this, "stir"));
@@ -68,6 +71,8 @@ public partial class Console : Node
         LimboConsole.RegisterCommand(new Callable(this, "crane_pilot"));
         LimboConsole.RegisterCommand(new Callable(this, "crane_drive"));
         LimboConsole.RegisterCommand(new Callable(this, "crane_info"));
+        LimboConsole.RegisterCommand(new Callable(this, "droppers"));
+        LimboConsole.RegisterCommand(new Callable(this, "dropper"));
 
         // Keep debug windows (perf) drawing while the tree is paused, e.g. during world load.
         ProcessMode = ProcessModeEnum.Always;
@@ -104,6 +109,7 @@ public partial class Console : Node
         GraphicsDebug.Process(this, delta);
         ItemsDebug.Process(this, delta);
         QuestsDebug.Process();
+        DroppersDebug.Process();
     }
 
     // ---- saves (host only; see GameWorld.Resync.cs) ----
@@ -362,6 +368,9 @@ public partial class Console : Node
             case "quests":
                 QuestsDebug.displayQuestsDebugInfo = !QuestsDebug.displayQuestsDebugInfo;
                 break;
+            case "droppers":
+                DroppersDebug.displayDroppersDebugInfo = !DroppersDebug.displayDroppersDebugInfo;
+                break;
             case "reset":
                 foreach (string name in GetDebuguiOptions())
                 {
@@ -385,6 +394,7 @@ public partial class Console : Node
             "graphics",
             "items",
             "quests",
+            "droppers",
             "reset",
         };
     }

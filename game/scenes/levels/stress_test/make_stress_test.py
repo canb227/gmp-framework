@@ -129,6 +129,21 @@ def weights(items):
     return "Dictionary[String, float]({\n" + ",\n".join(f'"{i}": 1.0' for i in items) + "\n})"
 
 
+def item_path(item):
+    """The definition file of an item id (game/definitions/**/<id>.tres), as a res:// path."""
+    root = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "definitions"))
+    for folder, _, files in os.walk(root):
+        if item + ".tres" in files:
+            rel = os.path.relpath(os.path.join(folder, item + ".tres"), os.path.join(root, "..", ".."))
+            return "res://" + rel.replace(os.sep, "/")
+    raise FileNotFoundError(item)
+
+
+def item_weights(items):
+    """An ItemDropper's itemWeights: keyed by the item definitions (ext_resource ids item_<id>)."""
+    return 'Dictionary[ExtResource("iteminfo"), float]({\n' + ",\n".join(f'ExtResource("item_{i}"): 1.0' for i in items) + "\n})"
+
+
 class Factory:
     def __init__(self):
         self.cells = {kind: read_cells(path) for kind, path in SCENES.items()}
@@ -271,8 +286,14 @@ def write(f):
     for kind, path in SCENES.items():
         lines.append(f'[ext_resource type="PackedScene" path="{path}" id="{ext[kind]}"]')
     lines.append('[ext_resource type="Script" path="res://game/scripts/entities/Stirrer.cs" id="stirrer"]')
-    lines.append('[ext_resource type="Script" path="res://game/scripts/entities/ItemSeeder.cs" id="seeder"]')
+    lines.append('[ext_resource type="Script" path="res://game/scripts/entities/ItemDropper.cs" id="dropper"]')
+    lines.append('[ext_resource type="Script" path="res://game/scripts/items/ItemInfo.cs" id="iteminfo"]')
+    for item in ITEMS:
+        lines.append(f'[ext_resource type="Resource" path="{item_path(item)}" id="item_{item}"]')
     lines.append("")
+    # The droppers' boxes: over all the belts (items land on the top belt below each point), and the area by the pit.
+    lines.append('[sub_resource type="BoxShape3D" id="BoxShape3D_belts"]\nsize = Vector3(102, 30, 62)\n')
+    lines.append('[sub_resource type="BoxShape3D" id="BoxShape3D_area"]\nsize = Vector3(13, 2, 13)\n')
     lines.append(STATIC_RESOURCES)
     lines.append(STATIC_NODES)
 
@@ -288,14 +309,32 @@ def write(f):
             lines.extend(props)
             lines.append("")
 
-    lines.append('[node name="ItemSeeder" type="Node3D" parent="." node_paths=PackedStringArray("beltsRoot")]')
+    # 1700 items dropped onto the belts (STRUCTURE surfaces: groundTags 512) and 300 scattered by the pit.
+    lines.append('[node name="BeltDropper" type="Node3D" parent="." node_paths=PackedStringArray("spawnVolume")]')
+    lines.append('script = ExtResource("dropper")')
+    lines.append(f"itemWeights = {item_weights(ITEMS)}")
+    lines.append("startOn = 0")
+    lines.append("count = 1700")
+    lines.append("itemsPerTick = 50")
+    lines.append('spawnVolume = NodePath("SpawnVolume")')
+    lines.append("dropToGround = true")
+    lines.append("groundTags = 512")
+    lines.append("")
+    lines.append('[node name="SpawnVolume" type="CollisionShape3D" parent="BeltDropper"]')
+    lines.append("transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 14, 17.5)")
+    lines.append('shape = SubResource("BoxShape3D_belts")')
+    lines.append("")
+    lines.append('[node name="AreaDropper" type="Node3D" parent="." node_paths=PackedStringArray("spawnVolume")]')
     lines.append("transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.5, 0)")
-    lines.append('script = ExtResource("seeder")')
-    lines.append(f"itemWeights = {weights(ITEMS)}")
-    lines.append('beltsRoot = NodePath("../Belts")')
-    lines.append("itemsOnBelts = 1700")
-    lines.append("itemsInArea = 300")
-    lines.append("areaSize = Vector3(13, 2, 13)")
+    lines.append('script = ExtResource("dropper")')
+    lines.append(f"itemWeights = {item_weights(ITEMS)}")
+    lines.append("startOn = 0")
+    lines.append("count = 300")
+    lines.append("itemsPerTick = 50")
+    lines.append('spawnVolume = NodePath("SpawnVolume")')
+    lines.append("")
+    lines.append('[node name="SpawnVolume" type="CollisionShape3D" parent="AreaDropper"]')
+    lines.append('shape = SubResource("BoxShape3D_area")')
     lines.append("")
 
     with open(OUT, "w", encoding="utf-8", newline="\n") as out:

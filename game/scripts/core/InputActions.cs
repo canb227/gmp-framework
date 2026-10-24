@@ -27,6 +27,8 @@ public static class InputActions
     public static readonly StringName freePlace = "freePlace";
     /// <summary>Held on a structure to take it apart, whatever is equipped (as left click does with the wrench).</summary>
     public static readonly StringName deconstruct = "deconstruct";
+    /// <summary>Downs the player into a ball at once (K, for trying it out).</summary>
+    public static readonly StringName knockOut = "knockOut";
 
     /// <summary>The hotbar slot actions slot0 to slot9, by slot index.</summary>
     public static readonly StringName[] slots =

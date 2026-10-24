@@ -3,6 +3,7 @@
 #include "math_convert.h"
 #include "physics_world.h"
 
+#include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/core/class_db.hpp>
 
 #include <cmath>
@@ -17,6 +18,8 @@ const uint64_t QueryHiddenLayer = 1ull << 30;
 const float SoftPushLimit = 0.01f;
 const int MaxMoverPlanes = 32;
 const int MoverIterations = 5;
+// The legs' ring of small casts around the middle one.
+const int LegRingProbes = 4;
 
 GMPCharacter::GMPCharacter() {
 	bodyType = KINEMATIC;
@@ -31,8 +34,9 @@ void GMPCharacter::_notification(int what) {
 		make_capsule_shape();
 	}
 	if (what == NOTIFICATION_EXIT_TREE) {
-		// It went with the body.
+		// It went with the body, and so did the filter joints.
 		capsuleShape = b3_nullShapeId;
+		ignoredBodies.clear();
 	}
 }
 
@@ -73,6 +77,8 @@ void GMPCharacter::make_capsule_shape() {
 
 struct MoverContext {
 	b3BodyId self = b3_nullBodyId;
+	// The character moving: what its magnet rod holds is skipped.
+	const GMPCharacter *character = nullptr;
 	b3CollisionPlane planes[MaxMoverPlanes];
 	// The shape each plane is on.
 	b3ShapeId planeShapes[MaxMoverPlanes];
@@ -104,7 +110,20 @@ static bool is_soft(b3ShapeId shapeId) {
 }
 
 static bool mover_filter(b3ShapeId shapeId, void *context) {
-	return !is_self((MoverContext *)context, shapeId) && !b3Shape_IsSensor(shapeId);
+	MoverContext *mover = (MoverContext *)context;
+	if (is_self(mover, shapeId) || b3Shape_IsSensor(shapeId)) {
+		return false;
+	}
+	if (mover->character != nullptr && mover->character->ignores_any()) {
+		GMPPhysicsWorld *world = GMPPhysicsWorld::get_current();
+		if (world != nullptr) {
+			Body *body = world->body_of_shape(shapeId);
+			if (body != nullptr && mover->character->ignores(body->id)) {
+				return false;
+			}
+		}
+	}
+	return true;
 }
 
 static bool collect_planes(b3ShapeId shapeId, const b3PlaneResult *results, int count, void *context) {
@@ -165,46 +184,119 @@ static b3QueryFilter mover_query_filter(uint32_t mask) {
 // ---- the legs ----
 
 void GMPCharacter::probe_floor(b3WorldId world, b3Pos feet, bool rising, float &distance) {
-	// A ball a little thinner than the capsule, from the bottom of the capsule straight down past the feet.
-	float ballRadius = radius * 0.9f;
-	float restTravel = stepHeight + radius - ballRadius;
-	float length = restTravel + groundSnap;
-	b3Pos start = { feet.x, feet.y + stepHeight + radius, feet.z };
+	// Balls cast from the bottom of the capsule straight down past the feet: one a little thinner than the
+	// capsule under its middle, and a ring of small ones under its edge, so on a pile of round items the legs
+	// stand on the pile's slope rather than on the side of whichever item the middle one lands on.
+	float startHeight = stepHeight + radius;
 	b3Vec3 centre = { 0, 0, 0 };
-	b3ShapeProxy ball = { &centre, 1, ballRadius };
+	b3QueryFilter filter = mover_query_filter(collisionMask);
 
-	MoverContext context;
-	context.self = get_body_id();
-	b3World_CastShape(world, start, &ball, b3Vec3{ 0, -length, 0 }, mover_query_filter(collisionMask), legs_callback, &context);
+	// What they found: the highest ground (the legs stand on it), the normals added up, and the speeds of the
+	// soft things under them added up.
+	bool found = false;
+	float closest = 0;
+	b3ShapeId closestShape = b3_nullShapeId;
+	b3Pos closestPoint = {};
+	Vector3 normalSum;
+	Vector3 softVelocitySum;
+	int softCount = 0;
+	for (int i = 0; i <= LegRingProbes; i++) {
+		float ballRadius = radius * 0.9f;
+		float offsetX = 0;
+		float offsetZ = 0;
+		if (i > 0) {
+			ballRadius = radius * 0.35f;
+			float angle = (i - 1) * 2.0f * B3_PI / LegRingProbes;
+			offsetX = std::cos(angle) * radius * 0.6f;
+			offsetZ = std::sin(angle) * radius * 0.6f;
+		}
+		// How far the ball travels before its bottom reaches the feet.
+		float restTravel = startHeight - ballRadius;
+		float length = restTravel + groundSnap;
+		b3Pos start = { feet.x + offsetX, feet.y + startHeight, feet.z + offsetZ };
+		b3ShapeProxy ball = { &centre, 1, ballRadius };
+
+		MoverContext context;
+		context.self = get_body_id();
+		context.character = this;
+		b3World_CastShape(world, start, &ball, b3Vec3{ 0, -length, 0 }, filter, legs_callback, &context);
+		if (!context.hit) {
+			continue;
+		}
+		float probeDistance = context.hitFraction * length - restTravel;
+		if (!found || probeDistance < closest) {
+			found = true;
+			closest = probeDistance;
+			closestShape = context.hitShape;
+			closestPoint = context.hitPoint;
+		}
+		normalSum += to_godot(context.hitNormal);
+		if (is_soft(context.hitShape)) {
+			b3BodyId body = b3Shape_GetBody(context.hitShape);
+			softVelocitySum += to_godot(b3Body_GetWorldPointVelocity(body, context.hitPoint));
+			softCount++;
+		}
+	}
 
 	onFloor = false;
-	floorNormal = Vector3(0, 1, 0);
-	floorVelocity = Vector3();
 	distance = 0;
-	if (!context.hit || rising) {
-		return;
+	Vector3 normal = Vector3(0, 1, 0);
+	if (found && normalSum.length_squared() > 0) {
+		normal = normalSum.normalized();
 	}
 	float minNormalY = std::cos(maxSlopeDegrees * B3_PI / 180.0f);
-	if (context.hitNormal.y < minNormalY) {
-		// Too steep to stand on.
+	if (!found || rising || normal.y < minNormalY) {
+		if (!rising && softGraceLeft > 0) {
+			// Just off loose items it stood on (between two, on the side of one, the pile shifting under it): it
+			// still stands for a moment, on the floor it last had.
+			onFloor = true;
+			if (found) {
+				distance = closest;
+			}
+			return;
+		}
+		// Nothing to stand on, too steep to stand on, or jumping.
+		softGraceLeft = 0;
+		floorSoft = false;
+		floorNormal = Vector3(0, 1, 0);
+		floorVelocity = Vector3();
 		return;
 	}
 	onFloor = true;
-	floorNormal = to_godot(context.hitNormal);
-	floorPoint = Vector3(context.hitPoint.x, context.hitPoint.y, context.hitPoint.z);
-	floorShape = context.hitShape;
-	distance = context.hitFraction * length - restTravel;
+	floorNormal = normal;
+	floorPoint = Vector3(closestPoint.x, closestPoint.y, closestPoint.z);
+	floorShape = closestShape;
+	distance = closest;
+	floorSoft = is_soft(closestShape);
 
+	if (floorSoft) {
+		// Loose items carry it at their average speed (smoothed in move()).
+		softGraceLeft = softGroundGrace;
+		floorVelocity = softVelocitySum / (float)softCount;
+		return;
+	}
+	softGraceLeft = 0;
 	// Standing still on something moving means moving with it: a body's own motion at that point, plus a
 	// belt's surface drive (in the body's axes) while rideBelts is on.
-	b3BodyId ground = b3Shape_GetBody(context.hitShape);
-	b3Vec3 pointVelocity = b3Body_GetWorldPointVelocity(ground, context.hitPoint);
+	b3BodyId ground = b3Shape_GetBody(closestShape);
+	b3Vec3 pointVelocity = b3Body_GetWorldPointVelocity(ground, closestPoint);
 	floorVelocity = to_godot(pointVelocity);
 	if (rideBelts) {
-		b3SurfaceMaterial material = b3Shape_GetSurfaceMaterial(context.hitShape);
+		b3SurfaceMaterial material = b3Shape_GetSurfaceMaterial(closestShape);
 		b3Vec3 drive = b3RotateVector(b3Body_GetRotation(ground), material.tangentVelocity);
 		floorVelocity += to_godot(drive);
 	}
+}
+
+Vector3 GMPCharacter::smooth_soft_floor_velocity(Vector3 raw, float delta) {
+	// Only along the ground: the legs keep the height, and items bouncing up underfoot would otherwise read as
+	// a jump (move() lets go of the floor above 0.5 m/s up).
+	raw.y = 0;
+	// Capped before smoothing, so a fast pile never pulls harder than the cap.
+	raw = raw.limit_length(softFloorMaxSpeed);
+	float blend = 1.0f - std::exp(-2.0f * B3_PI * softFloorHertz * delta);
+	softFloorVelocity = softFloorVelocity.lerp(raw, blend);
+	return softFloorVelocity;
 }
 
 // ---- moving ----
@@ -227,6 +319,7 @@ Vector3 GMPCharacter::move(Vector3 velocity, float delta) {
 	// As the last move left it.
 	bool wasOnFloor = onFloor;
 	Vector3 velocityIn = velocity;
+	softGraceLeft -= delta;
 
 	// Jumping: the legs let go.
 	bool rising = velocity.y > 0.5f;
@@ -249,6 +342,7 @@ Vector3 GMPCharacter::move(Vector3 velocity, float delta) {
 
 	MoverContext context;
 	context.self = get_body_id();
+	context.character = this;
 	for (int iteration = 0; iteration < MoverIterations; iteration++) {
 		context.planeCount = 0;
 		b3World_CollideMover(world, feet, &shape, filter, collect_planes, &context);
@@ -295,6 +389,12 @@ Vector3 GMPCharacter::move(Vector3 velocity, float delta) {
 	set_global_transform(transform);
 	// Ready for the next move, and for C# to read in between.
 	probe_floor(world, feet, rising, distance);
+	if (onFloor && floorSoft) {
+		floorVelocity = smooth_soft_floor_velocity(floorVelocity, delta);
+	} else {
+		// Stepping onto loose items starts from how fast it was carried before.
+		softFloorVelocity = floorVelocity;
+	}
 	if (onFloor && !wasOnFloor) {
 		float speed = -velocityIn.dot(floorNormal);
 		if (speed > 0) {
@@ -339,6 +439,8 @@ void GMPCharacter::teleport_character(Transform3D transform) {
 	legVelocity = 0;
 	onFloor = false;
 	againstWall = false;
+	floorSoft = false;
+	softGraceLeft = 0;
 }
 
 bool GMPCharacter::can_fit_height(float newHeight) const {
@@ -356,6 +458,67 @@ bool GMPCharacter::can_fit_height(float newHeight) const {
 	context.self = get_body_id();
 	b3World_OverlapShape(world, to_b3(feet), &proxy, mover_query_filter(collisionMask), any_rigid_overlap, &context);
 	return !context.hit;
+}
+
+// ---- what its magnet rod holds ----
+
+void GMPCharacter::ignore_bodies(PackedInt64Array ids) {
+	GMPPhysicsWorld *world = GMPPhysicsWorld::get_current();
+	uint64_t frame = Engine::get_singleton()->get_physics_frames();
+	uint64_t graceFrames = (uint64_t)(ignoreGrace * Engine::get_singleton()->get_physics_ticks_per_second());
+	for (int i = 0; i < ids.size(); i++) {
+		uint64_t id = (uint64_t)ids[i];
+		bool known = false;
+		for (IgnoredBody &ignored : ignoredBodies) {
+			if (ignored.id == id) {
+				ignored.untilFrame = frame + graceFrames;
+				known = true;
+			}
+		}
+		if (known) {
+			continue;
+		}
+		IgnoredBody ignored;
+		ignored.id = id;
+		ignored.untilFrame = frame + graceFrames;
+		// The joint also ends any contact they have now, so an item lifted from under the feet lets go of them.
+		if (world != nullptr && sharedId != 0) {
+			ignored.joint = world->create_filter_joint((int64_t)id, (int64_t)sharedId);
+		}
+		ignoredBodies.push_back(ignored);
+	}
+	// Let go of a while ago: they touch again.
+	for (int i = (int)ignoredBodies.size() - 1; i >= 0; i--) {
+		if (ignoredBodies[i].untilFrame < frame) {
+			if (world != nullptr) {
+				world->destroy_joint(ignoredBodies[i].joint);
+			}
+			ignoredBodies.erase(ignoredBodies.begin() + i);
+		}
+	}
+}
+
+void GMPCharacter::forget_ignored_bodies() {
+	GMPPhysicsWorld *world = GMPPhysicsWorld::get_current();
+	if (world != nullptr) {
+		for (IgnoredBody &ignored : ignoredBodies) {
+			world->destroy_joint(ignored.joint);
+		}
+	}
+	ignoredBodies.clear();
+}
+
+bool GMPCharacter::ignores(uint64_t id) const {
+	for (const IgnoredBody &ignored : ignoredBodies) {
+		if (ignored.id == id) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool GMPCharacter::ignores_any() const {
+	return !ignoredBodies.empty();
 }
 
 bool GMPCharacter::is_on_floor() const {
@@ -430,6 +593,8 @@ void GMPCharacter::set_noclip(bool value) {
 	onFloor = false;
 	againstWall = false;
 	floorVelocity = Vector3();
+	floorSoft = false;
+	softGraceLeft = 0;
 	make_capsule_shape();
 }
 
@@ -445,6 +610,38 @@ bool GMPCharacter::get_ride_belts() const {
 	return rideBelts;
 }
 
+void GMPCharacter::set_soft_ground_grace(float value) {
+	softGroundGrace = value;
+}
+
+float GMPCharacter::get_soft_ground_grace() const {
+	return softGroundGrace;
+}
+
+void GMPCharacter::set_soft_floor_hertz(float value) {
+	softFloorHertz = value;
+}
+
+float GMPCharacter::get_soft_floor_hertz() const {
+	return softFloorHertz;
+}
+
+void GMPCharacter::set_soft_floor_max_speed(float value) {
+	softFloorMaxSpeed = value;
+}
+
+float GMPCharacter::get_soft_floor_max_speed() const {
+	return softFloorMaxSpeed;
+}
+
+void GMPCharacter::set_ignore_grace(float value) {
+	ignoreGrace = value;
+}
+
+float GMPCharacter::get_ignore_grace() const {
+	return ignoreGrace;
+}
+
 void GMPCharacter::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("move", "velocity", "delta"), &GMPCharacter::move);
 	ClassDB::bind_method(D_METHOD("teleport_character", "transform"), &GMPCharacter::teleport_character);
@@ -452,6 +649,8 @@ void GMPCharacter::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_floor_normal"), &GMPCharacter::get_floor_normal);
 	ClassDB::bind_method(D_METHOD("get_floor_velocity"), &GMPCharacter::get_floor_velocity);
 	ClassDB::bind_method(D_METHOD("can_fit_height", "height"), &GMPCharacter::can_fit_height);
+	ClassDB::bind_method(D_METHOD("ignore_bodies", "ids"), &GMPCharacter::ignore_bodies);
+	ClassDB::bind_method(D_METHOD("forget_ignored_bodies"), &GMPCharacter::forget_ignored_bodies);
 
 	ClassDB::bind_method(D_METHOD("set_radius", "value"), &GMPCharacter::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &GMPCharacter::get_radius);
@@ -469,6 +668,14 @@ void GMPCharacter::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_noclip"), &GMPCharacter::get_noclip);
 	ClassDB::bind_method(D_METHOD("set_ride_belts", "value"), &GMPCharacter::set_ride_belts);
 	ClassDB::bind_method(D_METHOD("get_ride_belts"), &GMPCharacter::get_ride_belts);
+	ClassDB::bind_method(D_METHOD("set_soft_ground_grace", "value"), &GMPCharacter::set_soft_ground_grace);
+	ClassDB::bind_method(D_METHOD("get_soft_ground_grace"), &GMPCharacter::get_soft_ground_grace);
+	ClassDB::bind_method(D_METHOD("set_soft_floor_hertz", "value"), &GMPCharacter::set_soft_floor_hertz);
+	ClassDB::bind_method(D_METHOD("get_soft_floor_hertz"), &GMPCharacter::get_soft_floor_hertz);
+	ClassDB::bind_method(D_METHOD("set_soft_floor_max_speed", "value"), &GMPCharacter::set_soft_floor_max_speed);
+	ClassDB::bind_method(D_METHOD("get_soft_floor_max_speed"), &GMPCharacter::get_soft_floor_max_speed);
+	ClassDB::bind_method(D_METHOD("set_ignore_grace", "value"), &GMPCharacter::set_ignore_grace);
+	ClassDB::bind_method(D_METHOD("get_ignore_grace"), &GMPCharacter::get_ignore_grace);
 
 	ADD_GROUP("Character", "");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "radius", PROPERTY_HINT_RANGE, "0.05,2,0.01,suffix:m"), "set_radius", "get_radius");
@@ -478,6 +685,10 @@ void GMPCharacter::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "ground_snap", PROPERTY_HINT_RANGE, "0,1,0.01,suffix:m"), "set_ground_snap", "get_ground_snap");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "leg_hertz", PROPERTY_HINT_RANGE, "1,30,0.1,suffix:Hz"), "set_leg_hertz", "get_leg_hertz");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "ride_belts"), "set_ride_belts", "get_ride_belts");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "soft_ground_grace", PROPERTY_HINT_RANGE, "0,1,0.01,suffix:s"), "set_soft_ground_grace", "get_soft_ground_grace");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "soft_floor_hertz", PROPERTY_HINT_RANGE, "0.1,30,0.1,suffix:Hz"), "set_soft_floor_hertz", "get_soft_floor_hertz");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "soft_floor_max_speed", PROPERTY_HINT_RANGE, "0,10,0.01,suffix:m/s"), "set_soft_floor_max_speed", "get_soft_floor_max_speed");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "ignore_grace", PROPERTY_HINT_RANGE, "0,2,0.01,suffix:s"), "set_ignore_grace", "get_ignore_grace");
 	// Set at run time only (not saved in scenes).
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "noclip", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_noclip", "get_noclip");
 }

@@ -34,6 +34,7 @@ public partial record PlayerSave
     public Vector3 rot;
     public InventorySlot[] slots;
     public int equippedSlot;
+    public int spawnIndex;
 }
 
 /// <summary>Everything a save file holds, and what a joiner or a resync is sent.</summary>
@@ -89,7 +90,7 @@ public partial class GameWorld
     public const string SaveExtension = ".sav";
 
     /// <summary>Players the last restore couldn't match to anyone here; written back into the next save.</summary>
-    static List<PlayerSave> absentPlayers = new();
+    public static List<PlayerSave> absentPlayers = new();
 
     /// <summary>A new save's suggested file name: the time, so saves sort by age.</summary>
     public static string DefaultSaveName()
@@ -206,6 +207,7 @@ public partial class GameWorld
             rot = p.Rotation,
             slots = (InventorySlot[])p.inventory.slots.Clone(),
             equippedSlot = p.inventory.ActiveHotbarSlot,
+            spawnIndex = p.spawnIndex,
         };
     }
 
@@ -365,7 +367,7 @@ public partial class GameWorld
     // Locally, like the rest of the restore: every restoring peer spawns the same avatars with the same ids.
     static void SpawnSavedPlayer(PlayerSave p)
     {
-        PlayerSync sync = new() { controllingPeerID = p.peerID, pos = p.pos, rot = p.rot, equippedSlot = p.equippedSlot };
+        PlayerSync sync = new() { controllingPeerID = p.peerID, pos = p.pos, rot = p.rot, equippedSlot = p.equippedSlot, spawnIndex = p.spawnIndex };
         GMPOInitData init = new(p.id, p.peerID, p.peerID, 0, true);
         if (SpawnLocal(GameBootstrap.PlayerScene, p.pos, p.rot, init, GMPObject.serializer.Serialize(sync)) is not FactoryPlayer player)
         {

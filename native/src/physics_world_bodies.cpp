@@ -166,7 +166,7 @@ int32_t GMPPhysicsWorld::shape_index(b3ShapeId shapeId) {
 
 // ---- loose items ----
 
-void GMPPhysicsWorld::spawn_item(int64_t id, int kindIndex, int64_t authority, Transform3D transform, Vector3 linearVelocity, Vector3 angularVelocity) {
+void GMPPhysicsWorld::spawn_item(int64_t id, int kindIndex, int64_t authority, Transform3D transform, Vector3 linearVelocity, Vector3 angularVelocity, bool awake) {
 	if (!b3World_IsValid(world)) {
 		ERR_PRINT("spawn_item: the world isn't in the tree yet.");
 		return;
@@ -195,6 +195,8 @@ void GMPPhysicsWorld::spawn_item(int64_t id, int kindIndex, int64_t authority, T
 	bodyDef.rotation = to_b3(transform.basis.get_rotation_quaternion());
 	bodyDef.linearVelocity = to_b3(linearVelocity);
 	bodyDef.angularVelocity = to_b3(angularVelocity);
+	// Asleep for items that start at rest (a baked pile): they cost nothing until something touches them.
+	bodyDef.isAwake = awake;
 	bodyDef.userData = (void *)(uintptr_t)(slot + 1);
 	b3BodyId body = b3CreateBody(world, &bodyDef);
 

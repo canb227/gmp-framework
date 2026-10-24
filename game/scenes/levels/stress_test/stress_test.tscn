@@ -1,5 +1,18 @@
 [gd_scene format=3 uid="uid://dba5fbyvuyuic"]
 
+[ext_resource type="Script" uid="uid://b36dqopg7hge1" path="res://game/scripts/entities/ItemDropper.cs" id="dropper"]
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="iteminfo"]
+[ext_resource type="Resource" uid="uid://hyev1inlo1ug" path="res://game/definitions/resources/electronic_bits.tres" id="item_electronic_bits"]
+[ext_resource type="Resource" uid="uid://bbfghtki3mmni" path="res://game/definitions/resources/scrap_ball.tres" id="item_scrap_ball"]
+[ext_resource type="Resource" uid="uid://fvesdqk4ku3q" path="res://game/definitions/resources/scrap_ingot.tres" id="item_scrap_ingot"]
+[ext_resource type="Resource" path="res://game/definitions/dev/sieve_test/sieve_ball_010.tres" id="item_sieve_ball_010"]
+[ext_resource type="Resource" path="res://game/definitions/dev/sieve_test/sieve_ball_025.tres" id="item_sieve_ball_025"]
+[ext_resource type="Resource" path="res://game/definitions/dev/sieve_test/sieve_ball_050.tres" id="item_sieve_ball_050"]
+[ext_resource type="Resource" path="res://game/definitions/dev/sieve_test/sieve_ball_075.tres" id="item_sieve_ball_075"]
+[ext_resource type="Resource" path="res://game/definitions/dev/sieve_test/sieve_cube_010.tres" id="item_sieve_cube_010"]
+[ext_resource type="Resource" path="res://game/definitions/dev/sieve_test/sieve_cube_025.tres" id="item_sieve_cube_025"]
+[ext_resource type="Resource" path="res://game/definitions/dev/sieve_test/sieve_cube_050.tres" id="item_sieve_cube_050"]
+[ext_resource type="Resource" path="res://game/definitions/dev/sieve_test/sieve_cube_075.tres" id="item_sieve_cube_075"]
 [ext_resource type="PackedScene" uid="uid://bjrk1ic4be4k8" path="res://game/scenes/structures/logistics/conveyors/basic/Conveyor.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://kntxrimjqyhh" path="res://game/scenes/structures/logistics/conveyors/basic/ConveyorTurnLeft.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://dcm710gynders" path="res://game/scenes/structures/logistics/conveyors/basic/ConveyorTurnRight.tscn" id="3"]
@@ -8,8 +21,13 @@
 [ext_resource type="PackedScene" path="res://game/scenes/structures/sorting/Trommel.tscn" id="6"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/special/DevItemDeleter.tscn" id="7"]
 [ext_resource type="PackedScene" path="res://game/scenes/structures/special/DevSpawner.tscn" id="8"]
-[ext_resource type="Script" uid="uid://dq4cj2glatd8j" path="res://game/scripts/entities/ItemSeeder.cs" id="seeder"]
 [ext_resource type="Script" uid="uid://c3tks7n4phhva" path="res://game/scripts/entities/Stirrer.cs" id="stirrer"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_belts"]
+size = Vector3(102, 30, 62)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area"]
+size = Vector3(13, 2, 13)
 
 [sub_resource type="Environment" id="Env"]
 background_mode = 1
@@ -1768,23 +1786,52 @@ transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 3, 0, 12)
 [node name="D_007_FinesDeleter" parent="Machines" unique_id=962608248 instance=ExtResource("7")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 3, 0, 8)
 
-[node name="ItemSeeder" type="Node3D" parent="." unique_id=1674211167 node_paths=PackedStringArray("beltsRoot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.5, 0)
-script = ExtResource("seeder")
-itemWeights = Dictionary[String, float]({
-"electronic_bits": 1.0,
-"scrap_ball": 1.0,
-"scrap_ingot": 1.0,
-"sieve_ball_010": 1.0,
-"sieve_ball_025": 1.0,
-"sieve_ball_050": 1.0,
-"sieve_ball_075": 1.0,
-"sieve_cube_010": 1.0,
-"sieve_cube_025": 1.0,
-"sieve_cube_050": 1.0,
-"sieve_cube_075": 1.0
+[node name="BeltDropper" type="Node3D" parent="." node_paths=PackedStringArray("spawnVolume")]
+script = ExtResource("dropper")
+itemWeights = Dictionary[ExtResource("iteminfo"), float]({
+ExtResource("item_electronic_bits"): 1.0,
+ExtResource("item_scrap_ball"): 1.0,
+ExtResource("item_scrap_ingot"): 1.0,
+ExtResource("item_sieve_ball_010"): 1.0,
+ExtResource("item_sieve_ball_025"): 1.0,
+ExtResource("item_sieve_ball_050"): 1.0,
+ExtResource("item_sieve_ball_075"): 1.0,
+ExtResource("item_sieve_cube_010"): 1.0,
+ExtResource("item_sieve_cube_025"): 1.0,
+ExtResource("item_sieve_cube_050"): 1.0,
+ExtResource("item_sieve_cube_075"): 1.0
 })
-beltsRoot = NodePath("../Belts")
-itemsOnBelts = 1700
-itemsInArea = 300
-areaSize = Vector3(13, 2, 13)
+startOn = 0
+count = 1700
+itemsPerTick = 50
+spawnVolume = NodePath("SpawnVolume")
+dropToGround = true
+groundTags = 512
+
+[node name="SpawnVolume" type="CollisionShape3D" parent="BeltDropper"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 14, 17.5)
+shape = SubResource("BoxShape3D_belts")
+
+[node name="AreaDropper" type="Node3D" parent="." node_paths=PackedStringArray("spawnVolume")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.5, 0)
+script = ExtResource("dropper")
+itemWeights = Dictionary[ExtResource("iteminfo"), float]({
+ExtResource("item_electronic_bits"): 1.0,
+ExtResource("item_scrap_ball"): 1.0,
+ExtResource("item_scrap_ingot"): 1.0,
+ExtResource("item_sieve_ball_010"): 1.0,
+ExtResource("item_sieve_ball_025"): 1.0,
+ExtResource("item_sieve_ball_050"): 1.0,
+ExtResource("item_sieve_ball_075"): 1.0,
+ExtResource("item_sieve_cube_010"): 1.0,
+ExtResource("item_sieve_cube_025"): 1.0,
+ExtResource("item_sieve_cube_050"): 1.0,
+ExtResource("item_sieve_cube_075"): 1.0
+})
+startOn = 0
+count = 300
+itemsPerTick = 50
+spawnVolume = NodePath("SpawnVolume")
+
+[node name="SpawnVolume" type="CollisionShape3D" parent="AreaDropper"]
+shape = SubResource("BoxShape3D_area")

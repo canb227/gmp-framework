@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/scripts/player/PlayerBall.cs" id="1_ball"]
+[ext_resource type="Texture2D" uid="uid://b646400pws0lh" path="res://icon.svg" id="2_icon"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+radius = 0.22
+height = 0.44
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_head"]
+albedo_texture = ExtResource("2_icon")
+
+[node name="PlayerBall" type="GMPBody"]
+script = ExtResource("1_ball")
+priority = 100
+
+[node name="Shape" type="GMPShape" parent="."]
+shape = 1
+radius = 0.22
+density = 600.0
+friction = 0.6
+restitution = 0.45
+rolling_resistance = 0.2
+tags = 128
+
+[node name="head" type="MeshInstance3D" parent="."]
+gi_mode = 2
+mesh = SubResource("SphereMesh_head")
+surface_material_override/0 = SubResource("StandardMaterial3D_head")

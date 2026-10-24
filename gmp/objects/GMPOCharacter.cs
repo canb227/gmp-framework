@@ -64,6 +64,8 @@ public partial class GMPOCharacter : Node3D, GMPObject
     static readonly StringName getFloorNormalName = "get_floor_normal";
     static readonly StringName getFloorVelocityName = "get_floor_velocity";
     static readonly StringName canFitHeightName = "can_fit_height";
+    static readonly StringName ignoreBodiesName = "ignore_bodies";
+    static readonly StringName forgetIgnoredBodiesName = "forget_ignored_bodies";
     static readonly StringName heightName = "height";
     static readonly StringName noclipName = "noclip";
     static readonly StringName rideBeltsName = "ride_belts";
@@ -106,6 +108,22 @@ public partial class GMPOCharacter : Node3D, GMPObject
     public bool CanFitHeight(float height)
     {
         return Call(canFitHeightName, height).AsBool();
+    }
+
+    /// <summary>
+    /// The bodies the character holds (its magnet rod's catch), every tick on every peer's copy, empty once it holds
+    /// none: the character and they pass through each other (other characters still bump them), until a moment after
+    /// they leave the list.
+    /// </summary>
+    public void IgnoreBodies(long[] ids)
+    {
+        Call(ignoreBodiesName, ids);
+    }
+
+    /// <summary>Touches everything it was ignoring again at once.</summary>
+    public void ForgetIgnoredBodies()
+    {
+        Call(forgetIgnoredBodiesName);
     }
 
     /// <summary>The capsule's full height from the feet.</summary>
