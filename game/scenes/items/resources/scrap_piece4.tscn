@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://cyb5y57f7yovg"]
+
+[ext_resource type="Material" uid="uid://1h74niprlvyn" path="res://game/assets/materials/metal_rusty.tres" id="1_wcl4j"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_1id86"]
+top_radius = 0.35
+bottom_radius = 0.35
+height = 0.9
+
+[node name="scrap_piece4" type="GMPBody" unique_id=1636194786]
+tags = 2
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1.0000001, 0, 0, 0)
+
+[node name="Shape" type="GMPShape" parent="." unique_id=1620749381]
+shape = 3
+size = Vector3(0.39853516, 0.333, 0.62194824)
+radius = 0.35
+height = 0.9
+friction = 0.5
+restitution = 0.1
+rolling_resistance = 0.2
+tags = 2
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=32231142]
+mesh = SubResource("CylinderMesh_1id86")
+surface_material_override/0 = ExtResource("1_wcl4j")

@@ -13,7 +13,7 @@ public partial class Consumer : IOMachine
         Dictionary<Currency, int> value = new(item.currencyValue);
         ConsumeInputItem(item);
         ProgressManager.RequestDeposit(itemID, value);
-        processTimeRemaining = 1f;
+        processTimeRemaining = 0.3f;
         return true;
     }
 

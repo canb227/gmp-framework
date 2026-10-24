@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ItemInfo" format=3 uid="uid://dqduwj7ocqjxy"]
+
+[ext_resource type="PackedScene" uid="uid://cyb5y57f7yovg" path="res://game/scenes/items/resources/scrap_piece4.tscn" id="1_vcpjc"]
+[ext_resource type="Texture2D" uid="uid://3unk615o2jxa" path="res://game/assets/icons/items/scrap_ball.png" id="2_vwl6i"]
+[ext_resource type="Script" uid="uid://cjkscq3ch54w2" path="res://game/scripts/items/ItemInfo.cs" id="3_yl8ce"]
+
+[resource]
+script = ExtResource("3_yl8ce")
+itemID = "scrap_piece4"
+droppedScene = ExtResource("1_vcpjc")
+displayName = "Scrap Piece"
+description = "A piece of ruined metal."
+icon = ExtResource("2_vwl6i")
+maxStackSize = 999
+tags = 2
+currencyValue = Dictionary[int, int]({
+0: 1
+})
+canBePickTarget = true
+canBeGrabbed = true

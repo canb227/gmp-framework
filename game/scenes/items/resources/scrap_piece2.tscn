@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://o17g0tn7jsl1"]
 
-[ext_resource type="Material" uid="uid://bosg7vc1hulq8" path="res://game/assets/materials/temp_metal.tres" id="2_i2cxf"]
+[ext_resource type="Material" uid="uid://1h74niprlvyn" path="res://game/assets/materials/metal_rusty.tres" id="1_jnosm"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_pet1e"]
 size = Vector3(0.05, 1.3, 1.3)
@@ -17,4 +17,4 @@ tags = 2
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=32231142]
 mesh = SubResource("BoxMesh_pet1e")
-surface_material_override/0 = ExtResource("2_i2cxf")
+surface_material_override/0 = ExtResource("1_jnosm")

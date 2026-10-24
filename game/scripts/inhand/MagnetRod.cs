@@ -243,11 +243,13 @@ public partial class MagnetRod : HeldItem
             }
             return;
         }
-        if (mode == MagnetMode.Area)
+        else
         {
             //audio position update
             hold_audio.set3DAttributes(AudioManager.To3D(GlobalPosition));
-            
+        }
+        if (mode == MagnetMode.Area)
+        {
             untilRescan -= delta;
             if (untilRescan <= 0)
             {
