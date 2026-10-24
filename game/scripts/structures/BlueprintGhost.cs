@@ -8,7 +8,7 @@ using System.Collections.Generic;
 /// probe's sensors check against the simulation. While shown it reveals the grid around itself
 /// and highlights the face it's snapped to (<see cref="BuildGrid.placementActive"/>, BuildGrid.Reveal.cs). Other players' copies stay empty. As a <see cref="HeldItem"/>
 /// it handles its own input: "rotate" turns the preview, "alternate" switches a two-form blueprint (e.g. uphill/downhill
-/// slope) to its other form, and releasing primary builds it (host-arbitrated, see BuildGrid.Placement.cs). Deconstructing is the <see cref="Wrench"/>'s.
+/// slope) to its other form, and primary builds it (host-arbitrated, see BuildGrid.Placement.cs). Deconstructing is the <see cref="Wrench"/>'s.
 /// <para>
 /// A structure with input or output ends snaps to connect to placed structures' open ends whenever the crosshair's ray
 /// passes near the connection (<see cref="SnapRange"/>), both ways round: taking an output's items or feeding an
@@ -16,10 +16,11 @@ using System.Collections.Generic;
 /// a belt into the air), but never over something the ray hits first. Connections that couldn't be built are passed over.
 /// </para>
 /// <para>
-/// A belt blueprint (<see cref="ConveyorBlueprint"/>) is dragged, like Factorio: holding primary lays a straight line of
-/// ghosts, end to end, from where it was pressed toward the crosshair, every belt facing away from the first, and releasing
-/// builds the line. Aimed at a belt of its own blueprint, it targets that belt's cells, and its ghosts may cover such
-/// belts exactly: they're replaced (turned to face the line's way) rather than blocking it.
+/// Holding primary keeps building: each time the preview moves somewhere it's allowed, it's built there
+/// (<see cref="PlaceWhileDragging"/>). Meanwhile carrying on forward from an output snaps further and comes first
+/// (<see cref="DragStickiness"/>), so dragging along a belt builds it out belt by belt, each onto the end of the last.
+/// Aimed at a belt of its own blueprint, a belt blueprint targets that belt's cells and replaces it (turned the
+/// preview's way) rather than being blocked by it.
 /// </para>
 /// </summary>
 public partial class BlueprintGhost : HeldItem
@@ -28,16 +29,17 @@ public partial class BlueprintGhost : HeldItem
     [Export] public Color validColor = new(0.2f, 1f, 0.3f, 0.35f);
     [Export] public Color invalidColor = new(1f, 0.2f, 0.2f, 0.35f);
     /// <summary>
-    /// When on, a dragged belt line with any blocked cell builds nothing; when off, its buildable cells are built and the
-    /// blocked ones skipped. A belt the line replaces doesn't block it; running out of blueprints only cuts the line short.
-    /// </summary>
-    [Export] public bool refuseBlockedLines = false;
-    /// <summary>
     /// How close (m) the crosshair must be to where the structure would connect to a placed structure's open end for
     /// the preview to snap there: where the ray lands, or the ray itself if it lands nowhere near, measured to the
     /// connected footprint (<see cref="FindConnection"/>). Aim further off and the preview goes where it's aimed.
     /// </summary>
     const float SnapRange = 0.5f;
+    /// <summary>
+    /// How close (m) the crosshair must be to the joint itself (the middle of the face where the preview would join the
+    /// placed end, not its whole footprint) to snap to a connection the structure couldn't be built at, with no
+    /// <see cref="ConnectStickiness"/>: the preview only shows it there in red when aimed right at the joint.
+    /// </summary>
+    const float BlockedSnapRange = 0.6f;
 
     public BlueprintItem blueprint => item as BlueprintItem;
     /// <summary>The anchor cell the structure would be built at, or null when not looking at anything in range.</summary>
@@ -79,6 +81,8 @@ public partial class BlueprintGhost : HeldItem
     /// The placed structure's end the preview is snapped to, or null.
     /// </summary>
     static CellEnd snappedTo;
+    /// <summary>Whether <see cref="snappedTo"/> is an output the preview carries on from (rather than an input it feeds).</summary>
+    static bool snappedForward;
     /// <summary>True while the preview is snapped to connect to a placed structure's end (for ghost_info).</summary>
     public static bool connected => snappedTo != null;
     /// <summary>
@@ -106,9 +110,10 @@ public partial class BlueprintGhost : HeldItem
     /// <summary>
     /// A pose that connects the preview to a placed structure's open end, with the normal pointing from that structure
     /// into the preview, how close the crosshair's ray passes to the posed footprint and how far along the ray that is,
-    /// and how far the crosshair is from the end itself (which picks between connections, see FindConnection).
+    /// and how far the crosshair is from the end itself (which picks between connections, see FindConnection), and
+    /// whether it carries on forward from an output (rather than feeding an input).
     /// </summary>
-    record Connection(Vector3I anchor, int turns, CellEnd end, Vector3I normal, float distance, float along, float aim);
+    record Connection(Vector3I anchor, int turns, CellEnd end, Vector3I normal, float distance, float along, float aim, bool forward);
     /// <summary>The connection to the end the preview is snapped to counts this much (m) nearer, so it doesn't flick off at the edge.</summary>
     const float ConnectStickiness = 0.5f;
 
@@ -139,8 +144,9 @@ public partial class BlueprintGhost : HeldItem
     // How long the crosshair has found nothing to place at.
     float sinceAimed;
 
-    // What's drawn, eased each frame toward the target pose: the footprint's centre and the rotation, so a turn spins
-    // about the middle. centreInRoot is that centre in the structure's own frame.
+    // What's drawn, eased each frame toward the target pose: the centre of the anchor's module (BuildGrid.AnchorModuleCentre)
+    // and the rotation, so a turn spins about that module, as placement does. centreInRoot is that centre in the
+    // structure's own frame.
     bool shown;
     Vector3 shownCentre;
     Quaternion shownRotation = Quaternion.Identity;
@@ -155,19 +161,53 @@ public partial class BlueprintGhost : HeldItem
         Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
     };
 
+    /// <summary>True while primary is held: the preview is built wherever it's allowed as it moves (<see cref="PlaceWhileDragging"/>).</summary>
+    bool dragging;
     /// <summary>
-    /// While primary is held with a belt blueprint: the min corner of the footprint's bounding box where the line starts.
-    /// The first belt keeps those cells whichever way the line runs, so a module-aligned start stays module aligned.
+    /// The surface the drag's first structure stood on (its face normal and footprint floor), once it has one: later ones
+    /// not snapped to an end must stand on it too.
     /// </summary>
-    Vector3I? dragCorner;
-    /// <summary>The line's ghosts, one per belt out from <see cref="dragCorner"/>, each tinted on its own.</summary>
-    readonly List<(PlacementProbe probe, StandardMaterial3D material)> lineGhosts = new();
-    /// <summary>Quarter turns every belt of the line faces.</summary>
-    int lineTurns;
-    /// <summary>The line's cells to build on release and whether each replaces a belt, worked out every physics tick.</summary>
-    readonly List<(Vector3I anchor, bool replace)> linePlan = new();
-    /// <summary>Whether any cell of the line can't be built (see <see cref="refuseBlockedLines"/>).</summary>
-    bool lineBlocked;
+    bool dragHasPlane;
+    Vector3I dragNormal;
+    int dragFloor;
+    /// <summary>Every cell asked for this drag, so nothing is asked for twice while the host is still building it.</summary>
+    readonly HashSet<Vector3I> dragCells = new();
+    /// <summary>
+    /// While dragging, every connection carrying on forward from an output counts this much (m) nearer, on top of
+    /// <see cref="ConnectStickiness"/>: a belt being dragged out keeps snapping onto the end of the one just built rather
+    /// than going where the crosshair lands.
+    /// </summary>
+    const float DragStickiness = 1.0f;
+    /// <summary>Whether the target replaces a belt of the same blueprint (aimed at it, to turn it).</summary>
+    bool targetReplaces;
+    /// <summary>The belt the target replaces, or null.</summary>
+    Conveyor targetBelt;
+    /// <summary>
+    /// Where the crosshair was this physics tick: where the ray lands, or the middle of the target's anchor module if it
+    /// lands nowhere. A drag's first belt reads its direction from how this moves.
+    /// </summary>
+    Vector3 aimPoint;
+    /// <summary>
+    /// A drag's first belt, held back while it waits for its direction: pressed somewhere free, snapped on after an
+    /// output (not feeding an input), or on a belt of the same blueprint. The preview stays on it, turned to face the way
+    /// the crosshair leans from where it was pressed (<see cref="DragLean"/>), and once the crosshair crosses out of its
+    /// anchor module it's built that way and the drag carries on from it. A belt takes the shape it's fed in
+    /// (<see cref="Conveyor.ShapeAt"/>), so after an output, or on a belt fed from behind, a side makes it a turn;
+    /// back toward the output it was snapped on after picks nothing. Pressed on a belt, straight on along it leaves it as
+    /// it is (the drag builds on past it) and any other way replaces it turned. Released before crossing, it's built
+    /// as shown, if it can be.
+    /// </summary>
+    Vector3I? firstAnchor;
+    int firstTurns;
+    Vector3I firstNormal;
+    /// <summary>The output the waiting first belt is snapped on after, or null.</summary>
+    CellEnd firstEnd;
+    /// <summary>The belt the waiting first belt was pressed on, which it replaces unless the drag goes straight on, or null.</summary>
+    Conveyor firstBelt;
+    /// <summary>Where the crosshair was when the drag was pressed (<see cref="aimPoint"/>).</summary>
+    Vector3 firstAim;
+    /// <summary>How far (m) the crosshair must lean from where the drag was pressed before the first belt shows a direction.</summary>
+    const float DragLean = 0.4f;
 
     /// <summary>Builds the preview (on the holder's peer only).</summary>
     public override void Equip(ItemInfo item, FactoryPlayer player)
@@ -246,7 +286,9 @@ public partial class BlueprintGhost : HeldItem
     {
         probe?.Free();
         probe = null;
-        ClearLine();
+        dragging = false;
+        dragCells.Clear();
+        firstAnchor = null;
         if (isLocal)
         {
             BuildGrid.placementActive = false;
@@ -273,29 +315,35 @@ public partial class BlueprintGhost : HeldItem
         }
         if (@event.IsActionPressed(InputActions.primary))
         {
-            // Builds on release; a belt is first dragged into a line from here.
-            if (blueprint is ConveyorBlueprint && targetCell is Vector3I start)
+            // Builds from the next physics tick on, for as long as it's held; a belt first waits for its direction.
+            dragging = true;
+            dragHasPlane = false;
+            dragCells.Clear();
+            firstAnchor = null;
+            bool free = snappedTo == null && targetBelt == null && canPlace;
+            bool afterOutput = snappedTo != null && snappedForward;
+            bool onBelt = targetBelt != null;
+            if (blueprint is ConveyorBlueprint && (free || afterOutput || onBelt) && targetCell is Vector3I start)
             {
-                dragCorner = FootprintMin(start, quarterTurns);
+                firstAnchor = start;
+                firstTurns = quarterTurns;
+                firstNormal = targetNormal;
+                firstEnd = snappedTo;
+                firstBelt = targetBelt;
+                firstAim = aimPoint;
             }
             return true;
         }
         if (@event.IsActionReleased(InputActions.primary))
         {
-            if (dragCorner != null)
+            if (firstAnchor != null && canPlace && targetCell is Vector3I shown)
             {
-                if (linePlan.Count > 0 && !(refuseBlockedLines && lineBlocked))
-                {
-                    // The next belt carries on the line's way.
-                    quarterTurns = lineTurns;
-                    BuildGrid.RequestPlace(player, blueprint, linePlan, lineTurns);
-                }
-                ClearLine();
+                // Never crossed out of its module: built as shown.
+                BuildGrid.RequestPlace(player, blueprint, new() { (shown, targetReplaces) }, quarterTurns, showingAlternate);
             }
-            else if (blueprint is not ConveyorBlueprint && canPlace && targetCell is Vector3I cell)
-            {
-                BuildGrid.RequestPlace(player, blueprint, new() { (cell, false) }, quarterTurns, showingAlternate);
-            }
+            firstAnchor = null;
+            dragging = false;
+            dragCells.Clear();
             return true;
         }
         return false;
@@ -304,9 +352,9 @@ public partial class BlueprintGhost : HeldItem
     /// <summary>
     /// Turns the next structure a quarter clockwise seen from above (a quarter turn of negative yaw) from how the
     /// preview shows it, as "rotate" does: four presses come back round, like Factorio. A belt shows the shape it would
-    /// be built in at each (straight, or a turn where it's fed from a side). While the preview is snapped to an end it
-    /// turns in place, over the same cells, and keeps that pose instead of the one snapping picks until it snaps
-    /// elsewhere (<see cref="rotatedEnd"/>).
+    /// be built in at each (straight, or a turn where it's fed from a side). It turns about its anchor module
+    /// (<see cref="BuildGrid.AnchorModuleMin"/>), which stays where it is; while the preview is snapped to an end it
+    /// keeps that pose instead of the one snapping picks until it snaps elsewhere (<see cref="rotatedEnd"/>).
     /// </summary>
     public void Rotate()
     {
@@ -314,8 +362,14 @@ public partial class BlueprintGhost : HeldItem
         if (snappedTo != null && smartPlacement && targetCell is Vector3I shownAnchor)
         {
             rotatedEnd = snappedTo;
-            rotatedAnchor = FootprintMin(shownAnchor, quarterTurns) - FootprintMin(Vector3I.Zero, turned);
+            rotatedAnchor = shownAnchor + BuildGrid.AnchorModuleMin(Vector3I.Zero, quarterTurns) - BuildGrid.AnchorModuleMin(Vector3I.Zero, turned);
             rotatedTurns = turned;
+        }
+        if (firstAnchor is Vector3I first)
+        {
+            // A drag's first belt still waiting: turned in place, about its anchor module.
+            firstAnchor = first + BuildGrid.AnchorModuleMin(Vector3I.Zero, firstTurns) - BuildGrid.AnchorModuleMin(Vector3I.Zero, turned);
+            firstTurns = turned;
         }
         quarterTurns = turned;
         // Asked for, so never taken for the crosshair bouncing back to the pose the preview last left.
@@ -339,11 +393,6 @@ public partial class BlueprintGhost : HeldItem
         }
         BuildGrid.placementActive = true;
         BuildGrid.placementFree = !smartPlacement;
-        if (dragCorner is Vector3I corner)
-        {
-            UpdateLine(corner);
-            return;
-        }
 
         Camera3D camera = player.camera;
         Vector3 from = camera.GlobalPosition;
@@ -399,6 +448,7 @@ public partial class BlueprintGhost : HeldItem
             }
             Connection connection = FindConnection(from, direction, reach, hitPoint, floorHit, aimedOutput);
             snappedTo = connection?.end;
+            snappedForward = connection != null && connection.forward;
             if (connection != null)
             {
                 anchor = connection.anchor;
@@ -406,6 +456,58 @@ public partial class BlueprintGhost : HeldItem
                 faceNormal = connection.normal;
                 aimed = true;
             }
+        }
+        if (ray.hit)
+        {
+            aimPoint = ray.position;
+        }
+        else if (aimed)
+        {
+            aimPoint = BuildGrid.AnchorModuleCentre(anchor, quarterTurns, true);
+        }
+        bool heldFirst = firstAnchor != null;
+        if (firstAnchor is Vector3I first)
+        {
+            // A drag's first belt waiting for its direction (see firstAnchor): the preview stays on it, turned (about
+            // its anchor module) to face the way the crosshair leans from where it was pressed, and is built below like
+            // any other once the crosshair crosses out of its anchor module that way, the drag carrying on from it.
+            Vector3 lean = aimPoint - firstAim;
+            lean.Y = 0;
+            int turns = firstTurns;
+            bool leaning = lean.Length() >= DragLean;
+            if (leaning)
+            {
+                turns = Mathf.PosMod(Mathf.RoundToInt(Mathf.Atan2(-lean.X, -lean.Z) / (Mathf.Pi / 2)), 4);
+                // After an output, back toward it would feed it: not a direction.
+                if (firstEnd != null && turns == (firstTurns + 2) % 4)
+                {
+                    turns = firstTurns;
+                    leaning = false;
+                }
+            }
+            anchor = first + BuildGrid.AnchorModuleMin(Vector3I.Zero, firstTurns) - BuildGrid.AnchorModuleMin(Vector3I.Zero, turns);
+            quarterTurns = turns;
+            // Out of its anchor module across the floor.
+            Vector3 moduleMin = (Vector3)BuildGrid.AnchorModuleMin(first, firstTurns) * BuildGrid.CellSize;
+            bool outside = aimPoint.X < moduleMin.X || aimPoint.X > moduleMin.X + BuildGrid.ModuleSize
+                || aimPoint.Z < moduleMin.Z || aimPoint.Z > moduleMin.Z + BuildGrid.ModuleSize;
+            if (leaning && outside)
+            {
+                firstAnchor = null;
+                if (firstBelt != null && turns == firstBelt.quarterTurns)
+                {
+                    // Straight on along the belt it was pressed on: that belt stays as it is, and the drag builds on past it.
+                    foreach (Vector3I cell in BuildGrid.FootprintCells(firstBelt.anchor, firstBelt.cells.Keys, firstBelt.quarterTurns))
+                    {
+                        dragCells.Add(cell);
+                    }
+                }
+            }
+            faceNormal = firstNormal;
+            snappedTo = firstEnd;
+            snappedForward = firstEnd != null;
+            aimedBelt = firstBelt;
+            aimed = true;
         }
         if (!aimed)
         {
@@ -418,6 +520,8 @@ public partial class BlueprintGhost : HeldItem
             }
             rotatedEnd = null;
             targetCell = null;
+            targetBelt = null;
+            targetReplaces = false;
             canPlace = false;
             shown = false;
             probe.structure.Visible = false;
@@ -426,7 +530,8 @@ public partial class BlueprintGhost : HeldItem
             return;
         }
         sinceAimed = 0;
-        if (targetCell is Vector3I current && (anchor != current || quarterTurns != targetTurns))
+        // A waiting first belt turns as it's told (it doesn't follow the crosshair onto boundaries).
+        if (!heldFirst && targetCell is Vector3I current && (anchor != current || quarterTurns != targetTurns))
         {
             bool goingBack = leftAnchor == anchor && leftTurns == quarterTurns;
             if (goingBack)
@@ -489,7 +594,7 @@ public partial class BlueprintGhost : HeldItem
         }
         // Where _Process eases the drawn preview to.
         Transform3D pose = Structure.PlacementTransform(anchor, quarterTurns);
-        targetCentre = FootprintBox(anchor, quarterTurns).GetCenter();
+        targetCentre = BuildGrid.AnchorModuleCentre(anchor, quarterTurns, smartPlacement);
         targetRotation = pose.Basis.GetRotationQuaternion();
         centreInRoot = pose.AffineInverse() * targetCentre;
         // Until the probe settles its overlaps still describe the previous pose: keep the old tint, don't allow placing.
@@ -503,6 +608,12 @@ public partial class BlueprintGhost : HeldItem
         if (aimedBelt != null && aimedBelt.quarterTurns == quarterTurns)
         {
             canPlace = false;
+        }
+        targetReplaces = aimedBelt != null;
+        targetBelt = aimedBelt;
+        if (dragging)
+        {
+            PlaceWhileDragging();
         }
         targetTint = invalidColor;
         if (canPlace)
@@ -535,161 +646,6 @@ public partial class BlueprintGhost : HeldItem
         material.AlbedoColor = material.AlbedoColor.Lerp(targetTint, 1f - Mathf.Exp(-tintRate * (float)delta));
     }
 
-    // Lays the line of belt ghosts from the footprint at corner toward the crosshair, along whichever horizontal axis
-    // that's further on, and works out which belts to build on release (linePlan). Belts follow one another a
-    // footprint's depth apart (its size along the way it carries items), so they line up end to end.
-    void UpdateLine(Vector3I corner)
-    {
-        ConveyorBlueprint conveyorBlueprint = (ConveyorBlueprint)blueprint;
-        probe.structure.Visible = false;
-        int minZ = int.MaxValue, maxZ = int.MinValue;
-        foreach (Vector3I offset in probe.structure.cells.Keys)
-        {
-            minZ = Mathf.Min(minZ, offset.Z);
-            maxZ = Mathf.Max(maxZ, offset.Z);
-        }
-        int depth = maxZ - minZ + 1;
-
-        // The crosshair's cell: where it meets the floor of the line, or placeRange out if that's further or behind.
-        Camera3D camera = player.camera;
-        Vector3 from = camera.GlobalPosition;
-        Vector3 direction = -camera.GlobalTransform.Basis.Z;
-        float distance = placeRange;
-        if (direction.Y != 0)
-        {
-            float toFloor = (corner.Y * BuildGrid.CellSize - from.Y) / direction.Y;
-            if (toFloor > 0 && toFloor < placeRange)
-            {
-                distance = toFloor;
-            }
-        }
-        Vector3I end = BuildGrid.WorldToCell(from + direction * distance);
-        // How many footprints along each axis the crosshair is from the first one.
-        int alongX = Mathf.FloorToInt((end.X - corner.X) / (float)depth);
-        int alongZ = Mathf.FloorToInt((end.Z - corner.Z) / (float)depth);
-        Vector3I step;
-        int length;
-        if (Mathf.Abs(alongX) >= Mathf.Abs(alongZ))
-        {
-            step = new Vector3I(Mathf.Sign(alongX), 0, 0);
-            length = Mathf.Abs(alongX);
-        }
-        else
-        {
-            step = new Vector3I(0, 0, Mathf.Sign(alongZ));
-            length = Mathf.Abs(alongZ);
-        }
-        // Belts face away from the start; a click without a drag keeps the preview's rotation.
-        lineTurns = quarterTurns;
-        if (length > 0)
-        {
-            lineTurns = Mathf.PosMod(Mathf.RoundToInt(Mathf.Atan2(-step.X, -step.Z) / (Mathf.Pi / 2)), 4);
-        }
-
-        int blueprintsLeft = 0;
-        InventorySlot slot = player.inventory.GetSlot(player.inventory.ActiveHotbarSlot);
-        if (slot.itemID == blueprint.itemID)
-        {
-            blueprintsLeft = slot.Count;
-        }
-        // The first belt's anchor that, turned the line's way, covers the cells at corner.
-        Vector3I firstAnchor = corner - FootprintMin(Vector3I.Zero, lineTurns);
-        linePlan.Clear();
-        lineBlocked = false;
-        for (int i = 0; i <= length; i++)
-        {
-            Vector3I anchor = firstAnchor + step * depth * i;
-            // Only the first belt can be fed from a side; the rest are fed from behind by the one before.
-            PackedScene scene = conveyorBlueprint.structureScene;
-            if (i == 0)
-            {
-                scene = conveyorBlueprint.SceneFor(Conveyor.ShapeAt(conveyorBlueprint, anchor, lineTurns));
-            }
-            if (i == lineGhosts.Count)
-            {
-                StandardMaterial3D ghostMaterial = (StandardMaterial3D)material.Duplicate();
-                lineGhosts.Add((CreateGhost(scene, ghostMaterial), ghostMaterial));
-            }
-            else if (lineGhosts[i].probe.structure.SceneFilePath != scene.ResourcePath)
-            {
-                lineGhosts[i].probe.Free();
-                lineGhosts[i] = (CreateGhost(scene, lineGhosts[i].material), lineGhosts[i].material);
-            }
-            PlacementProbe ghost = lineGhosts[i].probe;
-            if (ghost.anchor != anchor || ghost.quarterTurns != lineTurns || !ghost.structure.Visible)
-            {
-                ghost.MoveTo(anchor, lineTurns);
-                ghost.structure.Visible = true;
-            }
-
-            Conveyor replaced = BuildGrid.ReplaceableBelt(blueprint.itemID, BuildGrid.FootprintCells(anchor, ghost.structure.cells.Keys, lineTurns));
-            bool replace = replaced != null;
-            bool buildable;
-            if (replace && replaced.quarterTurns == lineTurns)
-            {
-                // Already the belt the line would build: left as it is. Clicked on alone, there's nothing to build.
-                buildable = length > 0;
-            }
-            else
-            {
-                // Until the ghost settles its overlaps describe its previous cells: go by the grid alone, and let the host check the rest.
-                if (ghost.settled)
-                {
-                    buildable = BuildGrid.IsPlacementAllowed(ghost, replace, out _);
-                }
-                else
-                {
-                    buildable = replace || BuildGrid.FootprintClear(anchor, ghost.structure.cells.Keys, lineTurns);
-                }
-                if (!buildable)
-                {
-                    lineBlocked = true;
-                }
-                else if (!replace && blueprintsLeft == 0)
-                {
-                    buildable = false;
-                }
-                else
-                {
-                    if (!replace)
-                    {
-                        blueprintsLeft--;
-                    }
-                    linePlan.Add((anchor, replace));
-                }
-            }
-            if (buildable)
-            {
-                lineGhosts[i].material.AlbedoColor = validColor;
-            }
-            else
-            {
-                lineGhosts[i].material.AlbedoColor = invalidColor;
-            }
-        }
-        while (lineGhosts.Count > length + 1)
-        {
-            lineGhosts[^1].probe.Free();
-            lineGhosts.RemoveAt(lineGhosts.Count - 1);
-        }
-        BuildGrid.placementTint = validColor;
-        if (refuseBlockedLines && lineBlocked)
-        {
-            // Nothing will be built.
-            foreach (var lineGhost in lineGhosts)
-            {
-                lineGhost.material.AlbedoColor = invalidColor;
-            }
-            BuildGrid.placementTint = invalidColor;
-        }
-
-        // The grid reveal follows the last belt.
-        BuildGrid.placementFocus = BuildGrid.CellToWorld(corner + step * depth * length);
-        BuildGrid.placementHalfSize = depth * BuildGrid.CellSize / 2f;
-        BuildGrid.placementFloor = corner.Y * BuildGrid.CellSize;
-        BuildGrid.placementFace = null;
-    }
-
     // The min corner of the footprint's bounding box at anchor, turned turns.
     Vector3I FootprintMin(Vector3I anchor, int turns)
     {
@@ -701,17 +657,41 @@ public partial class BlueprintGhost : HeldItem
         return min;
     }
 
-    // Ends a drag: frees the line's ghosts and shows the ordinary preview again.
-    void ClearLine()
+    // While primary is held: builds the preview where it is, if it's allowed there and none of its cells were asked
+    // for already this drag. A pose snapped to a placed structure's end always counts, so a belt dragged along carries
+    // on from the one just built; any other must stand on the surface the drag's first one did (the same face normal
+    // and floor), so the preview moving onto what was just built (its top, or its side facing the player) never
+    // builds on it.
+    void PlaceWhileDragging()
     {
-        foreach (var lineGhost in lineGhosts)
+        // A first belt still waiting for its direction isn't built yet (see firstAnchor).
+        if (!canPlace || firstAnchor != null || targetCell is not Vector3I anchor)
         {
-            lineGhost.probe.Free();
+            return;
         }
-        lineGhosts.Clear();
-        linePlan.Clear();
-        dragCorner = null;
-        targetCell = null;
+        int floor = FootprintMin(anchor, quarterTurns).Y;
+        if (snappedTo == null && dragHasPlane && (targetNormal != dragNormal || floor != dragFloor))
+        {
+            return;
+        }
+        foreach (Vector3I cell in BuildGrid.FootprintCells(anchor, probe.structure.cells.Keys, quarterTurns))
+        {
+            if (dragCells.Contains(cell))
+            {
+                return;
+            }
+        }
+        foreach (Vector3I cell in BuildGrid.FootprintCells(anchor, probe.structure.cells.Keys, quarterTurns))
+        {
+            dragCells.Add(cell);
+        }
+        if (!dragHasPlane)
+        {
+            dragHasPlane = true;
+            dragNormal = targetNormal;
+            dragFloor = floor;
+        }
+        BuildGrid.RequestPlace(player, blueprint, new() { (anchor, targetReplaces) }, quarterTurns, showingAlternate);
     }
 
     // The best way to connect the preview to an open end of a placed structure near the crosshair's ray (from along
@@ -722,7 +702,8 @@ public partial class BlueprintGhost : HeldItem
     // those, the end nearest where the ray lands (hitPoint), or nearest the ray if it lands nowhere, wins: between a
     // belt's output and a slope's input a few cells on, which one the preview joins switches halfway between them,
     // whatever kind of end each is. A pose the structure couldn't be built in (its cells taken or blocked, or its
-    // colliders in the level, like a down slope sunk into the floor) is passed over, so the preview stays where it's aimed.
+    // colliders in the level, like a slope run into a wall) is passed over for one that can be, but if none can, the
+    // best is kept so the player sees why (the preview turns red there).
     // The ray landing right on an end's own cells (aimedEnd, the front of a belt) makes that end the nearest of all.
     Connection FindConnection(Vector3 from, Vector3 direction, float reach, Vector3? hitPoint, Vector3? floorHit, CellEnd aimedEnd)
     {
@@ -742,16 +723,28 @@ public partial class BlueprintGhost : HeldItem
                 AddConnection(connections, end, false, from, direction, reach, hitPoint, floorHit, aimedEnd);
             }
         }
-        // Best first, until one can be built.
+        // Best first, until one can be built. If none can, the best one whose joint is aimed within BlockedSnapRange of,
+        // so the preview shows it there in red. While dragging, carrying on forward from an output comes before
+        // feeding an input, so a dragged belt keeps extending the line rather than doubling back.
+        Connection bestOfAll = null;
         while (connections.Count > 0)
         {
             Connection best = connections[0];
             foreach (Connection c in connections)
             {
-                if (c.aim < best.aim || (c.aim == best.aim && c.along < best.along))
+                bool better = c.aim < best.aim || (c.aim == best.aim && c.along < best.along);
+                if (dragging && c.forward != best.forward)
+                {
+                    better = c.forward;
+                }
+                if (better)
                 {
                     best = c;
                 }
+            }
+            if (bestOfAll == null && best.aim <= BlockedSnapRange)
+            {
+                bestOfAll = best;
             }
             if (CanBuildAt(best.anchor, best.turns))
             {
@@ -759,7 +752,7 @@ public partial class BlueprintGhost : HeldItem
             }
             connections.Remove(best);
         }
-        return null;
+        return bestOfAll;
     }
 
     // Adds the pose connecting the preview to end (a placed structure's output if endIsOutput, else its input), if the
@@ -772,10 +765,9 @@ public partial class BlueprintGhost : HeldItem
         {
             return;
         }
-        // The pose the player turned it to at this end, else the one snapping picks.
-        Vector3I anchor = rotatedAnchor;
-        int turns = rotatedTurns;
-        if (end != rotatedEnd && !ConnectPose(end, endIsOutput, out anchor, out turns))
+        // Whether the crosshair is at this end is judged by the pose snapping picks, even when the player has turned it
+        // here (rotatedEnd): their turn only changes the pose shown (below), so it holds until the snap moves elsewhere.
+        if (!ConnectPose(end, endIsOutput, out Vector3I anchor, out int turns))
         {
             return;
         }
@@ -805,6 +797,11 @@ public partial class BlueprintGhost : HeldItem
         if (end == snappedTo)
         {
             distance = Mathf.Max(0f, distance - ConnectStickiness);
+        }
+        // Dragging, carrying on forward from an output reaches further (DragStickiness).
+        if (dragging && endIsOutput)
+        {
+            distance = Mathf.Max(0f, distance - DragStickiness);
         }
         if (end == aimedEnd)
         {
@@ -841,7 +838,13 @@ public partial class BlueprintGhost : HeldItem
         {
             aim = 0;
         }
-        connections.Add(new Connection(anchor, turns, end, normal, distance, along, aim));
+        // The pose the player turned it to at this end, else the one snapping picks.
+        if (end == rotatedEnd)
+        {
+            anchor = rotatedAnchor;
+            turns = rotatedTurns;
+        }
+        connections.Add(new Connection(anchor, turns, end, normal, distance, along, aim, endIsOutput));
     }
 
     // Where the preview is anchored, and turned, for one of its main scene's ends to connect to end head on (a placed
@@ -905,7 +908,7 @@ public partial class BlueprintGhost : HeldItem
     // the level. Moves the probe there to ask.
     bool CanBuildAt(Vector3I anchor, int turns)
     {
-        if (!BuildGrid.FootprintClear(anchor, probe.structure.cells.Keys, turns))
+        if (!BuildGrid.CanPlace(anchor, probe.structure.cells.Keys, turns))
         {
             return false;
         }

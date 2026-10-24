@@ -177,7 +177,8 @@ public partial class BuildGrid
         Vector3 chunkMin = (Vector3)(chunk.coord * FillChunkCells) * CellSize;
         if (chunk.scanned < 0)
         {
-            var box = new Aabb(chunkMin, Vector3.One * (FillChunkCells * CellSize));
+            // A little past its sides, so a floor lying on its top face counts (QueryLevelBlocked).
+            var box = new Aabb(chunkMin, Vector3.One * (FillChunkCells * CellSize)).Grow(2f * LevelOverlapDepth);
             long[] near = PhysicsWorld.OverlapBox(new Transform3D(Basis.Identity, box.GetCenter()), box.Size, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer);
             bool anyLevel = false;
             foreach (long id in near)
@@ -290,7 +291,8 @@ public partial class BuildGrid
 
     /// <summary>
     /// True if the level's static geometry reaches more than <see cref="LevelOverlapDepth"/> into
-    /// <paramref name="cell"/>, so nothing can be built in it. Read from the fill's scan where it has reached the
+    /// <paramref name="cell"/>, as the fill shows it (placement ignores it: the structure's own colliders decide,
+    /// <see cref="PlacementProbe.LevelOverlaps"/>). Read from the fill's scan where it has reached the
     /// cell, otherwise asked of the physics world (call from <c>_PhysicsProcess</c>).
     /// </summary>
     public static bool IsLevelBlocked(Vector3I cell)
@@ -311,6 +313,39 @@ public partial class BuildGrid
             {
                 return true;
             }
+        }
+        // A level surface lying on one of the cell's faces (within LevelOverlapDepth) and facing out of it, so the
+        // level is behind it, in the cell: a mesh collider is only a surface, with no inside for the overlap to find,
+        // so a floor exactly on a cell line would otherwise leave the cell under it open.
+        foreach (Vector3I direction in FaceDirections)
+        {
+            Vector3 face = CellToWorld(cell) + (Vector3)direction * (CellSize / 2f);
+            if (LevelSurfaceFacing(face + (Vector3)direction * LevelOverlapDepth, face - (Vector3)direction * LevelOverlapDepth, direction))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Whether the ray from `from` to `to` meets a level collider's surface facing toward `facing` (within 60°), passing
+    // through anything else (a structure standing there) on the way.
+    static bool LevelSurfaceFacing(Vector3 from, Vector3 to, Vector3I facing)
+    {
+        Vector3 step = (to - from).Normalized() * 0.001f;
+        Vector3 start = from;
+        for (int i = 0; i < 4; i++)
+        {
+            RayHit hit = PhysicsWorld.Raycast(start, to, ~GameWorld.QueryHiddenLayer & ~PhysicsWorld.ItemLayer);
+            if (!hit.hit)
+            {
+                return false;
+            }
+            if (PlacementProbe.IsStaticLevelCollider(PhysicsWorld.BodyNode(hit.id)))
+            {
+                return hit.normal.Dot(facing) > 0.5f;
+            }
+            start = hit.position + step;
         }
         return false;
     }

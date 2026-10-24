@@ -39,8 +39,9 @@ public partial class BuildGrid
     /// <summary>World height of the bottom of the ghost's footprint; the grid lines lying on it are drawn brighter. Set by the local ghost.</summary>
     public static float placementFloor;
 
-    // Reveal radius around a one-cell ghost; bigger ghosts add to it (placementHalfSize).
-    private const float RevealRadius = 7.0f;
+    // Reveal radius around a one-cell ghost; bigger ghosts add to it (placementHalfSize). The grid lines and structure
+    // cells reach this far; level geometry's cells only part of it (BuildGridFill.gdshader's level_reveal_scale).
+    private const float RevealRadius = 11.0f;
     // Enough layers for a quick sweep across cells to fade out gracefully; past that the faintest is recycled.
     // BuildGridFill.gdshader takes one light per layer, so its arrays must be this long too.
     private const int RevealLayers = 5;

@@ -26,8 +26,6 @@ public partial class BuildGrid : Node3D
     private const float DrawExtent = 200.0f;
     private const float HighlightRaycastRange = 20.0f;
     private const float HighlightEdgeNudge = 0.001f;
-    // How many cells out from a surface the placement target looks for one level geometry doesn't block.
-    private const int MaxTargetSteps = 3;
 
     private static readonly Dictionary<Vector3I, Structure> cells = new();
     /// <summary>The level's <see cref="NoBuildVolume"/>s in the tree; any cell one touches can't be built in.</summary>
@@ -142,7 +140,8 @@ public partial class BuildGrid : Node3D
     /// would be anchored when placed by looking along a ray. The ray picks a face:
     /// <list type="bullet">
     /// <item>If the ray crosses cells occupied by a structure before it hits any collider beyond them, it snaps
-    /// to a full face of those cells, whatever the structure's colliders look like (a thin conveyor, a slope):
+    /// to a full face of those cells (of the modules they're in, with <paramref name="snapToModules"/>), whatever the
+    /// structure's colliders look like (a thin conveyor, a slope):
     /// the face it entered through if the ray ends inside them, else the face it exits through (see
     /// <see cref="TryFindOccupiedCellAlongRay"/>). The target is the cell across that face.</item>
     /// <item>Otherwise the target is the cell on the open side of the surface the ray hit (its normal snapped to
@@ -150,20 +149,27 @@ public partial class BuildGrid : Node3D
     /// </list>
     /// The footprint then grows away from that face: it is shifted along the face normal so its rearmost
     /// layer sits in the target cell's layer, e.g. a 2x1x1 put against a wall's side sticks out of the wall. Across
-    /// the face it is centred on where the ray meets the face (in whole cells, always covering the target cell), so
-    /// a structure several cells wide sits under the crosshair and turning it turns it about its own middle. The one
-    /// exception is height on a wall: there the footprint stands on the target cell rather than centring on it.
+    /// the face its anchor cell (the cell its root is the corner of) is the target cell, so the structure starts under
+    /// the crosshair and turning it turns it about that cell. Height on a wall works out the same: the footprint
+    /// stands on the target cell.
     /// <para>
     /// With <paramref name="snapToModules"/> the footprint's bounding box starts on a module corner (even cells on
     /// every axis), so structures line up with each other in whole modules instead of overlapping by a cell. Along the
-    /// normal it moves away from the surface to get there, across the face to the module run nearest the aim (which
-    /// may leave the target cell uncovered), and on a wall down to the module below.
+    /// normal it moves away from the surface to get there; across the face the anchor's module
+    /// (<see cref="AnchorModuleCentre"/>) is the target cell's, so the ghost only moves when the crosshair crosses a
+    /// module line and turns about that module; and on a wall it stands on the module below.
     /// </para>
     /// <para>
-    /// Cells the level's geometry blocks (<see cref="IsLevelBlocked"/>) are kept out of: the target is the first cell
-    /// out from the surface that isn't blocked (a floor whose top is partway up a cell blocks that cell), and a
-    /// footprint that isn't clear (<see cref="FootprintClear"/>) moves a step (a module, or a cell without
-    /// <paramref name="snapToModules"/>) to the side to the nearest clear spot, if there is one.
+    /// The target is the first cell out from the surface hit that the surface itself doesn't reach into (a floor whose
+    /// top is partway up a cell, the cell above); if level geometry takes any of that cell (<see cref="IsLevelBlocked"/>,
+    /// a floor cell at the foot of a wall), or with <paramref name="snapToModules"/> any cell of its module, the cell
+    /// (module) the ray passes through just before it first enters one the level takes, still standing on the surface
+    /// aimed at (its layer nearest that surface along the surface's normal), so the structure goes where it would on
+    /// the surface and shows as blocked if it runs into the level.
+    /// Whether the level is in the way of the structure is its colliders' to say (<see cref="PlacementProbe.LevelOverlaps"/>). Free building, a footprint that isn't free on the grid
+    /// (<see cref="CanPlace"/>) moves a cell to the side to the nearest free spot,
+    /// if there is one; with <paramref name="snapToModules"/> it stays where the aim puts it, shown as blocked, so the
+    /// player sees why rather than the ghost jumping somewhere they didn't aim.
     /// </para>
     /// <paramref name="target"/> is the empty cell across the picked face and <paramref name="normal"/> points out of
     /// the surface into that cell.
@@ -178,9 +184,16 @@ public partial class BuildGrid : Node3D
         float hitDistance = hit ? from.DistanceTo(ray.position) : range;
 
         // A structure's cells crossed by the ray snap to a full face of them; otherwise the cell on the open side
-        // of the surface that was hit. aim is where the ray meets the face, which the footprint centres on.
+        // of the surface that was hit. aim is where the ray meets the face.
         Vector3 aim;
-        if (TryFindOccupiedCellAlongRay(from, direction, 2f, hitDistance, out target, out normal))
+        // Smart placement walks whole modules, so a structure's footprint counts as solid modules: a slope's low end,
+        // one cell high, can't be aimed at through the top of its cells from beside it.
+        int blockCells = 1;
+        if (snapToModules)
+        {
+            blockCells = ModuleCells;
+        }
+        if (TryFindOccupiedCellAlongRay(from, direction, 2f, hitDistance, blockCells, out target, out normal))
         {
             int axis = normal.X != 0 ? 0 : normal.Y != 0 ? 1 : 2;
             float plane = (target[axis] + (normal[axis] > 0 ? 0 : 1)) * CellSize;
@@ -193,14 +206,36 @@ public partial class BuildGrid : Node3D
                 return false;
             }
             normal = DominantAxis(ray.normal);
-            target = WorldToCell(ray.position + (Vector3)normal * HighlightEdgeNudge);
+            // The first cell out from the surface it doesn't reach into by more than LevelOverlapDepth: the cell just
+            // across a surface on a cell boundary, the next one out from a surface partway through a cell. Judged by
+            // the surface hit alone; other level geometry around it (a wall beside the floor) is the probe's to judge.
+            target = WorldToCell(ray.position + (Vector3)normal * (CellSize - LevelOverlapDepth));
             aim = ray.position;
-        }
-        // A surface partway through a cell leaves that cell blocked by the geometry under it: the target is the first
-        // clear cell out from the surface.
-        for (int i = 0; i < MaxTargetSteps && IsLevelBlocked(target); i++)
-        {
-            target += normal;
+            // That cell (its module, with smart placement) taken by other level geometry (a floor cell at the foot of a
+            // wall): the last cell (module) the ray passes through before it enters one the level takes. Only which
+            // block changes: the structure still stands on the surface aimed at, from that block's layer nearest it
+            // along the surface's normal, so it goes where it would on the surface, even if it then runs into the level.
+            Vector3I targetBlock = new(
+                target.X - Mathf.PosMod(target.X, blockCells),
+                target.Y - Mathf.PosMod(target.Y, blockCells),
+                target.Z - Mathf.PosMod(target.Z, blockCells));
+            if (AnyLevelIn(targetBlock, blockCells)
+                && TryFindLevelBlockedCellAlongRay(from, direction, hitDistance + blockCells * CellSize, blockCells, out Vector3I before))
+            {
+                target = before;
+                for (int axis = 0; axis < 3; axis++)
+                {
+                    if (normal[axis] != 0)
+                    {
+                        int blockStart = before[axis] - Mathf.PosMod(before[axis], blockCells);
+                        target[axis] = blockStart;
+                        if (normal[axis] < 0)
+                        {
+                            target[axis] = blockStart + blockCells - 1;
+                        }
+                    }
+                }
+            }
         }
 
         Vector3I min = new(int.MaxValue, int.MaxValue, int.MaxValue), max = new(int.MinValue, int.MinValue, int.MinValue);
@@ -236,34 +271,26 @@ public partial class BuildGrid : Node3D
                 }
                 anchor[axis] = start - min[axis];
             }
+            else if (snapToModules)
+            {
+                // Across the face: the anchor's module is the target cell's, with the footprint starting on a module corner.
+                int moduleStart = target[axis] - Mathf.PosMod(target[axis], ModuleCells);
+                anchor[axis] = moduleStart + Mathf.PosMod(-min[axis], ModuleCells);
+            }
             else
             {
-                // Across the face: the run of cells whose middle is nearest the aim, still covering the target cell.
-                int width = max[axis] - min[axis] + 1;
-                int start;
-                if (snapToModules)
-                {
-                    // Or the run starting on a module corner whose middle is nearest the aim.
-                    start = Mathf.RoundToInt((aim[axis] / CellSize - width / 2f) / ModuleCells) * ModuleCells;
-                }
-                else
-                {
-                    start = Mathf.RoundToInt(aim[axis] / CellSize - width / 2f);
-                    start = Mathf.Clamp(start, target[axis] - width + 1, target[axis]);
-                }
-                anchor[axis] = start - min[axis];
+                // Or, free building, the anchor cell is the target cell.
+                anchor[axis] = target[axis];
             }
         }
 
-        if (!FootprintClear(anchor, offsets, quarterTurns))
+        if (!snapToModules && !CanPlace(anchor, offsets, quarterTurns))
         {
-            // Partly in the way of something (a wall beside the floor, a structure): of the spots a step to the side
-            // across the face (a module, or a cell while free building), the clear one whose middle is nearest the
-            // aim. Left where it is, and shown as blocked, when none is clear.
-            int step = snapToModules ? ModuleCells : 1;
+            // Free building, partly in the way of something (a wall beside the floor, a structure): of the spots a
+            // cell to the side across the face, the clear one whose anchor cell is nearest the aim. Left where it is,
+            // and shown as blocked, when none is clear.
             int faceAxis = normal.X != 0 ? 0 : normal.Y != 0 ? 1 : 2;
             int across1 = (faceAxis + 1) % 3, across2 = (faceAxis + 2) % 3;
-            Vector3 middle = ((Vector3)(min + max) / 2f + Vector3.One * 0.5f) * CellSize;
             Vector3I best = anchor;
             float bestDistance = float.MaxValue;
             for (int i = -1; i <= 1; i++)
@@ -275,10 +302,10 @@ public partial class BuildGrid : Node3D
                         continue;
                     }
                     Vector3I candidate = anchor;
-                    candidate[across1] += i * step;
-                    candidate[across2] += j * step;
-                    float distance = ((Vector3)candidate * CellSize + middle).DistanceSquaredTo(aim);
-                    if (distance < bestDistance && FootprintClear(candidate, offsets, quarterTurns))
+                    candidate[across1] += i;
+                    candidate[across2] += j;
+                    float distance = CellToWorld(candidate).DistanceSquaredTo(aim);
+                    if (distance < bestDistance && CanPlace(candidate, offsets, quarterTurns))
                     {
                         best = candidate;
                         bestDistance = distance;
@@ -291,10 +318,11 @@ public partial class BuildGrid : Node3D
     }
 
     /// <summary>
-    /// Walks the ray cell by cell (Amanatides-Woo voxel traversal) up to <paramref name="maxDistance"/> and, at the
-    /// first run of cells occupied by structures that it enters, snaps to a full face of that run, so thin
-    /// structures act like solid cells. <paramref name="target"/> is the empty cell across that face and
-    /// <paramref name="normal"/> points from the run into it:
+    /// Walks the ray block by block (Amanatides-Woo voxel traversal; blocks of <paramref name="blockCells"/> cells a
+    /// side on the grid, a cell or a module) up to <paramref name="maxDistance"/> and, at the first run of blocks with
+    /// structures in them that it enters, snaps to a full face of that run, so thin structures act like solid blocks.
+    /// <paramref name="target"/> is the cell across that face where the ray crosses it and <paramref name="normal"/>
+    /// points from the run into it:
     /// <list type="bullet">
     /// <item>If the ray ends inside the run, the face it entered through, like hitting a solid block.</item>
     /// <item>If it passes through and out the other side, the face it exits through. Aiming just past a structure
@@ -306,15 +334,18 @@ public partial class BuildGrid : Node3D
     /// neighbours, and so is any occupied cell the ray enters closer than <paramref name="minDistance"/>, so
     /// structures right in front of the camera don't grab the target.
     /// </summary>
-    static bool TryFindOccupiedCellAlongRay(Vector3 from, Vector3 direction, float minDistance, float maxDistance, out Vector3I target, out Vector3I normal)
+    static bool TryFindOccupiedCellAlongRay(Vector3 from, Vector3 direction, float minDistance, float maxDistance, int blockCells,
+        out Vector3I target, out Vector3I normal)
     {
-        Vector3I cell = WorldToCell(from);
+        float blockSize = blockCells * CellSize;
+        Vector3I block = new(Mathf.FloorToInt(from.X / blockSize), Mathf.FloorToInt(from.Y / blockSize), Mathf.FloorToInt(from.Z / blockSize));
         target = default;
         normal = default;
         bool inRun = false;
-        Vector3I runEntryTarget = default, runEntryNormal = default;
+        float runEntryDistance = 0;
+        Vector3I runEntryNormal = default;
         Vector3I step = new(Math.Sign(direction.X), Math.Sign(direction.Y), Math.Sign(direction.Z));
-        // Distance along the ray to the next cell boundary on each axis, and between boundaries.
+        // Distance along the ray to the next block boundary on each axis, and between boundaries.
         Vector3 next = default, delta = default;
         for (int axis = 0; axis < 3; axis++)
         {
@@ -325,9 +356,9 @@ public partial class BuildGrid : Node3D
                 delta[axis] = float.PositiveInfinity;
                 continue;
             }
-            float boundary = (cell[axis] + (d > 0 ? 1 : 0)) * CellSize;
+            float boundary = (block[axis] + (d > 0 ? 1 : 0)) * blockSize;
             next[axis] = (boundary - from[axis]) / d;
-            delta[axis] = CellSize / Math.Abs(d);
+            delta[axis] = blockSize / Math.Abs(d);
         }
 
         while (true)
@@ -338,10 +369,9 @@ public partial class BuildGrid : Node3D
             {
                 return false;
             }
-            Vector3I previous = cell;
-            cell[axis] += step[axis];
+            block[axis] += step[axis];
             next[axis] += delta[axis];
-            bool occupied = entryDistance >= minDistance && GetStructureAt(cell) != null;
+            bool occupied = entryDistance >= minDistance && AnyStructureIn(block * blockCells, blockCells);
 
             if (inRun && !occupied)
             {
@@ -351,9 +381,10 @@ public partial class BuildGrid : Node3D
                 {
                     return false;
                 }
-                target = cell;
                 normal = default;
                 normal[axis] = step[axis];
+                // The cell across the face where the ray crosses it.
+                target = WorldToCell(from + direction * entryDistance + (Vector3)normal * HighlightEdgeNudge);
                 return true;
             }
             if (!inRun && occupied)
@@ -361,17 +392,133 @@ public partial class BuildGrid : Node3D
                 inRun = true;
                 runEntryNormal = default;
                 runEntryNormal[axis] = -step[axis];
-                runEntryTarget = previous;
+                runEntryDistance = entryDistance;
             }
             float exitDistance = Mathf.Min(next.X, Mathf.Min(next.Y, next.Z));
             if (inRun && exitDistance >= maxDistance - HighlightEdgeNudge)
             {
-                // The ray ends inside the run: the face it entered through.
-                target = runEntryTarget;
+                // The ray ends inside the run: the face it entered through, at the cell outside it where the ray crossed it.
                 normal = runEntryNormal;
+                target = WorldToCell(from + direction * runEntryDistance + (Vector3)normal * HighlightEdgeNudge);
                 return true;
             }
         }
+    }
+
+    /// <summary>
+    /// World-space centre of the module holding a structure's anchor cell (the cell its root is the corner of), which
+    /// placement puts under the crosshair and turns about; or of the anchor cell itself without
+    /// <paramref name="snapToModules"/> (free building, off module corners).
+    /// </summary>
+    public static Vector3 AnchorModuleCentre(Vector3I anchor, int quarterTurns, bool snapToModules)
+    {
+        if (!snapToModules)
+        {
+            return CellToWorld(anchor);
+        }
+        return ((Vector3)AnchorModuleMin(anchor, quarterTurns) + Vector3.One * (ModuleCells / 2f)) * CellSize;
+    }
+
+    /// <summary>
+    /// The min cell of a structure's anchor module at <paramref name="anchor"/>, turned <paramref name="quarterTurns"/>:
+    /// the module-sized block of its own frame that starts at its anchor cell and grows the way its footprint does
+    /// (+X, +Y, -Z). On a module corner this is the module holding the anchor cell; a pose that isn't (connected to
+    /// an end) has one too, which is what turning it keeps in place.
+    /// </summary>
+    public static Vector3I AnchorModuleMin(Vector3I anchor, int quarterTurns)
+    {
+        Vector3I min = new(int.MaxValue, anchor.Y, int.MaxValue);
+        foreach (Vector3I corner in new Vector3I[] { new(0, 0, 0), new(ModuleCells - 1, 0, 0), new(0, 0, 1 - ModuleCells), new(ModuleCells - 1, 0, 1 - ModuleCells) })
+        {
+            Vector3I cell = anchor + RotateOffset(corner, quarterTurns);
+            min.X = Math.Min(min.X, cell.X);
+            min.Z = Math.Min(min.Z, cell.Z);
+        }
+        return min;
+    }
+
+    // Walks the ray block by block (blocks of blockCells cells a side, a cell or a module), as
+    // TryFindOccupiedCellAlongRay does, up to maxDistance, to the first block with a cell level geometry blocks
+    // (IsLevelBlocked): target is the cell just before the face the ray enters it through, where it crosses it. False
+    // if it reaches none.
+    static bool TryFindLevelBlockedCellAlongRay(Vector3 from, Vector3 direction, float maxDistance, int blockCells, out Vector3I target)
+    {
+        float blockSize = blockCells * CellSize;
+        Vector3I block = new(Mathf.FloorToInt(from.X / blockSize), Mathf.FloorToInt(from.Y / blockSize), Mathf.FloorToInt(from.Z / blockSize));
+        target = default;
+        Vector3I step = new(Math.Sign(direction.X), Math.Sign(direction.Y), Math.Sign(direction.Z));
+        Vector3 next = default, delta = default;
+        for (int axis = 0; axis < 3; axis++)
+        {
+            float d = direction[axis];
+            if (d == 0)
+            {
+                next[axis] = float.PositiveInfinity;
+                delta[axis] = float.PositiveInfinity;
+                continue;
+            }
+            float boundary = (block[axis] + (d > 0 ? 1 : 0)) * blockSize;
+            next[axis] = (boundary - from[axis]) / d;
+            delta[axis] = blockSize / Math.Abs(d);
+        }
+
+        while (true)
+        {
+            int axis = next.X < next.Y ? (next.X < next.Z ? 0 : 2) : (next.Y < next.Z ? 1 : 2);
+            float entryDistance = next[axis];
+            if (entryDistance > maxDistance)
+            {
+                return false;
+            }
+            block[axis] += step[axis];
+            next[axis] += delta[axis];
+            if (AnyLevelIn(block * blockCells, blockCells))
+            {
+                // Nudged back out of the face it enters through.
+                Vector3 back = Vector3.Zero;
+                back[axis] = -step[axis] * HighlightEdgeNudge;
+                target = WorldToCell(from + direction * entryDistance + back);
+                return true;
+            }
+        }
+    }
+
+    // Whether level geometry blocks any of the size x size x size cells from first (its min corner).
+    static bool AnyLevelIn(Vector3I first, int size)
+    {
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                for (int z = 0; z < size; z++)
+                {
+                    if (IsLevelBlocked(first + new Vector3I(x, y, z)))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    // Whether any of the size x size x size cells from first (its min corner) has a structure in it.
+    static bool AnyStructureIn(Vector3I first, int size)
+    {
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                for (int z = 0; z < size; z++)
+                {
+                    if (GetStructureAt(first + new Vector3I(x, y, z)) != null)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /// <summary>The nearest hit along the ray that isn't a loose item: items aren't surfaces to build on or aim at.</summary>
@@ -504,27 +651,6 @@ public partial class BuildGrid : Node3D
         foreach (Vector3I cell in FootprintCells(anchor, offsets, quarterTurns))
         {
             if (cells.ContainsKey(cell) || IsNoBuild(cell))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /// <summary>
-    /// True if a structure could be built over the footprint: <see cref="CanPlace"/>, and level geometry blocks none of
-    /// its cells (<see cref="IsLevelBlocked"/>), which are the cells the build grid's fill shows. Asks Box3D, so call
-    /// from <c>_PhysicsProcess</c>. Registering structures (<see cref="Occupy"/>) checks only the grid.
-    /// </summary>
-    public static bool FootprintClear(Vector3I anchor, IEnumerable<Vector3I> offsets, int quarterTurns)
-    {
-        if (!CanPlace(anchor, offsets, quarterTurns))
-        {
-            return false;
-        }
-        foreach (Vector3I cell in FootprintCells(anchor, offsets, quarterTurns))
-        {
-            if (IsLevelBlocked(cell))
             {
                 return false;
             }

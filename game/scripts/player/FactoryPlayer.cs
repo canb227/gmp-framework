@@ -84,6 +84,8 @@ public partial class FactoryPlayer : GMPOCharacter
     float sinceOnFloor = 10;
     float sinceJumpPressed = 10;
     bool crouching;
+    /// <summary>How far a crouch in the air raised the feet; standing up in the air lowers them again.</summary>
+    float airCrouchLift;
     /// <summary>How far the eye is below standing eye height now (eased toward crouchEyeDrop or 0).</summary>
     float eyeDrop;
     /// <summary>Velocity for the debug window.</summary>
@@ -320,6 +322,7 @@ public partial class FactoryPlayer : GMPOCharacter
         velocity = Vector3.Zero;
         // Fly standing up.
         crouching = false;
+        airCrouchLift = 0;
         capsuleHeight = standHeight;
         eyeDrop = 0;
     }
@@ -631,26 +634,63 @@ public partial class FactoryPlayer : GMPOCharacter
 
     /// <summary>
     /// Crouches while held; stands back up once there's room. Crouching in the air pulls the legs up instead of
-    /// lowering the head (the feet rise), so a crouch-jump clears higher ledges.
+    /// lowering the head (the feet rise), so a crouch-jump clears higher ledges. Standing up in the air puts the
+    /// feet back down (the head stays), so tapping crouch can't climb; only something under the raised feet (the
+    /// ledge being cleared) makes it stand up from where they are.
     /// </summary>
     void UpdateCrouch(bool held, bool onFloor, float delta)
     {
+        if (onFloor)
+        {
+            airCrouchLift = 0;
+        }
         if (held && !crouching)
         {
             crouching = true;
             capsuleHeight = crouchHeight;
             if (!onFloor)
             {
-                float lift = standHeight - crouchHeight;
-                TeleportCharacter(new Transform3D(GlobalBasis, GlobalPosition + Vector3.Up * lift));
-                // The eye stays where it was.
-                eyeDrop -= lift;
+                airCrouchLift = standHeight - crouchHeight;
+                TeleportCharacter(new Transform3D(GlobalBasis, GlobalPosition + Vector3.Up * airCrouchLift));
+                // The eye stays where it was. The drawn camera rides the interpolated body, so stop it sliding up
+                // over the tick (the eye would dip for a frame).
+                eyeDrop += airCrouchLift;
+                ResetPhysicsInterpolation();
             }
         }
-        else if (!held && crouching && CanFitHeight(standHeight))
+        else if (!held && crouching)
         {
-            crouching = false;
-            capsuleHeight = standHeight;
+            bool lowered = false;
+            if (airCrouchLift > 0)
+            {
+                Vector3 raisedFeet = GlobalPosition;
+                TeleportCharacter(new Transform3D(GlobalBasis, raisedFeet - Vector3.Up * airCrouchLift));
+                if (CanFitHeight(standHeight))
+                {
+                    lowered = true;
+                }
+                else
+                {
+                    TeleportCharacter(new Transform3D(GlobalBasis, raisedFeet));
+                }
+            }
+            if (lowered || CanFitHeight(standHeight))
+            {
+                crouching = false;
+                capsuleHeight = standHeight;
+                if (lowered)
+                {
+                    // The eye stays where it was.
+                    eyeDrop -= airCrouchLift;
+                    ResetPhysicsInterpolation();
+                }
+                airCrouchLift = 0;
+            }
+        }
+        // Crouching in the air doesn't move the eye at all; it eases down once landed.
+        if (airCrouchLift > 0)
+        {
+            return;
         }
         float wanted = 0;
         if (crouching)

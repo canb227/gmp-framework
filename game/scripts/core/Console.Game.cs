@@ -819,8 +819,6 @@ public partial class Console
                 refused += $" {cell}:taken";
             else if (BuildGrid.IsNoBuild(cell))
                 refused += $" {cell}:nobuild";
-            else if (BuildGrid.IsLevelBlocked(cell))
-                refused += $" {cell}:level";
         }
         LimboConsole.Info($"build_probe: {blueprintItemID} at ({x},{y},{z}) allowed={allowed} level overlaps:{hits} | by:{blamed} | cells refused:{refused}");
         probe.Free();

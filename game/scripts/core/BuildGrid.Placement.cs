@@ -38,7 +38,8 @@ public partial class BuildGrid
     /// <summary>
     /// True if the probe overlaps none of the level's static colliders and its cells can take it: for a replacement
     /// (<paramref name="replace"/>), its anchor cell holds a belt it replaces (<see cref="ReplaceableBelt"/>); otherwise
-    /// the footprint is clear (<see cref="FootprintClear"/>: free grid cells, none blocked by level geometry).
+    /// the footprint's grid cells are free (<see cref="CanPlace"/>). Cells level geometry blocks don't count: the
+    /// colliders do.
     /// </summary>
     public static bool IsPlacementAllowed(PlacementProbe probe, bool replace, out List<Node> levelOverlaps)
     {
@@ -51,7 +52,7 @@ public partial class BuildGrid
         {
             return ReplaceableBelt(probe.structure.blueprintItemID, FootprintCells(probe.anchor, probe.structure.cells.Keys, probe.quarterTurns)) != null;
         }
-        return FootprintClear(probe.anchor, probe.structure.cells.Keys, probe.quarterTurns);
+        return CanPlace(probe.anchor, probe.structure.cells.Keys, probe.quarterTurns);
     }
 
     /// <summary>

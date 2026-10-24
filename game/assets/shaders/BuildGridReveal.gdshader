@@ -13,10 +13,11 @@ uniform vec4 line_color : source_color = vec4(0.66, 0.86, 1.0, 0.11);
 uniform vec3 focus;
 uniform float opacity : hint_range(0.0, 1.0) = 1.0;
 // Fully lit within reveal_radius - fade_width of the focus, gone at reveal_radius; reveal_falloff steepens the fade
-// (higher keeps the grid to a tighter pool around the ghost).
-uniform float reveal_radius = 7.0;
-uniform float reveal_falloff = 3.0;
-uniform float fade_width = 5.75;
+// (higher keeps the grid to a tighter pool around the ghost). The fade spans nearly the whole radius, so the grid
+// dims steadily with distance from a small fully lit core.
+uniform float reveal_radius = 11.0;
+uniform float reveal_falloff = 1.6;
+uniform float fade_width = 9.5;
 // Full-strength core width; the edges then feather out over edge_softness_px on each side.
 uniform float line_width_px = 0.9;
 uniform float edge_softness_px = 1.4;
@@ -29,7 +30,7 @@ uniform float minor_visibility = 0.0;
 // The flat lines on the ghost's floor (the bottom of its footprint, height floor_y) are drawn floor_strength times as
 // strong, every other line (other heights, and the upright lines) off_floor_strength times.
 uniform float floor_y = 0.0;
-uniform float floor_strength = 1.6;
+uniform float floor_strength = 2.2;
 uniform float off_floor_strength = 0.5;
 // The cell lines fade out sooner than the module lines, over this fraction of the reveal radius.
 uniform float minor_reveal_scale = 0.55;

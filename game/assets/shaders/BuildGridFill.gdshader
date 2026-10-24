@@ -1,7 +1,7 @@
 // The cell fill shown with the build grid (BuildGrid.CellFill.cs): faint quads on the open faces of cells that can't
 // be built in, coloured by what blocks them (the kind in UV.x: 0 level geometry, 1 structure, 2 no-build volume). It is
 // lit by the grid's reveals (BuildGrid.Reveal.cs), one light per reveal: each fades with distance just as the grid
-// lines do, and faces turned away from it keep only `ambient` of its light, which shades the cells as blocks.
+// lines do (level geometry's faces sooner, level_reveal_scale), and faces turned away from it keep only `ambient` of its light, which shades the cells as blocks.
 // Overlapping lights unite like the overlapping grid reveals do (1 - (1-a)(1-b)).
 shader_type spatial;
 render_mode unshaded, blend_mix, depth_draw_never, cull_back, shadows_disabled, fog_disabled;
@@ -13,8 +13,11 @@ uniform vec4 no_build_color : source_color = vec4(1.0, 0.32, 0.25, 0.11);
 uniform vec4 lights[5];
 uniform float light_radii[5];
 // The same fade as BuildGridReveal.gdshader's lines.
-uniform float fade_width = 5.75;
-uniform float reveal_falloff = 3.0;
+uniform float fade_width = 9.5;
+uniform float reveal_falloff = 1.6;
+// Level geometry's faces are revealed over this fraction of each light's radius (and fade width), so the floor and
+// walls stay a tight pool around the ghost while the grid lines and structures reach further.
+uniform float level_reveal_scale = 0.5;
 // What a face turned away from a light keeps of it.
 uniform float ambient = 0.35;
 // Lifts the faces off the surfaces they lie on.
@@ -32,11 +35,16 @@ void vertex() {
 }
 
 void fragment() {
+	float scale = 1.0;
+	if (kind < 0.5) {
+		scale = level_reveal_scale;
+	}
 	float unlit = 1.0;
 	for (int i = 0; i < 5; i++) {
 		vec3 to_light = lights[i].xyz - world_pos;
 		float d = length(to_light);
-		float reveal = pow(1.0 - smoothstep(light_radii[i] - fade_width, light_radii[i], d), reveal_falloff);
+		float radius = light_radii[i] * scale;
+		float reveal = pow(1.0 - smoothstep(radius - fade_width * scale, radius, d), reveal_falloff);
 		float facing = max(dot(world_normal, to_light / max(d, 0.001)), 0.0);
 		unlit *= 1.0 - lights[i].w * reveal * mix(ambient, 1.0, facing);
 	}
