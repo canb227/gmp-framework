@@ -1,24 +1,16 @@
 [gd_scene format=3 uid="uid://cvlmuiyneyaja"]
 
-[ext_resource type="Texture2D" uid="uid://b646400pws0lh" path="res://icon.svg" id="2_d7x8v"]
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_vchc8"]
-radius = 0.05
-height = 0.2
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4x2dv"]
-albedo_texture = ExtResource("2_d7x8v")
+[ext_resource type="PackedScene" uid="uid://c1yhc227apk2e" path="res://game/assets/models/items/electric_bit.blend" id="1_sg1lv"]
 
 [node name="electronic_bits" type="GMPBody" unique_id=232515007]
 
 [node name="Shape" type="GMPShape" parent="." unique_id=1371820554]
-shape = 2
-radius = 0.1
-height = 0.4
+shape = 3
+radius = 0.09277344
+height = 0.20201416
 density = 6.0
 friction = 0.55
 tags = 16
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0017639026, 0)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1940357077]
-mesh = SubResource("CapsuleMesh_vchc8")
-surface_material_override/0 = SubResource("StandardMaterial3D_4x2dv")
+[node name="electric_bit" parent="." unique_id=1770294039 instance=ExtResource("1_sg1lv")]

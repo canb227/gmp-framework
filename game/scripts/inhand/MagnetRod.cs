@@ -102,6 +102,7 @@ public partial class MagnetRod : HeldItem
     readonly List<ulong> caught = new();
     /// <summary>Area mode: seconds until the next search for items to catch (each copy searches for itself).</summary>
     double untilRescan;
+    
 
     // The holder's peer only.
     Vector3 lastTarget;
@@ -110,6 +111,7 @@ public partial class MagnetRod : HeldItem
     GpuParticles3D particles;
 
     FmodStudio.EventInstance hold_audio;
+    [Export] AnimationPlayer animationPlayer;
 
     static readonly Vector3 gravity = ProjectSettings.GetSetting("physics/3d/default_gravity_vector").AsVector3()
         * ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
@@ -174,6 +176,9 @@ public partial class MagnetRod : HeldItem
         hold_audio = (FmodStudio.EventInstance)AudioManager.Instance.CreateInstance("event:/Items/GravGun_Hold");
         hold_audio.setVolume(1.0f);
         hold_audio.start();
+
+        //animation
+        animationPlayer.Play("hold");
     }
 
     Vector3 HoldPoint()
@@ -231,6 +236,11 @@ public partial class MagnetRod : HeldItem
         {
             caught.Clear();
             hold_audio.stop(FmodStudio.STOP_MODE.ALLOWFADEOUT);
+            if(animationPlayer.AssignedAnimation != "idle")
+            {
+                animationPlayer.Stop();
+                animationPlayer.Play("idle");
+            }
             return;
         }
         if (mode == MagnetMode.Area)
